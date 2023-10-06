@@ -350,7 +350,7 @@ PODS:
     - React-Core
   - react-native-keep-awake (1.2.0):
     - React-Core
-  - react-native-ldk (0.0.111):
+  - react-native-ldk (0.0.112):
     - React
   - react-native-mmkv (2.8.0):
     - MMKV (>= 1.2.13)
@@ -846,7 +846,7 @@ SPEC CHECKSUMS:
   react-native-flipper: 5d8dcbcb905a7e8076c9a61a3709944c23cf48ee
   react-native-image-picker: ec9b713e248760bfa0f879f0715391de4651a7cb
   react-native-keep-awake: caee3ff89eaa21dfe29010f0d143566874a04441
-  react-native-ldk: 20bafd3ad8ea69c33841d7b4895379b6eb8cf9f6
+  react-native-ldk: 2f199553c70feaf4547353ac0f0a77bd4b4dd9cf
   react-native-mmkv: 7da5e18e55c04a9af9a7e0ab9792a1e8d33765a1
   react-native-netinfo: 22c082970cbd99071a4e5aa7a612ac20d66b08f0
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846

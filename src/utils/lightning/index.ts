@@ -81,7 +81,11 @@ import { TLightningNodeVersion } from '../../store/types/lightning';
 import { getBlocktankInfo, isGeoBlocked } from '../blocktank';
 import { updateOnchainFeeEstimates } from '../../store/actions/fees';
 import { addTodo, removeTodo } from '../../store/actions/todos';
-import { __TRUSTED_ZERO_CONF_PEERS__ } from '../../constants/env';
+import {
+	__BACKUPS_SERVER_HOST__,
+	__BACKUPS_SERVER_PUBKEY__,
+	__TRUSTED_ZERO_CONF_PEERS__,
+} from '../../constants/env';
 
 let LDKIsStayingSynced = false;
 
@@ -258,6 +262,10 @@ export const setupLdk = async ({
 				manually_accept_inbound_channels: true,
 			},
 			trustedZeroConfPeers: __TRUSTED_ZERO_CONF_PEERS__,
+			backupServerDetails: {
+				host: __BACKUPS_SERVER_HOST__,
+				serverPubKey: __BACKUPS_SERVER_PUBKEY__,
+			},
 		});
 
 		if (lmStart.isErr()) {
