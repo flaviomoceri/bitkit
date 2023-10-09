@@ -117,7 +117,7 @@
     "react-native-localize": "^2.2.6",
     "react-native-mmkv": "^2.8.0",
     "react-native-modal": "^13.0.1",
-    "react-native-permissions": "^3.7.3",
+    "react-native-permissions": "^3.9.3",
     "react-native-polyfill-globals": "^3.1.0",
     "react-native-qrcode-svg": "^6.2.0",
     "react-native-quick-actions": "^0.3.13",
@@ -210,12 +210,6 @@
     "rn-nodeify": "^10.3.0",
     "typescript": "5.0.4"
   },
-  "reactNativePermissionsIOS": [
-    "Camera",
-    "FaceID",
-    "Notifications",
-    "PhotoLibrary"
-  ],
   "react-native": {
     "crypto": "react-native-crypto",
     "_stream_transform": "readable-stream/transform",
