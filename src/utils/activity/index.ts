@@ -41,7 +41,7 @@ export const onChainTransactionToActivityItem = ({
 	// check if tx is a payment from Blocktank (i.e. transfer to savings)
 	const isTransferToSavings = !!blocktankOrders.find((order) => {
 		return !!transaction.vin.find(
-			(input) => input.txid === order.channel?.closingTxId,
+			(input) => input.txid === order.channel?.close?.txId,
 		);
 	});
 
