@@ -1,4 +1,4 @@
-import React, { ReactElement, memo } from 'react';
+import React, { ReactElement, memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Trans, useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ const Availability = ({
 	navigation,
 }: TransferScreenProps<'Availability'>): ReactElement => {
 	const { t } = useTranslation('lightning');
+	const [isLoading, setIsLoading] = useState(false);
 	const selectedWallet = useSelector(selectedWalletSelector);
 	const selectedNetwork = useSelector(selectedNetworkSelector);
 
@@ -32,6 +33,7 @@ const Availability = ({
 	};
 
 	const onContinue = async (): Promise<void> => {
+		setIsLoading(true);
 		const closeResponse = await closeAllChannels({
 			selectedNetwork,
 			selectedWallet,
@@ -81,6 +83,7 @@ const Availability = ({
 						style={styles.button}
 						text={t('ok')}
 						size="large"
+						loading={isLoading}
 						onPress={onContinue}
 					/>
 				</View>
