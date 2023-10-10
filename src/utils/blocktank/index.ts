@@ -97,6 +97,7 @@ export const createOrder = async (
 				...data.options,
 				couponCode: data.options?.couponCode ?? 'bitkit',
 				turboChannel: true,
+				zeroReserve: true,
 			},
 		);
 		if (buyRes?.id) {
