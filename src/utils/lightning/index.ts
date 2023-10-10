@@ -80,7 +80,6 @@ import { updateSlashPayConfig2 } from '../slashtags2';
 import { TLightningNodeVersion } from '../../store/types/lightning';
 import { getBlocktankInfo, isGeoBlocked } from '../blocktank';
 import { updateOnchainFeeEstimates } from '../../store/actions/fees';
-import { addTodo, removeTodo } from '../../store/actions/todos';
 import {
 	__BACKUPS_SERVER_HOST__,
 	__BACKUPS_SERVER_PUBKEY__,
