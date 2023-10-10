@@ -23,6 +23,7 @@ export const defaultBlocktankInfoShape: IBtInfo = {
 		minPaymentConfirmations: 0,
 		minHighRiskPaymentConfirmations: 1,
 		max0ConfClientBalanceSat: 856487,
+		maxClientBalanceSat: 856487,
 	},
 };
 
