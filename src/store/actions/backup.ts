@@ -1,5 +1,5 @@
 import { err, ok, Result } from '@synonymdev/result';
-import lm, { ENetworks, TLdkData } from '@synonymdev/react-native-ldk';
+import lm, { ldk, ENetworks, TLdkData } from '@synonymdev/react-native-ldk';
 
 import actions from './actions';
 import { getBackupStore, getDispatch } from '../helpers';
@@ -13,6 +13,7 @@ import { bytesToString, stringToBytes } from '../../utils/converters';
 import { Slashtag } from '../../hooks/slashtags';
 import {
 	exportBackup,
+	getAccount,
 	setAccount,
 	setLdkStoragePath,
 } from '../../utils/lightning';
@@ -40,6 +41,10 @@ import { showToast } from '../../utils/notifications';
 import { FAILED_BACKUP_CHECK_TIME } from '../../utils/backup/backups-subscriber';
 import i18n from '../../utils/i18n';
 import { ISlashtags, TContacts } from '../types/slashtags';
+import {
+	__BACKUPS_SERVER_HOST__,
+	__BACKUPS_SERVER_PUBKEY__,
+} from '../../constants/env';
 
 const dispatch = getDispatch();
 
@@ -179,12 +184,86 @@ export const performRemoteBackup = async <T>({
 };
 
 export const performLdkRestore = async ({
+	selectedNetwork,
+}: {
+	selectedNetwork?: TAvailableNetworks;
+}): Promise<Result<{ backupExists: boolean }>> => {
+	if (!selectedNetwork) {
+		selectedNetwork = getSelectedNetwork();
+	}
+
+	const storageRes = await setLdkStoragePath();
+	if (storageRes.isErr()) {
+		return err(storageRes.error);
+	}
+
+	const lightningAccount = await getAccount({ selectedNetwork });
+	if (lightningAccount.isErr()) {
+		return err(lightningAccount.error);
+	}
+
+	let network: ENetworks;
+	switch (selectedNetwork) {
+		case 'bitcoin':
+			network = ENetworks.mainnet;
+			break;
+		case 'bitcoinTestnet':
+			network = ENetworks.testnet;
+			break;
+		default:
+			network = ENetworks.regtest;
+			break;
+	}
+
+	const backupServerDetails = {
+		host: __BACKUPS_SERVER_HOST__,
+		serverPubKey: __BACKUPS_SERVER_PUBKEY__,
+	};
+	const backupSetupRes = await ldk.backupSetup({
+		seed: lightningAccount.value.seed,
+		network,
+		details: backupServerDetails,
+	});
+
+	if (backupSetupRes.isErr()) {
+		return err(backupSetupRes.error);
+	}
+
+	//Check if backup exists on new server
+	const fileListRes = await ldk.backupListFiles();
+	if (fileListRes.isErr()) {
+		return err(fileListRes.error);
+	}
+
+	const fileList = fileListRes.value;
+	const backupExists =
+		fileList.list.length > 0 || fileList.channel_monitors.length > 0;
+	if (!backupExists) {
+		return ok({ backupExists });
+	}
+
+	//If exists just restore it
+	const restoreRes = await lm.restoreFromRemoteServer({
+		account: lightningAccount.value,
+		serverDetails: backupServerDetails,
+	});
+
+	if (restoreRes.isErr()) {
+		return err(restoreRes.error);
+	}
+
+	//If not exists, check if there is a backup on the old server
+	return ok({ backupExists });
+};
+
+export const performLdkRestoreDeprecated = async ({
 	slashtag,
 	selectedNetwork,
 }: {
 	slashtag: Slashtag;
 	selectedNetwork?: TAvailableNetworks;
 }): Promise<Result<{ backupExists: boolean }>> => {
+	console.warn(`Restoring ${selectedNetwork} from deprecated backup server.`);
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
 	}
@@ -539,14 +618,25 @@ export const performFullRestoreFromLatestBackup = async (
 	slashtag: Slashtag,
 ): Promise<Result<{ backupExists: boolean }>> => {
 	try {
-		// ldk restore should be perfomed for all networks
+		// ldk restore should be performed for all networks
 		for (const network of Object.values(EAvailableNetworks)) {
 			const ldkBackupRes = await performLdkRestore({
-				slashtag,
 				selectedNetwork: network,
 			});
 			if (ldkBackupRes.isErr()) {
 				return err(ldkBackupRes.error.message);
+			}
+
+			//No backup found on new server, try deprecated backup server
+			if (!ldkBackupRes.value.backupExists) {
+				const ldkBackupDeprecatedRes = await performLdkRestoreDeprecated({
+					slashtag,
+					selectedNetwork: network,
+				});
+
+				if (ldkBackupDeprecatedRes.isErr()) {
+					return err(ldkBackupDeprecatedRes.error.message);
+				}
 			}
 		}
 
