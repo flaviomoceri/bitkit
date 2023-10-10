@@ -323,9 +323,9 @@ const ChannelDetails = ({
 	};
 
 	let channelCloseTime: string | undefined;
-	if (blocktankOrder?.channel?.closingTxId) {
+	if (blocktankOrder?.channel?.close) {
 		channelCloseTime = tTime('dateTime', {
-			v: new Date().toLocaleString(),
+			v: new Date(blocktankOrder.channel.close.registeredAt),
 			formatParams: {
 				v: {
 					year: 'numeric',
