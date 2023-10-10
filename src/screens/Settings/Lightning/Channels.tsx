@@ -126,10 +126,7 @@ const getPendingBlocktankChannels = (
 		if (order.state === BtOrderState.CREATED) {
 			pendingOrders.push(fakeChannel);
 		}
-		if (
-			order.state === BtOrderState.EXPIRED ||
-			order.state === BtOrderState.CLOSED
-		) {
+		if (order.state === BtOrderState.EXPIRED) {
 			failedOrders.push(fakeChannel);
 		}
 	});
