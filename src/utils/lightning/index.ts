@@ -418,15 +418,6 @@ export const subscribeToLightningPayments = ({
 					selectedNetwork = getSelectedNetwork();
 				}
 
-				const currentNode = getLightningStore().nodes[selectedWallet];
-				const openChannels = currentNode.openChannelIds[selectedNetwork];
-
-				// only add this todo for the first channel
-				if (!openChannels.length) {
-					addTodo('lightningConnecting');
-				}
-
-				removeTodo('lightningSettingUp');
 				refreshLdk({ selectedWallet, selectedNetwork }).then();
 
 				// Check if this is a CJIT Entry that needs to be added to the activity list.
@@ -438,11 +429,7 @@ export const subscribeToLightningPayments = ({
 		// @ts-ignore
 		onSpendableOutputsSubscription = ldk.onEvent(
 			EEventTypes.channel_manager_spendable_outputs,
-			() => {
-				// Channel closed & all funds are spendable
-				removeTodo('transferToSavings');
-				addTodo('lightning');
-			},
+			() => {},
 		);
 	}
 };
