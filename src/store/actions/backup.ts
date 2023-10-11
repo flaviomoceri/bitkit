@@ -246,6 +246,7 @@ export const performLdkRestore = async ({
 	const restoreRes = await lm.restoreFromRemoteServer({
 		account: lightningAccount.value,
 		serverDetails: backupServerDetails,
+		network,
 	});
 
 	if (restoreRes.isErr()) {
