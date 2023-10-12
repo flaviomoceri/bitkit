@@ -523,7 +523,7 @@ export const setAccount = async ({
 				service: name,
 			},
 		);
-		if (!setRes || setRes?.service !== name || setRes?.storage !== 'keychain') {
+		if (!setRes) {
 			return false;
 		}
 		return true;
