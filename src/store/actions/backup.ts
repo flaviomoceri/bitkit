@@ -247,6 +247,7 @@ export const performLdkRestore = async ({
 		account: lightningAccount.value,
 		serverDetails: backupServerDetails,
 		network,
+		overwrite: true,
 	});
 
 	if (restoreRes.isErr()) {
