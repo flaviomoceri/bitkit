@@ -87,10 +87,11 @@ const ReceiveDetails = ({
 			return;
 		}
 
-		// Subtract from max to keep a buffer for dust
-		const maxInvoiceSats = maxChannelSizeSat - MINIMUM_AMOUNT;
+		// channel size must be at least 2x the invoice amount
+		const maxAmount = maxChannelSizeSat / 2;
+
 		// Ensure the CJIT entry is within an acceptable range.
-		if (invoice.amount >= MINIMUM_AMOUNT && invoice.amount <= maxInvoiceSats) {
+		if (invoice.amount >= MINIMUM_AMOUNT && invoice.amount <= maxAmount) {
 			const cJitEntryResponse = await createCJitEntry({
 				channelSizeSat: maxChannelSizeSat,
 				invoiceSat: invoice.amount,
