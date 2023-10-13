@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
 		marginRight: 8,
 	},
 	columnRight: {
-		flex: 2,
+		flex: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'flex-end',
