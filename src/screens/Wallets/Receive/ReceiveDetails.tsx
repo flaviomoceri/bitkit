@@ -48,6 +48,10 @@ import { useLightningBalance } from '../../../hooks/lightning';
 
 const imageSrc = require('../../../assets/illustrations/coin-stack-4.png');
 
+// hardcoded to be above fee (1092)
+// TODO: fee is dynamic so this should be fetched from the API
+const MINIMUM_AMOUNT = 5000;
+
 const ReceiveDetails = ({
 	navigation,
 	route,
@@ -63,6 +67,8 @@ const ReceiveDetails = ({
 	const blocktank = useSelector(blocktankInfoSelector);
 	const lightningBalance = useLightningBalance(false);
 	const isGeoBlocked = useSelector(isGeoBlockedSelector);
+
+	const { maxChannelSizeSat } = blocktank.options;
 
 	const onChangeUnit = (): void => {
 		const result = getNumberPadText(invoice.amount, nextUnit);
@@ -80,16 +86,14 @@ const ReceiveDetails = ({
 		) {
 			return;
 		}
-		const maxChannelSats = blocktank.options.maxChannelSizeSat;
-		// Subtract from max to keep a buffer for dust
-		const maxInvoiceSats = maxChannelSats - blocktank.options.minChannelSizeSat;
+
+		// channel size must be at least 2x the invoice amount
+		const maxAmount = maxChannelSizeSat / 2;
+
 		// Ensure the CJIT entry is within an acceptable range.
-		if (
-			invoice.amount >= blocktank.options.minChannelSizeSat &&
-			invoice.amount <= maxInvoiceSats
-		) {
+		if (invoice.amount >= MINIMUM_AMOUNT && invoice.amount <= maxAmount) {
 			const cJitEntryResponse = await createCJitEntry({
-				channelSizeSat: maxChannelSats,
+				channelSizeSat: maxChannelSizeSat,
 				invoiceSat: invoice.amount,
 				invoiceDescription: invoice.message,
 				channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
@@ -104,8 +108,7 @@ const ReceiveDetails = ({
 			navigation.navigate('ReceiveConnect');
 		}
 	}, [
-		blocktank.options.maxChannelSizeSat,
-		blocktank.options.minChannelSizeSat,
+		maxChannelSizeSat,
 		enableInstant,
 		invoice.amount,
 		invoice.message,

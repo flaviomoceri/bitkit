@@ -2,6 +2,7 @@
 
 import { PersistedState } from 'redux-persist';
 import { defaultActivityShape } from '../shapes/activity';
+import { defaultBlocktankInfoShape } from '../shapes/blocktank';
 import { defaultTodosShape } from '../shapes/todos';
 import { defaultViewControllers } from '../shapes/ui';
 import { defaultChecksShape } from '../shapes/checks';
@@ -236,6 +237,15 @@ const migrations = {
 			settings: {
 				...state.settings,
 				isWebRelayTrusted: false,
+			},
+		};
+	},
+	25: (state): PersistedState => {
+		return {
+			...state,
+			blocktank: {
+				...state.blocktank,
+				info: defaultBlocktankInfoShape,
 			},
 		};
 	},

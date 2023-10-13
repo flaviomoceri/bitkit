@@ -22,10 +22,13 @@ import { getNumberPadText } from '../../../utils/numberpad';
 import { createCJitEntry } from '../../../utils/blocktank';
 import { showToast } from '../../../utils/notifications';
 import { DEFAULT_CHANNEL_DURATION } from '../../Lightning/CustomConfirm';
-import { primaryUnitSelector } from '../../../store/reselect/settings';
 import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
 import { refreshBlocktankInfo } from '../../../store/actions/blocktank';
 import type { ReceiveScreenProps } from '../../../navigation/types';
+
+// hardcoded to be above fee (1092)
+// TODO: fee is dynamic so this should be fetched from the API
+const MINIMUM_AMOUNT = 5000;
 
 const ReceiveAmount = ({
 	navigation,
@@ -35,12 +38,11 @@ const ReceiveAmount = ({
 	const [nextUnit, switchUnit] = useSwitchUnit();
 	const [isLoading, setIsLoading] = useState(false);
 	const invoice = useSelector(receiveSelector);
-	const unit = useSelector(primaryUnitSelector);
 	const blocktank = useSelector(blocktankInfoSelector);
 
-	const { minChannelSizeSat, maxChannelSizeSat } = blocktank.options;
-	// Subtract from max to keep a buffer for dust
-	const maxInvoiceSats = maxChannelSizeSat - minChannelSizeSat;
+	const { maxChannelSizeSat } = blocktank.options;
+	// channel size must be at least 2x the invoice amount
+	const maxAmount = maxChannelSizeSat / 2;
 
 	useFocusEffect(
 		useCallback(() => {
@@ -56,30 +58,7 @@ const ReceiveAmount = ({
 
 	const onContinue = async (): Promise<void> => {
 		setIsLoading(true);
-		// Ensure the invoice is greater than blocktank.options.minChannelSizeSat
-		if (invoice.amount < blocktank.options.minChannelSizeSat) {
-			const txt = getNumberPadText(blocktank.options.minChannelSizeSat, unit);
-			setIsLoading(false);
-			showToast({
-				type: 'error',
-				title: t('receive_error_min_title'),
-				description: t('receive_error_min_description', { txt }),
-				autoHide: true,
-			});
-			return;
-		}
-		// Ensure the invoice is less than maxInvoiceSats
-		if (invoice.amount > maxInvoiceSats) {
-			const txt = getNumberPadText(maxInvoiceSats, unit);
-			setIsLoading(false);
-			showToast({
-				type: 'error',
-				title: t('receive_error_max_title'),
-				description: t('receive_error_max_description', { txt }),
-				autoHide: true,
-			});
-			return;
-		}
+
 		const cJitEntryResponse = await createCJitEntry({
 			channelSizeSat: maxChannelSizeSat,
 			invoiceSat: invoice.amount,
@@ -104,8 +83,7 @@ const ReceiveAmount = ({
 	};
 
 	const continueDisabled =
-		invoice.amount < blocktank.options.minChannelSizeSat ||
-		invoice.amount > maxInvoiceSats;
+		invoice.amount < MINIMUM_AMOUNT || invoice.amount > maxAmount;
 
 	return (
 		<GradientView style={styles.container}>
@@ -125,11 +103,7 @@ const ReceiveAmount = ({
 							<Caption13Up style={styles.minimumText} color="gray1">
 								{t('minimum')}
 							</Caption13Up>
-							<Money
-								sats={blocktank.options.minChannelSizeSat}
-								size="text02m"
-								symbol={true}
-							/>
+							<Money sats={MINIMUM_AMOUNT} size="text02m" symbol={true} />
 						</View>
 						<View style={styles.actionButtons}>
 							<View style={styles.actionButtonContainer}>
