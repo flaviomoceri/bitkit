@@ -27,6 +27,10 @@ import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
 import { refreshBlocktankInfo } from '../../../store/actions/blocktank';
 import type { ReceiveScreenProps } from '../../../navigation/types';
 
+// hardcoded to be above fee (1092)
+// TODO: fee is dynamic so this should be fetched from the API
+const MINIMUM_AMOUNT = 5000;
+
 const ReceiveAmount = ({
 	navigation,
 }: ReceiveScreenProps<'ReceiveAmount'>): ReactElement => {
@@ -38,9 +42,9 @@ const ReceiveAmount = ({
 	const unit = useSelector(primaryUnitSelector);
 	const blocktank = useSelector(blocktankInfoSelector);
 
-	const { minChannelSizeSat, maxChannelSizeSat } = blocktank.options;
+	const { maxChannelSizeSat } = blocktank.options;
 	// Subtract from max to keep a buffer for dust
-	const maxInvoiceSats = maxChannelSizeSat - minChannelSizeSat;
+	const maxInvoiceSats = maxChannelSizeSat - MINIMUM_AMOUNT;
 
 	useFocusEffect(
 		useCallback(() => {
@@ -56,18 +60,6 @@ const ReceiveAmount = ({
 
 	const onContinue = async (): Promise<void> => {
 		setIsLoading(true);
-		// Ensure the invoice is greater than blocktank.options.minChannelSizeSat
-		if (invoice.amount < blocktank.options.minChannelSizeSat) {
-			const txt = getNumberPadText(blocktank.options.minChannelSizeSat, unit);
-			setIsLoading(false);
-			showToast({
-				type: 'error',
-				title: t('receive_error_min_title'),
-				description: t('receive_error_min_description', { txt }),
-				autoHide: true,
-			});
-			return;
-		}
 		// Ensure the invoice is less than maxInvoiceSats
 		if (invoice.amount > maxInvoiceSats) {
 			const txt = getNumberPadText(maxInvoiceSats, unit);
@@ -104,8 +96,7 @@ const ReceiveAmount = ({
 	};
 
 	const continueDisabled =
-		invoice.amount < blocktank.options.minChannelSizeSat ||
-		invoice.amount > maxInvoiceSats;
+		invoice.amount < MINIMUM_AMOUNT || invoice.amount > maxInvoiceSats;
 
 	return (
 		<GradientView style={styles.container}>
@@ -125,11 +116,7 @@ const ReceiveAmount = ({
 							<Caption13Up style={styles.minimumText} color="gray1">
 								{t('minimum')}
 							</Caption13Up>
-							<Money
-								sats={blocktank.options.minChannelSizeSat}
-								size="text02m"
-								symbol={true}
-							/>
+							<Money sats={MINIMUM_AMOUNT} size="text02m" symbol={true} />
 						</View>
 						<View style={styles.actionButtons}>
 							<View style={styles.actionButtonContainer}>
