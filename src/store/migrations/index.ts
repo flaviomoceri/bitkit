@@ -249,6 +249,15 @@ const migrations = {
 			},
 		};
 	},
+	26: (state): PersistedState => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				isWebRelayTrusted: true,
+			},
+		};
+	},
 };
 
 export default migrations;
