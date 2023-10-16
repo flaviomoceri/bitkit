@@ -23,6 +23,7 @@ import {
 } from '../../utils/lightning';
 import {
 	TCreateLightningInvoice,
+	TLdkAccountVersions,
 	TLightningNodeVersion,
 } from '../types/lightning';
 import { EPaymentType, TWalletName } from '../types/wallet';
@@ -436,4 +437,16 @@ export const moveMetaIncPaymentTags = (invoice: TInvoice): Result<string> => {
 	}
 
 	return ok('Metadata tags resynced with transactions.');
+};
+
+export const updateLdkAccountVersion = (
+	accountVersion: TLdkAccountVersions,
+): TLdkAccountVersions => {
+	dispatch({
+		type: actions.UPDATE_LDK_ACCOUNT_VERSION,
+		payload: {
+			accountVersion,
+		},
+	});
+	return accountVersion;
 };

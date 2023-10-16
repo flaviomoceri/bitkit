@@ -975,6 +975,12 @@ export const handleData = async ({
 			return ok({ type: EQRDataType.lnurlPay });
 		}
 		case EQRDataType.lnurlChannel: {
+			const accountVersion = getLightningStore().accountVersion;
+			if (accountVersion < 2) {
+				return err(
+					'LDK is currently in the process of migrating. Please restart your app, wait a few blocks and try again.',
+				);
+			}
 			const params = data.lnUrlParams! as LNURLChannelParams;
 			rootNavigation.navigate('LightningRoot', {
 				screen: 'LNURLChannel',
@@ -987,6 +993,12 @@ export const handleData = async ({
 			return await handleLnurlAuth({ params, selectedWallet, selectedNetwork });
 		}
 		case EQRDataType.lnurlWithdraw: {
+			const accountVersion = getLightningStore().accountVersion;
+			if (accountVersion < 2) {
+				return err(
+					'LDK is currently in the process of migrating. Please restart your app, wait a few blocks and try again.',
+				);
+			}
 			let params = data.lnUrlParams as LNURLWithdrawParams;
 
 			//Convert msats to sats.

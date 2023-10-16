@@ -45,6 +45,7 @@ import { DEFAULT_CHANNEL_DURATION } from '../../Lightning/CustomConfirm';
 import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
 import { isGeoBlockedSelector } from '../../../store/reselect/user';
 import { useLightningBalance } from '../../../hooks/lightning';
+import { lightningSelector } from '../../../store/reselect/lightning';
 
 const imageSrc = require('../../../assets/illustrations/coin-stack-4.png');
 
@@ -67,6 +68,7 @@ const ReceiveDetails = ({
 	const blocktank = useSelector(blocktankInfoSelector);
 	const lightningBalance = useLightningBalance(false);
 	const isGeoBlocked = useSelector(isGeoBlockedSelector);
+	const lightning = useSelector(lightningSelector);
 
 	const { maxChannelSizeSat } = blocktank.options;
 
@@ -82,7 +84,8 @@ const ReceiveDetails = ({
 		if (
 			!enableInstant ||
 			isGeoBlocked ||
-			lightningBalance.remoteBalance >= invoice.amount
+			lightningBalance.remoteBalance >= invoice.amount ||
+			lightning.accountVersion < 2
 		) {
 			return;
 		}
@@ -113,6 +116,7 @@ const ReceiveDetails = ({
 		invoice.amount,
 		invoice.message,
 		isGeoBlocked,
+		lightning.accountVersion,
 		lightningBalance.remoteBalance,
 		navigation,
 	]);
