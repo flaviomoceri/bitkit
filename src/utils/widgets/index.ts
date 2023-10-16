@@ -45,7 +45,7 @@ export const decodeWidgetFieldValue = (
 			const json = value;
 			const { format } = new Intl.NumberFormat('en-US');
 
-			if (field.name === 'Height') {
+			if (field.name === 'Block') {
 				return format(json);
 			}
 			if (field.name === 'Time') {
