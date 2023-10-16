@@ -34,6 +34,13 @@ import {
 	widgetsSelector,
 } from '../store/reselect/widgets';
 import LuganoFeedWidget from './LuganoFeedWidget';
+import {
+	BitcoinFactsURL,
+	BlocksFeedURL,
+	LuganoFeedURL,
+	NewsFeedURL,
+	PriceFeedURL,
+} from '../screens/Widgets/WidgetsSuggestions';
 
 const Widgets = (): ReactElement => {
 	const { t } = useTranslation('slashtags');
@@ -63,7 +70,7 @@ const Widgets = (): ReactElement => {
 
 	const renderItem = useCallback(
 		({ item, drag }: RenderItemParams<[string, IWidget]>): ReactElement => {
-			const [url, widget] = item;
+			let [url, widget] = item;
 
 			const _drag = (): void => {
 				// only allow dragging if there are more than 1 widget
@@ -99,22 +106,27 @@ const Widgets = (): ReactElement => {
 				case SUPPORTED_FEED_TYPES.PRICE_FEED:
 					Component = PriceWidget;
 					testID = 'PriceWidget';
+					url = PriceFeedURL;
 					break;
 				case SUPPORTED_FEED_TYPES.HEADLINES_FEED:
 					Component = HeadlinesWidget;
 					testID = 'HeadlinesWidget';
+					url = NewsFeedURL;
 					break;
 				case SUPPORTED_FEED_TYPES.BLOCKS_FEED:
 					Component = BlocksWidget;
 					testID = 'BlocksWidget';
+					url = BlocksFeedURL;
 					break;
 				case SUPPORTED_FEED_TYPES.FACTS_FEED:
 					Component = FactsWidget;
 					testID = 'FactsWidget';
+					url = BitcoinFactsURL;
 					break;
 				case SUPPORTED_FEED_TYPES.LUGANO_FEED:
 					Component = LuganoFeedWidget;
 					testID = 'LuganoWidget';
+					url = LuganoFeedURL;
 					break;
 				default:
 					Component = FeedWidget;
