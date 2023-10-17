@@ -9,6 +9,8 @@ import { TransferIcon, SavingsIcon, CoinsIcon } from '../../../styles/icons';
 import { useBalance } from '../../../hooks/wallet';
 import { RootNavigationProp } from '../../../navigation/types';
 import { isGeoBlockedSelector } from '../../../store/reselect/user';
+import { lightningSelector } from '../../../store/reselect/lightning';
+import { showToast } from '../../../utils/notifications';
 import { openChannelIdsSelector } from '../../../store/reselect/lightning';
 import NetworkRow from './NetworkRow';
 
@@ -16,6 +18,7 @@ const BitcoinBreakdown = (): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const navigation = useNavigation<RootNavigationProp>();
 	const isGeoBlocked = useSelector(isGeoBlockedSelector);
+	const lightning = useSelector(lightningSelector);
 	const openChannelIds = useSelector(openChannelIdsSelector);
 	const {
 		onchainBalance,
@@ -28,6 +31,14 @@ const BitcoinBreakdown = (): ReactElement => {
 	const isTransferToSavings = openChannelIds.length === 0;
 
 	const onRebalancePress = (): void => {
+		if (lightning.accountVersion < 2) {
+			showToast({
+				type: 'error',
+				title: t('migrating_ldk_title'),
+				description: t('migrating_ldk_description'),
+			});
+			return;
+		}
 		if (lightningBalance && !isGeoBlocked) {
 			navigation.navigate('Transfer', { screen: 'Setup' });
 		} else {

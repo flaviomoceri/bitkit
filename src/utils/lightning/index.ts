@@ -52,6 +52,7 @@ import {
 	removePeer,
 	syncLightningTxsWithActivityList,
 	updateClaimableBalance,
+	updateLdkAccountVersion,
 	updateLightningChannels,
 	updateLightningNodeId,
 	updateLightningNodeVersion,
@@ -77,9 +78,13 @@ import {
 	updateUi,
 } from '../../store/actions/ui';
 import { updateSlashPayConfig2 } from '../slashtags2';
-import { TLightningNodeVersion } from '../../store/types/lightning';
+import {
+	TLdkAccountVersions,
+	TLightningNodeVersion,
+} from '../../store/types/lightning';
 import { getBlocktankInfo, isGeoBlocked } from '../blocktank';
 import { updateOnchainFeeEstimates } from '../../store/actions/fees';
+import { reportLdkChannelMigrations } from '../checks';
 import {
 	__BACKUPS_SERVER_HOST__,
 	__BACKUPS_SERVER_PUBKEY__,
@@ -151,7 +156,8 @@ export const wipeLdkStorage = async ({
 	return ok(`${selectedNetwork}'s LDK directory wiped for ${selectedWallet}`);
 };
 
-const LDK_ACCOUNT_SUFFIX = 'ldkaccount';
+const LDK_ACCOUNT_SUFFIX_V1 = 'ldkaccount';
+const LDK_ACCOUNT_SUFFIX_V2 = 'ldkaccountv2';
 
 export const setLdkStoragePath = (): Promise<Result<string>> =>
 	lm.setBaseStoragePath(`${RNFS.DocumentDirectoryPath}/ldk/`);
@@ -169,11 +175,13 @@ export const setupLdk = async ({
 	selectedNetwork,
 	shouldRefreshLdk = true,
 	staleBackupRecoveryMode = false,
+	shouldPreemptivelyStopLdk = true,
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: TAvailableNetworks;
 	shouldRefreshLdk?: boolean;
 	staleBackupRecoveryMode?: boolean;
+	shouldPreemptivelyStopLdk?: boolean;
 } = {}): Promise<Result<string>> => {
 	try {
 		if (!selectedWallet) {
@@ -183,10 +191,21 @@ export const setupLdk = async ({
 			selectedNetwork = getSelectedNetwork();
 		}
 
-		// start from a clean slate
-		await ldk.stop();
+		if (shouldPreemptivelyStopLdk) {
+			// start from a clean slate
+			await ldk.stop();
+		}
 
-		const account = await getAccount({ selectedWallet });
+		const accountVersion = await checkAccountVersion(
+			selectedWallet,
+			selectedNetwork,
+		);
+
+		const account = await getLdkAccount({
+			version: accountVersion,
+			selectedWallet,
+			selectedNetwork,
+		});
 		if (account.isErr()) {
 			return err(account.error.message);
 		}
@@ -290,6 +309,12 @@ export const setupLdk = async ({
 		}
 
 		subscribeToLightningPayments({
+			selectedWallet,
+			selectedNetwork,
+		});
+
+		await handleAccountMigrations({
+			accountVersion,
 			selectedWallet,
 			selectedNetwork,
 		});
@@ -490,6 +515,11 @@ export const refreshLdk = async ({
 		]);
 		await updateClaimableBalance({ selectedNetwork, selectedWallet });
 		await syncLightningTxsWithActivityList();
+		const accountVersion = getLightningStore()?.accountVersion;
+		if (!accountVersion || accountVersion < 2) {
+			// Attempt to migrate on refresh.
+			await migrateToLdkV2Account(selectedWallet, selectedNetwork);
+		}
 		updateUi({ isLDKReady: true });
 		return ok('');
 	} catch (e) {
@@ -510,7 +540,7 @@ export const setAccount = async ({
 	try {
 		if (!name) {
 			name = getSelectedWallet();
-			name = `${name}${LDK_ACCOUNT_SUFFIX}`;
+			name = `${name}${LDK_ACCOUNT_SUFFIX_V2}`;
 		}
 		const account: TAccount = {
 			name,
@@ -533,14 +563,47 @@ export const setAccount = async ({
 };
 
 /**
+ * Checks if v1 account exists in storage. Otherwise, updates to v2.
+ * @param {TWalletName} selectedWallet
+ * @param {TAvailableNetworks} selectedNetwork
+ * @returns {Promise<Result<string>>}
+ */
+export const checkAccountVersion = async (
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
+): Promise<TLdkAccountVersions> => {
+	let accountVersion = getLightningStore().accountVersion;
+	if (accountVersion === 1) {
+		// Check if a v1 account exists in storage.
+		const v1AccountExists = await getExistingLdkAccount({
+			version: accountVersion,
+			selectedWallet,
+			selectedNetwork,
+		});
+		if (v1AccountExists.isErr()) {
+			// If no v1 account exists in storage, update version number.
+			updateLdkAccountVersion(2);
+			accountVersion = 2;
+		}
+	}
+	return accountVersion;
+};
+
+/**
  * Retrieve LDK account info from storage.
+ * @param {number} version
+ * @param {boolean} shouldCreateAccount When set to true, it will create a new account if none is found.
  * @param {TWalletName} [selectedWallet]
  * @param {TAvailableNetworks} [selectedNetwork]
  */
-export const getAccount = async ({
+export const getLdkAccount = async ({
+	version = 2,
+	shouldCreateAccount = true,
 	selectedWallet,
 	selectedNetwork,
 }: {
+	version?: TLdkAccountVersions;
+	shouldCreateAccount?: boolean;
 	selectedWallet?: TWalletName;
 	selectedNetwork?: TAvailableNetworks;
 } = {}): Promise<Result<TAccount>> => {
@@ -550,39 +613,312 @@ export const getAccount = async ({
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
 	}
+
+	const existingAccountRes = await getExistingLdkAccount({
+		version,
+		selectedWallet,
+		selectedNetwork,
+	});
+	if (existingAccountRes.isOk()) {
+		// Return existing account.
+		return existingAccountRes;
+	}
+	if (!shouldCreateAccount) {
+		// Return error from getExistingLdkAccount instead of creating an account.
+		return existingAccountRes;
+	}
+
+	// If no account was found, attempt to create one.
+	return createDefaultLdkAccount({ version, selectedWallet, selectedNetwork });
+};
+
+export const createDefaultLdkAccount = async ({
+	version,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
+}: {
+	version: TLdkAccountVersions;
+	selectedWallet?: TWalletName;
+	selectedNetwork?: TAvailableNetworks;
+}): Promise<Result<TAccount>> => {
 	const mnemonicPhrase = await getMnemonicPhrase(selectedWallet);
 	if (mnemonicPhrase.isErr()) {
 		return err(mnemonicPhrase.error.message);
 	}
-	const name = `${selectedWallet}${selectedNetwork}${LDK_ACCOUNT_SUFFIX}`;
-	try {
-		const result = await Keychain.getGenericPassword({ service: name });
-		if (!!result && result?.password) {
-			// Return existing account.
-			return ok(JSON.parse(result?.password));
-		} else {
-			const defaultAccount = _getDefaultAccount(name, mnemonicPhrase.value);
-			// Setup default account.
-			const setAccountResponse = await setAccount(defaultAccount);
-			if (setAccountResponse) {
-				return ok(defaultAccount);
-			} else {
-				return err('Unable to set LDK account.');
-			}
-		}
-	} catch (e) {
-		console.log(e);
-		const defaultAccount = _getDefaultAccount(name, mnemonicPhrase.value);
+	const name = getLdkAccountName({ version, selectedWallet, selectedNetwork });
+	const defaultAccount = getDefaultLdkAccount({
+		name,
+		mnemonic: mnemonicPhrase.value,
+		version,
+	});
+	// Setup default account.
+	const setAccountResponse = await setAccount(defaultAccount);
+	if (setAccountResponse) {
 		return ok(defaultAccount);
+	} else {
+		return err('Unable to set LDK account.');
 	}
 };
-const _getDefaultAccount = (name: string, mnemonic: string): TAccount => {
-	// @ts-ignore
-	const ldkSeed = bitcoin.crypto.sha256(mnemonic).toString('hex');
-	return {
-		name,
-		seed: ldkSeed,
-	};
+
+/**
+ * Returns existing LDK account from storage.
+ * Returns error if none exist.
+ * @param {TLdkAccountVersions} version
+ * @param {TWalletName} [selectedWallet]
+ * @param {TAvailableNetworks} [selectedNetwork]
+ * @returns {Promise<Result<TAccount>>}
+ */
+const getExistingLdkAccount = async ({
+	version,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
+}: {
+	version: TLdkAccountVersions;
+	selectedWallet?: TWalletName;
+	selectedNetwork?: TAvailableNetworks;
+}): Promise<Result<TAccount>> => {
+	const name = getLdkAccountName({ version, selectedWallet, selectedNetwork });
+	const result = await Keychain.getGenericPassword({ service: name });
+	if (!!result && result?.password) {
+		// Return existing account.
+		return ok(JSON.parse(result.password));
+	}
+	return err('No LDK account found.');
+};
+
+/**
+ * Attempts to migrate LDK accounts to the next version.
+ * @param {TLdkAccountVersions} accountVersion
+ * @param {TWalletName} selectedWallet
+ * @param {TAvailableNetworks} selectedNetwork
+ * @returns {Promise<void>}
+ */
+const handleAccountMigrations = async ({
+	accountVersion,
+	selectedWallet,
+	selectedNetwork,
+}: {
+	accountVersion: TLdkAccountVersions;
+	selectedWallet: TWalletName;
+	selectedNetwork: TAvailableNetworks;
+}): Promise<void> => {
+	if (accountVersion >= 2) {
+		return;
+	}
+	if (!__DEV__ && selectedNetwork !== 'bitcoin') {
+		// We only care about migrating mainnet accounts outside of development.
+		return;
+	}
+	if (accountVersion === 1) {
+		// Close v1 account and migrate to v2
+		await closeLdkV1Account(selectedWallet, selectedNetwork);
+	}
+};
+
+/**
+ * Attempts to close all open channels and migrate to v2.
+ * @param {TWalletName} selectedWallet
+ * @param {TAvailableNetworks} selectedNetwork
+ * @returns {Promise<Result<string>>}
+ */
+const closeLdkV1Account = async (
+	selectedWallet,
+	selectedNetwork,
+): Promise<Result<string>> => {
+	const openChannelsRes = await getOpenChannels({
+		fromStorage: false,
+		selectedNetwork,
+		selectedWallet,
+	});
+	if (openChannelsRes.isErr()) {
+		return err(openChannelsRes.error.message);
+	}
+	const channels = openChannelsRes.value;
+	if (channels.length) {
+		const closeRes = await closeAllChannels({
+			channels,
+			selectedWallet,
+			selectedNetwork,
+		});
+		if (closeRes.isErr()) {
+			return err(closeRes.error.message);
+		}
+		if (closeRes.value.length) {
+			await reportLdkChannelMigrations({
+				channels: closeRes.value,
+				selectedNetwork,
+			});
+		}
+		await sleep(1000);
+		await lm.syncLdk();
+		await sleep(1000);
+	}
+	return migrateToLdkV2Account(selectedWallet, selectedNetwork);
+};
+
+let isMigrating = false;
+export const migrateToLdkV2Account = async (
+	selectedWallet: TWalletName,
+	selectedNetwork: TAvailableNetworks,
+): Promise<Result<string>> => {
+	if (isMigrating) {
+		return err('Currently Migrating.');
+	}
+	isMigrating = true;
+	try {
+		if (!__DEV__ && selectedNetwork !== 'bitcoin') {
+			return err('Only migrate if mainnet.');
+		}
+		const lightningBalance = getLightningBalance({
+			selectedWallet,
+			selectedNetwork,
+			includeReserveBalance: true,
+		});
+		const openChannels = await getOpenChannels({
+			selectedNetwork,
+			selectedWallet,
+		});
+		if (openChannels.isErr()) {
+			return err(openChannels.error.message);
+		}
+		const claimableBalance = await getClaimableBalance({
+			selectedWallet,
+			selectedNetwork,
+		});
+		const nodeId = await getNodeId();
+		if (nodeId.isErr()) {
+			return err(nodeId.error.message);
+		}
+
+		if (
+			lightningBalance.localBalance ||
+			lightningBalance.remoteBalance ||
+			claimableBalance ||
+			openChannels.value.length
+		) {
+			return err('Not ready to migrate.');
+		}
+
+		const oldNodeId = await getNodeId();
+		if (oldNodeId.isErr()) {
+			return err(oldNodeId.error.message);
+		}
+		updateLdkAccountVersion(2);
+		await sleep(1000);
+		await setupLdk({
+			selectedWallet,
+			selectedNetwork,
+			shouldRefreshLdk: false,
+		});
+		// Ensure the LDK Account was created.
+		const ldkAccount = await getLdkAccount({
+			version: 2,
+			selectedWallet,
+			selectedNetwork,
+		});
+		if (ldkAccount.isErr()) {
+			// Attempt to create the v2 account for the next retry.
+			await createDefaultLdkAccount({
+				version: 2,
+				selectedWallet,
+				selectedNetwork,
+			});
+			return err('Unable to get v2 LDK account.');
+		}
+		await ldk.stop();
+		await sleep(1000);
+		await refreshLdk({
+			selectedWallet,
+			selectedNetwork,
+		});
+		const newNodeId = await getNodeId();
+		if (newNodeId.isErr()) {
+			return err(newNodeId.error.message);
+		}
+		if (oldNodeId.value === newNodeId.value) {
+			// Revert version to try again later.
+			updateLdkAccountVersion(1);
+			return err('Failed to migrate to v2.');
+		}
+		updateLightningNodeId({
+			nodeId: newNodeId.value,
+			selectedWallet,
+			selectedNetwork,
+		});
+		return ok('Migrated to v2.');
+	} catch (e) {
+		return err(e);
+	} finally {
+		isMigrating = false;
+	}
+};
+
+/**
+ * Retrieves LDK account name for the provided version, wallet and network.
+ * @param {TLdkAccountVersions} version
+ * @param {TWalletName} [selectedWallet]
+ * @param {TAvailableNetworks} [selectedNetwork]
+ * @returns {string}
+ */
+export const getLdkAccountName = ({
+	version,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
+}: {
+	version: TLdkAccountVersions;
+	selectedWallet?: TWalletName;
+	selectedNetwork?: TAvailableNetworks;
+}): string => {
+	const suffix = version === 1 ? LDK_ACCOUNT_SUFFIX_V1 : LDK_ACCOUNT_SUFFIX_V2;
+	return `${selectedWallet}${selectedNetwork}${suffix}`;
+};
+
+/**
+ * Returns the default LDK account for the provided name, mnemonic & version.
+ * @param {string} name
+ * @param {string} mnemonic
+ * @param {TLdkAccountVersions} version
+ * @returns {TAccount}
+ */
+export const getDefaultLdkAccount = ({
+	name,
+	mnemonic,
+	version,
+}: {
+	name: string;
+	mnemonic: string;
+	version: TLdkAccountVersions;
+}): TAccount => {
+	switch (version) {
+		case 1:
+			// @ts-ignore
+			const ldkSeed = bitcoin.crypto.sha256(mnemonic).toString('hex');
+			return {
+				name,
+				seed: ldkSeed,
+			};
+		case 2:
+			return {
+				name,
+				seed: getSha256(mnemonic),
+			};
+		default:
+			return {
+				name,
+				seed: getSha256(mnemonic),
+			};
+	}
+};
+
+/**
+ * Get sha256 hash of a given string.
+ * @param {string} str
+ * @returns {string}
+ */
+export const getSha256 = (str: string): string => {
+	const buffer = Buffer.from(str, 'utf8');
+	const hash = bitcoin.crypto.sha256(buffer);
+	return hash.toString('hex');
 };
 
 /**
@@ -594,7 +930,7 @@ export const exportBackup = async (
 	account?: TAccount,
 ): Promise<Result<TAccountBackup>> => {
 	if (!account) {
-		const res = await getAccount();
+		const res = await getLdkAccount();
 		if (res.isErr()) {
 			return err(res.error);
 		}

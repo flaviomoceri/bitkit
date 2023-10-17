@@ -14,7 +14,11 @@ import {
 } from '../../../store/actions/wallet';
 import { resetUserStore } from '../../../store/actions/user';
 import { resetActivityStore } from '../../../store/actions/activity';
-import { resetLightningStore } from '../../../store/actions/lightning';
+import {
+	resetLightningStore,
+	updateLdkAccountVersion,
+	updateLightningNodeId,
+} from '../../../store/actions/lightning';
 import { resetBlocktankStore } from '../../../store/actions/blocktank';
 import { resetSlashtagsStore } from '../../../store/actions/slashtags';
 import { resetWidgetsStore } from '../../../store/actions/widgets';
@@ -35,6 +39,12 @@ import { refreshWallet } from '../../../utils/wallet';
 import { runChecks } from '../../../utils/wallet/checks';
 import { getFakeTransaction } from '../../../utils/wallet/testing';
 import type { SettingsScreenProps } from '../../../navigation/types';
+import { lightningSelector } from '../../../store/reselect/lightning';
+import {
+	createDefaultLdkAccount,
+	getNodeId,
+	setupLdk,
+} from '../../../utils/lightning';
 
 const DevSettings = ({
 	navigation,
@@ -44,6 +54,7 @@ const DevSettings = ({
 	const selectedWallet = useSelector(selectedWalletSelector);
 	const selectedNetwork = useSelector(selectedNetworkSelector);
 	const addressType = useSelector(addressTypeSelector);
+	const lightning = useSelector(lightningSelector);
 	const warnings = useSelector((state) => {
 		return warningsSelector(state, selectedWallet, selectedNetwork);
 	});
@@ -178,6 +189,69 @@ const DevSettings = ({
 					type: EItemType.textButton,
 					value: '',
 					testID: 'Warnings',
+				},
+			],
+		},
+		{
+			title: 'LDK Account Migration',
+			data: [
+				{
+					title: `LDK Account Version: ${lightning.accountVersion}`,
+					type: EItemType.textButton,
+					value: '',
+					testID: 'LDKAccountVersion',
+				},
+				{
+					title: 'Force LDK V2 Account Migration',
+					type: EItemType.button,
+					onPress: async (): Promise<void> => {
+						updateLdkAccountVersion(2);
+						await createDefaultLdkAccount({
+							version: 2,
+							selectedWallet,
+							selectedNetwork,
+						});
+						await setupLdk({
+							selectedWallet,
+							selectedNetwork,
+							shouldRefreshLdk: true,
+						});
+						const newNodeId = await getNodeId();
+						if (newNodeId.isOk()) {
+							updateLightningNodeId({
+								nodeId: newNodeId.value,
+								selectedWallet,
+								selectedNetwork,
+							});
+						}
+					},
+					testID: 'ForceV2Migration',
+				},
+				{
+					title: 'Revert to LDK V1 Account',
+					type: EItemType.button,
+					onPress: async (): Promise<void> => {
+						updateLdkAccountVersion(1);
+						await createDefaultLdkAccount({
+							version: 1,
+							selectedWallet,
+							selectedNetwork,
+						});
+						await setupLdk({
+							selectedWallet,
+							selectedNetwork,
+							shouldRefreshLdk: true,
+						});
+						const newNodeId = await getNodeId();
+						if (newNodeId.isOk()) {
+							updateLightningNodeId({
+								nodeId: newNodeId.value,
+								selectedWallet,
+								selectedNetwork,
+							});
+						}
+					},
+					testID: 'RevertToLDKV1',
 				},
 			],
 		},

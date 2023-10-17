@@ -234,13 +234,22 @@ const migrations = {
 	24: (state): PersistedState => {
 		return {
 			...state,
+			lightning: {
+				...state.lightning,
+				accountVersion: 1,
+			},
+		};
+	},
+	25: (state): PersistedState => {
+		return {
+			...state,
 			settings: {
 				...state.settings,
 				isWebRelayTrusted: false,
 			},
 		};
 	},
-	25: (state): PersistedState => {
+	26: (state): PersistedState => {
 		return {
 			...state,
 			blocktank: {
@@ -249,7 +258,7 @@ const migrations = {
 			},
 		};
 	},
-	26: (state): PersistedState => {
+	27: (state): PersistedState => {
 		return {
 			...state,
 			settings: {

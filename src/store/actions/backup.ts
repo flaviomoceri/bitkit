@@ -12,8 +12,9 @@ import {
 import { bytesToString, stringToBytes } from '../../utils/converters';
 import { Slashtag } from '../../hooks/slashtags';
 import {
+	checkAccountVersion,
 	exportBackup,
-	getAccount,
+	getLdkAccount,
 	setAccount,
 	setLdkStoragePath,
 } from '../../utils/lightning';
@@ -197,7 +198,8 @@ export const performLdkRestore = async ({
 		return err(storageRes.error);
 	}
 
-	const lightningAccount = await getAccount({ selectedNetwork });
+	const version = await checkAccountVersion();
+	const lightningAccount = await getLdkAccount({ selectedNetwork, version });
 	if (lightningAccount.isErr()) {
 		return err(lightningAccount.error);
 	}

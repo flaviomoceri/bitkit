@@ -155,6 +155,7 @@ export const startWalletServices = async ({
 				selectedNetwork,
 				shouldRefreshLdk: false,
 				staleBackupRecoveryMode,
+				shouldPreemptivelyStopLdk: false,
 			});
 			if (setupResponse.isOk()) {
 				keepLdkSynced({ selectedNetwork }).then();

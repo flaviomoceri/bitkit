@@ -57,6 +57,7 @@ import {
 } from '../../../store/reselect/wallet';
 import {
 	closedChannelsSelector,
+	lightningSelector,
 	openChannelsSelector,
 	pendingChannelsSelector,
 } from '../../../store/reselect/lightning';
@@ -236,6 +237,7 @@ const Channels = ({
 	const selectedWallet = useSelector(selectedWalletSelector);
 	const selectedNetwork = useSelector(selectedNetworkSelector);
 	const enableDevOptions = useSelector(enableDevOptionsSelector);
+	const lightning = useSelector(lightningSelector);
 
 	const blocktankOrders = useSelector(blocktankOrdersSelector);
 	const paidOrders = useSelector(blocktankPaidOrdersSelector);
@@ -254,6 +256,14 @@ const Channels = ({
 	const pendingConnections = [...pendingOrders, ...pendingChannels];
 
 	const handleAdd = useCallback((): void => {
+		if (lightning.accountVersion < 2) {
+			showToast({
+				type: 'error',
+				title: t('migrating_ldk_title'),
+				description: t('migrating_ldk_description'),
+			});
+			return;
+		}
 		navigation.navigate('LightningRoot', {
 			screen: 'CustomSetup',
 			params: { spending: true },
@@ -261,7 +271,7 @@ const Channels = ({
 
 		// TODO: Update this view once we enable creating channels with nodes other than Blocktank.
 		// navigation.navigate('LightningAddConnection');
-	}, [navigation]);
+	}, [lightning.accountVersion, navigation, t]);
 
 	const handleExportLogs = useCallback(async (): Promise<void> => {
 		const result = await zipLogs({ includeJson: enableDevOptions });
