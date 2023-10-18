@@ -464,6 +464,25 @@ export const unsubscribeFromLightningSubscriptions = (): void => {
 	onSpendableOutputsSubscription?.remove();
 };
 
+let isRefreshing = false;
+let pendingRefreshPromises: Array<(result: Result<string>) => void> = [];
+
+const resolveAllPendingRefreshPromises = (result: Result<string>): void => {
+	isRefreshing = false;
+	while (pendingRefreshPromises.length > 0) {
+		const resolve = pendingRefreshPromises.shift();
+		if (resolve) {
+			resolve(result);
+		}
+	}
+};
+
+const handleRefreshError = (errorMessage: string): Result<string> => {
+	isRefreshing = false;
+	resolveAllPendingRefreshPromises(err(errorMessage));
+	return err(errorMessage);
+};
+
 /**
  * This method syncs LDK, re-adds peers & updates lightning channels.
  * @param {TWalletName} [selectedWallet]
@@ -477,6 +496,13 @@ export const refreshLdk = async ({
 	selectedWallet?: TWalletName;
 	selectedNetwork?: TAvailableNetworks;
 } = {}): Promise<Result<string>> => {
+	if (isRefreshing) {
+		return new Promise((resolve) => {
+			pendingRefreshPromises.push(resolve);
+		});
+	}
+	isRefreshing = true;
+
 	try {
 		// wait for interactions/animations to be completed
 		await new Promise((resolve) => {
@@ -498,14 +524,14 @@ export const refreshLdk = async ({
 				shouldRefreshLdk: false,
 			});
 			if (setupResponse.isErr()) {
-				return err(setupResponse.error.message);
+				return handleRefreshError(setupResponse.error.message);
 			}
 			keepLdkSynced({ selectedNetwork }).then();
 		}
 
 		const syncRes = await lm.syncLdk();
 		if (syncRes.isErr()) {
-			return err(syncRes.error.message);
+			return handleRefreshError(syncRes.error.message);
 		}
 		await lm.setFees();
 
@@ -521,10 +547,12 @@ export const refreshLdk = async ({
 			await migrateToLdkV2Account(selectedWallet, selectedNetwork);
 		}
 		updateUi({ isLDKReady: true });
+
+		resolveAllPendingRefreshPromises(ok(''));
 		return ok('');
 	} catch (e) {
 		console.log(e);
-		return err(e);
+		return handleRefreshError(e.message);
 	}
 };
 
