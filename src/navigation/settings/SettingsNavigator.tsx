@@ -11,6 +11,7 @@ import { TChannel } from '@synonymdev/react-native-ldk';
 import MainSettings from '../../screens/Settings';
 import CurrenciesSettings from '../../screens/Settings/Currencies';
 import ElectrumConfig from '../../screens/Settings/ElectrumConfig';
+import RGSServer from '../../screens/Settings/RGSServer';
 import CoinSelectPreference from '../../screens/Settings/CoinSelectPreference';
 import PaymentPreference from '../../screens/Settings/PaymentPreference';
 import AddressTypePreference from '../../screens/Settings/AddressTypePreference';
@@ -74,6 +75,7 @@ export type SettingsStackParamList = {
 	TransactionSpeedSettings: undefined;
 	CustomFee: undefined;
 	ElectrumConfig: undefined;
+	RGSServer: undefined;
 	CoinSelectPreference: undefined;
 	PaymentPreference: undefined;
 	AddressTypePreference: undefined;
@@ -131,6 +133,7 @@ const SettingsNavigator = (): ReactElement => {
 			/>
 			<Stack.Screen name="CustomFee" component={CustomFee} />
 			<Stack.Screen name="ElectrumConfig" component={ElectrumConfig} />
+			<Stack.Screen name="RGSServer" component={RGSServer} />
 			<Stack.Screen
 				name="CoinSelectPreference"
 				component={CoinSelectPreference}

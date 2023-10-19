@@ -267,6 +267,15 @@ const migrations = {
 			},
 		};
 	},
+	28: (state): PersistedState => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				rapidGossipSyncUrl: 'https://rapidsync.lightningdevkit.org/snapshot/',
+			},
+		};
+	},
 };
 
 export default migrations;
