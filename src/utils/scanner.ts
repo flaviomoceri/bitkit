@@ -387,7 +387,7 @@ export const decodeQRData = async (
 	// Treasure hunt
 	if (__DEV__ || selectedNetwork === EAvailableNetworks.bitcoin) {
 		// Airdrop
-		if (data.includes('cutt.ly/VwQFzhJJ')) {
+		if (data.includes('cutt.ly/VwQFzhJJ') || data.includes('bitkit.to/drone')) {
 			const chestId = '2gZxrqhc';
 			return ok([{ qrDataType: EQRDataType.treasureHunt, chestId }]);
 		}
