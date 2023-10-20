@@ -105,6 +105,7 @@ export const defaultSettingsShape: Readonly<ISettings> = {
 	selectedCurrency: 'USD',
 	selectedLanguage: 'english',
 	customElectrumPeers: origCustomElectrumPeers,
+	rapidGossipSyncUrl: 'https://rapidsync.lightningdevkit.org/snapshot/',
 	coinSelectAuto: true,
 	coinSelectPreference: 'small',
 	receivePreference: defaultReceivePreference,

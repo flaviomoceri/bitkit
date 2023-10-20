@@ -44,6 +44,7 @@ import {
 	getBlocktankStore,
 	getFeesStore,
 	getLightningStore,
+	getStore,
 	getWalletStore,
 } from '../../store/helpers';
 import { defaultHeader } from '../../store/shapes/wallet';
@@ -90,6 +91,7 @@ import {
 	__BACKUPS_SERVER_PUBKEY__,
 	__TRUSTED_ZERO_CONF_PEERS__,
 } from '../../constants/env';
+import { EStore } from '../../store/types';
 
 let LDKIsStayingSynced = false;
 
@@ -245,6 +247,8 @@ export const setupLdk = async ({
 		if (storageRes.isErr()) {
 			return err(storageRes.error);
 		}
+		const rapidGossipSyncUrl =
+			getStore()[EStore.settings]?.rapidGossipSyncUrl ?? '';
 		const lmStart = await lm.start({
 			account: account.value,
 			getFees: async () => {
@@ -284,6 +288,7 @@ export const setupLdk = async ({
 				host: __BACKUPS_SERVER_HOST__,
 				serverPubKey: __BACKUPS_SERVER_PUBKEY__,
 			},
+			rapidGossipSyncUrl,
 		});
 
 		if (lmStart.isErr()) {

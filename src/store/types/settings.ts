@@ -57,6 +57,7 @@ export interface ISettings {
 	theme: TTheme;
 	unit: EUnit;
 	customElectrumPeers: TCustomElectrumPeers;
+	rapidGossipSyncUrl: string;
 	// TODO: type available currencies
 	selectedCurrency: string;
 	selectedLanguage: string;

@@ -82,6 +82,10 @@ export const customElectrumPeersSelector = createSelector(
 	(customElectrumPeers, selectedNetwork): ICustomElectrumPeer[] =>
 		customElectrumPeers[selectedNetwork],
 );
+export const rapidGossipSyncUrlSelector = createSelector(
+	[settingsState],
+	(settings): string => settings.rapidGossipSyncUrl,
+);
 export const transactionSpeedSelector = createSelector(
 	[settingsState],
 	(settings): ETransactionSpeed => settings.transactionSpeed,

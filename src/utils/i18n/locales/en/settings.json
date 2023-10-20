@@ -109,6 +109,7 @@
 		"lightning_connections": "Lightning Connections",
 		"lightning_node": "Lightning Node",
 		"electrum_server": "Electrum Server",
+		"rgs_server": "Rapid-Gossip-Sync Server",
 		"web_relay": "Slashtags Web Relay",
 		"bitcoin_network": "Bitcoin Network"
 	},
@@ -175,6 +176,13 @@
 		"protocol": "Protocol",
 		"button_reset": "Reset To Default",
 		"button_connect": "Connect To Host"
+	},
+	"rgs": {
+		"server_url": "Rapid-Gossip-Sync Server URL",
+		"button_connect": "Connect",
+		"button_reconnect": "Re-Connect",
+		"update_success_title": "Rapid-Gossip-Sync Server Updated",
+		"update_success_description": "You may need to restart the app once or twice for this change to take effect."
 	},
 	"wr": {
 		"error_wr": "Web Relay Error",
