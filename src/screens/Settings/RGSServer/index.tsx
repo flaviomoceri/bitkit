@@ -25,6 +25,7 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import { setupLdk } from '../../../utils/lightning';
+import { showToast } from '../../../utils/notifications';
 
 const isValidURL = (data: string): boolean => {
 	const pattern = new RegExp(
@@ -74,6 +75,11 @@ const RGSServer = ({
 		await setupLdk({
 			selectedWallet,
 			selectedNetwork,
+		});
+		showToast({
+			type: 'success',
+			title: t('rgs.update_success_title'),
+			description: t('rgs.update_success_description'),
 		});
 		setLoading(false);
 	};

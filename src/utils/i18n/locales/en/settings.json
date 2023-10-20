@@ -180,7 +180,9 @@
 	"rgs": {
 		"server_url": "Rapid-Gossip-Sync Server URL",
 		"button_connect": "Connect",
-		"button_reconnect": "Re-Connect"
+		"button_reconnect": "Re-Connect",
+		"update_success_title": "Rapid-Gossip-Sync Server Updated",
+		"update_success_description": "You may need to restart the app once or twice for this change to take effect."
 	},
 	"wr": {
 		"error_wr": "Web Relay Error",
