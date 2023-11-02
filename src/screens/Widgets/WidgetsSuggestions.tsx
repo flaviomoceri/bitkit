@@ -14,16 +14,14 @@ import { handleSlashtagURL } from '../../utils/slashtags';
 import { useSlashfeed } from '../../hooks/widgets';
 import type { RootStackScreenProps } from '../../navigation/types';
 
-export const PriceFeedURL =
+const PriceFeedURL =
 	'slashfeed:9ckhj7ea31ugskdewy9eiod5trhtbgcu9juza8aypjyugsp5f4oo/Bitcoin Price';
-export const NewsFeedURL =
+const NewsFeedURL =
 	'slashfeed:tdm8gwcuh6nfw4w8remadpzid9cff4tpoyazeokzbrfnjrxyf9ho/Bitcoin Headlines';
-export const BlocksFeedURL =
+const BlocksFeedURL =
 	'slashfeed:xzdjbqu5ym3hk4xp993hg4ahzs1g4o85dhw9nnp4qcbd57pxndoo/Bitcoin Blocks';
-export const BitcoinFactsURL =
+const BitcoinFactsURL =
 	'slashfeed:jm1n46tbdbnz4soq8hqppbpwt3pqp3cp9qobdjgyk8mjmnmdj14o/Bitcoin Facts';
-export const LuganoFeedURL =
-	'slashfeed:aa6poszco9snsh5fu9nj16aecpabhi798m5hazgttykqkxn4ocny/Plan ₿ Forum';
 
 const WidgetsSuggestions = ({
 	navigation,
@@ -43,7 +41,6 @@ const WidgetsSuggestions = ({
 					<Feed url={NewsFeedURL} testID="HeadlinesWidget" />
 					<Feed url={BlocksFeedURL} testID="BlocksWidget" />
 					<Feed url={BitcoinFactsURL} testID="FactsWidget" />
-					<Feed url={LuganoFeedURL} testID="LuganoFeedWidget" />
 				</ScrollView>
 
 				<View style={styles.buttonContainer}>
