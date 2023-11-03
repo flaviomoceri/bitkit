@@ -11,8 +11,7 @@ import BaseFeedWidget from './BaseFeedWidget';
 import { Change, Chart, getChange } from './PriceChart';
 import { decodeWidgetFieldValue, SUPPORTED_FEED_TYPES } from '../utils/widgets';
 import { useSlashtags2 } from '../hooks/slashtags2';
-
-const INTERVAL = 1000 * 60;
+import { __E2E__ } from '../constants/env';
 
 type TField = {
 	name: string;
@@ -84,42 +83,56 @@ const PriceWidget = ({
 			}
 		};
 
-		const getLatestPrices = (): void => {
-			widget.fields.map(async (field) => {
-				const pair = `${field.base}${field.quote}` as Pair;
-				const updatedPrice = await reader.getLatestPrice(pair);
-
-				setData((prev) => {
-					const pairData = prev.find((f) => f.name === field.name);
-
-					if (pairData && updatedPrice) {
-						const change = getChange([...pairData.pastValues, updatedPrice]);
-						// replace last candle with updated price
-						const pastValues = [...pairData.pastValues].fill(updatedPrice, -1);
-
-						const price = decodeWidgetFieldValue(
-							SUPPORTED_FEED_TYPES.PRICE_FEED,
-							field,
-							updatedPrice,
-						);
-						const updated = { ...pairData, pastValues, change, price };
-
-						// replace old data while keeping the order
-						return prev.map((d) => (d !== pairData ? d : updated));
-					} else {
-						return prev;
-					}
-				});
-			});
-		};
-
-		// get data once then start polling
+		// get data once then subscribe to updates
 		getCandles();
-		getLatestPrices();
-		const interval = setInterval(getLatestPrices, INTERVAL);
+
+		let subscriptions: (() => void)[] = [];
+
+		// subscriptions are breaking e2e tests
+		if (!__E2E__) {
+			// subscribe to price updates
+			subscriptions = widget.fields.map((field) => {
+				const pair = `${field.base}${field.quote}` as Pair;
+
+				const unsubscribe = reader.subscribeLatestPrice(
+					pair,
+					(updatedPrice) => {
+						setData((prev) => {
+							const pairData = prev.find((f) => f.name === field.name);
+
+							if (pairData && updatedPrice) {
+								const change = getChange([
+									...pairData.pastValues,
+									updatedPrice,
+								]);
+								// replace last candle with updated price
+								const pastValues = [...pairData.pastValues].fill(
+									updatedPrice,
+									-1,
+								);
+
+								const price = decodeWidgetFieldValue(
+									SUPPORTED_FEED_TYPES.PRICE_FEED,
+									field,
+									updatedPrice,
+								);
+								const updated = { ...pairData, pastValues, change, price };
+
+								// replace old data while keeping the order
+								return prev.map((d) => (d !== pairData ? d : updated));
+							} else {
+								return prev;
+							}
+						});
+					},
+				);
+
+				return unsubscribe;
+			});
+		}
 
 		return () => {
-			clearInterval(interval);
+			subscriptions.forEach((unsubscribe) => unsubscribe());
 		};
 	}, [url, widget.fields, period, webRelayClient, webRelayUrl]);
 

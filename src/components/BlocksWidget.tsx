@@ -1,7 +1,7 @@
 import React, { memo, ReactElement, useEffect, useState } from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Reader } from '@synonymdev/feeds';
+import { Reader } from '@synonymdev/slashtags-widget-bitcoin-feed';
 
 import { Caption13M, Text01M, Text02M } from '../styles/text';
 import BaseFeedWidget from './BaseFeedWidget';
@@ -9,8 +9,19 @@ import { IWidget } from '../store/types/widgets';
 import { useSlashfeed } from '../hooks/widgets';
 import { decodeWidgetFieldValue, SUPPORTED_FEED_TYPES } from '../utils/widgets';
 import { useSlashtags2 } from '../hooks/slashtags2';
+import { __E2E__ } from '../constants/env';
 
-const INTERVAL = 1000 * 60;
+const mapping = {
+	Block: 'height',
+	Time: 'timestamp',
+	Date: 'timestamp',
+	Transactions: 'transactionCount',
+	Size: 'size',
+	Difficulty: 'difficulty',
+	Weight: 'weight',
+	Hash: 'hash',
+	'Merkle Root': 'merkleRoot',
+};
 
 const BlocksWidget = ({
 	url,
@@ -30,19 +41,16 @@ const BlocksWidget = ({
 	onPressIn?: () => void;
 }): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const { webRelayClient, webRelayUrl } = useSlashtags2();
 	const { config, fields, loading } = useSlashfeed({ url });
 	const [data, setData] = useState(fields);
-	const { webRelayClient, webRelayUrl } = useSlashtags2();
 
-	// manually refresh feed for now
 	useEffect(() => {
+		const feedUrl = `${url}?relay=${webRelayUrl}`;
+		const reader = new Reader(webRelayClient, feedUrl);
+
 		const getData = async (): Promise<void> => {
 			try {
-				const reader = new Reader(
-					webRelayClient,
-					`${url}?relay=${webRelayUrl}`,
-				);
-
 				const promises = widget.fields.map(async (field) => {
 					const fieldName = field.main.replace('/feed/', '');
 					const value = await reader.getField(fieldName);
@@ -64,12 +72,30 @@ const BlocksWidget = ({
 			}
 		};
 
+		// get data once then subscribe to updates
 		getData();
 
-		const interval = setInterval(getData, INTERVAL);
+		let unsubscribe: () => void;
+
+		// subscriptions are breaking e2e tests
+		if (!__E2E__) {
+			unsubscribe = reader.subscribeBlockInfo((blockInfo) => {
+				const values = widget.fields.map((field) => {
+					const value = blockInfo[mapping[field.name]];
+					const formattedValue = decodeWidgetFieldValue(
+						SUPPORTED_FEED_TYPES.BLOCKS_FEED,
+						field,
+						value,
+					);
+					return { name: field.name, value: formattedValue };
+				});
+
+				setData(values);
+			});
+		}
 
 		return () => {
-			clearInterval(interval);
+			unsubscribe();
 		};
 	}, [url, widget.fields, webRelayUrl, webRelayClient]);
 

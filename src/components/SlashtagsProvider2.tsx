@@ -147,7 +147,6 @@ export const SlashtagsProvider2 = ({
 				relay: webRelayUrl,
 				keyPair,
 				store,
-				_skipCache: true,
 				_skipRecordVerification: isWebRelayTrusted,
 			});
 			setClient(webRelayClient);
