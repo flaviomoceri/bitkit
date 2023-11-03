@@ -2984,10 +2984,10 @@
     "@synonymdev/feeds" "^2.0.0"
     node-fetch "^2.6.12"
 
-"@synonymdev/web-relay@1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@synonymdev/web-relay/-/web-relay-1.0.5.tgz#b6ab3ad7765bec006bc103f30bcd5867e9376113"
-  integrity sha512-f8OS0QGl8eiyr6gQV5U7XMC3DR9QRfQft8G9MNly1yNFqs6LMyKPsVqgOweiGYCS6/hwZttc56Z8La4/zJmkAQ==
+"@synonymdev/web-relay@1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@synonymdev/web-relay/-/web-relay-1.0.6.tgz#5a93c69235baca2703231154a73f4f3b052acecf"
+  integrity sha512-L1crEDNkO3HtAlbbjx7Bh0alSU1QDiS35klI4XXEGjG9fARE9+EBZUrhUnmP7hYAH4Pis6ULr2dKcSfTuc6tqw==
   dependencies:
     "@synonymdev/slashtags-url" "^1.0.0"
     b4a "1.6.4"

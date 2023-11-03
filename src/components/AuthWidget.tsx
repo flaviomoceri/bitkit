@@ -42,10 +42,13 @@ const AuthWidget = ({
 	const { slashtag } = useSelectedSlashtag();
 	const { profile } = useProfile(url);
 	const [showDialog, setShowDialog] = useState(false);
+	const [isSigningIn, setIsSigningIn] = useState(false);
 
 	const client = useMemo(() => new Client(slashtag), [slashtag]);
 
 	const onSignIn = useCallback(async () => {
+		setIsSigningIn(true);
+
 		const magiclink = await client.magiclink(url).catch((e: Error) => {
 			console.log(e.message);
 			const message =
@@ -69,6 +72,8 @@ const AuthWidget = ({
 				});
 			});
 		}
+
+		setIsSigningIn(false);
 	}, [client, url, t]);
 
 	const onEdit = (): void => {
@@ -108,6 +113,7 @@ const AuthWidget = ({
 								style={styles.signInButton}
 								text={t('auth_signin')}
 								icon={<KeyIcon color="white" width={16} height={16} />}
+								loading={isSigningIn}
 								onPress={onSignIn}
 							/>
 						</View>

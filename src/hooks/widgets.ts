@@ -49,8 +49,6 @@ export const useSlashfeed = (options: {
 	useEffect(() => {
 		let unmounted = false;
 
-		setLoading(true);
-
 		const getData = async (): Promise<void> => {
 			try {
 				await reader.ready();
@@ -59,6 +57,10 @@ export const useSlashfeed = (options: {
 					setFailed(true);
 					setLoading(false);
 					return;
+				}
+
+				if (!cache[options.url]) {
+					setLoading(true);
 				}
 
 				cache[options.url] = cache[options.url] || {};

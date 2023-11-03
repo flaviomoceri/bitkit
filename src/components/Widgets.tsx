@@ -27,20 +27,13 @@ import FeedWidget from './FeedWidget';
 import HeadlinesWidget from './HeadlinesWidget';
 import BlocksWidget from './BlocksWidget';
 import FactsWidget from './FactsWidget';
+import LuganoFeedWidget from './LuganoFeedWidget';
 import { IWidget } from '../store/types/widgets';
 import {
 	onboardedWidgetsSelector,
 	widgetsOrderSelector,
 	widgetsSelector,
 } from '../store/reselect/widgets';
-import LuganoFeedWidget from './LuganoFeedWidget';
-import {
-	BitcoinFactsURL,
-	BlocksFeedURL,
-	LuganoFeedURL,
-	NewsFeedURL,
-	PriceFeedURL,
-} from '../screens/Widgets/WidgetsSuggestions';
 
 const Widgets = (): ReactElement => {
 	const { t } = useTranslation('slashtags');
@@ -106,27 +99,22 @@ const Widgets = (): ReactElement => {
 				case SUPPORTED_FEED_TYPES.PRICE_FEED:
 					Component = PriceWidget;
 					testID = 'PriceWidget';
-					url = PriceFeedURL;
 					break;
 				case SUPPORTED_FEED_TYPES.HEADLINES_FEED:
 					Component = HeadlinesWidget;
 					testID = 'HeadlinesWidget';
-					url = NewsFeedURL;
 					break;
 				case SUPPORTED_FEED_TYPES.BLOCKS_FEED:
 					Component = BlocksWidget;
 					testID = 'BlocksWidget';
-					url = BlocksFeedURL;
 					break;
 				case SUPPORTED_FEED_TYPES.FACTS_FEED:
 					Component = FactsWidget;
 					testID = 'FactsWidget';
-					url = BitcoinFactsURL;
 					break;
 				case SUPPORTED_FEED_TYPES.LUGANO_FEED:
 					Component = LuganoFeedWidget;
 					testID = 'LuganoWidget';
-					url = LuganoFeedURL;
 					break;
 				default:
 					Component = FeedWidget;
