@@ -76,8 +76,8 @@ export const completeOnboarding = async () => {
 	await waitFor(element(by.id('ToGetStartedClose'))).toBeVisible();
 	await sleep(1000); // take app some time to load
 
-	// repeat 60 times before fail
-	for (let i = 0; i < 60; i++) {
+	// try for 3min before fail
+	for (let i = 0; i < 180; i++) {
 		await sleep(1000);
 		try {
 			await element(by.id('ToGetStartedClose')).tap();

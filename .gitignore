@@ -88,7 +88,7 @@ android/app/pepk.jar
 # VSCode
 .vscode
 
-# tests
+# testing
 coverage/
 artifacts/
 

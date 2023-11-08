@@ -7,16 +7,26 @@ buildscript {
         compileSdkVersion = 33
         targetSdkVersion = 33
         kotlin_version = '1.8.0'
-        ndkVersion = "25.1.8937393"
+        ndkVersion = "25.2.9519653"
     }
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.4.2")
+        classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("de.undercouch:gradle-download-task:5.3.1")
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 33
+            }
+        }
     }
 }
