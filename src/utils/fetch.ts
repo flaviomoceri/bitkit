@@ -1,9 +1,9 @@
 // Add text streaming support via react-native-fetch-api
-window.fetch = (url, options): Promise<Response> => {
-	return window.fetch(url, {
+global.fetch = (url, options): Promise<Response> => {
+	return global.fetch(url, {
 		...options,
 		reactNative: { textStreaming: true },
 	});
 };
 
-export default window.fetch;
+export default global.fetch;
