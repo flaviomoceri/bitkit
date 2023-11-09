@@ -1,5 +1,3 @@
-import { TextEncoder, TextDecoder } from 'text-encoding';
-
 /**
  * Convert readable string to bytes
  * @param str

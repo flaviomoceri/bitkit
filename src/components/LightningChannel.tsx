@@ -1,5 +1,5 @@
 import React, { ReactElement, memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { DimensionValue, StyleSheet, View } from 'react-native';
 import { TChannel } from '@synonymdev/react-native-ldk';
 
 import { useLightningChannelBalance } from '../hooks/lightning';
@@ -34,11 +34,11 @@ const LightningChannel = ({
 	}
 
 	const spendingAvailableStyle = {
-		width: `${100 * (spendingAvailable / capacity)}%`,
+		width: `${100 * (spendingAvailable / capacity)}%` as DimensionValue,
 	};
 
 	const receivingAvailableStyle = {
-		width: `${100 * (receivingAvailable / capacity)}%`,
+		width: `${100 * (receivingAvailable / capacity)}%` as DimensionValue,
 	};
 
 	return (

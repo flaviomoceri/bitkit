@@ -15,7 +15,7 @@ fs.access(devEnvFile, fs.constants.F_OK, (err) => {
 
 let baseCommand = `
 yarn install --no-audit --prefer-offline --production=true --cwd nodejs-assets/nodejs-project &&
-rn-nodeify --install buffer,stream,assert,events,crypto,vm,process --hack`;
+rn-nodeify --install buffer,stream,events,crypto,process --hack`;
 
 if (os.type() === 'Darwin') {
 	baseCommand  += '&& react-native setup-ios-permissions';
