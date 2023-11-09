@@ -254,10 +254,13 @@ export const setupLdk = async ({
 			getFees: async () => {
 				const fees = getFeesStore().onchain;
 				return {
-					highPriority: fees.fast,
-					normal: fees.normal,
-					background: fees.slow,
-					mempoolMinimum: fees.minimum,
+					nonAnchorChannelFee: fees.fast,
+					anchorChannelFee: fees.normal,
+					maxAllowedNonAnchorChannelRemoteFee: fees.fast * 3,
+					channelCloseMinimum: fees.minimum,
+					minAllowedAnchorChannelRemoteFee: fees.minimum,
+					minAllowedNonAnchorChannelRemoteFee: fees.minimum,
+					onChainSweep: fees.normal,
 				};
 			},
 			network,
