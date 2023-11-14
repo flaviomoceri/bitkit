@@ -292,6 +292,7 @@ export const setupLdk = async ({
 				serverPubKey: __BACKUPS_SERVER_PUBKEY__,
 			},
 			rapidGossipSyncUrl,
+			skipParamCheck: true, //Switch off for debugging LDK networking issues
 		});
 
 		if (lmStart.isErr()) {
