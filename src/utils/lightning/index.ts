@@ -559,7 +559,7 @@ export const refreshLdk = async ({
 		resolveAllPendingRefreshPromises(ok(''));
 		return ok('');
 	} catch (e) {
-		console.log(e);
+		console.error(e);
 		return handleRefreshError(e.message);
 	}
 };
@@ -1454,23 +1454,6 @@ export const closeChannel = async ({
 	try {
 		// Ensure we're fully up-to-date.
 		await refreshLdk();
-
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TODO remove after LDK updated to 0.0.118
-		const getChannelsResponse = await getLightningChannels();
-		if (getChannelsResponse.isErr()) {
-			return err(getChannelsResponse.error.message);
-		}
-
-		const channelToClose = getChannelsResponse.value.find(
-			(c) => c.channel_id === channelId,
-		);
-		if (!channelToClose?.is_channel_ready || !channelToClose.is_usable) {
-			return err(
-				'Channel temporarily unavailable for closing. Please try again in a few moments.',
-			);
-		}
-		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  TODO remove after LDK updated to 0.0.118
-
 		return await ldk.closeChannel({ channelId, counterPartyNodeId, force });
 	} catch (e) {
 		console.log(e);
