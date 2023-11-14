@@ -537,18 +537,26 @@ export const refreshLdk = async ({
 			keepLdkSynced({ selectedNetwork }).then();
 		}
 
-		const syncRes = await lm.syncLdk();
-		if (syncRes.isErr()) {
-			return handleRefreshError(syncRes.error.message);
+		// Calls that don't require sequential execution.
+		const promises: Promise<Result<any>>[] = [
+			lm.syncLdk(),
+			lm.setFees(),
+			addPeers({ selectedNetwork, selectedWallet }),
+		];
+		const results = await Promise.all(promises);
+		for (const result of results) {
+			if (result.isErr()) {
+				//Can fail, but we should still continue and make UI ready so payments can be attempted
+				console.error(result.error.message);
+			}
 		}
-		await lm.setFees();
 
 		await Promise.all([
-			addPeers({ selectedNetwork, selectedWallet }),
 			updateLightningChannels({ selectedWallet, selectedNetwork }),
+			updateClaimableBalance({ selectedNetwork, selectedWallet }),
+			syncLightningTxsWithActivityList(),
 		]);
-		await updateClaimableBalance({ selectedNetwork, selectedWallet });
-		await syncLightningTxsWithActivityList();
+
 		const accountVersion = getLightningStore()?.accountVersion;
 		if (!accountVersion || accountVersion < 2) {
 			// Attempt to migrate on refresh.
