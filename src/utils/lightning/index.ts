@@ -292,6 +292,7 @@ export const setupLdk = async ({
 				serverPubKey: __BACKUPS_SERVER_PUBKEY__,
 			},
 			rapidGossipSyncUrl,
+			skipParamCheck: true, //Switch off for debugging LDK networking issues
 		});
 
 		if (lmStart.isErr()) {
@@ -537,18 +538,26 @@ export const refreshLdk = async ({
 			keepLdkSynced({ selectedNetwork }).then();
 		}
 
-		const syncRes = await lm.syncLdk();
-		if (syncRes.isErr()) {
-			return handleRefreshError(syncRes.error.message);
+		// Calls that don't require sequential execution.
+		const promises: Promise<Result<any>>[] = [
+			lm.syncLdk(),
+			lm.setFees(),
+			addPeers({ selectedNetwork, selectedWallet }),
+		];
+		const results = await Promise.all(promises);
+		for (const result of results) {
+			if (result.isErr()) {
+				//Can fail, but we should still continue and make UI ready so payments can be attempted
+				console.error(result.error.message);
+			}
 		}
-		await lm.setFees();
 
 		await Promise.all([
-			addPeers({ selectedNetwork, selectedWallet }),
 			updateLightningChannels({ selectedWallet, selectedNetwork }),
+			updateClaimableBalance({ selectedNetwork, selectedWallet }),
+			syncLightningTxsWithActivityList(),
 		]);
-		await updateClaimableBalance({ selectedNetwork, selectedWallet });
-		await syncLightningTxsWithActivityList();
+
 		const accountVersion = getLightningStore()?.accountVersion;
 		if (!accountVersion || accountVersion < 2) {
 			// Attempt to migrate on refresh.
@@ -559,7 +568,7 @@ export const refreshLdk = async ({
 		resolveAllPendingRefreshPromises(ok(''));
 		return ok('');
 	} catch (e) {
-		console.log(e);
+		console.error(e);
 		return handleRefreshError(e.message);
 	}
 };
@@ -1454,23 +1463,6 @@ export const closeChannel = async ({
 	try {
 		// Ensure we're fully up-to-date.
 		await refreshLdk();
-
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TODO remove after LDK updated to 0.0.118
-		const getChannelsResponse = await getLightningChannels();
-		if (getChannelsResponse.isErr()) {
-			return err(getChannelsResponse.error.message);
-		}
-
-		const channelToClose = getChannelsResponse.value.find(
-			(c) => c.channel_id === channelId,
-		);
-		if (!channelToClose?.is_channel_ready || !channelToClose.is_usable) {
-			return err(
-				'Channel temporarily unavailable for closing. Please try again in a few moments.',
-			);
-		}
-		//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  TODO remove after LDK updated to 0.0.118
-
 		return await ldk.closeChannel({ channelId, counterPartyNodeId, force });
 	} catch (e) {
 		console.log(e);

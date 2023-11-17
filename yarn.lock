@@ -3201,10 +3201,10 @@
   dependencies:
     b4a "^1.5.3"
 
-"@synonymdev/react-native-ldk@0.0.121":
-  version "0.0.121"
-  resolved "https://registry.yarnpkg.com/@synonymdev/react-native-ldk/-/react-native-ldk-0.0.121.tgz#3df8648bae6cddd43088c5e09aa181cfa4aa8b5c"
-  integrity sha512-zRiIgbZKuXhdCpRurqHi93HQXb2bJ4tVNJAcz4Oym9zQj0Z62+MBwtcrDkcoq3qhuYh3Uvi3eRJkuI56jbNlRQ==
+"@synonymdev/react-native-ldk@0.0.123":
+  version "0.0.123"
+  resolved "https://registry.yarnpkg.com/@synonymdev/react-native-ldk/-/react-native-ldk-0.0.123.tgz#92ffe828488b8c8a1257a037acbb6eda2f4ed36a"
+  integrity sha512-Q8vMBJVjPlzRSLF3KhPcCp4B38fH0IuMdNRF36VKneVsio3r1yQPmVcubXD5cFweHib6YWSCWmcw0tENyAPOfQ==
   dependencies:
     bitcoinjs-lib "^6.0.2"
 
@@ -11397,9 +11397,10 @@ react-native-share@9.4.1:
   resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-9.4.1.tgz#1b6d96015009e3878bfc4346940602c1cffff525"
   integrity sha512-jm4qA5J5+ytWA8UFg6s8iEfdZYGPW+t5oreSuzrPt0assjvBUlFaoqYGGwGR5RJ8BIpjzOJYvx/c9MjXB4ApUg==
 
-"react-native-skia-stub@github:limpbrains/react-native-skia-stub#e9ddba50e5ad909030a8e375e5eb90361cd08cd7":
+react-native-skia-stub@0.0.1:
   version "0.0.1"
-  resolved "https://codeload.github.com/limpbrains/react-native-skia-stub/tar.gz/e9ddba50e5ad909030a8e375e5eb90361cd08cd7"
+  resolved "https://registry.yarnpkg.com/react-native-skia-stub/-/react-native-skia-stub-0.0.1.tgz#3578125ab20db34162df034864fbb692ec2f5efc"
+  integrity sha512-yZ+sm8grxCeiabaCN5L8n3deyzYDz7Pr9bmTDWS6lnVrrLbHTbkkqqs5sji7BMy0mW1JjPufxcm2IEHPMtf96A==
 
 react-native-svg-transformer@^1.1.0:
   version "1.1.0"
