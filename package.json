@@ -2,7 +2,6 @@
   "name": "bitkit",
   "author": "Synonym",
   "version": "1.0.0-beta.92",
-  "private": false,
   "scripts": {
     "start": "react-native start",
     "android": "react-native run-android",
@@ -28,9 +27,6 @@
     "bundle": "yarn clean:android && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.jsbundle --assets-dest android/app/build/intermediates/res/merged/release/ && cd android && ./gradlew assembleRelease --no-daemon",
     "prepare": "husky install",
     "postinstall": "node postinstall.js"
-  },
-  "engines": {
-    "node": ">=16"
   },
   "dependencies": {
     "@bitcoinerlab/secp256k1": "1.0.5",
