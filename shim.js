@@ -2,6 +2,10 @@
 // needed for sodium-javascript/randombytes.js
 require('crypto');
 
+// Polyfill TextEncoder/TextDecoder including TextEncoder().encodeInto
+// https://github.com/anonyco/FastestSmallestTextEncoderDecoder
+require('fastestsmallesttextencoderdecoder-encodeinto');
+
 global.net = require('./src/utils/electrum/net');
 global.tls = require('./src/utils/electrum/tls');
 

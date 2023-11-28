@@ -73,6 +73,7 @@
     "bitcoin-units": "0.3.0",
     "bitcoinjs-lib": "6.1.5",
     "events": "3.3.0",
+    "fastestsmallesttextencoderdecoder-encodeinto": "^1.0.22",
     "fuzzysort": "1.9.0",
     "i18next": "23.6.0",
     "i18next-icu": "2.3.0",
@@ -132,7 +133,6 @@
     "secp256k1": "4.0.3",
     "stream-browserify": "3.0.0",
     "styled-components": "5.3.11",
-    "text-encoding": "^0.7.0",
     "url-parse": "1.5.10",
     "uuid": "9.0.1"
   },
