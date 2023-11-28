@@ -1856,7 +1856,7 @@
   dependencies:
     chalk "^4.1.0"
 
-"@craftzdog/react-native-buffer@^6.0.5":
+"@craftzdog/react-native-buffer@6.0.5", "@craftzdog/react-native-buffer@^6.0.5":
   version "6.0.5"
   resolved "https://registry.yarnpkg.com/@craftzdog/react-native-buffer/-/react-native-buffer-6.0.5.tgz#0d4fbe0dd104186d2806655e3c0d25cebdae91d3"
   integrity sha512-Av+YqfwA9e7jhgI9GFE/gTpwl/H+dRRLmZyJPOpKTy107j9Oj7oXlm3/YiMNz+C/CEGqcKAOqnXDLs4OL6AAFw==
@@ -6564,7 +6564,7 @@ fast-xml-parser@^4.0.12:
   dependencies:
     strnum "^1.0.5"
 
-fastestsmallesttextencoderdecoder-encodeinto@^1.0.22:
+fastestsmallesttextencoderdecoder-encodeinto@1.0.22:
   version "1.0.22"
   resolved "https://registry.yarnpkg.com/fastestsmallesttextencoderdecoder-encodeinto/-/fastestsmallesttextencoderdecoder-encodeinto-1.0.22.tgz#c095cf0f54ff93f7028dec8c7be546ea48edeffe"
   integrity sha512-csOz3cwJjZY75QcPHnY+v6cKWeofYCmhtLVYaurjcRn5vaNXoYe1Leo1ZkiZIxZp796+J5Z+TtmeMbbfYBfiiQ==
@@ -10641,14 +10641,14 @@ react-native-quick-actions@0.3.13:
   resolved "https://registry.yarnpkg.com/react-native-quick-actions/-/react-native-quick-actions-0.3.13.tgz#74431b0b30e98ac896e44cc1024c38864cfe2bbc"
   integrity sha512-Vz13a0+NV0mzCh/29tNt0qDzWPh8i2srTQW8eCSzGFDArnVm1COTOhTD0FY0hWHlxRY0ahvX+BlezTDvsyAuMA==
 
-react-native-quick-base64@^2.0.5, react-native-quick-base64@^2.0.7:
+react-native-quick-base64@2.0.7, react-native-quick-base64@^2.0.5:
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/react-native-quick-base64/-/react-native-quick-base64-2.0.7.tgz#70ec863fb5dba8cd858a262f6b901dbbfbfdd3df"
   integrity sha512-QmOon3zXAWFi3KvQVCJjCC7N66rwfl1R4nLPuJ+OVs8nWysvKlaU8mKxe2BV4Ud1nB3nTDgyi2VCJFpjtjJxKw==
   dependencies:
     base64-js "^1.5.1"
 
-react-native-quick-crypto@^0.6.1:
+react-native-quick-crypto@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/react-native-quick-crypto/-/react-native-quick-crypto-0.6.1.tgz#7b89c67c4a5d3669c4491fe7884621c1c74d01bc"
   integrity sha512-s6uFo7tcI3syo8/y5j+t6Rf+KVSuRKDp6tH04A0vjaHptJC6Iu7DVgkNYO7aqtfrYn8ZUgQ/Kqaq+m4i9TxgIQ==
