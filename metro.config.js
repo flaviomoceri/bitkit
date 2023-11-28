@@ -1,5 +1,9 @@
+const path = require('path');
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 const exclusionList = require('metro-config/src/defaults/exclusionList');
+
+const defaultConfig = getDefaultConfig(__dirname);
+const { assetExts, sourceExts } = defaultConfig.resolver;
 
 /**
  * Metro configuration
@@ -7,30 +11,26 @@ const exclusionList = require('metro-config/src/defaults/exclusionList');
  *
  * @type {import('metro-config').MetroConfig}
  */
-const customConfig = {
-  transformer: {
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: false,
-        inlineRequires: false,
-      },
-    }),
-    babelTransformerPath: require.resolve('react-native-svg-transformer'),
-  },
-  resolver: {
-    blacklistRE: exclusionList([
-      /android\/build\/nodejs-native-assets-temp-build\/.*/,
-      /\/nodejs-assets\/.*/,
-      /\/android\/build\/*/,
-    ])
-  },
-}
+const config = {
+	transformer: {
+		// Need this here because of some metro weirdness
+		getTransformOptions: async () => ({}),
+		babelTransformerPath: require.resolve('react-native-svg-transformer'),
+	},
+	resolver: {
+		assetExts: assetExts.filter((ext) => ext !== 'svg'),
+		sourceExts: [...sourceExts, 'svg'],
+		extraNodeModules: {
+			buffer: path.resolve(__dirname, './node_modules/@craftzdog/react-native-buffer'),
+			crypto: path.resolve(__dirname, './node_modules/react-native-quick-crypto'),
+			stream: path.resolve(__dirname, './node_modules/stream-browserify'),
+		},
+		blacklistRE: exclusionList([
+			/android\/build\/nodejs-native-assets-temp-build\/.*/,
+			/\/nodejs-assets\/.*/,
+			/\/android\/build\/*/,
+		]),
+	},
+};
 
-module.exports = (async () => {
-  const {
-    resolver: { sourceExts, assetExts },
-  } = getDefaultConfig();
-  customConfig.resolver.assetExts = assetExts.filter((ext) => ext !== 'svg');
-  customConfig.resolver.sourceExts = [...sourceExts, 'svg'];
-  return mergeConfig(getDefaultConfig(__dirname), customConfig);
-})();
+module.exports = mergeConfig(defaultConfig, config);
