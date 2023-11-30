@@ -10,33 +10,25 @@ Make sure you have [setup your environment for React Native](https://reactnative
 git clone git@github.com:synonymdev/bitkit.git && cd bitkit
 ```
 
-2. Install dependencies
+2. Switch Node version
+
+Switch to the Node.js version defined in `.node-version`. You can visit [.node-version File Usage](https://github.com/shadowspawn/node-version-usage) and use one of these methods to change the node version you need.
+
+3. Install dependencies
 
 ```shell
 yarn install
 ```
 
-3. Setup iOS or Android dependencies
-
-```shell
-yarn setup-ios
-```
-
-or
-
-```shell
-yarn setup-android
-```
-
 4. Start the project
 
-On iOS Simulator:
+On iOS Simulator/Device:
 
 ```shell
 yarn ios
 ```
 
-On Android Emulator:
+On Android Emulator/Device:
 
 ```shell
 yarn android
