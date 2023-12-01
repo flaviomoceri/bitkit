@@ -22,10 +22,9 @@
     "lint:fix": "eslint . --fix --ext .js,.jsx,.ts,.tsx",
     "tsc:check": "tsc -p tsconfig.json --noEmit",
     "clean": "yarn clean:rn && yarn clean:ios && yarn clean:android && yarn start --reset-cache",
-    "clean:rn": "watchman watch-del-all && rimraf node_modules nodejs-assets/nodejs-project/node_modules && yarn && rimraf /tmp/metro-*",
-    "clean:android": "cd android && rimraf build app/build",
-    "clean:ios": "cd ios && rimraf Pods Podfile.lock build && pod deintegrate && pod install",
-    "bump": "./scripts/bump-version.sh",
+    "clean:rn": "watchman watch-del-all && npx del-cli node_modules nodejs-assets/nodejs-project/node_modules && yarn && npx del-cli /tmp/metro-*",
+    "clean:android": "cd android && npx del-cli build app/build",
+    "clean:ios": "cd ios && npx del-cli Pods Podfile.lock build && pod deintegrate && pod install",
     "bundle": "yarn clean:android && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.jsbundle --assets-dest android/app/build/intermediates/res/merged/release/ && cd android && ./gradlew assembleRelease --no-daemon",
     "prepare": "husky install",
     "postinstall": "node postinstall.js"
@@ -187,7 +186,6 @@
     "react-native-skia-stub": "0.0.1",
     "react-native-svg-transformer": "^1.1.0",
     "redux-flipper": "^2.0.2",
-    "rimraf": "^5.0.5",
     "rn-nodeify": "^10.3.0",
     "typescript": "5.2.2"
   },
