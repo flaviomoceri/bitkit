@@ -112,6 +112,12 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    packagingOptions {
+        pickFirst 'lib/x86/liblog.so'
+        pickFirst 'lib/x86_64/liblog.so'
+        pickFirst 'lib/armeabi-v7a/liblog.so'
+        pickFirst 'lib/arm64-v8a/liblog.so'
+    }
 }
 
 dependencies {
