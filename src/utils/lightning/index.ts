@@ -254,13 +254,14 @@ export const setupLdk = async ({
 			getFees: async () => {
 				const fees = getFeesStore().onchain;
 				return {
-					nonAnchorChannelFee: fees.fast,
-					anchorChannelFee: fees.normal,
-					maxAllowedNonAnchorChannelRemoteFee: fees.fast * 3,
-					channelCloseMinimum: fees.minimum,
+					//https://github.com/lightningdevkit/rust-lightning/blob/main/CHANGELOG.md#api-updates
+					onChainSweep: fees.fast,
+					maxAllowedNonAnchorChannelRemoteFee: Math.max(25, fees.fast * 10),
 					minAllowedAnchorChannelRemoteFee: fees.minimum,
-					minAllowedNonAnchorChannelRemoteFee: fees.minimum,
-					onChainSweep: fees.normal,
+					minAllowedNonAnchorChannelRemoteFee: Math.max(fees.minimum - 1, 0),
+					anchorChannelFee: fees.slow,
+					nonAnchorChannelFee: fees.normal,
+					channelCloseMinimum: fees.minimum,
 				};
 			},
 			network,
