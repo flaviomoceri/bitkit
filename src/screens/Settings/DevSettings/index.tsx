@@ -29,7 +29,7 @@ import { resetSettingsStore, wipeApp } from '../../../store/actions/settings';
 import { getStore, getWalletStore } from '../../../store/helpers';
 import { resetMetaStore } from '../../../store/actions/metadata';
 import { warningsSelector } from '../../../store/reselect/checks';
-import { lightningSelector } from '../../../store/reselect/lightning';
+import { accountVersionSelector } from '../../../store/reselect/lightning';
 import {
 	addressTypeSelector,
 	selectedNetworkSelector,
@@ -60,7 +60,7 @@ const DevSettings = ({
 	const selectedWallet = useSelector(selectedWalletSelector);
 	const selectedNetwork = useSelector(selectedNetworkSelector);
 	const addressType = useSelector(addressTypeSelector);
-	const lightning = useSelector(lightningSelector);
+	const accountVersion = useSelector(accountVersionSelector);
 	const warnings = useSelector((state) => {
 		return warningsSelector(state, selectedWallet, selectedNetwork);
 	});
@@ -226,7 +226,7 @@ const DevSettings = ({
 			title: 'LDK Account Migration',
 			data: [
 				{
-					title: `LDK Account Version: ${lightning.accountVersion}`,
+					title: `LDK Account Version: ${accountVersion}`,
 					type: EItemType.textButton,
 					value: '',
 					testID: 'LDKAccountVersion',
