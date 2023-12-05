@@ -5,13 +5,13 @@ import {
 	StyleProp,
 	StyleSheet,
 	ViewStyle,
+	Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Caption13Up, Text02M, Text02S } from '../styles/text';
 import { TrashIcon } from '../styles/icons';
 import { LocalLink } from '../store/types/slashtags';
-import { openURL } from '../utils/helpers';
 import { editLink, removeLink } from '../store/actions/slashtags';
 import LabeledInput from './LabeledInput';
 import Divider from './Divider';
@@ -31,6 +31,14 @@ const trimLink = (link: LocalLink): string => {
 	}
 
 	return trimmedUrl.replace('https://', '').replace('www.', '');
+};
+
+const openURL = async (url: string): Promise<void> => {
+	try {
+		await Linking.openURL(url);
+	} catch (err) {
+		console.log('Cannot open url: ', url);
+	}
 };
 
 const ProfileLinks = ({
