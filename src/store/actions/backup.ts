@@ -2,7 +2,7 @@ import { err, ok, Result } from '@synonymdev/result';
 import lm, { ldk, ENetworks, TLdkData } from '@synonymdev/react-native-ldk';
 
 import actions from './actions';
-import { getBackupStore, getDispatch } from '../helpers';
+import { getBackupStore, dispatch } from '../helpers';
 import {
 	EBackupCategories,
 	fetchBackup,
@@ -46,8 +46,6 @@ import {
 	__BACKUPS_SERVER_HOST__,
 	__BACKUPS_SERVER_PUBKEY__,
 } from '../../constants/env';
-
-const dispatch = getDispatch();
 
 /**
  * Triggers a full remote backup

@@ -1,13 +1,11 @@
 import actions from './actions';
-import { getDispatch } from '../helpers';
+import { dispatch } from '../helpers';
 import {
 	IWidgetsStore,
 	SlashFeedJSON,
 	TWidgetSettings,
 } from '../types/widgets';
 import { ok, Result } from '@synonymdev/result';
-
-const dispatch = getDispatch();
 
 export const updateWidgets = (
 	payload: Partial<IWidgetsStore>,

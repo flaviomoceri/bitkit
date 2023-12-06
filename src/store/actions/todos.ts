@@ -2,10 +2,8 @@ import { ok, Result } from '@synonymdev/result';
 import { TChannel } from '@synonymdev/react-native-ldk';
 
 import actions from './actions';
-import { getDispatch } from '../helpers';
+import { dispatch } from '../helpers';
 import { TTodoType } from '../types/todos';
-
-const dispatch = getDispatch();
 
 export const hideTodo = (id: TTodoType): Result<string> => {
 	dispatch({

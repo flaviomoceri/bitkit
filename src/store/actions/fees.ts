@@ -1,12 +1,10 @@
 import { ok, err, Result } from '@synonymdev/result';
 
 import actions from './actions';
-import { getDispatch, getFeesStore } from '../helpers';
+import { dispatch, getFeesStore } from '../helpers';
 import { getFeeEstimates } from '../../utils/wallet/transactions';
 import { TAvailableNetworks } from '../../utils/networks';
 import { IOnchainFees } from '../types/fees';
-
-const dispatch = getDispatch();
 
 export const REFRESH_INTERVAL = 60 * 30; // in seconds, 30 minutes
 

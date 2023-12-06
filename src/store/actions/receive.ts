@@ -1,9 +1,7 @@
 import { ok, Result } from '@synonymdev/result';
 import { ICJitEntry } from '@synonymdev/blocktank-lsp-http-client';
 import actions from './actions';
-import { getDispatch } from '../helpers';
-
-const dispatch = getDispatch();
+import { dispatch } from '../helpers';
 
 export const updateInvoice = (payload: {
 	amount?: number;

@@ -1,11 +1,9 @@
 import { ok, Result } from '@synonymdev/result';
 import actions from './actions';
-import { getDispatch, getMetaDataStore } from '../helpers';
+import { dispatch, getMetaDataStore } from '../helpers';
 import { getCurrentWallet } from '../../utils/wallet';
 import { EPaymentType } from '../types/wallet';
 import { IMetadata } from '../types/metadata';
-
-const dispatch = getDispatch();
 
 /*
  * This action updates transactions tags

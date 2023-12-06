@@ -1,12 +1,10 @@
 import actions from './actions';
-import { getDispatch } from '../helpers';
+import { dispatch } from '../helpers';
 import { TWalletName } from '../types/wallet';
 import { getSelectedNetwork, getSelectedWallet } from '../../utils/wallet';
 import { TAvailableNetworks } from '../../utils/networks';
 import { TStorageWarning } from '../types/checks';
 import { getWarnings } from '../../utils/checks';
-
-const dispatch = getDispatch();
 
 /**
  * Adds a single warning.

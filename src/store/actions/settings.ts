@@ -2,7 +2,7 @@ import { err, ok, Result } from '@synonymdev/result';
 import RNRestart from 'react-native-restart';
 
 import actions from './actions';
-import { getDispatch } from '../helpers';
+import { dispatch } from '../helpers';
 import i18n from '../../utils/i18n';
 import { sleep } from '../../utils/helpers';
 import { removePin } from '../../utils/settings';
@@ -13,8 +13,6 @@ import { getSelectedNetwork, getSelectedWallet } from '../../utils/wallet';
 import { getAllKeychainKeys, resetKeychainValue } from '../../utils/keychain';
 import { ICustomElectrumPeer, ISettings, TChest } from '../types/settings';
 import { TWalletName } from '../types/wallet';
-
-const dispatch = getDispatch();
 
 export const updateSettings = (payload: Partial<ISettings>): Result<string> => {
 	dispatch({
@@ -84,7 +82,7 @@ export const wipeApp = async ({
 			showToast({
 				type: 'success',
 				title: i18n.t('security:wiped_title'),
-				description: i18n.t('security:wiped_description'),
+				description: i18n.t('security:wiped_message'),
 			});
 		}
 

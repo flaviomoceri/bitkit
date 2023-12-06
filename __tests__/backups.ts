@@ -26,9 +26,9 @@ import {
 	performWidgetsRestore,
 } from '../src/store/actions/backup';
 import {
+	dispatch,
 	getActivityStore,
 	getBlocktankStore,
-	getDispatch,
 	getMetaDataStore,
 	getSettingsStore,
 	getWidgetsStore,
@@ -274,7 +274,6 @@ describe('Remote backups', () => {
 	});
 
 	it('Backups and restores Blocktank orders', async () => {
-		const dispatch = getDispatch();
 		addPaidBlocktankOrder({ orderId: 'id', txid: 'txid' });
 		dispatch({
 			type: actions.UPDATE_BLOCKTANK_ORDER,
