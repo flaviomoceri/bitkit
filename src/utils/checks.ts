@@ -8,8 +8,8 @@ import {
 import { getAddressBalance } from './wallet/electrum';
 import { err, ok, Result } from '@synonymdev/result';
 import { TWalletName } from '../store/types/wallet';
-import { addWarning, updateWarning } from '../store/actions/checks';
-import { getChecksStore } from '../store/helpers';
+import { addWarning, updateWarning } from '../store/slices/checks';
+import { dispatch, getChecksStore } from '../store/helpers';
 import { Platform } from 'react-native';
 import { version } from '../../package.json';
 import { TChannel } from '@synonymdev/react-native-ldk';
@@ -95,12 +95,11 @@ export const reportLdkChannelMigrations = async ({
 	selectedNetwork: TAvailableNetworks;
 	channels: TChannel[];
 }): Promise<Result<string>> => {
+	const selectedWallet = getSelectedWallet();
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
 	}
-	const warnings = getWarnings({
-		selectedNetwork,
-	});
+	const warnings = getWarnings({ selectedNetwork });
 	const ldkMigrationWarnings = warnings.filter(
 		(w) => w.warningId === EWarningIds.ldkMigration,
 	);
@@ -133,16 +132,20 @@ export const reportLdkChannelMigrations = async ({
 		if (!res.ok) {
 			return err('Failed to report channel migrations for force-close.');
 		}
-		addWarning({
-			warning: {
-				id: uuidv4(),
-				warningId: EWarningIds.storageCheck,
-				data: channel,
-				warningReported: true,
-				timestamp: new Date().getTime(),
-			},
-			selectedNetwork,
-		});
+
+		dispatch(
+			addWarning({
+				warning: {
+					id: uuidv4(),
+					warningId: EWarningIds.storageCheck,
+					data: channel,
+					warningReported: true,
+					timestamp: new Date().getTime(),
+				},
+				selectedWallet,
+				selectedNetwork,
+			}),
+		);
 	}
 	return ok('Reported LDK channel migrations for force-close.');
 };
@@ -199,16 +202,13 @@ export const reportUnreportedWarnings = async ({
 
 			warningsReported++;
 
-			const updatedWarning: TStorageWarning = {
-				...warning,
-				warningReported: true,
-			};
-			updateWarning({
-				selectedWallet,
-				selectedNetwork,
-				id: warning.id,
-				warningData: updatedWarning,
-			});
+			dispatch(
+				updateWarning({
+					warning: { ...warning, warningReported: true },
+					selectedWallet,
+					selectedNetwork,
+				}),
+			);
 		}),
 	);
 	return warningsReported;

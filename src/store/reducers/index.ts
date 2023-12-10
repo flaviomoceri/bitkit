@@ -6,7 +6,7 @@ import actions from '../actions/actions';
 import activity from '../slices/activity';
 import backup from './backup';
 import blocktank from './blocktank';
-import checks from './checks';
+import checks from '../slices/checks';
 import fees from '../slices/fees';
 import lightning from './lightning';
 import metadata from './metadata';

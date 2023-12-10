@@ -5,7 +5,7 @@ import { initialActivityState } from '../slices/activity';
 import { defaultBlocktankInfoShape } from '../shapes/blocktank';
 import { defaultTodosShape } from '../shapes/todos';
 import { defaultViewControllers } from '../shapes/ui';
-import { defaultChecksShape } from '../shapes/checks';
+import { defaultChecksState } from '../slices/checks';
 import { defaultBackupShape } from '../shapes/backup';
 import { initialWidgetsState } from '../slices/widgets';
 import { getNetworkContent } from '../shapes/wallet';
@@ -85,7 +85,7 @@ const migrations = {
 	9: (state): PersistedState => {
 		return {
 			...state,
-			checks: defaultChecksShape,
+			checks: defaultChecksState,
 		};
 	},
 	10: (state): PersistedState => {

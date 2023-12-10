@@ -24,7 +24,7 @@ import {
 	clearUtxos,
 	replaceImpactedAddresses,
 } from '../../store/actions/wallet';
-import { addWarning } from '../../store/actions/checks';
+import { addWarning } from '../../store/slices/checks';
 import {
 	EWarningIds,
 	TAddressStorageCheckRes,
@@ -39,6 +39,7 @@ import {
 	reportUnreportedWarnings,
 } from '../checks';
 import { addressTypes } from '../../store/shapes/wallet';
+import { dispatch } from '../../store/helpers';
 
 export const runChecks = async ({
 	selectedWallet,
@@ -64,9 +65,7 @@ export const runChecks = async ({
 
 	reportUnreportedWarnings({ selectedWallet, selectedNetwork }).then();
 
-	return ok({
-		ranStorageCheck,
-	});
+	return ok({ ranStorageCheck });
 };
 
 /**
@@ -140,17 +139,19 @@ export const runStorageCheck = async ({
 	}
 
 	// Add/Save warning info locally in the event it's needed for future use and debugging.
-	addWarning({
-		warning: {
-			id: uuidv4(),
-			warningId: EWarningIds.storageCheck,
-			data: getImpactedAddressesRes.value,
-			warningReported,
-			timestamp: new Date().getTime(),
-		},
-		selectedWallet,
-		selectedNetwork,
-	});
+	dispatch(
+		addWarning({
+			warning: {
+				id: uuidv4(),
+				warningId: EWarningIds.storageCheck,
+				data: getImpactedAddressesRes.value,
+				warningReported,
+				timestamp: new Date().getTime(),
+			},
+			selectedWallet,
+			selectedNetwork,
+		}),
+	);
 
 	await clearUtxos({ selectedWallet, selectedNetwork });
 
