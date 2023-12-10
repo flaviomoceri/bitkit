@@ -5,7 +5,7 @@ import { storage } from '../mmkv-storage';
 import actions from '../actions/actions';
 import activity from '../slices/activity';
 import backup from './backup';
-import blocktank from './blocktank';
+import blocktank from '../slices/blocktank';
 import checks from '../slices/checks';
 import fees from '../slices/fees';
 import lightning from './lightning';

@@ -11,7 +11,7 @@ import {
 } from '../wallet';
 import { createWallet, updateExchangeRates } from '../../store/actions/wallet';
 import { getWalletStore } from '../../store/helpers';
-import { refreshBlocktankInfo } from '../../store/actions/blocktank';
+import { refreshBlocktankInfo } from '../../store/utils/blocktank';
 import { connectToElectrum, subscribeToHeader } from '../wallet/electrum';
 import { updateOnchainFeeEstimates } from '../../store/utils/fees';
 import { keepLdkSynced, setupLdk } from '../lightning';

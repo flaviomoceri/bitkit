@@ -16,7 +16,7 @@ import {
 	refreshAllBlocktankOrders,
 	refreshOrder,
 	refreshOrdersList,
-} from '../../store/actions/blocktank';
+} from '../../store/utils/blocktank';
 import i18n from '../../utils/i18n';
 import { sleep } from '../helpers';
 import { dispatch, getBlocktankStore, getUserStore } from '../../store/helpers';

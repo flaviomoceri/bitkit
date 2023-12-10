@@ -33,7 +33,7 @@ import {
 } from '../../utils/conversion';
 import { getFiatDisplayValues } from '../../utils/displayValues';
 import { showToast } from '../../utils/notifications';
-import { startChannelPurchase } from '../../store/actions/blocktank';
+import { startChannelPurchase } from '../../store/utils/blocktank';
 import { EUnit } from '../../store/types/wallet';
 import {
 	primaryUnitSelector,
@@ -48,7 +48,7 @@ import NumberPadTextField from '../../components/NumberPadTextField';
 import { getNumberPadText } from '../../utils/numberpad';
 import { DEFAULT_CHANNEL_DURATION } from './CustomConfirm';
 import { SPENDING_LIMIT_RATIO } from '../../utils/wallet/constants';
-import { refreshBlocktankInfo } from '../../store/actions/blocktank';
+import { refreshBlocktankInfo } from '../../store/utils/blocktank';
 import useDisplayValues from '../../hooks/displayValues';
 
 export type TPackage = {

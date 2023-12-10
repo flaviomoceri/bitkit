@@ -8,7 +8,7 @@ import { getCurrentWallet } from '../../utils/wallet';
 import { getLightningChannels } from '../../utils/lightning';
 import { formatBoostedActivityItems } from '../../utils/boost';
 import { onChainTransactionToActivityItem } from '../../utils/activity';
-import { checkPendingCJitEntries } from '../actions/blocktank';
+import { checkPendingCJitEntries } from './blocktank';
 import { updateSettings } from '../slices/settings';
 import { closeSheet } from '../slices/ui';
 import { addActivityItem, updateActivityItems } from '../slices/activity';

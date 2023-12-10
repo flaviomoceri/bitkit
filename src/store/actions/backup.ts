@@ -30,11 +30,11 @@ import { updateMetadata } from './metadata';
 import { EActivityType } from '../types/activity';
 import { addActivityItems, TActivity } from '../slices/activity';
 import {
+	updateWidgets,
 	initialWidgetsState,
 	TWidgetsState,
-	updateWidgets,
 } from '../slices/widgets';
-import { updateBlocktank } from './blocktank';
+import { updateBlocktank } from '../slices/blocktank';
 import { addContacts } from './slashtags';
 import { IBlocktank } from '../types/blocktank';
 import { checkBackup } from '../../utils/slashtags';
@@ -576,7 +576,7 @@ export const performBlocktankRestore = async ({
 		return ok({ backupExists: false });
 	}
 
-	updateBlocktank(backup);
+	dispatch(updateBlocktank(backup));
 	updateBackup({ remoteBlocktankBackupSynced: true });
 
 	// Restore success

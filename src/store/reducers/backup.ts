@@ -64,8 +64,8 @@ const backup = (state: IBackup = defaultBackupShape, action): IBackup => {
 			};
 		}
 
-		case actions.ADD_PAID_BLOCKTANK_ORDER:
-		case actions.UPDATE_BLOCKTANK_ORDER: {
+		case 'blocktank/addPaidBlocktankOrder':
+		case 'blocktank/updateBlocktankOrder': {
 			const remoteBlocktankBackupSyncRequired =
 				state.remoteBlocktankBackupSyncRequired ?? new Date().getTime();
 			return {

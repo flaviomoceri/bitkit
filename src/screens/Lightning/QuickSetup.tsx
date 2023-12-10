@@ -28,7 +28,7 @@ import {
 import {
 	refreshBlocktankInfo,
 	startChannelPurchase,
-} from '../../store/actions/blocktank';
+} from '../../store/utils/blocktank';
 import { showToast } from '../../utils/notifications';
 import { convertToSats } from '../../utils/conversion';
 import { getFiatDisplayValues } from '../../utils/displayValues';

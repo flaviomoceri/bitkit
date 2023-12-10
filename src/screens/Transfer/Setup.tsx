@@ -25,7 +25,7 @@ import { useBalance, useSwitchUnit } from '../../hooks/wallet';
 import {
 	refreshBlocktankInfo,
 	startChannelPurchase,
-} from '../../store/actions/blocktank';
+} from '../../store/utils/blocktank';
 import { convertToSats } from '../../utils/conversion';
 import { getNumberPadText } from '../../utils/numberpad';
 import { LIGHTNING_DIFF } from '../../utils/wallet/constants';

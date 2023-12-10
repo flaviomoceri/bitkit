@@ -16,7 +16,7 @@ import { sleep } from '../../utils/helpers';
 import { useBalance } from '../../hooks/wallet';
 import useDisplayValues from '../../hooks/displayValues';
 import type { LightningScreenProps } from '../../navigation/types';
-import { confirmChannelPurchase } from '../../store/actions/blocktank';
+import { confirmChannelPurchase } from '../../store/utils/blocktank';
 import { blocktankOrdersSelector } from '../../store/reselect/blocktank';
 import {
 	selectedNetworkSelector,

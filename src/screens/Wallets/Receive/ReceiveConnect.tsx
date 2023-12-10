@@ -10,17 +10,17 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
 import GlowImage from '../../../components/GlowImage';
 import Money from '../../../components/Money';
-import { useAppSelector } from '../../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useScreenSize } from '../../../hooks/screen';
 import useDisplayValues from '../../../hooks/displayValues';
 import { useLightningBalance } from '../../../hooks/lightning';
 import { receiveSelector } from '../../../store/reselect/receive';
 import type { ReceiveScreenProps } from '../../../navigation/types';
 import { DEFAULT_CHANNEL_DURATION } from '../../Lightning/CustomConfirm';
-import { addCJitEntry } from '../../../store/actions/blocktank';
+import { addCjitEntry } from '../../../store/slices/blocktank';
+import { updateInvoice } from '../../../store/slices/receive';
 import { createCJitEntry, estimateOrderFee } from '../../../utils/blocktank';
 import { showToast } from '../../../utils/notifications';
-import { updateInvoice } from '../../../store/actions/receive';
 import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
 
 const imageSrc = require('../../../assets/illustrations/lightning.png');
@@ -33,10 +33,13 @@ const ReceiveConnect = ({
 	const lightningBalance = useLightningBalance(true);
 	const [feeEstimate, setFeeEstimate] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
+	const dispatch = useAppDispatch();
 	const blocktank = useAppSelector(blocktankInfoSelector);
 	const { amount, message } = useAppSelector(receiveSelector);
 
 	const { maxChannelSizeSat } = blocktank.options;
+	const payAmount = amount - feeEstimate;
+	const displayFee = useDisplayValues(feeEstimate);
 
 	useEffect(() => {
 		const getFeeEstimation = async (): Promise<void> => {
@@ -48,11 +51,9 @@ const ReceiveConnect = ({
 				setFeeEstimate(estimate.value);
 			}
 		};
+
 		getFeeEstimation();
 	}, [amount]);
-
-	const payAmount = amount - feeEstimate;
-	const displayFee = useDisplayValues(feeEstimate);
 
 	const onContinue = async (): Promise<void> => {
 		setIsLoading(true);
@@ -72,8 +73,8 @@ const ReceiveConnect = ({
 			return;
 		}
 		const order = cJitEntryResponse.value;
-		updateInvoice({ jitOrder: order });
-		addCJitEntry(order).then();
+		dispatch(updateInvoice({ jitOrder: order }));
+		dispatch(addCjitEntry(order));
 		setIsLoading(false);
 		navigation.navigate('ReceiveQR');
 	};

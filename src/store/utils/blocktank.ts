@@ -1,7 +1,6 @@
 import { err, ok, Result } from '@synonymdev/result';
 
-import actions from './actions';
-import { resetSendTransaction, updateSendTransaction } from './wallet';
+import { resetSendTransaction, updateSendTransaction } from '../actions/wallet';
 import { setLightningSetupStep } from '../slices/user';
 import { getBlocktankStore, getWalletStore, dispatch } from '../helpers';
 import * as blocktank from '../../utils/blocktank';
@@ -33,7 +32,6 @@ import { getDisplayValues } from '../../utils/displayValues';
 import i18n from '../../utils/i18n';
 import { refreshLdk } from '../../utils/lightning';
 import { TWalletName } from '../types/wallet';
-import { IBlocktank } from '../types/blocktank';
 import {
 	BtOrderState,
 	BtPaymentState,
@@ -41,6 +39,13 @@ import {
 	ICJitEntry,
 } from '@synonymdev/blocktank-lsp-http-client';
 import { CJitStateEnum } from '@synonymdev/blocktank-lsp-http-client/dist/shared/CJitStateEnum';
+import {
+	addPaidBlocktankOrder,
+	resetBlocktankOrders,
+	updateBlocktankInfo,
+	updateBlocktankOrder,
+	updateCjitEntry,
+} from '../slices/blocktank';
 
 /**
  * Retrieves & updates the status of stored orders that may have changed.
@@ -64,9 +69,9 @@ export const refreshOrdersList = async (): Promise<Result<string>> => {
 export const checkPendingCJitEntries = async (): Promise<Result<string>> => {
 	const pendingCJitEntries = blocktank.getPendingCJitEntries();
 	try {
-		const promises = pendingCJitEntries.map((order) =>
-			refreshCJitEntry(order.id),
-		);
+		const promises = pendingCJitEntries.map((order) => {
+			return refreshCJitEntry(order.id);
+		});
 		await Promise.all(promises);
 		return ok('Orders list updated');
 	} catch (e) {
@@ -88,11 +93,7 @@ export const refreshCJitEntry = async (
 			return ok(cJitEntry);
 		}
 
-		// Update stored CJIT entry
-		dispatch({
-			type: actions.UPDATE_CJIT_ENTRY,
-			payload: cJitEntry,
-		});
+		dispatch(updateCjitEntry(cJitEntry));
 
 		return ok(cJitEntry);
 	} catch (error) {
@@ -147,10 +148,7 @@ export const refreshOrder = async (
 		}
 
 		// Update stored order
-		dispatch({
-			type: actions.UPDATE_BLOCKTANK_ORDER,
-			payload: order,
-		});
+		dispatch(updateBlocktankOrder(order));
 
 		// Handle order state changes for paid orders
 		if (
@@ -184,29 +182,8 @@ export const updateOrder = async (
 		return err(orderRes.error.message);
 	}
 	const order = orderRes.value;
-	dispatch({
-		type: actions.UPDATE_BLOCKTANK_ORDER,
-		payload: order,
-	});
+	dispatch(updateBlocktankOrder(order));
 	return ok(order);
-};
-
-/**
- * Retrieves and updates a given blocktank order by id.
- * @param {ICJitEntry} cJitEntry
- * @returns {Promise<Result<IBtOrder>>}
- */
-export const addCJitEntry = async (
-	cJitEntry: ICJitEntry,
-): Promise<Result<ICJitEntry>> => {
-	if (!cJitEntry) {
-		return err('No cJitEntry provided.');
-	}
-	dispatch({
-		type: actions.ADD_CJIT_ENTRY,
-		payload: cJitEntry,
-	});
-	return ok(cJitEntry);
 };
 
 /**
@@ -220,10 +197,7 @@ export const refreshBlocktankInfo = async (): Promise<Result<string>> => {
 	}
 	const infoResponse = await getBlocktankInfo();
 	if (infoResponse.nodes) {
-		dispatch({
-			type: actions.UPDATE_BLOCKTANK_INFO,
-			payload: infoResponse,
-		});
+		dispatch(updateBlocktankInfo(infoResponse));
 		return ok('Blocktank info updated.');
 	}
 	return err('Unable to update Blocktank info.');
@@ -404,7 +378,7 @@ export const confirmChannelPurchase = async ({
 		});
 		return err(broadcastResponse.error.message);
 	}
-	addPaidBlocktankOrder({ orderId, txid: broadcastResponse.value });
+	dispatch(addPaidBlocktankOrder({ orderId, txid: broadcastResponse.value }));
 
 	// Reset tx data.
 	resetSendTransaction({ selectedWallet, selectedNetwork });
@@ -419,28 +393,6 @@ export const confirmChannelPurchase = async ({
 	}).then();
 
 	return ok({ txid: broadcastResponse.value, useUnconfirmedInputs });
-};
-
-/**
- * Stores all paid order id's and pairs them with their corresponding txid.
- * @param {string} orderId
- * @param {string} txid
- */
-export const addPaidBlocktankOrder = ({
-	orderId,
-	txid,
-}: {
-	orderId: string;
-	txid: string;
-}): void => {
-	const payload = {
-		orderId,
-		txid,
-	};
-	dispatch({
-		type: actions.ADD_PAID_BLOCKTANK_ORDER,
-		payload,
-	});
 };
 
 /**
@@ -484,22 +436,13 @@ const handleOrderStateChange = (order: IBtOrder): void => {
 };
 
 /**
- * Wipes all stored blocktank orders.
- * @returns {<Result<string>>}
- */
-export const resetBlocktankOrders = (): Result<string> => {
-	dispatch({ type: actions.RESET_BLOCKTANK_ORDERS });
-	return ok('');
-};
-
-/**
  * Wipes all stored blocktank order data and updates it to match returned data from the server.
  * Used for migrating from v1 to v2 of the Blocktank API.
  * @returns {Promise<Result<string>>}
  */
 export const refreshAllBlocktankOrders = async (): Promise<Result<string>> => {
 	const orders = getBlocktankStore().orders;
-	await resetBlocktankOrders();
+	dispatch(resetBlocktankOrders());
 	await Promise.all(
 		orders.map(async (order): Promise<void> => {
 			// @ts-ignore
@@ -508,32 +451,9 @@ export const refreshAllBlocktankOrders = async (): Promise<Result<string>> => {
 			if (getUpdatedOrderResult.isErr()) {
 				return;
 			}
-			const payload = getUpdatedOrderResult.value;
 			// Update stored order
-			dispatch({
-				type: actions.UPDATE_BLOCKTANK_ORDER,
-				payload,
-			});
+			dispatch(updateBlocktankOrder(getUpdatedOrderResult.value));
 		}),
 	);
 	return ok('All orders refreshed.');
-};
-
-export const updateBlocktank = (
-	payload: Partial<IBlocktank>,
-): Result<string> => {
-	dispatch({
-		type: actions.UPDATE_BLOCKTANK,
-		payload,
-	});
-	return ok('');
-};
-
-/*
- * This resets the activity store to defaultActivityShape
- * @returns {Result<string>}
- */
-export const resetBlocktankStore = (): Result<string> => {
-	dispatch({ type: actions.RESET_BLOCKTANK_STORE });
-	return ok('');
 };

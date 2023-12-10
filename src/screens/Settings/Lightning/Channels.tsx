@@ -29,7 +29,7 @@ import LightningChannel, {
 import Money from '../../../components/Money';
 import useColors from '../../../hooks/colors';
 import { useAppSelector } from '../../../hooks/redux';
-import { refreshOrdersList } from '../../../store/actions/blocktank';
+import { refreshOrdersList } from '../../../store/utils/blocktank';
 import {
 	addPeer,
 	getNodeId,

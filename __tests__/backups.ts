@@ -50,10 +50,11 @@ import { EActivityType } from '../src/store/types/activity';
 import { EPaymentType } from '../src/store/types/wallet';
 import {
 	addPaidBlocktankOrder,
-	resetBlocktankStore,
-} from '../src/store/actions/blocktank';
+	resetBlocktankState,
+} from '../src/store/slices/blocktank';
 import actions from '../src/store/actions/actions';
 import { defaultOrderResponse } from '../src/store/shapes/blocktank';
+import { updateBlocktankOrder } from '../src/store/slices/blocktank';
 
 jest.setTimeout(30000);
 
@@ -280,11 +281,8 @@ describe('Remote backups', () => {
 	});
 
 	it('Backups and restores Blocktank orders', async () => {
-		addPaidBlocktankOrder({ orderId: 'id', txid: 'txid' });
-		dispatch({
-			type: actions.UPDATE_BLOCKTANK_ORDER,
-			payload: defaultOrderResponse,
-		});
+		dispatch(addPaidBlocktankOrder({ orderId: 'id', txid: 'txid' }));
+		dispatch(updateBlocktankOrder(defaultOrderResponse));
 
 		const { orders, paidOrders } = getBlocktankStore();
 		const backup = { orders, paidOrders };
@@ -302,7 +300,7 @@ describe('Remote backups', () => {
 			throw uploadRes.error;
 		}
 
-		resetBlocktankStore();
+		dispatch(resetBlocktankState());
 		expect(store.getState().blocktank.orders.length).toEqual(0);
 		expect(store.getState().blocktank.paidOrders).toMatchObject({});
 

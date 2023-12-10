@@ -19,7 +19,7 @@ import {
 	updateLdkAccountVersion,
 	updateLightningNodeId,
 } from '../../../store/actions/lightning';
-import { resetBlocktankStore } from '../../../store/actions/blocktank';
+import { resetBlocktankState } from '../../../store/slices/blocktank';
 import { resetSlashtagsStore } from '../../../store/actions/slashtags';
 import { resetWidgetsState } from '../../../store/slices/widgets';
 import { resetFeesState } from '../../../store/slices/fees';
@@ -324,7 +324,7 @@ const DevSettings = ({
 				{
 					title: 'Reset Blocktank Store',
 					type: EItemType.button,
-					onPress: resetBlocktankStore,
+					onPress: () => dispatch(resetBlocktankState()),
 				},
 				{
 					title: 'Reset Current Wallet Store',

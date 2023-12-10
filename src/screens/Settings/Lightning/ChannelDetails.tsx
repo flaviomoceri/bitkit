@@ -51,7 +51,7 @@ import {
 	IBtOrder,
 } from '@synonymdev/blocktank-lsp-http-client';
 import { BtOpenChannelState } from '@synonymdev/blocktank-lsp-http-client/dist/shared/BtOpenChannelState';
-import { updateOrder } from '../../../store/actions/blocktank';
+import { updateOrder } from '../../../store/utils/blocktank';
 
 export const getOrderStatus = (
 	order: IBtOrder,

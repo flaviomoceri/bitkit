@@ -20,7 +20,7 @@ import { sleep } from '../../utils/helpers';
 import {
 	confirmChannelPurchase,
 	startChannelPurchase,
-} from '../../store/actions/blocktank';
+} from '../../store/utils/blocktank';
 import { showToast } from '../../utils/notifications';
 import {
 	selectedNetworkSelector,

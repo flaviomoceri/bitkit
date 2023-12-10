@@ -20,7 +20,7 @@ import { updateInvoice } from '../../../store/slices/receive';
 import { receiveSelector } from '../../../store/reselect/receive';
 import { getNumberPadText } from '../../../utils/numberpad';
 import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
-import { refreshBlocktankInfo } from '../../../store/actions/blocktank';
+import { refreshBlocktankInfo } from '../../../store/utils/blocktank';
 import type { ReceiveScreenProps } from '../../../navigation/types';
 
 // hardcoded to be above fee (1092)

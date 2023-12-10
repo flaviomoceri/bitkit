@@ -84,7 +84,7 @@ import {
 	CHUNK_LIMIT,
 } from './constants';
 import { moveMetaIncTxTags } from '../../store/actions/metadata';
-import { refreshOrdersList } from '../../store/actions/blocktank';
+import { refreshOrdersList } from '../../store/utils/blocktank';
 import { IDefaultLightningShape } from '../../store/types/lightning';
 import { showNewTxPrompt } from '../../store/utils/ui';
 import { objectKeys } from '../objectKeys';
