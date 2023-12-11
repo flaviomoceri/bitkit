@@ -35,13 +35,13 @@ import {
 	TWidgetsState,
 } from '../slices/widgets';
 import { updateBlocktank } from '../slices/blocktank';
-import { addContacts } from './slashtags';
+import { addContacts } from '../slices/slashtags';
 import { IBlocktank } from '../types/blocktank';
 import { checkBackup } from '../../utils/slashtags';
 import { showToast } from '../../utils/notifications';
 import { FAILED_BACKUP_CHECK_TIME } from '../../utils/backup/backups-subscriber';
 import i18n from '../../utils/i18n';
-import { ISlashtags, TContacts } from '../types/slashtags';
+import { TSlashtagsState } from '../types/slashtags';
 import {
 	__BACKUPS_SERVER_HOST__,
 	__BACKUPS_SERVER_PUBKEY__,
@@ -594,7 +594,7 @@ export const performSlashtagsRestore = async ({
 		selectedNetwork = getSelectedNetwork();
 	}
 
-	const backupRes = await getBackup<Partial<ISlashtags>>({
+	const backupRes = await getBackup<Partial<TSlashtagsState>>({
 		slashtag,
 		backupCategory: EBackupCategories.slashtags,
 		selectedNetwork,
@@ -613,7 +613,7 @@ export const performSlashtagsRestore = async ({
 		return ok({ backupExists: false });
 	}
 
-	addContacts(backup.contacts as TContacts);
+	dispatch(addContacts(backup.contacts!));
 	updateBackup({ remoteSlashtagsBackupSynced: true });
 
 	// Restore success

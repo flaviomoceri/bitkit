@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Share from 'react-native-share';
@@ -19,7 +19,6 @@ import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import ProfileCard from '../../components/ProfileCard';
 import ProfileLinks from '../../components/ProfileLinks';
-import { deleteContact } from '../../store/actions/slashtags';
 import { processInputData } from '../../utils/scanner';
 import { useSlashtagsSDK } from '../../components/SlashtagsProvider';
 import { useProfile2 } from '../../hooks/slashtags2';
@@ -30,6 +29,7 @@ import { RootStackScreenProps } from '../../navigation/types';
 import Dialog from '../../components/Dialog';
 import Tooltip from '../../components/Tooltip';
 import IconButton from '../../components/IconButton';
+import { deleteContact } from '../../store/slices/slashtags';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
@@ -47,6 +47,7 @@ const Contact = ({
 	const [isSharing, setIsSharing] = useState(false);
 	const [loading, setLoading] = useState(false);
 
+	const dispatch = useAppDispatch();
 	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const contacts = useAppSelector(contactsSelector);
@@ -75,9 +76,9 @@ const Contact = ({
 	};
 
 	const onDelete = useCallback(() => {
-		deleteContact(url);
+		dispatch(deleteContact(url));
 		navigation.navigate('Contacts');
-	}, [navigation, url]);
+	}, [navigation, url, dispatch]);
 
 	const handleSend = async (): Promise<void> => {
 		setLoading(true);

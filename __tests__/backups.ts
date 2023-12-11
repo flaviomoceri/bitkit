@@ -52,7 +52,6 @@ import {
 	addPaidBlocktankOrder,
 	resetBlocktankState,
 } from '../src/store/slices/blocktank';
-import actions from '../src/store/actions/actions';
 import { defaultOrderResponse } from '../src/store/shapes/blocktank';
 import { updateBlocktankOrder } from '../src/store/slices/blocktank';
 

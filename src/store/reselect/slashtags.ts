@@ -5,15 +5,15 @@ import { RootState } from '..';
 import {
 	BasicProfile,
 	IContactRecord,
-	ISlashtags,
+	TSlashtagsState,
 	LocalLink,
 	TOnboardingProfileStep,
 } from '../types/slashtags';
 import { TContacts } from '../../store/types/slashtags';
 
-const slashtagsState = (state: RootState): ISlashtags => state.slashtags;
+const slashtagsState = (state: RootState): TSlashtagsState => state.slashtags;
 
-export const slashtagsSelector = (state: RootState): ISlashtags => {
+export const slashtagsSelector = (state: RootState): TSlashtagsState => {
 	return state.slashtags;
 };
 

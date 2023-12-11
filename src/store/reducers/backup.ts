@@ -75,9 +75,9 @@ const backup = (state: IBackup = defaultBackupShape, action): IBackup => {
 			};
 		}
 
-		case actions.CONTACT_ADD:
-		case actions.CONTACT_DELETE:
-		case actions.CONTACTS_ADD: {
+		case 'slashtags/addContact':
+		case 'slashtags/addContacts':
+		case 'slashtags/deleteContact': {
 			const remoteSlashtagsBackupSyncRequired =
 				state.remoteSlashtagsBackupSyncRequired ?? new Date().getTime();
 			return {

@@ -7,7 +7,7 @@ import React, {
 	ReactElement,
 } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { ScrollView, View as ThemedView } from '../../styles/components';
@@ -25,7 +25,7 @@ import { useProfile2, useSlashtags2 } from '../../hooks/slashtags2';
 import {
 	setLinks,
 	setOnboardingProfileStep,
-} from '../../store/actions/slashtags';
+} from '../../store/slices/slashtags';
 import { showBottomSheet } from '../../store/utils/ui';
 import { BasicProfile } from '../../store/types/slashtags';
 import { slashtagsLinksSelector } from '../../store/reselect/slashtags';
@@ -44,6 +44,7 @@ const ProfileEdit = ({
 	const [hasEdited, setHasEdited] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [fields, setFields] = useState<Omit<BasicProfile, 'links'>>({});
+	const dispatch = useAppDispatch();
 	const links = useAppSelector(slashtagsLinksSelector);
 	const onboardingStep = useAppSelector(onboardingProfileStepSelector);
 
@@ -56,8 +57,10 @@ const ProfileEdit = ({
 			...link,
 			id: `${link.title}:${link.url}`,
 		}));
-		setLinks(localLinks);
-	}, [savedProfile?.links]);
+		if (localLinks.length > 0) {
+			dispatch(setLinks(localLinks));
+		}
+	}, [savedProfile?.links, dispatch]);
 
 	// show save button if links have changed
 	useEffect(() => {
@@ -101,7 +104,7 @@ const ProfileEdit = ({
 		await Keyboard.dismiss();
 
 		if (!onboardedProfile) {
-			setOnboardingProfileStep('OfflinePayments');
+			dispatch(setOnboardingProfileStep('OfflinePayments'));
 		} else {
 			navigation.navigate('Profile');
 		}

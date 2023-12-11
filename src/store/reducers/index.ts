@@ -12,7 +12,7 @@ import lightning from './lightning';
 import metadata from './metadata';
 import receive from '../slices/receive';
 import settings from '../slices/settings';
-import slashtags from './slashtags';
+import slashtags from '../slices/slashtags';
 import todos from './todos';
 import ui from '../slices/ui';
 import user from '../slices/user';

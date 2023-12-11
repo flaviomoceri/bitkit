@@ -8,15 +8,15 @@ import {
 	contactsSelector,
 	profileCacheSelector,
 } from '../store/reselect/slashtags';
-import { addContacts, cacheProfile2 } from '../store/actions/slashtags';
+import { addContacts, cacheProfile2 } from '../store/slices/slashtags';
 import {
-	ISlashtagsContext2,
+	TSlashtagsStateContext2,
 	SlashtagsContext2,
 } from '../components/SlashtagsProvider2';
 import { useSlashtags } from '../components/SlashtagsProvider';
 import { __E2E__ } from '../constants/env';
 import { getNewProfileUrl, saveProfile2 } from '../utils/slashtags2';
-import { useAppSelector } from './redux';
+import { useAppDispatch, useAppSelector } from './redux';
 import { useProfile, useSelectedSlashtag } from './slashtags';
 
 export const useSelectedSlashtag2 = (): {
@@ -26,7 +26,7 @@ export const useSelectedSlashtag2 = (): {
 	return { url };
 };
 
-export const useSlashtags2 = (): ISlashtagsContext2 => {
+export const useSlashtags2 = (): TSlashtagsStateContext2 => {
 	return useContext(SlashtagsContext2);
 };
 
@@ -38,6 +38,7 @@ export const useProfile2 = (
 	profile: BasicProfile;
 	url: string;
 } => {
+	const dispatch = useAppDispatch();
 	const { webRelayClient, webRelayUrl } = useSlashtags2();
 	const [resolving, setResolving] = useState(true);
 	const [url, profileUrl] = useMemo(() => {
@@ -81,7 +82,7 @@ export const useProfile2 = (
 				setResolving(false);
 
 				if (pr) {
-					cacheProfile2(profileUrl, pr);
+					dispatch(cacheProfile2({ url: profileUrl, profile: pr }));
 				}
 
 				if (!unmounted) {
@@ -102,7 +103,7 @@ export const useProfile2 = (
 				return;
 			}
 
-			cacheProfile2(profileUrl, pr);
+			dispatch(cacheProfile2({ url: profileUrl, profile: pr }));
 		});
 
 		let unmounted = false;
@@ -111,7 +112,7 @@ export const useProfile2 = (
 			unsubscribe();
 			unmounted = true;
 		};
-	}, [webRelayClient, profileUrl, shouldResolve]);
+	}, [webRelayClient, profileUrl, shouldResolve, dispatch]);
 
 	return {
 		resolving,
@@ -123,6 +124,7 @@ export const useProfile2 = (
 export const useMigrateSlashtags2 = (): void => {
 	const status = useRef({ contacts: false, profile: false });
 	const oldContacts = useSlashtags().contacts;
+	const dispatch = useAppDispatch();
 	const newContacts = useAppSelector(contactsSelector);
 
 	const { url: oldUrl } = useSelectedSlashtag();
@@ -158,7 +160,7 @@ export const useMigrateSlashtags2 = (): void => {
 			contacts[id] = { url: newUrl, name: old.name };
 		}
 
-		addContacts(contacts);
+		dispatch(addContacts(contacts));
 
 		// ingnore newContacts here
 		// eslint-disable-next-line react-hooks/exhaustive-deps

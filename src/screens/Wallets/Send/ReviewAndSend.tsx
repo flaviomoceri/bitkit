@@ -45,7 +45,7 @@ import {
 	addMetaSlashTagsUrlTag,
 } from '../../../store/actions/metadata';
 import useColors from '../../../hooks/colors';
-import { useAppSelector } from '../../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import useDisplayValues from '../../../hooks/displayValues';
 import { useLightningBalance } from '../../../hooks/lightning';
 import { EFeeId } from '../../../store/types/fees';
@@ -74,11 +74,11 @@ import {
 	pinForPaymentsSelector,
 	pinSelector,
 } from '../../../store/reselect/settings';
+import { EUnit } from '../../../store/types/wallet';
 import { onChainFeesSelector } from '../../../store/reselect/fees';
 import { updateOnChainActivityList } from '../../../store/utils/activity';
+import { updateLastPaidContacts } from '../../../store/slices/slashtags';
 import { truncate } from '../../../utils/helpers';
-import { EUnit } from '../../../store/types/wallet';
-import { updateLastPaidContacts } from '../../../store/actions/slashtags';
 import AmountToggle from '../../../components/AmountToggle';
 import LightningSyncing from '../../../components/LightningSyncing';
 
@@ -116,6 +116,7 @@ const ReviewAndSend = ({
 	const onChainBalance = useAppSelector(onChainBalanceSelector);
 	const transaction = useAppSelector(transactionSelector);
 	const lightningBalance = useLightningBalance(false);
+	const dispatch = useAppDispatch();
 	const exchangeRates = useAppSelector(exchangeRatesSelector);
 	const feeEstimates = useAppSelector(onChainFeesSelector);
 	const enableSendAmountWarning = useAppSelector(
@@ -222,7 +223,7 @@ const ReviewAndSend = ({
 		updateMetaTxTags(payInvoiceResponse.value.payment_hash, transaction.tags);
 
 		if (transaction.slashTagsUrl) {
-			updateLastPaidContacts(transaction.slashTagsUrl);
+			dispatch(updateLastPaidContacts(transaction.slashTagsUrl));
 			// save Slashtags contact to metadata
 			addMetaSlashTagsUrlTag(
 				payInvoiceResponse.value.payment_hash,
@@ -244,6 +245,7 @@ const ReviewAndSend = ({
 		transaction.lightningInvoice,
 		transaction.outputs,
 		transaction.tags,
+		dispatch,
 		t,
 	]);
 
@@ -320,7 +322,7 @@ const ReviewAndSend = ({
 		setIsLoading(false);
 
 		if (transaction.slashTagsUrl) {
-			updateLastPaidContacts(transaction.slashTagsUrl);
+			dispatch(updateLastPaidContacts(transaction.slashTagsUrl));
 		}
 
 		navigation.navigate('Result', { success: true, txId: rawTx.id });
@@ -333,6 +335,7 @@ const ReviewAndSend = ({
 		_onError,
 		navigation,
 		transaction,
+		dispatch,
 		t,
 	]);
 

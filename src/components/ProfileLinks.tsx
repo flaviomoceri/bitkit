@@ -12,7 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { Caption13Up, Text02M, Text02S } from '../styles/text';
 import { TrashIcon } from '../styles/icons';
 import { LocalLink } from '../store/types/slashtags';
-import { editLink, removeLink } from '../store/actions/slashtags';
+import { useAppDispatch } from '../hooks/redux';
+import { editLink, deleteLink } from '../store/slices/slashtags';
 import LabeledInput from './LabeledInput';
 import Divider from './Divider';
 import { suggestions } from '../screens/Profile/ProfileLinkSuggestions';
@@ -51,6 +52,15 @@ const ProfileLinks = ({
 	style?: StyleProp<ViewStyle>;
 }): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
+
+	const onChange = (link: LocalLink): void => {
+		dispatch(editLink(link));
+	};
+
+	const onRemove = (id: LocalLink['id']): void => {
+		dispatch(deleteLink(id));
+	};
 
 	return (
 		<View style={style}>
@@ -70,17 +80,11 @@ const ProfileLinks = ({
 							label={link.title}
 							value={link.url}
 							onChange={(value: string): void => {
-								editLink({
-									id: link.id,
-									title: link.title,
-									url: value,
-								});
+								onChange({ ...link, url: value });
 							}}>
 							<TouchableOpacity
 								testID="RemoveLinkButton"
-								onPress={(): void => {
-									removeLink(link.id);
-								}}>
+								onPress={(): void => onRemove(link.id)}>
 								<TrashIcon color="brand" width={16} />
 							</TouchableOpacity>
 						</LabeledInput>

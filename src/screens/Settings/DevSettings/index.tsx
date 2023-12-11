@@ -20,7 +20,7 @@ import {
 	updateLightningNodeId,
 } from '../../../store/actions/lightning';
 import { resetBlocktankState } from '../../../store/slices/blocktank';
-import { resetSlashtagsStore } from '../../../store/actions/slashtags';
+import { resetSlashtagsState } from '../../../store/slices/slashtags';
 import { resetWidgetsState } from '../../../store/slices/widgets';
 import { resetFeesState } from '../../../store/slices/fees';
 import { resetTodos } from '../../../store/actions/todos';
@@ -356,7 +356,7 @@ const DevSettings = ({
 				{
 					title: 'Reset Slashtags Store',
 					type: EItemType.button,
-					onPress: resetSlashtagsStore,
+					onPress: () => dispatch(resetSlashtagsState()),
 				},
 				{
 					title: 'Reset Todos Store',

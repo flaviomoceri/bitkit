@@ -16,10 +16,10 @@ import NavigationHeader from '../../components/NavigationHeader';
 import Button from '../../components/Button';
 import GlowingBackground from '../../components/GlowingBackground';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { setOnboardingProfileStep } from '../../store/actions/slashtags';
-import { ISlashtags } from '../../store/types/slashtags';
+import { TSlashtagsState } from '../../store/types/slashtags';
 import SwitchRow from '../../components/SwitchRow';
 import { updateSettings } from '../../store/slices/settings';
+import { setOnboardingProfileStep } from '../../store/slices/slashtags';
 import DetectSwipe from '../../components/DetectSwipe';
 import type {
 	RootStackParamList,
@@ -121,13 +121,15 @@ const Layout = memo(
 	}: {
 		navigation: StackNavigationProp<RootStackParamList, 'Profile'>;
 		illustration: ImageSourcePropType;
-		nextStep: ISlashtags['onboardingProfileStep'];
+		nextStep: TSlashtagsState['onboardingProfileStep'];
 		buttonText: string;
 		header: string;
 		children: ReactNode;
 		onNext?: () => void;
 	}): ReactElement => {
 		const { isSmallScreen } = useScreenSize();
+		const dispatch = useAppDispatch();
+
 		const onSwipeLeft = (): void => {
 			navigation.navigate('Wallet');
 		};
@@ -161,7 +163,7 @@ const Layout = memo(
 							size="large"
 							onPress={(): void => {
 								onNext?.();
-								setOnboardingProfileStep(nextStep);
+								dispatch(setOnboardingProfileStep(nextStep));
 							}}
 							testID="OnboardingContinue"
 						/>

@@ -8,7 +8,7 @@ import { TActivity } from './slices/activity';
 import { ILightning } from './types/lightning';
 import { IBlocktank } from './types/blocktank';
 import { TFeesState } from './slices/fees';
-import { ISlashtags } from './types/slashtags';
+import { TSlashtagsState } from './types/slashtags';
 import { ITodos } from './types/todos';
 import { TUiState } from './types/ui';
 import { TUser } from './slices/user';
@@ -50,7 +50,7 @@ export const getFeesStore = (): TFeesState => {
 	return cloneDeep(store.getState().fees);
 };
 
-export const getSlashtagsStore = (): ISlashtags => {
+export const getSlashtagsStore = (): TSlashtagsState => {
 	return cloneDeep(store.getState().slashtags);
 };
 

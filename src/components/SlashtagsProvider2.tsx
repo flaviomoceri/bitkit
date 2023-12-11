@@ -91,14 +91,14 @@ const store = new Store('slashtags.db') as unknown as Client.Store;
 export let webRelayClient: IWebRelayClient;
 let profile: SlashtagsProfile;
 
-export interface ISlashtagsContext2 {
+export interface TSlashtagsStateContext2 {
 	webRelayClient: Client;
 	webRelayUrl: string;
 	url: string;
 	profile: SlashtagsProfile;
 }
 
-export const SlashtagsContext2 = createContext<ISlashtagsContext2>({
+export const SlashtagsContext2 = createContext<TSlashtagsStateContext2>({
 	webRelayClient: {} as Client,
 	webRelayUrl: '',
 	url: '',

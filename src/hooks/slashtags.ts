@@ -5,7 +5,7 @@ import { useSlashtags, useSlashtagsSDK } from '../components/SlashtagsProvider';
 import { useAppSelector } from '../hooks/redux';
 import { decodeJSON, getSelectedSlashtag } from '../utils/slashtags';
 import { BasicProfile, IRemote } from '../store/types/slashtags';
-import { cacheProfile } from '../store/actions/slashtags';
+import { cacheProfileChecked } from '../store/utils/slashtags';
 
 export type Slashtag = ReturnType<SDK['slashtag']>;
 
@@ -73,7 +73,7 @@ export const useProfile = (
 				const buffer = await drive.get('/profile.json');
 				const _profile = decodeJSON(buffer) as BasicProfile;
 
-				cacheProfile(url, drive.files.feed.fork, version, _profile);
+				cacheProfileChecked(url, drive.files.feed.fork, version, _profile);
 
 				if (!unmounted) {
 					setResolving(false);

@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useBottomSheetBackPress } from '../../hooks/bottomSheet';
 import { Keyboard } from '../../hooks/keyboard';
 import { ProfileLinkScreenProps } from '../../navigation/types';
-import { addLink } from '../../store/actions/slashtags';
+import { addLink } from '../../store/slices/slashtags';
 import { closeSheet, updateProfileLink } from '../../store/slices/ui';
 import { profileLinkSelector } from '../../store/reselect/ui';
 import { suggestions } from './ProfileLinkSuggestions';
@@ -26,7 +26,7 @@ const ProfileLink = ({
 	useBottomSheetBackPress('profileAddDataForm');
 
 	const onSave = async (): Promise<void> => {
-		addLink(form);
+		dispatch(addLink(form));
 		dispatch(updateProfileLink({ title: '', url: '' }));
 		await Keyboard.dismiss();
 		dispatch(closeSheet('profileAddDataForm'));

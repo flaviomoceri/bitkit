@@ -17,7 +17,7 @@ import Dialog from '../../components/Dialog';
 import LoadingWalletScreen from './Loading';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useProfile2, useSelectedSlashtag2 } from '../../hooks/slashtags2';
-import { setOnboardingProfileStep } from '../../store/actions/slashtags';
+import { setOnboardingProfileStep } from '../../store/slices/slashtags';
 import { onboardingProfileStepSelector } from '../../store/reselect/slashtags';
 
 const checkImageSrc = require('../../assets/illustrations/check.png');
@@ -81,9 +81,9 @@ const RestoringScreen = (): ReactElement => {
 	useEffect(() => {
 		// If the user has a name, we can assume they have completed the profile onboarding
 		if (onboardingStep !== 'Done' && profile.name) {
-			setOnboardingProfileStep('Done');
+			dispatch(setOnboardingProfileStep('Done'));
 		}
-	}, [profile.name, onboardingStep]);
+	}, [profile.name, onboardingStep, dispatch]);
 
 	let color: keyof IColors = 'brand';
 	let content = <LoadingWalletScreen />;
