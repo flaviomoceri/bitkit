@@ -11,9 +11,9 @@ import Tag from '../../../components/Tag';
 import Button from '../../../components/Button';
 import { showToast } from '../../../utils/notifications';
 import { Keyboard } from '../../../hooks/keyboard';
-import { useAppSelector } from '../../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { addTxTag } from '../../../store/actions/wallet';
-import { addTag } from '../../../store/actions/metadata';
+import { addLastUsedTag } from '../../../store/slices/metadata';
 import { lastUsedTagsSelector } from '../../../store/reselect/metadata';
 import {
 	selectedNetworkSelector,
@@ -24,6 +24,7 @@ import type { SendScreenProps } from '../../../navigation/types';
 const Tags = ({ navigation }: SendScreenProps<'Tags'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const [text, setText] = useState('');
+	const dispatch = useAppDispatch();
 	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const lastUsedTags = useAppSelector(lastUsedTagsSelector);
@@ -42,7 +43,7 @@ const Tags = ({ navigation }: SendScreenProps<'Tags'>): ReactElement => {
 			});
 			return;
 		}
-		addTag(text);
+		dispatch(addLastUsedTag(text));
 
 		await Keyboard.dismiss();
 		navigation.goBack();
@@ -59,7 +60,7 @@ const Tags = ({ navigation }: SendScreenProps<'Tags'>): ReactElement => {
 			});
 			return;
 		}
-		addTag(tag);
+		dispatch(addLastUsedTag(tag));
 
 		await Keyboard.dismiss();
 		navigation.goBack();

@@ -62,7 +62,7 @@ import {
 	getBlockExplorerLink,
 } from '../../utils/wallet/transactions';
 import useColors from '../../hooks/colors';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 
 import { showBottomSheet } from '../../store/utils/ui';
 import { EPaymentType, EBoostType } from '../../store/types/wallet';
@@ -72,8 +72,8 @@ import {
 } from '../../store/reselect/activity';
 import {
 	deleteMetaTxTag,
-	deleteMetaSlashTagsUrlTag,
-} from '../../store/actions/metadata';
+	deleteMetaTxSlashtagsUrl,
+} from '../../store/slices/metadata';
 import { getTransactions } from '../../utils/wallet/electrum';
 import { ITransaction, ITxHash } from '../../utils/wallet';
 import { openURL } from '../../utils/helpers';
@@ -166,6 +166,7 @@ const OnchainActivityDetail = ({
 	const { t } = useTranslation('wallet');
 	const { t: tTime } = useTranslation('intl', { i18n: i18nTime });
 	const [_, switchUnit] = useSwitchUnit();
+	const dispatch = useAppDispatch();
 	const contacts = useAppSelector(contactsSelector);
 	const tags = useAppSelector((state) => tagSelector(state, id));
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
@@ -243,7 +244,7 @@ const OnchainActivityDetail = ({
 	};
 
 	const handleRemoveTag = (tag: string): void => {
-		deleteMetaTxTag(id, tag);
+		dispatch(deleteMetaTxTag({ txId: id, tag }));
 	};
 
 	const handleAssign = (): void => {
@@ -251,7 +252,7 @@ const OnchainActivityDetail = ({
 	};
 
 	const handleDetach = (): void => {
-		deleteMetaSlashTagsUrlTag(id);
+		dispatch(deleteMetaTxSlashtagsUrl(id));
 	};
 
 	const navigateToContact = (url: string): void => {
@@ -638,7 +639,8 @@ const LightningActivityDetail = ({
 	const [_, switchUnit] = useSwitchUnit();
 	const colors = useColors();
 	const { id, txType, value, fee, message, timestamp, address } = item;
-	const total = value + (fee ?? 0);
+
+	const dispatch = useAppDispatch();
 	const tags = useAppSelector((state) => tagSelector(state, id));
 	const slashTagsUrl = useAppSelector((state) => {
 		return slashTagsUrlSelector(state, id);
@@ -649,7 +651,7 @@ const LightningActivityDetail = ({
 	};
 
 	const handleRemoveTag = (tag: string): void => {
-		deleteMetaTxTag(id, tag);
+		dispatch(deleteMetaTxTag({ txId: id, tag }));
 	};
 
 	const handleAssign = (): void => {
@@ -657,7 +659,7 @@ const LightningActivityDetail = ({
 	};
 
 	const handleDetach = (): void => {
-		deleteMetaSlashTagsUrlTag(id);
+		dispatch(deleteMetaTxSlashtagsUrl(id));
 	};
 
 	const navigateToContact = (url: string): void => {
@@ -681,6 +683,7 @@ const LightningActivityDetail = ({
 	}, [id, t]);
 
 	const isSend = txType === EPaymentType.sent;
+	const total = value + (fee ?? 0);
 
 	const status = (
 		<View style={styles.row}>

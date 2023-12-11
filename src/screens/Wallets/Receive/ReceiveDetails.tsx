@@ -34,9 +34,9 @@ import { useScreenSize } from '../../../hooks/screen';
 import { getNumberPadText } from '../../../utils/numberpad';
 import { useSwitchUnit } from '../../../hooks/wallet';
 import {
-	removePendingInvoice,
 	updatePendingInvoice,
-} from '../../../store/actions/metadata';
+	deletePendingInvoice,
+} from '../../../store/slices/metadata';
 import { createCJitEntry } from '../../../utils/blocktank';
 import { DEFAULT_CHANNEL_DURATION } from '../../Lightning/CustomConfirm';
 import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
@@ -140,16 +140,18 @@ const ReceiveDetails = ({
 
 	useEffect(() => {
 		if (invoice.tags.length > 0) {
-			updatePendingInvoice({
-				id: invoice.id,
-				tags: invoice.tags,
-				address: receiveAddress,
-				payReq: lightningInvoice,
-			});
+			dispatch(
+				updatePendingInvoice({
+					id: invoice.id,
+					tags: invoice.tags,
+					address: receiveAddress,
+					payReq: lightningInvoice,
+				}),
+			);
 		} else {
-			removePendingInvoice(invoice.id);
+			dispatch(deletePendingInvoice(invoice.id));
 		}
-	}, [invoice.id, invoice.tags, receiveAddress, lightningInvoice]);
+	}, [invoice.id, invoice.tags, receiveAddress, lightningInvoice, dispatch]);
 
 	return (
 		<GradientView style={styles.container}>

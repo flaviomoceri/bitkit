@@ -9,7 +9,7 @@ import blocktank from '../slices/blocktank';
 import checks from '../slices/checks';
 import fees from '../slices/fees';
 import lightning from './lightning';
-import metadata from './metadata';
+import metadata from '../slices/metadata';
 import receive from '../slices/receive';
 import settings from '../slices/settings';
 import slashtags from '../slices/slashtags';

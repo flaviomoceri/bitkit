@@ -29,6 +29,7 @@ import {
 import { EPaymentType, TWalletName } from '../types/wallet';
 import { EActivityType, TLightningActivityItem } from '../types/activity';
 import { updateActivityItems } from '../slices/activity';
+import { moveMetaIncTxTag } from '../slices/metadata';
 
 /**
  * Attempts to update the node id for the given wallet and network.
@@ -423,13 +424,12 @@ export const moveMetaIncPaymentTags = (invoice: TInvoice): Result<string> => {
 	if (matched) {
 		const newPending = pendingInvoices.filter((item) => item !== matched);
 
-		dispatch({
-			type: actions.MOVE_META_INC_TX_TAG,
-			payload: {
+		dispatch(
+			moveMetaIncTxTag({
 				pendingInvoices: newPending,
 				tags: { [invoice.payment_hash]: matched.tags },
-			},
-		});
+			}),
+		);
 	}
 
 	return ok('Metadata tags resynced with transactions.');

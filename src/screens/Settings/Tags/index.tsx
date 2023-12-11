@@ -7,15 +7,16 @@ import { Caption13Up } from '../../../styles/text';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Tag from '../../../components/Tag';
-import { useAppSelector } from '../../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { lastUsedTagsSelector } from '../../../store/reselect/metadata';
-import { deleteTag } from '../../../store/actions/metadata';
+import { deleteLastUsedTag } from '../../../store/slices/metadata';
 import { SettingsScreenProps } from '../../../navigation/types';
 
 const TagsSettings = ({
 	navigation,
 }: SettingsScreenProps<'TagsSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
+	const dispatch = useAppDispatch();
 	const lastUsedTags = useAppSelector(lastUsedTagsSelector);
 
 	return (
@@ -39,7 +40,7 @@ const TagsSettings = ({
 									value={tag}
 									icon="trash"
 									onDelete={(): void => {
-										deleteTag(tag);
+										dispatch(deleteLastUsedTag(tag));
 
 										if (lastUsedTags.length === 1) {
 											navigation.goBack();

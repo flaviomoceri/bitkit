@@ -10,7 +10,7 @@ import Tag from '../../components/Tag';
 import Button from '../../components/Button';
 import { closeSheet } from '../../store/slices/ui';
 import { viewControllerSelector } from '../../store/reselect/ui';
-import { addMetaTxTag, addTag } from '../../store/actions/metadata';
+import { addMetaTxTag } from '../../store/slices/metadata';
 import { lastUsedTagsSelector } from '../../store/reselect/metadata';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { Keyboard } from '../../hooks/keyboard';
@@ -38,8 +38,7 @@ const ActivityTagsPrompt = (): ReactElement => {
 	};
 
 	const handleTagChoose = async (tag: string): Promise<void> => {
-		addMetaTxTag(id!, tag);
-		addTag(tag);
+		dispatch(addMetaTxTag({ txId: id!, tag: tag }));
 		closeBottomSheet();
 	};
 
@@ -47,8 +46,7 @@ const ActivityTagsPrompt = (): ReactElement => {
 		if (text.length === 0) {
 			return;
 		}
-		addMetaTxTag(id!, text);
-		addTag(text);
+		dispatch(addMetaTxTag({ txId: id!, tag: text }));
 		closeBottomSheet();
 	};
 

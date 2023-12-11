@@ -13,7 +13,6 @@ import { Keyboard } from '../../../hooks/keyboard';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { lastUsedTagsSelector } from '../../../store/reselect/metadata';
 import { updateInvoice } from '../../../store/slices/receive';
-import { addTag } from '../../../store/actions/metadata';
 import { ReceiveScreenProps } from '../../../navigation/types';
 
 const Tags = ({ navigation }: ReceiveScreenProps<'Tags'>): ReactElement => {
@@ -27,7 +26,6 @@ const Tags = ({ navigation }: ReceiveScreenProps<'Tags'>): ReactElement => {
 			return;
 		}
 		dispatch(updateInvoice({ tags: [text] }));
-		addTag(text);
 		await Keyboard.dismiss();
 		navigation.goBack();
 	}, [navigation, dispatch, text]);
@@ -35,7 +33,6 @@ const Tags = ({ navigation }: ReceiveScreenProps<'Tags'>): ReactElement => {
 	const handleTagChoose = useCallback(
 		async (tag: string): Promise<void> => {
 			dispatch(updateInvoice({ tags: [tag] }));
-			addTag(tag);
 			await Keyboard.dismiss();
 			navigation.goBack();
 		},

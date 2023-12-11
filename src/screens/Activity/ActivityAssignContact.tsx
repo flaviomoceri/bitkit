@@ -6,7 +6,8 @@ import { View as ThemedView } from '../../styles/components';
 import NavigationHeader from '../../components/NavigationHeader';
 import ContactsList from '../../components/ContactsList';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { addMetaSlashTagsUrlTag } from '../../store/actions/metadata';
+import { useAppDispatch } from '../../hooks/redux';
+import { addMetaTxSlashtagsUrl } from '../../store/slices/metadata';
 import { RootStackScreenProps } from '../../navigation/types';
 
 const ActivityAssignContact = ({
@@ -14,6 +15,7 @@ const ActivityAssignContact = ({
 	route,
 }: RootStackScreenProps<'ActivityAssignContact'>): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
 
 	return (
 		<ThemedView style={styles.container}>
@@ -22,7 +24,7 @@ const ActivityAssignContact = ({
 			<View style={styles.content}>
 				<ContactsList
 					onPress={({ url }): void => {
-						addMetaSlashTagsUrlTag(route.params.txid, url);
+						dispatch(addMetaTxSlashtagsUrl({ txId: route.params.txid, url }));
 						navigation.pop();
 					}}
 				/>

@@ -20,14 +20,14 @@ import {
 	updateLightningNodeId,
 } from '../../../store/actions/lightning';
 import { resetBlocktankState } from '../../../store/slices/blocktank';
+import { resetFeesState } from '../../../store/slices/fees';
+import { resetMetadataState } from '../../../store/slices/metadata';
+import { resetSettingsState } from '../../../store/slices/settings';
 import { resetSlashtagsState } from '../../../store/slices/slashtags';
 import { resetWidgetsState } from '../../../store/slices/widgets';
-import { resetFeesState } from '../../../store/slices/fees';
 import { resetTodos } from '../../../store/actions/todos';
-import { resetSettingsState } from '../../../store/slices/settings';
 import { wipeApp } from '../../../store/utils/settings';
 import { getStore, getWalletStore } from '../../../store/helpers';
-import { resetMetaStore } from '../../../store/actions/metadata';
 import { warningsSelector } from '../../../store/reselect/checks';
 import { accountVersionSelector } from '../../../store/reselect/lightning';
 import {
@@ -346,7 +346,7 @@ const DevSettings = ({
 				{
 					title: 'Reset Metadata Store',
 					type: EItemType.button,
-					onPress: resetMetaStore,
+					onPress: () => dispatch(resetMetadataState()),
 				},
 				{
 					title: 'Reset Settings Store',

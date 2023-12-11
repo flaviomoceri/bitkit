@@ -31,16 +31,16 @@ const backup = (state: IBackup = defaultBackupShape, action): IBackup => {
 			};
 		}
 
-		case actions.UPDATE_META_TX_TAGS:
-		case actions.ADD_META_TX_TAG:
-		case actions.DELETE_META_TX_TAG:
-		case actions.UPDATE_PENDING_INVOICE:
-		case actions.DELETE_PENDING_INVOICE:
-		case actions.MOVE_META_INC_TX_TAG:
-		case actions.ADD_META_TX_SLASH_TAGS_URL:
-		case actions.DELETE_META_TX_SLASH_TAGS_URL:
-		case actions.ADD_TAG:
-		case actions.DELETE_TAG: {
+		case 'metadata/updateMetaTxTags':
+		case 'metadata/addMetaTxTag':
+		case 'metadata/deleteMetaTxTag':
+		case 'metadata/updatePendingInvoice':
+		case 'metadata/deletePendingInvoice':
+		case 'metadata/moveMetaIncTxTag':
+		case 'metadata/addMetaSlashtagsUrl':
+		case 'metadata/deleteMetaSlashtagsUrl':
+		case 'metadata/addLastUsedTag':
+		case 'metadata/deleteLastUsedTag': {
 			const remoteMetadataBackupSyncRequired =
 				state.remoteMetadataBackupSyncRequired ?? new Date().getTime();
 			return {

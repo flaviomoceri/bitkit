@@ -42,8 +42,8 @@ import {
 } from '../../../store/actions/wallet';
 import {
 	updateMetaTxTags,
-	addMetaSlashTagsUrlTag,
-} from '../../../store/actions/metadata';
+	addMetaTxSlashtagsUrl,
+} from '../../../store/slices/metadata';
 import useColors from '../../../hooks/colors';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import useDisplayValues from '../../../hooks/displayValues';
@@ -220,14 +220,21 @@ const ReviewAndSend = ({
 		}
 
 		// save tags to metadata
-		updateMetaTxTags(payInvoiceResponse.value.payment_hash, transaction.tags);
+		dispatch(
+			updateMetaTxTags({
+				txId: payInvoiceResponse.value.payment_hash,
+				tags: transaction.tags,
+			}),
+		);
 
 		if (transaction.slashTagsUrl) {
 			dispatch(updateLastPaidContacts(transaction.slashTagsUrl));
 			// save Slashtags contact to metadata
-			addMetaSlashTagsUrlTag(
-				payInvoiceResponse.value.payment_hash,
-				transaction.slashTagsUrl,
+			dispatch(
+				addMetaTxSlashtagsUrl({
+					txId: payInvoiceResponse.value.payment_hash,
+					url: transaction.slashTagsUrl,
+				}),
 			);
 		}
 
@@ -312,10 +319,15 @@ const ReviewAndSend = ({
 		});
 
 		// save tags to metadata
-		updateMetaTxTags(rawTx.id, transaction.tags);
+		dispatch(updateMetaTxTags({ txId: rawTx.id, tags: transaction.tags }));
 		// save Slashtags contact to metadata
 		if (transaction.slashTagsUrl) {
-			addMetaSlashTagsUrlTag(rawTx.id, transaction.slashTagsUrl);
+			dispatch(
+				addMetaTxSlashtagsUrl({
+					txId: rawTx.id,
+					url: transaction.slashTagsUrl,
+				}),
+			);
 		}
 
 		updateOnChainActivityList();

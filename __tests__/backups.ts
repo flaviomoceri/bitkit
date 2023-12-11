@@ -11,12 +11,11 @@ import {
 import { bytesToString } from '../src/utils/converters';
 import store from '../src/store';
 import {
-	addTag,
 	addMetaTxTag,
-	resetMetaStore,
 	updatePendingInvoice,
-	addMetaSlashTagsUrlTag,
-} from '../src/store/actions/metadata';
+	addMetaTxSlashtagsUrl,
+	resetMetadataState,
+} from '../src/store/slices/metadata';
 import {
 	performBlocktankRestore,
 	performLdkActivityRestore,
@@ -105,15 +104,16 @@ describe('Remote backups', () => {
 	});
 
 	it('Backups and restores metadata', async () => {
-		addMetaTxTag('txid1', 'tag');
-		addTag('tag');
-		updatePendingInvoice({
-			id: 'id123',
-			tags: ['futuretag'],
-			address: 'address',
-			payReq: 'lightningInvoice',
-		});
-		addMetaSlashTagsUrlTag('txid2', 'slashtag');
+		dispatch(addMetaTxTag({ txId: 'txid1', tag: 'tag' }));
+		dispatch(
+			updatePendingInvoice({
+				id: 'id123',
+				tags: ['futuretag'],
+				address: 'address',
+				payReq: 'lightningInvoice',
+			}),
+		);
+		dispatch(addMetaTxSlashtagsUrl({ txId: 'txid2', url: 'slashtag' }));
 
 		const backup = getMetaDataStore();
 
@@ -130,7 +130,7 @@ describe('Remote backups', () => {
 			throw uploadRes.error;
 		}
 
-		resetMetaStore();
+		dispatch(resetMetadataState());
 		expect(store.getState().metadata.tags).toMatchObject({});
 
 		const restoreRes = await performMetadataRestore({

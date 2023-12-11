@@ -20,15 +20,12 @@ import {
 } from '../../utils/lightning';
 import { EAvailableNetworks, TAvailableNetworks } from '../../utils/networks';
 import { getSelectedNetwork } from '../../utils/wallet';
-import { updateSettings, TSettings } from '../slices/settings';
 import { IBackup, TAccountBackup } from '../types/backup';
 import { isObjPartialMatch } from '../../utils/helpers';
 import { getDefaultSettingsShape } from '../shapes/settings';
-import { IMetadata } from '../types/metadata';
-import { getDefaultMetadataShape } from '../shapes/metadata';
-import { updateMetadata } from './metadata';
-import { EActivityType } from '../types/activity';
 import { addActivityItems, TActivity } from '../slices/activity';
+import { initialMetadataState, updateMetadata } from '../slices/metadata';
+import { updateSettings, TSettings } from '../slices/settings';
 import {
 	updateWidgets,
 	initialWidgetsState,
@@ -36,7 +33,9 @@ import {
 } from '../slices/widgets';
 import { updateBlocktank } from '../slices/blocktank';
 import { addContacts } from '../slices/slashtags';
+import { EActivityType } from '../types/activity';
 import { IBlocktank } from '../types/blocktank';
+import { TMetadataState } from '../types/metadata';
 import { checkBackup } from '../../utils/slashtags';
 import { showToast } from '../../utils/notifications';
 import { FAILED_BACKUP_CHECK_TIME } from '../../utils/backup/backups-subscriber';
@@ -471,7 +470,7 @@ export const performMetadataRestore = async ({
 		selectedNetwork = getSelectedNetwork();
 	}
 
-	const backupRes = await getBackup<IMetadata>({
+	const backupRes = await getBackup<TMetadataState>({
 		slashtag,
 		backupCategory: EBackupCategories.metadata,
 		selectedNetwork,
@@ -486,7 +485,7 @@ export const performMetadataRestore = async ({
 		return ok({ backupExists: false });
 	}
 
-	const expectedBackupShape = getDefaultMetadataShape();
+	const expectedBackupShape = initialMetadataState;
 	//If the keys in the backup object are not found in the reference object assume the backup does not exist.
 	if (
 		!isObjPartialMatch(backup, expectedBackupShape, ['tags', 'slashTagsUrls'])
@@ -494,10 +493,7 @@ export const performMetadataRestore = async ({
 		return ok({ backupExists: false });
 	}
 
-	updateMetadata({
-		...expectedBackupShape,
-		...backup,
-	});
+	dispatch(updateMetadata({ ...expectedBackupShape, ...backup }));
 	updateBackup({ remoteMetadataBackupSynced: true });
 
 	// Restore success

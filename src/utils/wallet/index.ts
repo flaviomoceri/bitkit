@@ -83,7 +83,7 @@ import {
 	GENERATE_ADDRESS_AMOUNT,
 	CHUNK_LIMIT,
 } from './constants';
-import { moveMetaIncTxTags } from '../../store/actions/metadata';
+import { moveMetaIncTxTags } from '../../store/utils/metadata';
 import { refreshOrdersList } from '../../store/utils/blocktank';
 import { IDefaultLightningShape } from '../../store/types/lightning';
 import { showNewTxPrompt } from '../../store/utils/ui';

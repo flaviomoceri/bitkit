@@ -3,7 +3,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import store, { RootState } from '../store';
 import { IWalletStore } from './types/wallet';
 import { TSettings } from './slices/settings';
-import { IMetadata } from './types/metadata';
+import { TMetadataState } from './types/metadata';
 import { TActivity } from './slices/activity';
 import { ILightning } from './types/lightning';
 import { IBlocktank } from './types/blocktank';
@@ -30,7 +30,7 @@ export const getSettingsStore = (): TSettings => {
 	return cloneDeep(store.getState().settings);
 };
 
-export const getMetaDataStore = (): IMetadata => {
+export const getMetaDataStore = (): TMetadataState => {
 	return cloneDeep(store.getState().metadata);
 };
 

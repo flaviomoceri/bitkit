@@ -36,11 +36,11 @@ import {
 	UnifiedIcon,
 } from '../../../styles/icons';
 import { Caption13Up, Text01S, Text02S } from '../../../styles/text';
-import { updatePendingInvoice } from '../../../store/actions/metadata';
 import { createLightningInvoice } from '../../../store/actions/lightning';
+import { updatePendingInvoice } from '../../../store/slices/metadata';
 import { generateNewReceiveAddress } from '../../../store/actions/wallet';
 import { viewControllerIsOpenSelector } from '../../../store/reselect/ui';
-import { useAppSelector } from '../../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useLightningBalance } from '../../../hooks/lightning';
 import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';
 import { waitForLdk } from '../../../utils/lightning';
@@ -80,6 +80,7 @@ const ReceiveQR = ({
 	const carouselRef = useRef<ICarouselInstance>(null);
 	const qrRef = useRef<any>('');
 
+	const dispatch = useAppDispatch();
 	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const addressType = useAppSelector(addressTypeSelector);
@@ -204,14 +205,23 @@ const ReceiveQR = ({
 
 	useEffect(() => {
 		if (id && tags.length !== 0 && receiveAddress && receiveNavigationIsOpen) {
-			updatePendingInvoice({
-				id,
-				tags,
-				address: receiveAddress,
-				payReq: lightningInvoice,
-			});
+			dispatch(
+				updatePendingInvoice({
+					id,
+					tags,
+					address: receiveAddress,
+					payReq: lightningInvoice,
+				}),
+			);
 		}
-	}, [id, receiveAddress, lightningInvoice, tags, receiveNavigationIsOpen]);
+	}, [
+		id,
+		receiveAddress,
+		lightningInvoice,
+		tags,
+		receiveNavigationIsOpen,
+		dispatch,
+	]);
 
 	const uri = useMemo((): string => {
 		if (!receiveNavigationIsOpen) {
