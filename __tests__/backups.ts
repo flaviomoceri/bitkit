@@ -53,6 +53,7 @@ import {
 } from '../src/store/slices/blocktank';
 import { defaultOrderResponse } from '../src/store/shapes/blocktank';
 import { updateBlocktankOrder } from '../src/store/slices/blocktank';
+import { EAvailableNetwork } from '../src/utils/networks';
 
 jest.setTimeout(30000);
 
@@ -80,7 +81,7 @@ describe('Remote backups', () => {
 			slashtag,
 			stringToBytes(message),
 			category,
-			'bitcoinRegtest',
+			EAvailableNetwork.bitcoinRegtest,
 		);
 
 		if (uploadRes.isErr()) {
@@ -93,7 +94,7 @@ describe('Remote backups', () => {
 			slashtag,
 			timestamp,
 			category,
-			'bitcoinRegtest',
+			EAvailableNetwork.bitcoinRegtest,
 		);
 
 		if (fetchRes.isErr()) {

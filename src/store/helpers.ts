@@ -5,7 +5,7 @@ import { IWalletStore } from './types/wallet';
 import { TSettings } from './slices/settings';
 import { TMetadataState } from './types/metadata';
 import { TActivity } from './slices/activity';
-import { ILightning } from './types/lightning';
+import { TLightningState } from './types/lightning';
 import { IBlocktank } from './types/blocktank';
 import { TFeesState } from './slices/fees';
 import { TSlashtagsState } from './types/slashtags';
@@ -38,7 +38,7 @@ export const getActivityStore = (): TActivity => {
 	return cloneDeep(store.getState().activity);
 };
 
-export const getLightningStore = (): ILightning => {
+export const getLightningStore = (): TLightningState => {
 	return cloneDeep(store.getState().lightning);
 };
 

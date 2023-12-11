@@ -2,7 +2,7 @@ import * as electrum from 'rn-electrum-client/helpers';
 import { Block } from 'bitcoinjs-lib';
 import { err, ok, Result } from '@synonymdev/result';
 
-import { TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 import {
 	IAddresses,
 	IAddress,
@@ -58,7 +58,7 @@ export const isConnectedElectrum = async (): Promise<boolean> => {
 /**
  * Returns UTXO's for a given wallet and network along with the available balance.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {boolean} [scanAllAddresses]
  * @returns {Promise<Result<IGetUtxosResponse>>}
  */
@@ -68,7 +68,7 @@ export const getUtxos = async ({
 	scanAllAddresses = false,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	scanAllAddresses?: boolean;
 }): Promise<Result<IGetUtxosResponse>> => {
 	try {
@@ -147,7 +147,7 @@ export const getUtxos = async ({
 
 /**
  * Formats a provided array of addresses a returns their UTXO's & balances.
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {IAddress[]} allAddresses
  * @returns {Promise<Result<IGetUtxosResponse>>}
  */
@@ -155,7 +155,7 @@ export const getAddressUtxos = async ({
 	selectedNetwork,
 	allAddresses,
 }: {
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	allAddresses: IAddress[];
 }): Promise<Result<IGetUtxosResponse>> => {
 	if (!selectedNetwork) {
@@ -170,14 +170,14 @@ export const getAddressUtxos = async ({
 
 /**
  * Queries Electrum to return the available UTXO's and balance of the provided addresses.
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TUnspentAddressScriptHashData} addresses
  */
 export const listUnspentAddressScriptHashes = async ({
 	selectedNetwork,
 	addresses,
 }: {
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	addresses: TUnspentAddressScriptHashData;
 }): Promise<Result<IGetUtxosResponse>> => {
 	if (!selectedNetwork) {
@@ -223,7 +223,7 @@ export interface ISubscribeToAddress {
 /**
  * Subscribes to a number of address script hashes for receiving.
  * @param {string[]} scriptHashes
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  * @return {Promise<Result<string>>}
  */
@@ -235,7 +235,7 @@ export const subscribeToAddresses = async ({
 }: {
 	scriptHashes?: string[];
 	onReceive?: () => void;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 } = {}): Promise<Result<string>> => {
 	if (!selectedNetwork) {
@@ -321,7 +321,7 @@ export const subscribeToHeader = async ({
 	selectedNetwork,
 	onReceive,
 }: {
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	onReceive?: () => void;
 }): Promise<Result<IHeader>> => {
 	if (!selectedNetwork) {
@@ -393,7 +393,7 @@ export const transactionExists = (txData: ITransaction<IUtxo>): boolean => {
 /**
  * Returns available transactions from electrum based on the provided txHashes.
  * @param {ITxHash[]} txHashes
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @return {Promise<Result<IGetTransactions>>}
  */
 export const getTransactions = async ({
@@ -401,7 +401,7 @@ export const getTransactions = async ({
 	selectedNetwork,
 }: {
 	txHashes: ITxHash[];
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<IGetTransactions>> => {
 	try {
 		if (!selectedNetwork) {
@@ -456,11 +456,11 @@ export interface IPeerData {
 
 /**
  * Returns the currently connected Electrum peer.
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @return {Promise<Result<IPeerData>>}
  */
 export const getConnectedPeer = async (
-	selectedNetwork: TAvailableNetworks,
+	selectedNetwork: EAvailableNetwork,
 ): Promise<Result<IPeerData>> => {
 	try {
 		if (!selectedNetwork) {
@@ -490,7 +490,7 @@ interface IGetTransactionsFromInputs {
 /**
  * Returns transactions associated with the provided transaction hashes.
  * @param {ITxHash[]} txHashes
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @return {Promise<Result<IGetTransactionsFromInputs>>}
  */
 export const getTransactionsFromInputs = async ({
@@ -498,7 +498,7 @@ export const getTransactionsFromInputs = async ({
 	selectedNetwork,
 }: {
 	txHashes: ITxHash[];
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<IGetTransactionsFromInputs>> => {
 	try {
 		const data = {
@@ -545,7 +545,7 @@ export interface IGetAddressHistoryResponse extends TTxResult, IAddress {}
 /**
  * Returns the available history for the provided address script hashes.
  * @param {IAddress[]} [scriptHashes]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  * @param {boolean} [scanAllAddresses]
  * @returns {Promise<Result<IGetAddressHistoryResponse[]>>}
@@ -557,7 +557,7 @@ export const getAddressHistory = async ({
 	scanAllAddresses = false,
 }: {
 	scriptHashes?: IAddress[];
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 	scanAllAddresses?: boolean;
 }): Promise<Result<IGetAddressHistoryResponse[]>> => {
@@ -664,12 +664,12 @@ export const getAddressHistory = async ({
 /**
  * Used to retrieve scriptPubkey history for LDK.
  * @param {string} scriptPubkey
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<TGetAddressHistory[]>}
  */
 export const getScriptPubKeyHistory = async (
 	scriptPubkey: string,
-	selectedNetwork?: TAvailableNetworks,
+	selectedNetwork?: EAvailableNetwork,
 ): Promise<TGetAddressHistory[]> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -707,9 +707,9 @@ export const getScriptPubKeyHistory = async (
 
 /**
  * Connects to the provided electrum peer. Otherwise, it will attempt to connect to a set of default peers.
- * @param {TAvailableNetworks} [selectedNetwork]
  * @param {ICustomElectrumPeer[]} [customPeers]
- * @param {{ net: undefined, tls: undefined }} [options]
+ * @param {showNotification} [boolean
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @return {Promise<Result<string>>}
  */
 export const connectToElectrum = async ({
@@ -719,7 +719,7 @@ export const connectToElectrum = async ({
 }: {
 	peer?: ICustomElectrumPeer;
 	showNotification?: boolean;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 } = {}): Promise<Result<string>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -755,14 +755,14 @@ export const connectToElectrum = async ({
 /**
  * Returns combined balance of provided addresses.
  * @param {string[]} addresses
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const getAddressBalance = async ({
 	addresses = [],
 	selectedNetwork,
 }: {
 	addresses: string[];
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<number>> => {
 	try {
 		if (!selectedNetwork) {
@@ -800,7 +800,7 @@ export const getAddressBalance = async ({
 /**
  * Returns the block hex of the provided block height.
  * @param {number} [height]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<string>>}
  */
 export const getBlockHex = async ({
@@ -808,7 +808,7 @@ export const getBlockHex = async ({
 	selectedNetwork,
 }: {
 	height?: number;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -827,7 +827,7 @@ export const getBlockHex = async ({
  * Returns the block hash given a block hex.
  * Leaving blockHex empty will return the last known block hash from storage.
  * @param {string} [blockHex]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {string}
  */
 export const getBlockHashFromHex = ({
@@ -835,7 +835,7 @@ export const getBlockHashFromHex = ({
 	selectedNetwork,
 }: {
 	blockHex?: string;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): string => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -852,13 +852,13 @@ export const getBlockHashFromHex = ({
 
 /**
  * Returns last known block height, and it's corresponding hex from local storage.
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {IHeader}
  */
 export const getBlockHeader = ({
 	selectedNetwork,
 }: {
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): IHeader => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -869,7 +869,7 @@ export const getBlockHeader = ({
 /**
  * Returns the block hash for the provided height and network.
  * @param {number} [height]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<string>>}
  */
 export const getBlockHashFromHeight = async ({
@@ -877,7 +877,7 @@ export const getBlockHashFromHeight = async ({
 	selectedNetwork,
 }: {
 	height?: number;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -897,7 +897,7 @@ export const getTransactionMerkle = async ({
 }: {
 	tx_hash: string;
 	height: number;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<any> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();

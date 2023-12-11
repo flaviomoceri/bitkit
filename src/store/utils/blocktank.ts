@@ -20,7 +20,7 @@ import {
 	getSelectedWallet,
 	refreshWallet,
 } from '../../utils/wallet';
-import { TAvailableNetworks } from '../../utils/networks';
+import { EAvailableNetwork } from '../../utils/networks';
 import {
 	broadcastTransaction,
 	createTransaction,
@@ -210,7 +210,7 @@ export const refreshBlocktankInfo = async (): Promise<Result<string>> => {
  * @param {number} localBalance
  * @param {number} [channelExpiry]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<string>>}
  */
 export const startChannelPurchase = async ({
@@ -230,7 +230,7 @@ export const startChannelPurchase = async ({
 	couponCode?: string;
 	turboChannel?: boolean;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<
 	Result<{
 		order: IBtOrder;
@@ -330,7 +330,7 @@ export const startChannelPurchase = async ({
 /**
  * Creates, broadcasts and confirms a given Blocktank channel purchase by orderId.
  * @param {string} orderId
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  * @returns {Promise<Result<string>>}
  */
@@ -340,7 +340,7 @@ export const confirmChannelPurchase = async ({
 	selectedWallet,
 }: {
 	orderId: string;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 }): Promise<Result<{ txid: string; useUnconfirmedInputs: boolean }>> => {
 	if (!selectedNetwork) {

@@ -14,7 +14,7 @@ import {
 	EAddressType,
 } from '../types/wallet';
 import { defaultSendTransaction } from '../shapes/wallet';
-import { TAvailableNetworks } from '../../utils/networks';
+import { EAvailableNetwork } from '../../utils/networks';
 import { IExchangeRates } from '../../utils/exchange-rate';
 
 export const walletState = (state: RootState): IWalletStore => state.wallet;
@@ -24,7 +24,7 @@ export const exchangeRatesState = (state: RootState): IExchangeRates =>
 	state.wallet.exchangeRates;
 export const selectedWalletState = (state: RootState): TWalletName =>
 	state.wallet.selectedWallet;
-export const selectedNetworkState = (state: RootState): TAvailableNetworks =>
+export const selectedNetworkState = (state: RootState): EAvailableNetwork =>
 	state.wallet.selectedNetwork;
 
 /**
@@ -36,11 +36,11 @@ export const selectedWalletSelector = createSelector(
 );
 
 /**
- * Returns the selected network id (TAvailableNetworks)
+ * Returns the selected network id (EAvailableNetwork)
  */
 export const selectedNetworkSelector = createSelector(
 	[walletState],
-	(wallet): TAvailableNetworks => wallet.selectedNetwork,
+	(wallet): EAvailableNetwork => wallet.selectedNetwork,
 );
 
 /**

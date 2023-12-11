@@ -5,7 +5,7 @@ import {
 	IKeyDerivationPath,
 	TWalletName,
 } from '../../store/types/wallet';
-import { TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 import { err, ok, Result } from '@synonymdev/result';
 import { getMinMaxObjects, TGetMinMaxObject } from '../helpers';
 import isEqual from 'lodash/isEqual';
@@ -46,7 +46,7 @@ export const runChecks = async ({
 	selectedNetwork,
 }: {
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 }): Promise<Result<{ ranStorageCheck: boolean }>> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -71,7 +71,7 @@ export const runChecks = async ({
 /**
  * Performs the address storage check and resolves any discrepancies if needed.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {boolean} [allAddressTypes]
  * @returns {Promise<Result<string>>}
  */
@@ -81,7 +81,7 @@ export const runStorageCheck = async ({
 	allAddressTypes = false,
 }: {
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 	allAddressTypes?: boolean;
 }): Promise<Result<string>> => {
 	if (!selectedWallet) {
@@ -172,7 +172,7 @@ export const runStorageCheck = async ({
  * Any mismatch could be the result of a memory/storage bug.
  * See https://github.com/synonymdev/bitkit/issues/826 for more info.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {IAddressTypeData[]} [addressTypesToCheck]
  * @returns {Promise<Result<TAddressStorageCheckRes>>}
  */
@@ -181,7 +181,7 @@ export const addressStorageCheck = async ({
 	selectedNetwork,
 	addressTypesToCheck,
 }: {
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 	addressTypesToCheck?: IAddressTypeData[];
 }): Promise<Result<TAddressStorageCheckRes>> => {
@@ -281,7 +281,7 @@ export const addressStorageCheck = async ({
 /**
  * Generates specified addresses and formats them as needed for addressStorageCheck.
  * @param {TWalletName} selectedWallet
- * @param {TAvailableNetworks} selectedNetwork
+ * @param {EAvailableNetwork} selectedNetwork
  * @param {EAddressType} addressType
  * @param {IKeyDerivationPath} keyDerivationPath
  * @param {TGetMinMaxObject<IAddress>} minMaxAddresses
@@ -297,7 +297,7 @@ const _createMinMaxData = async ({
 	isChangeAddress,
 }: {
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 	addressType: EAddressType;
 	keyDerivationPath: IKeyDerivationPath;
 	minMaxAddresses: TGetMinMaxObject<IAddress>;
@@ -372,7 +372,7 @@ const _createMinMaxData = async ({
 /**
  * Returns impacted addresses or stored addresses that do not match their generated counterparts.
  * @param {TWalletName} selectedWallet]
- * @param {TAvailableNetworks} selectedNetwork]
+ * @param {EAvailableNetwork} selectedNetwork]
  * @param {TMinMaxData[]} data
  * @returns {TGetImpactedAddressesRes}
  */
@@ -382,7 +382,7 @@ export const getImpactedAddresses = async ({
 	storageCheckData,
 }: {
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 	storageCheckData: TMinMaxData[]; // Retrieved by calling addressStorageCheck
 }): Promise<Result<TGetImpactedAddressesRes>> => {
 	if (!selectedNetwork) {

@@ -3,7 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from '..';
 import themes, { IThemeColors } from '../../styles/themes';
 import { TSettings } from '../slices/settings';
-import { TAvailableNetworks } from '@synonymdev/react-native-ldk';
+import { EAvailableNetwork } from '../../utils/networks';
 import { EUnit } from '../types/wallet';
 import {
 	ICustomElectrumPeer,
@@ -68,7 +68,7 @@ export const coinSelectPreferenceSelector = createSelector(
 /**
  * Returns custom Electrum peers for a given network.
  * @param {RootState} state
- * @param {TAvailableNetworks} selectedNetwork
+ * @param {EAvailableNetwork} selectedNetwork
  * @returns {ICustomElectrumPeer[]}
  */
 export const customElectrumPeersSelector = createSelector(
@@ -76,8 +76,8 @@ export const customElectrumPeersSelector = createSelector(
 		customElectrumPeersState,
 		(
 			_customElectrumPeers,
-			selectedNetwork: TAvailableNetworks,
-		): TAvailableNetworks => selectedNetwork,
+			selectedNetwork: EAvailableNetwork,
+		): EAvailableNetwork => selectedNetwork,
 	],
 	(customElectrumPeers, selectedNetwork): ICustomElectrumPeer[] =>
 		customElectrumPeers[selectedNetwork],

@@ -2,7 +2,7 @@ import nodejs from 'nodejs-mobile-react-native';
 import { err, ok, Result } from '@synonymdev/result';
 import { v4 as uuidv4 } from 'uuid';
 
-import { TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 import { ENodeJsMethod, TNodeJsMethodsData } from './types';
 import { DefaultNodeJsMethodsShape } from './shapes';
 import { TWalletName } from '../../store/types/wallet';
@@ -93,7 +93,7 @@ export const invokeNodeJsMethod = async <T = string>(
 /**
  * Sets up nodejs-mobile to sign for the given wallet and network.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {string} [mnemonic]
  * @returns {Promise<{Result<{string}>}>}
  */
@@ -103,7 +103,7 @@ export const setupNodejsMobile = async ({
 	mnemonic,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	mnemonic?: string;
 } = {}): Promise<Result<string>> => {
 	if (!selectedWallet) {

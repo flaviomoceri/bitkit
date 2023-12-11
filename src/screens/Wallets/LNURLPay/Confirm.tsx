@@ -30,8 +30,6 @@ const Confirm = ({ route }: LNURLPayProps<'Confirm'>): ReactElement => {
 			const invoice = await handleLnurlPay({
 				params: pParams,
 				amountSats: amount,
-				selectedWallet,
-				selectedNetwork,
 			});
 
 			if (invoice.isErr()) {

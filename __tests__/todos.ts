@@ -23,6 +23,7 @@ import {
 	transferToSpendingTodo,
 } from '../src/store/shapes/todos';
 import { createNewWallet } from '../src/utils/startup';
+import { EAvailableNetwork } from '../src/utils/networks';
 
 describe('Todos selector', () => {
 	let s: RootState;
@@ -33,7 +34,7 @@ describe('Todos selector', () => {
 		if (res.isErr()) {
 			throw res.error;
 		}
-		updateWallet({ selectedNetwork: 'bitcoinRegtest' });
+		updateWallet({ selectedNetwork: EAvailableNetwork.bitcoinRegtest });
 		s = store.getState();
 	});
 

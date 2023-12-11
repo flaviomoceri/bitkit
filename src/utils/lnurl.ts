@@ -18,10 +18,10 @@ import {
 	getNodeIdFromStorage,
 	getPeersFromStorage,
 } from './lightning';
-import { createLightningInvoice, savePeer } from '../store/actions/lightning';
+import { createLightningInvoice, savePeer } from '../store/utils/lightning';
 import { EQRDataType, TProcessedData } from './scanner';
 import { TWalletName } from '../store/types/wallet';
-import { TAvailableNetworks } from './networks';
+import { EAvailableNetwork } from './networks';
 import {
 	getMnemonicPhrase,
 	getSelectedNetwork,
@@ -48,28 +48,17 @@ export const findlnurl = (text: string): string | null => {
  * Handles LNURL Pay Requests.
  * @param {LNURLPayParams} params
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<string>>}
  */
 export const handleLnurlPay = async ({
 	params,
 	amountSats,
-	selectedWallet,
-	selectedNetwork,
 }: {
 	params: LNURLPayParams;
 	amountSats: number;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
 }): Promise<Result<string>> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
-	const nodeId = getNodeIdFromStorage({ selectedWallet, selectedNetwork });
+	const nodeId = getNodeIdFromStorage();
 
 	if (!nodeId) {
 		const message = i18n.t('other:lnurl_ln_error_msg');
@@ -117,7 +106,7 @@ export const handleLnurlPay = async ({
  * Handles LNURL Channel Open Requests.
  * @param {LNURLChannelParams} params
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const handleLnurlChannel = async ({
 	params,
@@ -126,7 +115,7 @@ export const handleLnurlChannel = async ({
 }: {
 	params: LNURLChannelParams;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TProcessedData>> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -146,7 +135,7 @@ export const handleLnurlChannel = async ({
 		return err(message);
 	}
 
-	const nodeId = getNodeIdFromStorage({ selectedWallet, selectedNetwork });
+	const nodeId = getNodeIdFromStorage();
 	if (!nodeId) {
 		const message = i18n.t('other:lnurl_ln_error_msg');
 		showToast({
@@ -235,7 +224,7 @@ export const handleLnurlChannel = async ({
  * Handles LNURL Auth Requests.
  * @param {LNURLAuthParams} params
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<TProcessedData>>}
  */
 export const handleLnurlAuth = async ({
@@ -245,7 +234,7 @@ export const handleLnurlAuth = async ({
 }: {
 	params: LNURLAuthParams;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TProcessedData>> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -290,7 +279,7 @@ export const handleLnurlAuth = async ({
  * @param {number} amount
  * @param {LNURLWithdrawParams} params
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<TProcessedData>>}
  */
 export const handleLnurlWithdraw = async ({
@@ -302,7 +291,7 @@ export const handleLnurlWithdraw = async ({
 	amount: number;
 	params: LNURLWithdrawParams;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TProcessedData>> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();

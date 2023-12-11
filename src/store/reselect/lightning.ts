@@ -2,17 +2,19 @@ import { TChannel } from '@synonymdev/react-native-ldk';
 import { createSelector } from '@reduxjs/toolkit';
 
 import {
-	IDefaultLightningShape,
-	ILightning,
+	TLightningState,
+	TNode,
 	TNodes,
 	TOpenChannelIds,
 } from '../types/lightning';
 import { RootState } from '..';
 import { TWalletName } from '../types/wallet';
-import { TAvailableNetworks } from '../../utils/networks';
+import { EAvailableNetwork } from '../../utils/networks';
 import { selectedNetworkSelector, selectedWalletSelector } from './wallet';
 
-export const lightningState = (state: RootState): ILightning => state.lightning;
+export const lightningState = (state: RootState): TLightningState => {
+	return state.lightning;
+};
 export const nodesState = (state: RootState): TNodes => state.lightning.nodes;
 
 export const accountVersionSelector = createSelector(
@@ -25,7 +27,7 @@ export const nodeSelector = createSelector(
 		lightningState,
 		(_lightning, selectedWallet: TWalletName): TWalletName => selectedWallet,
 	],
-	(lightning, selectedWallet): IDefaultLightningShape => {
+	(lightning, selectedWallet): TNode => {
 		return lightning.nodes[selectedWallet];
 	},
 );
@@ -48,8 +50,8 @@ export const channelIsOpenSelector = createSelector(
 		(
 			_lightning,
 			_selectedWallet,
-			selectedNetwork: TAvailableNetworks,
-		): TAvailableNetworks => selectedNetwork,
+			selectedNetwork: EAvailableNetwork,
+		): EAvailableNetwork => selectedNetwork,
 		(
 			_lightning,
 			_selectedWallet,
@@ -71,8 +73,8 @@ export const channelsSelector = createSelector(
 		(
 			_lightning,
 			_selectedWallet,
-			selectedNetwork: TAvailableNetworks,
-		): TAvailableNetworks => selectedNetwork,
+			selectedNetwork: EAvailableNetwork,
+		): EAvailableNetwork => selectedNetwork,
 	],
 	(lightning, selectedWallet, selectedNetwork): { [key: string]: TChannel } =>
 		lightning.nodes[selectedWallet]?.channels[selectedNetwork],
@@ -88,8 +90,8 @@ export const channelSelector = createSelector(
 		(
 			_lightning,
 			_selectedWallet,
-			selectedNetwork: TAvailableNetworks,
-		): TAvailableNetworks => selectedNetwork,
+			selectedNetwork: EAvailableNetwork,
+		): EAvailableNetwork => selectedNetwork,
 		(
 			_lightning,
 			_selectedWallet,

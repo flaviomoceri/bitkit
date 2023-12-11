@@ -21,7 +21,7 @@ import { useLightningMaxInboundCapacity } from '../../hooks/lightning';
 import { getNodeIdFromStorage, waitForLdk } from '../../utils/lightning';
 import { EUnit } from '../../store/types/wallet';
 import { updateTreasureChest } from '../../store/slices/settings';
-import { createLightningInvoice } from '../../store/actions/lightning';
+import { createLightningInvoice } from '../../store/utils/lightning';
 import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
 import BitkitLogo from '../../assets/bitkit-logo.svg';
 import type { TreasureHuntScreenProps } from '../../navigation/types';

@@ -18,7 +18,7 @@ import {
 	setAccount,
 	setLdkStoragePath,
 } from '../../utils/lightning';
-import { EAvailableNetworks, TAvailableNetworks } from '../../utils/networks';
+import { EAvailableNetwork } from '../../utils/networks';
 import { getSelectedNetwork } from '../../utils/wallet';
 import { IBackup, TAccountBackup } from '../types/backup';
 import { isObjPartialMatch } from '../../utils/helpers';
@@ -90,18 +90,18 @@ export const performRemoteLdkBackup = async (
 	}
 
 	//Translate LDK type to our wallet type
-	let network: TAvailableNetworks = 'bitcoin';
+	let network = EAvailableNetwork.bitcoin;
 	switch (ldkBackup.network) {
 		case ENetworks.regtest: {
-			network = 'bitcoinRegtest';
+			network = EAvailableNetwork.bitcoinRegtest;
 			break;
 		}
 		case ENetworks.testnet: {
-			network = 'bitcoinTestnet';
+			network = EAvailableNetwork.bitcoinTestnet;
 			break;
 		}
 		case ENetworks.mainnet: {
-			network = 'bitcoin';
+			network = EAvailableNetwork.bitcoin;
 			break;
 		}
 	}
@@ -144,7 +144,7 @@ export const performRemoteBackup = async <T>({
 	syncCompletedKey: keyof IBackup;
 	backupCategory: EBackupCategories;
 	backup?: T;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	//Automated backup events pass the latest state through
 	if (!backup) {
@@ -184,7 +184,7 @@ export const performRemoteBackup = async <T>({
 export const performLdkRestore = async ({
 	selectedNetwork,
 }: {
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<{ backupExists: boolean }>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -262,7 +262,7 @@ export const performLdkRestoreDeprecated = async ({
 	selectedNetwork,
 }: {
 	slashtag: Slashtag;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<{ backupExists: boolean }>> => {
 	console.warn(`Restoring ${selectedNetwork} from deprecated backup server.`);
 	if (!selectedNetwork) {
@@ -317,7 +317,7 @@ export const performLdkRestoreDeprecated = async ({
  * Retrieves the backup data for the provided backupCategory.
  * @param {Slashtag} slashtag
  * @param {EBackupCategories} backupCategory
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<T | undefined>>}
  */
 export const getBackup = async <T>({
@@ -327,7 +327,7 @@ export const getBackup = async <T>({
 }: {
 	slashtag: Slashtag;
 	backupCategory: EBackupCategories;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<T | undefined>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -374,7 +374,7 @@ export const performSettingsRestore = async ({
 	selectedNetwork,
 }: {
 	slashtag: Slashtag;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<{ backupExists: boolean }>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -421,7 +421,7 @@ export const performWidgetsRestore = async ({
 	selectedNetwork,
 }: {
 	slashtag: Slashtag;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<{ backupExists: boolean }>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -464,7 +464,7 @@ export const performMetadataRestore = async ({
 	selectedNetwork,
 }: {
 	slashtag: Slashtag;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<{ backupExists: boolean }>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -505,7 +505,7 @@ export const performLdkActivityRestore = async ({
 	selectedNetwork,
 }: {
 	slashtag: Slashtag;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<{ backupExists: boolean }>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -547,7 +547,7 @@ export const performBlocktankRestore = async ({
 	selectedNetwork,
 }: {
 	slashtag: Slashtag;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<{ backupExists: boolean }>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -584,7 +584,7 @@ export const performSlashtagsRestore = async ({
 	selectedNetwork,
 }: {
 	slashtag: Slashtag;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<{ backupExists: boolean }>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -621,7 +621,7 @@ export const performFullRestoreFromLatestBackup = async (
 ): Promise<Result<{ backupExists: boolean }>> => {
 	try {
 		// ldk restore should be performed for all networks
-		for (const network of Object.values(EAvailableNetworks)) {
+		for (const network of Object.values(EAvailableNetwork)) {
 			const ldkBackupRes = await performLdkRestore({
 				selectedNetwork: network,
 			});

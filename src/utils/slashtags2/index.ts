@@ -9,8 +9,8 @@ import { BasicProfile, SlashPayConfig } from '../../store/types/slashtags';
 import { cacheProfile2 } from '../../store/slices/slashtags';
 import { TWalletName } from '../../store/types/wallet';
 import { dispatch, getSettingsStore } from '../../store/helpers';
-import { createLightningInvoice } from '../../store/actions/lightning';
-import { TAvailableNetworks } from '../networks';
+import { createLightningInvoice } from '../../store/utils/lightning';
+import { EAvailableNetwork } from '../networks';
 import { webRelayClient } from '../../components/SlashtagsProvider2';
 import {
 	decodeLightningInvoice,
@@ -66,7 +66,7 @@ export const updateSlashPayConfig2 = debounce(
 	}: {
 		forceUpdate?: boolean;
 		selectedWallet?: TWalletName;
-		selectedNetwork?: TAvailableNetworks;
+		selectedNetwork?: EAvailableNetwork;
 	}): Promise<void> => {
 		if (!webRelayClient) {
 			console.debug('webRelayClient not ready yet');

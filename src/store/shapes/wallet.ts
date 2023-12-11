@@ -2,7 +2,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { __WALLET_DEFAULT_SELECTED_NETWORK__ } from '../../constants/env';
 import { IHeader } from '../../utils/types/electrum';
-import { EAvailableNetworks } from '../../utils/networks';
+import { EAvailableNetwork } from '../../utils/networks';
 import { objectKeys } from '../../utils/objectKeys';
 import { EFeeId } from '../types/fees';
 import {
@@ -46,7 +46,7 @@ export const addressTypes: Readonly<IAddressTypes> = {
 };
 
 export const getNetworkContent = <T>(data: T): Readonly<IWalletItem<T>> => {
-	const networks = objectKeys(EAvailableNetworks);
+	const networks = objectKeys(EAvailableNetwork);
 	const content = {} as IWalletItem<T>;
 
 	networks.forEach((network) => {
@@ -84,13 +84,13 @@ export const getAddressIndexShape = (): IWalletItem<
 	IAddressTypeContent<IAddress>
 > => {
 	return cloneDeep({
-		[EAvailableNetworks.bitcoin]: getAddressTypeContent<IAddress>(
+		[EAvailableNetwork.bitcoin]: getAddressTypeContent<IAddress>(
 			defaultAddressContent,
 		),
-		[EAvailableNetworks.bitcoinTestnet]: getAddressTypeContent<IAddress>(
+		[EAvailableNetwork.bitcoinTestnet]: getAddressTypeContent<IAddress>(
 			defaultAddressContent,
 		),
-		[EAvailableNetworks.bitcoinRegtest]: getAddressTypeContent<IAddress>(
+		[EAvailableNetwork.bitcoinRegtest]: getAddressTypeContent<IAddress>(
 			defaultAddressContent,
 		),
 		timestamp: null,
@@ -101,9 +101,9 @@ export const getAddressesShape = (): IWalletItem<
 	IAddressTypeContent<IAddresses>
 > => {
 	return cloneDeep({
-		[EAvailableNetworks.bitcoin]: getAddressTypeContent<IAddresses>({}),
-		[EAvailableNetworks.bitcoinTestnet]: getAddressTypeContent<IAddresses>({}),
-		[EAvailableNetworks.bitcoinRegtest]: getAddressTypeContent<IAddresses>({}),
+		[EAvailableNetwork.bitcoin]: getAddressTypeContent<IAddresses>({}),
+		[EAvailableNetwork.bitcoinTestnet]: getAddressTypeContent<IAddresses>({}),
+		[EAvailableNetwork.bitcoinRegtest]: getAddressTypeContent<IAddresses>({}),
 		timestamp: null,
 	});
 };

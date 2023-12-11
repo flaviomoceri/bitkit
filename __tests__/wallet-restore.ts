@@ -13,6 +13,7 @@ import { addElectrumPeer } from '../src/store/slices/settings';
 import initWaitForElectrumToSync from './utils/wait-for-electrum';
 import { dispatch } from '../src/store/helpers';
 import { getSelectedNetwork } from '../src/utils/wallet';
+import { EAvailableNetwork } from '../src/utils/networks';
 
 jest.setTimeout(60_000);
 
@@ -69,7 +70,7 @@ describe('Wallet - wallet restore and receive', () => {
 		expect(store.getState().wallet.selectedWallet).toEqual('wallet0');
 
 		// switch to regtest
-		updateWallet({ selectedNetwork: 'bitcoinRegtest' });
+		updateWallet({ selectedNetwork: EAvailableNetwork.bitcoinRegtest });
 		expect(store.getState().wallet.selectedNetwork).toEqual('bitcoinRegtest');
 
 		const selectedNetwork = getSelectedNetwork();

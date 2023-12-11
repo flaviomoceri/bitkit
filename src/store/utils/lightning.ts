@@ -1,11 +1,20 @@
 import { LNURLChannelParams } from 'js-lnurl';
 import { err, ok, Result } from '@synonymdev/result';
-import { TChannel, TInvoice } from '@synonymdev/react-native-ldk';
+import { ldk, TChannel, TInvoice } from '@synonymdev/react-native-ldk';
 import { getLNURLParams, lnurlChannel } from '@synonymdev/react-native-lnurl';
 
-import actions from './actions';
 import { dispatch, getLightningStore, getMetaDataStore } from '../helpers';
-import { TAvailableNetworks } from '../../utils/networks';
+import { updateActivityItems } from '../slices/activity';
+import {
+	removeLightningPeer,
+	saveLightningPeer,
+	updateClaimableBalance,
+	updateLightningChannels,
+	updateLightningNodeId,
+	updateLightningNodeVersion,
+} from '../slices/lightning';
+import { moveMetaIncTxTag } from '../slices/metadata';
+import { EAvailableNetwork } from '../../utils/networks';
 import { getActivityItemById } from '../../utils/activity';
 import { getSelectedNetwork, getSelectedWallet } from '../../utils/wallet';
 import {
@@ -15,7 +24,6 @@ import {
 	getClaimedLightningPayments,
 	getCustomLightningPeers,
 	getLightningChannels,
-	getNodeIdFromStorage,
 	getNodeVersion,
 	getPendingInvoice,
 	getSentLightningPayments,
@@ -23,58 +31,40 @@ import {
 } from '../../utils/lightning';
 import {
 	TCreateLightningInvoice,
-	TLdkAccountVersions,
 	TLightningNodeVersion,
 } from '../types/lightning';
 import { EPaymentType, TWalletName } from '../types/wallet';
 import { EActivityType, TLightningActivityItem } from '../types/activity';
-import { updateActivityItems } from '../slices/activity';
-import { moveMetaIncTxTag } from '../slices/metadata';
 
 /**
- * Attempts to update the node id for the given wallet and network.
- * @param {string} nodeId
- * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * Attempts to update the node id for the selected wallet and network.
  */
-export const updateLightningNodeId = ({
-	nodeId,
-	selectedWallet,
-	selectedNetwork,
-}: {
-	nodeId: string;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
-}): Result<string> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
+export const updateLightningNodeIdThunk = async (): Promise<Result<string>> => {
+	const selectedNetwork = getSelectedNetwork();
+	const selectedWallet = getSelectedWallet();
+
+	try {
+		const result = await ldk.nodeId();
+		if (result.isOk()) {
+			dispatch(
+				updateLightningNodeId({
+					nodeId: result.value,
+					selectedWallet,
+					selectedNetwork,
+				}),
+			);
+		}
+		return ok('Updated nodeId.');
+	} catch (e) {
+		return err(e);
 	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	const nodeIdFromStorage = getNodeIdFromStorage({
-		selectedWallet,
-		selectedNetwork,
-	});
-	if (nodeId && nodeIdFromStorage !== nodeId) {
-		const payload = {
-			nodeId,
-			selectedWallet,
-			selectedNetwork,
-		};
-		dispatch({
-			type: actions.UPDATE_LIGHTNING_NODE_ID,
-			payload,
-		});
-	}
-	return ok('No need to update nodeId.');
 };
 
 /**
  * Attempts to grab, update and save the lightning node version to storage.
  * @returns {Promise<Result<TLightningNodeVersion>>}
  */
-export const updateLightningNodeVersion = async (): Promise<
+export const updateLightningNodeVersionThunk = async (): Promise<
 	Result<TLightningNodeVersion>
 > => {
 	try {
@@ -84,10 +74,7 @@ export const updateLightningNodeVersion = async (): Promise<
 		}
 		const currentVersion = getLightningStore()?.version;
 		if (version.value.ldk !== currentVersion.ldk) {
-			dispatch({
-				type: actions.UPDATE_LIGHTNING_NODE_VERSION,
-				payload: { version: version.value },
-			});
+			dispatch(updateLightningNodeVersion(version.value));
 		}
 		return ok(version.value);
 	} catch (e) {
@@ -100,14 +87,14 @@ export const updateLightningNodeVersion = async (): Promise<
  * Attempts to update the lightning channels for the given wallet and network.
  * This method will save all channels (both pending, open & closed) to redux and update openChannelIds to reference channels that are currently open.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
-export const updateLightningChannels = async ({
+export const updateLightningChannelsThunk = async ({
 	selectedWallet,
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TChannel[]>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -130,16 +117,15 @@ export const updateLightningChannels = async ({
 		}
 	});
 
-	const payload = {
-		channels,
-		openChannelIds,
-		selectedWallet,
-		selectedNetwork,
-	};
-	dispatch({
-		type: actions.UPDATE_LIGHTNING_CHANNELS,
-		payload,
-	});
+	dispatch(
+		updateLightningChannels({
+			channels,
+			openChannelIds,
+			selectedWallet,
+			selectedNetwork,
+		}),
+	);
+
 	return ok(lightningChannels.value);
 };
 
@@ -192,7 +178,7 @@ export const claimChannel = async (
  * @param {number} amountSats
  * @param {string} [description]
  * @param {number} [expiryDeltaSeconds]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  */
 export const createLightningInvoice = async ({
@@ -222,20 +208,10 @@ export const createLightningInvoice = async ({
 	return ok(invoice.value);
 };
 
-/*
- * This resets the lightning store to defaultLightningShape
- */
-export const resetLightningStore = (): Result<string> => {
-	dispatch({
-		type: actions.RESET_LIGHTNING_STORE,
-	});
-	return ok('');
-};
-
 /**
  * Attempts to save a custom lightning peer to storage.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {string} peer
  */
 export const savePeer = ({
@@ -244,7 +220,7 @@ export const savePeer = ({
 	peer,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	peer: string;
 }): Result<string> => {
 	if (!selectedWallet) {
@@ -275,17 +251,14 @@ export const savePeer = ({
 		selectedWallet,
 		selectedNetwork,
 	};
-	dispatch({
-		type: actions.SAVE_LIGHTNING_PEER,
-		payload,
-	});
+	dispatch(saveLightningPeer(payload));
 	return ok('Lightning Peer Saved');
 };
 
 /**
  * Attempts to remove a custom lightning peer from storage.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {string} peer
  * @returns {Result<string>}
  */
@@ -295,7 +268,7 @@ export const removePeer = ({
 	peer,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	peer: string;
 }): Result<string> => {
 	if (!selectedWallet) {
@@ -312,19 +285,16 @@ export const removePeer = ({
 		selectedWallet,
 		selectedNetwork,
 	};
-	dispatch({
-		type: actions.REMOVE_LIGHTNING_PEER,
-		payload,
-	});
+	dispatch(removeLightningPeer(payload));
 	return ok('Successfully Removed Lightning Peer');
 };
 
-export const updateClaimableBalance = async ({
+export const updateClaimableBalanceThunk = async ({
 	selectedWallet,
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -343,11 +313,7 @@ export const updateClaimableBalance = async ({
 		selectedWallet,
 		claimableBalance,
 	};
-
-	dispatch({
-		type: actions.UPDATE_CLAIMABLE_BALANCE,
-		payload,
-	});
+	dispatch(updateClaimableBalance(payload));
 	return ok('Successfully Updated Claimable Balance.');
 };
 
@@ -433,16 +399,4 @@ export const moveMetaIncPaymentTags = (invoice: TInvoice): Result<string> => {
 	}
 
 	return ok('Metadata tags resynced with transactions.');
-};
-
-export const updateLdkAccountVersion = (
-	accountVersion: TLdkAccountVersions,
-): TLdkAccountVersions => {
-	dispatch({
-		type: actions.UPDATE_LDK_ACCOUNT_VERSION,
-		payload: {
-			accountVersion,
-		},
-	});
-	return accountVersion;
 };

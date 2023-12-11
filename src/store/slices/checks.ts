@@ -1,13 +1,13 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { TAvailableNetworks } from '@synonymdev/react-native-ldk';
+import { EAvailableNetwork } from '../../utils/networks';
 import { getNetworkContent } from '../shapes/wallet';
-import { IWallets, TWalletName } from '../types/wallet';
+import { TWalletName, IWallets } from '../types/wallet';
 import { IChecksContent, IChecksShape, TStorageWarning } from '../types/checks';
 
 type TPayload = {
 	warning: TStorageWarning;
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 };
 
 const defaultChecksContent: IChecksContent = {

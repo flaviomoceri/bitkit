@@ -20,8 +20,8 @@ import {
 	getClaimedLightningPayments,
 	waitForLdk,
 } from '../lightning';
-import { TAvailableNetworks } from '../networks';
-import { createLightningInvoice } from '../../store/actions/lightning';
+import { EAvailableNetwork } from '../networks';
+import { createLightningInvoice } from '../../store/utils/lightning';
 import { getSettingsStore } from '../../store/helpers';
 import { cacheProfileChecked } from '../../store/utils/slashtags';
 import { TWalletName } from '../../store/types/wallet';
@@ -191,7 +191,7 @@ export const updateSlashPayConfig = debounce(
 		forceUpdate?: boolean;
 		sdk?: SDK;
 		selectedWallet?: TWalletName;
-		selectedNetwork?: TAvailableNetworks;
+		selectedNetwork?: EAvailableNetwork;
 	}): Promise<void> => {
 		if (!sdk) {
 			// sdk is not ready yet

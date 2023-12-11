@@ -47,10 +47,7 @@ import {
 	defaultAddressContent,
 	addressTypes,
 } from '../../../store/shapes/wallet';
-import {
-	EAvailableNetworks,
-	TAvailableNetworks,
-} from '../../../utils/networks';
+import { EAvailableNetwork } from '../../../utils/networks';
 import { showToast } from '../../../utils/notifications';
 import {
 	getBlockExplorerLink,
@@ -97,7 +94,7 @@ export type TAddressViewerConfig = {
 	addressType: EAddressType;
 	addressIndex: number;
 	viewReceivingAddresses: boolean;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 };
 const ADDRESS_AMOUNT = 20; //How many addresses to generate at a given time.
 
@@ -105,7 +102,7 @@ const defaultConfig: TAddressViewerConfig = {
 	addressType: EAddressType.p2wpkh,
 	addressIndex: 0,
 	viewReceivingAddresses: true,
-	selectedNetwork: EAvailableNetworks.bitcoin,
+	selectedNetwork: EAvailableNetwork.bitcoin,
 };
 const defaultAllAddressesData: TAddressViewerData = {
 	[EAddressType.p2wpkh]: {
@@ -281,7 +278,7 @@ const AddressViewer = ({
 	);
 	const [loadingAddresses, setLoadingAddresses] = useState(true);
 	const [loadingNetwork, setLoadingNetwork] = useState<
-		TAvailableNetworks | undefined
+		EAvailableNetwork | undefined
 	>(undefined);
 	const [isCheckingBalances, setIsCheckingBalances] = useState(false);
 	const [isGeneratingMoreAddresses, setIsGeneratingMoreAddresses] =
@@ -512,7 +509,7 @@ const AddressViewer = ({
 	 * Updates the selected network locally for the address viewer.
 	 */
 	const updateNetwork = useCallback(
-		async (n: EAvailableNetworks): Promise<void> => {
+		async (n: EAvailableNetwork): Promise<void> => {
 			if (n === config.selectedNetwork) {
 				return;
 			}
@@ -988,31 +985,31 @@ const AddressViewer = ({
 				{enableDevOptions && (
 					<View style={styles.row}>
 						<Button
-							loading={loadingNetwork === EAvailableNetworks.bitcoinTestnet}
+							loading={loadingNetwork === EAvailableNetwork.bitcoinTestnet}
 							color={getAddressTypeButtonColor(
-								EAvailableNetworks.bitcoinTestnet,
+								EAvailableNetwork.bitcoinTestnet,
 							)}
 							text="Testnet"
 							onPress={(): void => {
-								updateNetwork(EAvailableNetworks.bitcoinTestnet).then();
+								updateNetwork(EAvailableNetwork.bitcoinTestnet).then();
 							}}
 						/>
 						<Button
-							loading={loadingNetwork === EAvailableNetworks.bitcoinRegtest}
+							loading={loadingNetwork === EAvailableNetwork.bitcoinRegtest}
 							color={getAddressTypeButtonColor(
-								EAvailableNetworks.bitcoinRegtest,
+								EAvailableNetwork.bitcoinRegtest,
 							)}
 							text="Regtest"
 							onPress={(): void => {
-								updateNetwork(EAvailableNetworks.bitcoinRegtest).then();
+								updateNetwork(EAvailableNetwork.bitcoinRegtest).then();
 							}}
 						/>
 						<Button
-							loading={loadingNetwork === EAvailableNetworks.bitcoin}
-							color={getAddressTypeButtonColor(EAvailableNetworks.bitcoin)}
+							loading={loadingNetwork === EAvailableNetwork.bitcoin}
+							color={getAddressTypeButtonColor(EAvailableNetwork.bitcoin)}
 							text="Mainnet"
 							onPress={(): void => {
-								updateNetwork(EAvailableNetworks.bitcoin).then();
+								updateNetwork(EAvailableNetwork.bitcoin).then();
 							}}
 						/>
 					</View>

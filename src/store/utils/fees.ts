@@ -3,7 +3,7 @@ import { ok, err, Result } from '@synonymdev/result';
 import { dispatch, getFeesStore } from '../helpers';
 import { updateOnchainFees } from '../slices/fees';
 import { getFeeEstimates } from '../../utils/wallet/transactions';
-import { TAvailableNetworks } from '../../utils/networks';
+import { EAvailableNetwork } from '../../utils/networks';
 
 export const REFRESH_INTERVAL = 60 * 30; // in seconds, 30 minutes
 
@@ -11,7 +11,7 @@ export const updateOnchainFeeEstimates = async ({
 	selectedNetwork,
 	forceUpdate = false,
 }: {
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 	forceUpdate?: boolean;
 }): Promise<Result<string>> => {
 	const feesStore = getFeesStore();

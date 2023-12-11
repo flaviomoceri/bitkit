@@ -1,5 +1,4 @@
 import cloneDeep from 'lodash/cloneDeep';
-import { TAvailableNetworks } from '@synonymdev/react-native-ldk';
 
 import {
 	__ELECTRUM_BITCOIN_HOST__,
@@ -10,18 +9,15 @@ import {
 	__ELECTRUM_REGTEST_PROTO__,
 	__ELECTRUM_REGTEST_SSL_PORT__,
 	__ELECTRUM_REGTEST_TCP_PORT__,
-	__ELECTRUM_SIGNET_HOST__,
-	__ELECTRUM_SIGNET_PROTO__,
-	__ELECTRUM_SIGNET_SSL_PORT__,
-	__ELECTRUM_SIGNET_TCP_PORT__,
 	__WEB_RELAY__,
 } from '../../constants/env';
 import { TSettings } from '../slices/settings';
+import { EAvailableNetwork } from '../../utils/networks';
 import { ETransactionSpeed, ICustomElectrumPeer } from '../types/settings';
 import { EUnit } from '../types/wallet';
 
 export const defaultElectrumPeer: Record<
-	TAvailableNetworks,
+	EAvailableNetwork,
 	ICustomElectrumPeer[]
 > = {
 	bitcoin: [
@@ -64,14 +60,6 @@ export const defaultElectrumPeer: Record<
 			ssl: __ELECTRUM_REGTEST_SSL_PORT__,
 			tcp: __ELECTRUM_REGTEST_TCP_PORT__,
 			protocol: __ELECTRUM_REGTEST_PROTO__,
-		},
-	],
-	bitcoinSignet: [
-		{
-			host: __ELECTRUM_SIGNET_HOST__,
-			ssl: __ELECTRUM_SIGNET_SSL_PORT__,
-			tcp: __ELECTRUM_SIGNET_TCP_PORT__,
-			protocol: __ELECTRUM_SIGNET_PROTO__,
 		},
 	],
 };

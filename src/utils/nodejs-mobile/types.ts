@@ -1,4 +1,4 @@
-import { TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 
 export enum ENodeJsMethod {
 	setup = 'setup',
@@ -25,7 +25,7 @@ export interface INodeJsSetup {
 	data: {
 		mnemonic: string;
 		bip39Passphrase?: string;
-		selectedNetwork?: TAvailableNetworks;
+		selectedNetwork?: EAvailableNetwork;
 	};
 }
 
@@ -44,7 +44,7 @@ export interface INodeJsGetPrivateKey {
 		mnemonic: string;
 		bip39Passphrase: string;
 		path: string;
-		selectedNetwork?: TAvailableNetworks;
+		selectedNetwork?: EAvailableNetwork;
 	};
 }
 
@@ -53,7 +53,7 @@ export interface INodeJsGetScriptHash {
 	method: ENodeJsMethod.getScriptHash;
 	data: {
 		address: string;
-		selectedNetwork?: TAvailableNetworks;
+		selectedNetwork?: EAvailableNetwork;
 	};
 }
 
@@ -63,6 +63,6 @@ export interface INodeJsGetAddress {
 	data: {
 		path: string;
 		type: string;
-		selectedNetwork?: TAvailableNetworks;
+		selectedNetwork?: EAvailableNetwork;
 	};
 }

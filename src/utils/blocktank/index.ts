@@ -10,7 +10,7 @@ import { err, ok, Result } from '@synonymdev/result';
 import { CJitStateEnum } from '@synonymdev/blocktank-lsp-http-client/dist/shared/CJitStateEnum';
 import { BtOpenChannelState } from '@synonymdev/blocktank-lsp-http-client/dist/shared/BtOpenChannelState';
 
-import { EAvailableNetworks, TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 import { addPeers, getNodeId, refreshLdk } from '../lightning';
 import {
 	refreshAllBlocktankOrders,
@@ -37,15 +37,15 @@ const bt = new BlocktankClient();
  * @returns {void}
  */
 export const setupBlocktank = async (
-	selectedNetwork: TAvailableNetworks,
+	selectedNetwork: EAvailableNetwork,
 ): Promise<void> => {
 	let isGeoBlocked = false;
 	switch (selectedNetwork) {
-		case EAvailableNetworks.bitcoin:
+		case EAvailableNetwork.bitcoin:
 			isGeoBlocked = await setGeoBlock();
 			bt.baseUrl = 'https://blocktank.synonym.to/api/v2';
 			break;
-		case EAvailableNetworks.bitcoinRegtest:
+		case EAvailableNetwork.bitcoinRegtest:
 			dispatch(updateUser({ isGeoBlocked: false }));
 			bt.baseUrl = 'https://api.stag.blocktank.to/blocktank/api/v2';
 			break;

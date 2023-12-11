@@ -20,7 +20,7 @@ import { updateSlashPayConfig2 } from '../slashtags2';
 import { Slashtag } from '../../hooks/slashtags';
 import { performFullRestoreFromLatestBackup } from '../../store/actions/backup';
 import { promiseTimeout } from '../helpers';
-import { TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 import { TWalletName } from '../../store/types/wallet';
 import { runChecks } from '../wallet/checks';
 
@@ -93,7 +93,7 @@ export const startWalletServices = async ({
 	restore?: boolean;
 	staleBackupRecoveryMode?: boolean;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	try {
 		// wait for interactions/animations to be completed

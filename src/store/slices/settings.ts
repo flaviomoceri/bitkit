@@ -9,7 +9,7 @@ import {
 	TReceiveOption,
 	TTheme,
 } from '../types/settings';
-import { TAvailableNetworks } from '../../utils/networks';
+import { EAvailableNetwork } from '../../utils/networks';
 import { EUnit } from '../types/wallet';
 
 export type TSettings = {
@@ -55,7 +55,7 @@ export const settingsSlice = createSlice({
 			state,
 			action: PayloadAction<{
 				peer: ICustomElectrumPeer;
-				network: TAvailableNetworks;
+				network: EAvailableNetwork;
 			}>,
 		) => {
 			state.customElectrumPeers[action.payload.network].unshift(

@@ -10,7 +10,7 @@ import validate, { getAddressInfo } from 'bitcoin-address-validation';
 
 import { __E2E__, __JEST__ } from '../../constants/env';
 import { validateAddress } from '../scanner';
-import { EAvailableNetworks, networks, TAvailableNetworks } from '../networks';
+import { networks, EAvailableNetwork } from '../networks';
 import { reduceValue, shuffleArray } from '../helpers';
 import { btcToSats, satsToBtc } from '../conversion';
 import { getKeychainValue } from '../keychain';
@@ -76,10 +76,10 @@ const bip32 = BIP32Factory(ecc);
  */
 export const parseOnChainPaymentRequest = (
 	data: string,
-	selectedNetwork?: TAvailableNetworks,
+	selectedNetwork?: EAvailableNetwork,
 ): Result<{
 	address: string;
-	network: EAvailableNetworks;
+	network: EAvailableNetwork;
 	sats: number;
 	message: string;
 }> => {
@@ -93,7 +93,7 @@ export const parseOnChainPaymentRequest = (
 
 		let validateAddressResult = validateAddress({
 			address: data,
-			selectedNetwork: EAvailableNetworks[selectedNetwork],
+			selectedNetwork,
 		});
 
 		if (
@@ -338,7 +338,7 @@ export const getTotalFee = ({
 	transaction?: Partial<ISendTransaction>;
 	fundingLightning?: boolean;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): number => {
 	const baseTransactionSize = TRANSACTION_DEFAULTS.recommendedBaseFee;
 	try {
@@ -390,19 +390,19 @@ export const getTotalFee = ({
 
 interface ICreateTransaction {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	transactionData?: ISendTransaction;
 }
 
 /**
  * Creates a BIP32Interface from the selected wallet's mnemonic and passphrase
  * @param {TWalletName} selectedWallet
- * @param {TAvailableNetworks} selectedNetwork
+ * @param {EAvailableNetwork} selectedNetwork
  * @returns {Promise<Result<BIP32Interface>>}
  */
 const getBip32Interface = async (
 	selectedWallet: TWalletName,
-	selectedNetwork: TAvailableNetworks,
+	selectedNetwork: EAvailableNetwork,
 ): Promise<Result<BIP32Interface>> => {
 	const network = networks[selectedNetwork];
 
@@ -438,7 +438,7 @@ interface ITargets {
 /**
  * Returns a PSBT that includes unsigned funding inputs.
  * @param {TWalletName} selectedWallet
- * @param {TAvailableNetworks} selectedNetwork
+ * @param {EAvailableNetwork} selectedNetwork
  * @param {ISendTransaction} transactionData
  * @param {BIP32Interface} bip32Interface
  * @return {Promise<Result<Psbt>>}
@@ -450,7 +450,7 @@ const createPsbtFromTransactionData = async ({
 	bip32Interface,
 }: {
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 	transactionData: ISendTransaction;
 	bip32Interface?: BIP32Interface;
 }): Promise<Result<Psbt>> => {
@@ -594,14 +594,14 @@ const createPsbtFromTransactionData = async ({
  * Uses the transaction data store to create an unsigned PSBT with funded inputs
  * CURRENTLY UNUSED
  * @param {TWalletName} selectedWallet
- * @param {TAvailableNetworks} selectedNetwork
+ * @param {EAvailableNetwork} selectedNetwork
  */
 export const createFundedPsbtTransaction = async ({
 	selectedWallet,
 	selectedNetwork,
 }: {
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 }): Promise<Result<Psbt>> => {
 	const transactionData = getOnchainTransactionData({
 		selectedWallet,
@@ -625,7 +625,7 @@ export const createFundedPsbtTransaction = async ({
  * @param {Psbt} psbt
  * @param {BIP32Interface} bip32Interface
  * @param {TWalletName} selectedWallet
- * @param {TAvailableNetworks} selectedNetwork
+ * @param {EAvailableNetwork} selectedNetwork
  * @returns {Promise<Result<Psbt>>}
  */
 export const signPsbt = async ({
@@ -637,7 +637,7 @@ export const signPsbt = async ({
 	psbt: Psbt;
 	bip32Interface: BIP32Interface;
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 }): Promise<Result<Psbt>> => {
 	const transactionDataRes = getOnchainTransactionData({
 		selectedWallet,
@@ -784,14 +784,14 @@ export const removeDustOutputs = (outputs: IOutput[]): IOutput[] => {
 /**
  * Returns onchain transaction data related to the specified network and wallet.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const getOnchainTransactionData = ({
 	selectedWallet,
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Result<ISendTransaction> => {
 	try {
 		if (!selectedWallet) {
@@ -814,7 +814,7 @@ export interface IAddInput {
 	psbt: Psbt;
 	keyPair: BIP32Interface;
 	input: IUtxo;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }
 export const addInput = async ({
 	psbt,
@@ -903,7 +903,7 @@ export const broadcastTransaction = async ({
 	subscribeToOutputAddress = true,
 }: {
 	rawTx: string;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 	subscribeToOutputAddress?: boolean;
 }): Promise<Result<string>> => {
@@ -952,7 +952,7 @@ export const broadcastTransaction = async ({
 /**
  * Returns total value of all outputs. Excludes any value that would be sent to the change address.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {IOutput[]} [outputs]
  * @returns {number}
  */
@@ -962,7 +962,7 @@ export const getTransactionOutputValue = ({
 	outputs,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	outputs?: IOutput[];
 } = {}): number => {
 	try {
@@ -996,7 +996,7 @@ export const getTransactionOutputValue = ({
 /**
  * Returns total value of all utxos.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {IUtxo[]} [inputs]
  */
 export const getTransactionInputValue = ({
@@ -1005,7 +1005,7 @@ export const getTransactionInputValue = ({
 	inputs,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	inputs?: IUtxo[];
 }): number => {
 	try {
@@ -1040,14 +1040,14 @@ export const getTransactionInputValue = ({
 /**
  * Returns all inputs for the current transaction.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const getTransactionInputs = ({
 	selectedWallet,
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Result<IUtxo[]> => {
 	try {
 		if (!selectedWallet) {
@@ -1075,7 +1075,7 @@ export const getTransactionInputs = ({
  * @param {number} [satsPerByte]
  * @param {EFeeId} [selectedFeeId]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {number} [index]
  * @param {ISendTransaction} [transaction]
  */
@@ -1090,7 +1090,7 @@ export const updateFee = ({
 	satsPerByte: number;
 	selectedFeeId?: EFeeId;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	index?: number;
 	transaction?: ISendTransaction;
 }): Result<{ fee: number }> => {
@@ -1163,13 +1163,13 @@ export const updateFee = ({
  * Returns a block explorer URL for a specific transaction
  * @param {string} id
  * @param {'tx' | 'address'} type
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {'blockstream' | 'mempool'} [service]
  */
 export const getBlockExplorerLink = (
 	id: string,
 	type: 'tx' | 'address' = 'tx',
-	selectedNetwork?: TAvailableNetworks,
+	selectedNetwork?: EAvailableNetwork,
 	service: 'blockstream' | 'mempool' = 'mempool',
 ): string => {
 	if (!selectedNetwork) {
@@ -1470,7 +1470,7 @@ export const canBoost = (txid: string): ICanBoostResponse => {
 /**
  * Calculates the max amount able to send for onchain/lightning
  * @param {ISendTransaction} [transaction]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  * @param {number} [index]
  */
@@ -1480,7 +1480,7 @@ export const getMaxSendAmount = ({
 	selectedWallet,
 }: {
 	transaction?: ISendTransaction;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 	selectedWallet: TWalletName;
 }): Result<{ amount: number; fee?: number }> => {
 	try {
@@ -1581,7 +1581,7 @@ export const getMaxSendAmount = ({
  * @param {string} [address] If left undefined, the current receiving address will be provided.
  * @param {ISendTransaction} [transaction]
  * @param {number} [index]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  */
 export const sendMax = ({
@@ -1594,7 +1594,7 @@ export const sendMax = ({
 	address?: string;
 	transaction?: Partial<ISendTransaction>;
 	index?: number;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 } = {}): Result<string> => {
 	try {
@@ -1659,7 +1659,7 @@ export const sendMax = ({
  * Adjusts the fee by a given sat per byte.
  * @param {number} [adjustBy]
  * @param {ISendTransaction} [transaction]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  */
 export const adjustFee = ({
@@ -1670,7 +1670,7 @@ export const adjustFee = ({
 }: {
 	adjustBy: number;
 	transaction?: ISendTransaction;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 }): Result<{ fee: number }> => {
 	try {
@@ -1715,7 +1715,7 @@ export const adjustFee = ({
  * Updates the amount to send for the currently selected output.
  * @param {number} amount
  * @param {ISendTransaction} [transaction]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  */
 export const updateSendAmount = ({
@@ -1726,7 +1726,7 @@ export const updateSendAmount = ({
 }: {
 	amount: number;
 	transaction?: ISendTransaction;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 }): Result<string> => {
 	if (!selectedNetwork) {
@@ -1822,7 +1822,7 @@ export const updateSendAmount = ({
  * @param {ISendTransaction} [transaction]
  * @param {number} [index]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const updateMessage = async ({
 	message,
@@ -1835,7 +1835,7 @@ export const updateMessage = async ({
 	transaction?: ISendTransaction;
 	index?: number;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -1902,7 +1902,7 @@ export const updateMessage = async ({
  * Runs & Applies the autoCoinSelect method to the current transaction.
  * @param {ISendTransaction} [transaction]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 //TODO: Uncomment and utilize the following runCoinSelect method once the send flow is complete.
 /*
@@ -1912,7 +1912,7 @@ const runCoinSelect = async ({
 	selectedNetwork,
 }: {
 	transaction?: ISendTransaction;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 }): Promise<Result<string>> => {
 	try {
@@ -1977,7 +1977,7 @@ const runCoinSelect = async ({
 /**
  *
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {string} txid
  */
 export const setupBoost = async ({
@@ -1987,7 +1987,7 @@ export const setupBoost = async ({
 }: {
 	txid: string;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<Partial<ISendTransaction>>> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -2009,7 +2009,7 @@ export const setupBoost = async ({
 /**
  * Sets up a CPFP transaction.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {string} [txid]
  * @param {number} [satsPerByte]
  */
@@ -2020,7 +2020,7 @@ export const setupCpfp = async ({
 	satsPerByte,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	txid?: string; // txid of utxo to include in the CPFP tx. Undefined will gather all utxo's.
 	satsPerByte?: number;
 }): Promise<Result<Partial<ISendTransaction>>> => {
@@ -2072,7 +2072,7 @@ export const setupCpfp = async ({
  * Sets up a transaction for RBF.
  * @param {string} txid
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const setupRbf = async ({
 	txid,
@@ -2081,7 +2081,7 @@ export const setupRbf = async ({
 }: {
 	txid: string;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<Partial<ISendTransaction>>> => {
 	try {
 		if (!selectedNetwork) {
@@ -2173,7 +2173,7 @@ export const setupRbf = async ({
 /**
  * Used to broadcast and update a boosted transaction as needed.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {string} oldTxId
  */
 export const broadcastBoost = async ({
@@ -2183,7 +2183,7 @@ export const broadcastBoost = async ({
 	oldFee,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	oldTxId: string;
 	oldFee: number;
 }): Promise<Result<Partial<TOnchainActivityItem>>> => {
@@ -2260,11 +2260,11 @@ export const broadcastBoost = async ({
  * Attempts to decode a tx hex.
  * Source: https://github.com/bitcoinjs/bitcoinjs-lib/issues/1606#issuecomment-664740672
  * @param {string} hex
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const decodeRawTransaction = (
 	hex: string,
-	selectedNetwork?: TAvailableNetworks,
+	selectedNetwork?: EAvailableNetwork,
 ): Result<{
 	txid: string;
 	tx_hash: string;
@@ -2330,11 +2330,11 @@ export interface IGetFeeEstimatesResponse {
 
 /**
  * Returns the current fee estimates for the provided network.
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<IOnchainFees>}
  */
 export const getFeeEstimates = async (
-	selectedNetwork?: TAvailableNetworks,
+	selectedNetwork?: EAvailableNetwork,
 ): Promise<Result<IOnchainFees>> => {
 	try {
 		if (!selectedNetwork) {
@@ -2348,7 +2348,7 @@ export const getFeeEstimates = async (
 			});
 		}
 
-		if (selectedNetwork === EAvailableNetworks.bitcoinRegtest) {
+		if (selectedNetwork === EAvailableNetwork.bitcoinRegtest) {
 			return ok({
 				...initialFeesState.onchain,
 				timestamp: Date.now(),
@@ -2381,7 +2381,7 @@ export const getSelectedFeeId = ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): EFeeId => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -2411,7 +2411,7 @@ export const getTransactionOutputAmount = ({
 	outputIndex = 0,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	outputIndex?: number;
 }): Result<number> => {
 	const transaction = getOnchainTransactionData({

@@ -49,7 +49,7 @@ import {
 import {
 	createLightningInvoice,
 	savePeer,
-} from '../../../store/actions/lightning';
+} from '../../../store/utils/lightning';
 import { useBalance } from '../../../hooks/wallet';
 import {
 	selectedNetworkSelector,

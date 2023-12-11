@@ -21,7 +21,7 @@ import {
 	fetchBackup,
 	listBackups,
 } from '../../utils/backup/backpack';
-import { EAvailableNetworks } from '../../utils/networks';
+import { EAvailableNetwork } from '../../utils/networks';
 import Dialog from '../../components/Dialog';
 import { startWalletServices } from '../../utils/startup';
 import { showToast } from '../../utils/notifications';
@@ -71,7 +71,7 @@ const LightningWithSlashtags = ({
 			const res = await listBackups(
 				slashtag.slashtag,
 				EBackupCategories.ldkComplete,
-				__DEV__ ? selectedNetwork : EAvailableNetworks.bitcoin,
+				__DEV__ ? selectedNetwork : EAvailableNetwork.bitcoin,
 			);
 
 			if (res.isErr()) {

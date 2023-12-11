@@ -24,6 +24,7 @@ import { getScriptHash, getSelectedNetwork } from '../src/utils/wallet';
 import initWaitForElectrumToSync from './utils/wait-for-electrum';
 import { runStorageCheck } from '../src/utils/wallet/checks';
 import { dispatch } from '../src/store/helpers';
+import { EAvailableNetwork } from '../src/utils/networks';
 
 jest.setTimeout(60_000);
 
@@ -73,7 +74,7 @@ describe('Wallet - new wallet, send and receive', () => {
 		expect(res.value).toEqual('Wallet created');
 
 		// switch to regtest
-		updateWallet({ selectedNetwork: 'bitcoinRegtest' });
+		updateWallet({ selectedNetwork: EAvailableNetwork.bitcoinRegtest });
 		expect(store.getState().wallet.selectedNetwork).toEqual('bitcoinRegtest');
 
 		const selectedNetwork = getSelectedNetwork();
@@ -109,7 +110,7 @@ describe('Wallet - new wallet, send and receive', () => {
 		// run storage check
 		res = await runStorageCheck({
 			selectedWallet: 'wallet0',
-			selectedNetwork: 'bitcoinRegtest',
+			selectedNetwork: EAvailableNetwork.bitcoinRegtest,
 		});
 		if (res.isErr()) {
 			throw res.error;

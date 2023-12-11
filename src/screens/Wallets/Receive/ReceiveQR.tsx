@@ -36,7 +36,7 @@ import {
 	UnifiedIcon,
 } from '../../../styles/icons';
 import { Caption13Up, Text01S, Text02S } from '../../../styles/text';
-import { createLightningInvoice } from '../../../store/actions/lightning';
+import { createLightningInvoice } from '../../../store/utils/lightning';
 import { updatePendingInvoice } from '../../../store/slices/metadata';
 import { generateNewReceiveAddress } from '../../../store/actions/wallet';
 import { viewControllerIsOpenSelector } from '../../../store/reselect/ui';

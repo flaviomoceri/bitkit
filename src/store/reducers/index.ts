@@ -8,7 +8,7 @@ import backup from './backup';
 import blocktank from '../slices/blocktank';
 import checks from '../slices/checks';
 import fees from '../slices/fees';
-import lightning from './lightning';
+import lightning from '../slices/lightning';
 import metadata from '../slices/metadata';
 import receive from '../slices/receive';
 import settings from '../slices/settings';

@@ -25,7 +25,7 @@ import useDisplayValues from '../../hooks/displayValues';
 import { useLightningMaxInboundCapacity } from '../../hooks/lightning';
 import { getNodeIdFromStorage, waitForLdk } from '../../utils/lightning';
 import { updateTreasureChest } from '../../store/slices/settings';
-import { createLightningInvoice } from '../../store/actions/lightning';
+import { createLightningInvoice } from '../../store/utils/lightning';
 import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
 import type { TreasureHuntScreenProps } from '../../navigation/types';
 

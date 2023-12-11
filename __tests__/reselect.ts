@@ -7,6 +7,7 @@ import store, { RootState } from '../src/store';
 
 import { createNewWallet } from '../src/utils/startup';
 import { updateWallet } from '../src/store/actions/wallet';
+import { EAvailableNetwork } from '../src/utils/networks';
 import {
 	balanceSelector,
 	lnSetupSelector,
@@ -21,7 +22,7 @@ describe('Reselect', () => {
 		if (res.isErr()) {
 			throw res.error;
 		}
-		updateWallet({ selectedNetwork: 'bitcoinRegtest' });
+		updateWallet({ selectedNetwork: EAvailableNetwork.bitcoinRegtest });
 		s = store.getState();
 	});
 

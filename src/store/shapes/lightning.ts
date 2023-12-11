@@ -1,7 +1,7 @@
-import { IDefaultLightningShape, ILightning } from '../types/lightning';
+import { TLightningState, TNode } from '../types/lightning';
 import { defaultWalletShape, getNetworkContent } from './wallet';
 
-export const defaultLightningShape: IDefaultLightningShape = {
+export const defaultLightningShape: TNode = {
 	nodeId: getNetworkContent(''),
 	info: getNetworkContent({}),
 	channels: getNetworkContent({}),
@@ -10,7 +10,7 @@ export const defaultLightningShape: IDefaultLightningShape = {
 	claimableBalance: getNetworkContent(0),
 };
 
-export const defaultLightningStoreShape: ILightning = {
+export const defaultLightningStoreShape: TLightningState = {
 	accountVersion: 1,
 	version: {
 		ldk: '',

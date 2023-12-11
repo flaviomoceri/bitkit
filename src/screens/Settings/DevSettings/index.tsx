@@ -14,17 +14,17 @@ import {
 } from '../../../store/actions/wallet';
 import { resetUserState } from '../../../store/slices/user';
 import { resetActivityState } from '../../../store/slices/activity';
-import {
-	resetLightningStore,
-	updateLdkAccountVersion,
-	updateLightningNodeId,
-} from '../../../store/actions/lightning';
 import { resetBlocktankState } from '../../../store/slices/blocktank';
 import { resetFeesState } from '../../../store/slices/fees';
+import {
+	updateLdkAccountVersion,
+	resetLightningState,
+} from '../../../store/slices/lightning';
 import { resetMetadataState } from '../../../store/slices/metadata';
 import { resetSettingsState } from '../../../store/slices/settings';
 import { resetSlashtagsState } from '../../../store/slices/slashtags';
 import { resetWidgetsState } from '../../../store/slices/widgets';
+import { updateLightningNodeIdThunk } from '../../../store/utils/lightning';
 import { resetTodos } from '../../../store/actions/todos';
 import { wipeApp } from '../../../store/utils/settings';
 import { getStore, getWalletStore } from '../../../store/helpers';
@@ -44,11 +44,7 @@ import { zipLogs } from '../../../utils/lightning/logs';
 import { runChecks } from '../../../utils/wallet/checks';
 import { showToast } from '../../../utils/notifications';
 import { getFakeTransaction } from '../../../utils/wallet/testing';
-import {
-	createDefaultLdkAccount,
-	getNodeId,
-	setupLdk,
-} from '../../../utils/lightning';
+import { createDefaultLdkAccount, setupLdk } from '../../../utils/lightning';
 import Dialog from '../../../components/Dialog';
 
 const DevSettings = ({
@@ -235,8 +231,9 @@ const DevSettings = ({
 				{
 					title: 'Force LDK V2 Account Migration',
 					type: EItemType.button,
+					testID: 'ForceV2Migration',
 					onPress: async (): Promise<void> => {
-						updateLdkAccountVersion(2);
+						dispatch(updateLdkAccountVersion(2));
 						await createDefaultLdkAccount({
 							version: 2,
 							selectedWallet,
@@ -247,22 +244,15 @@ const DevSettings = ({
 							selectedNetwork,
 							shouldRefreshLdk: true,
 						});
-						const newNodeId = await getNodeId();
-						if (newNodeId.isOk()) {
-							updateLightningNodeId({
-								nodeId: newNodeId.value,
-								selectedWallet,
-								selectedNetwork,
-							});
-						}
+						await updateLightningNodeIdThunk();
 					},
-					testID: 'ForceV2Migration',
 				},
 				{
 					title: 'Revert to LDK V1 Account',
 					type: EItemType.button,
+					testID: 'RevertToLDKV1',
 					onPress: async (): Promise<void> => {
-						updateLdkAccountVersion(1);
+						dispatch(updateLdkAccountVersion(1));
 						await createDefaultLdkAccount({
 							version: 1,
 							selectedWallet,
@@ -273,16 +263,8 @@ const DevSettings = ({
 							selectedNetwork,
 							shouldRefreshLdk: true,
 						});
-						const newNodeId = await getNodeId();
-						if (newNodeId.isOk()) {
-							updateLightningNodeId({
-								nodeId: newNodeId.value,
-								selectedWallet,
-								selectedNetwork,
-							});
-						}
+						await updateLightningNodeIdThunk();
 					},
-					testID: 'RevertToLDKV1',
 				},
 			],
 		},
@@ -341,7 +323,7 @@ const DevSettings = ({
 				{
 					title: 'Reset Lightning Store',
 					type: EItemType.button,
-					onPress: resetLightningStore,
+					onPress: () => dispatch(resetLightningState()),
 				},
 				{
 					title: 'Reset Metadata Store',
