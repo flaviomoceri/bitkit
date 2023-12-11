@@ -2,7 +2,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { TChannel } from '@synonymdev/react-native-ldk';
 
 import { RootState } from '..';
-import { ITodos } from '../types/todos';
+import { TTodosState } from '../types/todos';
 import { ITodo } from '../types/todos';
 import {
 	backupSeedPhraseTodo,
@@ -32,7 +32,7 @@ import {
 } from './lightning';
 import { blocktankPaidOrdersFullSelector } from './blocktank';
 
-export const todosSelector = (state: RootState): ITodos => state.todos;
+export const todosSelector = (state: RootState): TTodosState => state.todos;
 
 export const newChannelsNotificationsSelector = createSelector(
 	todosSelector,

@@ -17,16 +17,18 @@ import useColors from '../../../hooks/colors';
 import { vibrate } from '../../../utils/helpers';
 import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';
 import { addPin } from '../../../utils/settings';
-import type { PinScreenProps } from '../../../navigation/types';
-import { hideTodo } from '../../../store/actions/todos';
+import { hideTodo } from '../../../store/slices/todos';
 import { pinTodo } from '../../../store/shapes/todos';
+import type { PinScreenProps } from '../../../navigation/types';
+import { useAppDispatch } from '../../../hooks/redux';
 
 const ChoosePIN = ({
 	navigation,
 	route,
 }: PinScreenProps<'ChoosePIN'>): ReactElement => {
-	const { t } = useTranslation('security');
 	const origPIN = route.params?.pin;
+	const { t } = useTranslation('security');
+	const dispatch = useAppDispatch();
 	const [pin, setPin] = useState<string>('');
 	const [tryAgain, setTryAgain] = useState<boolean>(false);
 	const { brand, brand08 } = useColors();
@@ -62,7 +64,7 @@ const ChoosePIN = ({
 			const pinsAreEqual = pin === origPIN;
 			if (pinsAreEqual) {
 				addPin(pin);
-				hideTodo(pinTodo.id);
+				dispatch(hideTodo(pinTodo.id));
 				navigation.navigate('AskForBiometrics');
 			} else {
 				vibrate({ type: 'notificationWarning' });
@@ -72,7 +74,7 @@ const ChoosePIN = ({
 		}, 500);
 
 		return (): void => clearTimeout(timer);
-	}, [pin, origPIN, navigation]);
+	}, [pin, origPIN, navigation, dispatch]);
 
 	return (
 		<GradientView style={styles.container}>

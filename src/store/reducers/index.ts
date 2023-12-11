@@ -13,7 +13,7 @@ import metadata from '../slices/metadata';
 import receive from '../slices/receive';
 import settings from '../slices/settings';
 import slashtags from '../slices/slashtags';
-import todos from './todos';
+import todos from '../slices/todos';
 import ui from '../slices/ui';
 import user from '../slices/user';
 import wallet from './wallet';

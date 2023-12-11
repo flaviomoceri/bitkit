@@ -25,7 +25,7 @@ import { resetSettingsState } from '../../../store/slices/settings';
 import { resetSlashtagsState } from '../../../store/slices/slashtags';
 import { resetWidgetsState } from '../../../store/slices/widgets';
 import { updateLightningNodeIdThunk } from '../../../store/utils/lightning';
-import { resetTodos } from '../../../store/actions/todos';
+import { resetTodosState } from '../../../store/slices/todos';
 import { wipeApp } from '../../../store/utils/settings';
 import { getStore, getWalletStore } from '../../../store/helpers';
 import { warningsSelector } from '../../../store/reselect/checks';
@@ -349,7 +349,7 @@ const DevSettings = ({
 				{
 					title: 'Reset Todos State',
 					type: EItemType.button,
-					onPress: resetTodos,
+					onPress: () => dispatch(resetTodosState()),
 				},
 				{
 					title: 'Reset User State',

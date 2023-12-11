@@ -7,8 +7,8 @@ import Dialog from '../../../components/Dialog';
 import Button from '../../../components/Button';
 import { EItemType, IListData } from '../../../components/List';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { resetHiddenTodos } from '../../../store/actions/todos';
 import { updateSettings } from '../../../store/slices/settings';
+import { resetHiddenTodos } from '../../../store/slices/todos';
 import { showSuggestionsSelector } from '../../../store/reselect/settings';
 import { SettingsScreenProps } from '../../../navigation/types';
 
@@ -67,7 +67,7 @@ const SuggestionsSettings = ({
 					setShowDialog(false);
 				}}
 				onConfirm={(): void => {
-					resetHiddenTodos();
+					dispatch(resetHiddenTodos());
 					setShowDialog(false);
 					navigation.navigate('Wallet');
 				}}

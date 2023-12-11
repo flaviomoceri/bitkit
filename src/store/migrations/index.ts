@@ -3,7 +3,7 @@
 import { PersistedState } from 'redux-persist';
 import { initialActivityState } from '../slices/activity';
 import { defaultBlocktankInfoShape } from '../shapes/blocktank';
-import { defaultTodosShape } from '../shapes/todos';
+import { initialTodosState } from '../shapes/todos';
 import { defaultViewControllers } from '../shapes/ui';
 import { initialChecksState } from '../slices/checks';
 import { initialBackupState } from '../shapes/backup';
@@ -15,13 +15,13 @@ const migrations = {
 	0: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 		};
 	},
 	1: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 		};
 	},
 	2: (state): PersistedState => {
@@ -38,7 +38,7 @@ const migrations = {
 	3: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 			user: {
 				...state.user,
 				startCoopCloseTimestamp: 0,
@@ -58,7 +58,7 @@ const migrations = {
 	5: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 		};
 	},
 	6: (state): PersistedState => {
@@ -79,7 +79,7 @@ const migrations = {
 	8: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 		};
 	},
 	9: (state): PersistedState => {
@@ -114,7 +114,7 @@ const migrations = {
 	12: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 			user: {
 				...state.user,
 				lightningSettingUpStep: 0,
@@ -228,7 +228,7 @@ const migrations = {
 	23: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 		};
 	},
 	24: (state): PersistedState => {

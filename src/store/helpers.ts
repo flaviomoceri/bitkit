@@ -9,7 +9,7 @@ import { TLightningState } from './types/lightning';
 import { IBlocktank } from './types/blocktank';
 import { TFeesState } from './slices/fees';
 import { TSlashtagsState } from './types/slashtags';
-import { ITodos } from './types/todos';
+import { TTodosState } from './types/todos';
 import { TUiState } from './types/ui';
 import { TUser } from './slices/user';
 import { TWidgetsState } from './slices/widgets';
@@ -54,7 +54,7 @@ export const getSlashtagsStore = (): TSlashtagsState => {
 	return cloneDeep(store.getState().slashtags);
 };
 
-export const getTodosStore = (): ITodos => {
+export const getTodosStore = (): TTodosState => {
 	return cloneDeep(store.getState().todos);
 };
 
