@@ -1,15 +1,13 @@
 // NOTE: 'ui' slice is not persisted to storage
 
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { defaultUiShape } from '../shapes/ui';
+import { initialUiState } from '../shapes/ui';
 import {
 	TUiState,
 	TAvailableUpdate,
 	TProfileLink,
 	ViewControllerParamList,
 } from '../types/ui';
-
-export const initialUiState: TUiState = defaultUiShape;
 
 export const uiSlice = createSlice({
 	name: 'ui',

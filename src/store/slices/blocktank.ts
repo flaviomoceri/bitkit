@@ -4,10 +4,8 @@ import {
 	IBtOrder,
 	ICJitEntry,
 } from '@synonymdev/blocktank-lsp-http-client';
-import { defaultBlocktankShape } from '../shapes/blocktank';
+import { initialBlocktankState } from '../shapes/blocktank';
 import { IBlocktank } from '../types/blocktank';
-
-export const initialBlocktankState: IBlocktank = defaultBlocktankShape;
 
 export const blocktankSlice = createSlice({
 	name: 'blocktank',

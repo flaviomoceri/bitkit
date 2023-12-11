@@ -1,16 +1,12 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { defaultLightningStoreShape } from '../shapes/lightning';
+import { initialLightningState } from '../shapes/lightning';
 import { EAvailableNetwork } from '../../utils/networks';
 import { TWalletName } from '../types/wallet';
 import {
 	TChannels,
 	TLdkAccountVersion,
 	TLightningNodeVersion,
-	TLightningState,
 } from '../types/lightning';
-
-export const initialLightningState: TLightningState =
-	defaultLightningStoreShape;
 
 export const lightningSlice = createSlice({
 	name: 'lightning',

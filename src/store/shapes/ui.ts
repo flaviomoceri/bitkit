@@ -28,7 +28,7 @@ export const defaultViewControllers: TUiState['viewControllers'] = {
 	lnurlPay: defaultViewController,
 };
 
-export const defaultUiShape: TUiState = {
+export const initialUiState: TUiState = {
 	availableUpdate: null,
 	isAuthenticated: false,
 	isConnectedToElectrum: true,

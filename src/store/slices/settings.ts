@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { defaultSettingsShape } from '../shapes/settings';
+import { initialSettingsState } from '../shapes/settings';
 import {
 	ETransactionSpeed,
 	ICustomElectrumPeer,
@@ -41,8 +41,6 @@ export type TSettings = {
 	treasureChests: TChest[];
 	webRelay: string;
 };
-
-export const initialSettingsState: TSettings = defaultSettingsShape;
 
 export const settingsSlice = createSlice({
 	name: 'settings',

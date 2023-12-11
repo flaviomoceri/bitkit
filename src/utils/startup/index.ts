@@ -18,7 +18,7 @@ import { keepLdkSynced, setupLdk } from '../lightning';
 import { setupBlocktank, watchPendingOrders } from '../blocktank';
 import { updateSlashPayConfig2 } from '../slashtags2';
 import { Slashtag } from '../../hooks/slashtags';
-import { performFullRestoreFromLatestBackup } from '../../store/actions/backup';
+import { performFullRestoreFromLatestBackup } from '../../store/utils/backup';
 import { promiseTimeout } from '../helpers';
 import { EAvailableNetwork } from '../networks';
 import { TWalletName } from '../../store/types/wallet';

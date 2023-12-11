@@ -10,7 +10,7 @@ export const defaultLightningShape: TNode = {
 	claimableBalance: getNetworkContent(0),
 };
 
-export const defaultLightningStoreShape: TLightningState = {
+export const initialLightningState: TLightningState = {
 	accountVersion: 1,
 	version: {
 		ldk: '',

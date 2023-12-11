@@ -14,7 +14,7 @@ import { TUiState } from './types/ui';
 import { TUser } from './slices/user';
 import { TWidgetsState } from './slices/widgets';
 import { IChecksShape } from './types/checks';
-import { IBackup } from './types/backup';
+import { TBackupState } from './types/backup';
 
 /*
 Used to retrieve the store outside of a component.
@@ -74,7 +74,7 @@ export const getChecksStore = (): IChecksShape => {
 	return cloneDeep(store.getState().checks);
 };
 
-export const getBackupStore = (): IBackup => {
+export const getBackupStore = (): TBackupState => {
 	return cloneDeep(store.getState().backup);
 };
 

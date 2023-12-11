@@ -23,7 +23,7 @@ import {
 	performRemoteBackup,
 	performSettingsRestore,
 	performWidgetsRestore,
-} from '../src/store/actions/backup';
+} from '../src/store/utils/backup';
 import {
 	dispatch,
 	getActivityStore,

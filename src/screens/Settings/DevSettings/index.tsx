@@ -46,6 +46,7 @@ import { showToast } from '../../../utils/notifications';
 import { getFakeTransaction } from '../../../utils/wallet/testing';
 import { createDefaultLdkAccount, setupLdk } from '../../../utils/lightning';
 import Dialog from '../../../components/Dialog';
+import { resetBackupState } from '../../../store/slices/backup';
 
 const DevSettings = ({
 	navigation,
@@ -292,66 +293,71 @@ const DevSettings = ({
 					onPress: exportStore,
 				},
 				{
-					title: 'Reset All Stores',
+					title: 'Reset App State',
 					type: EItemType.button,
 					onPress: (): void => {
 						dispatch({ type: actions.WIPE_APP });
 					},
 				},
 				{
-					title: 'Reset Activity Store',
+					title: 'Reset Activity State',
 					type: EItemType.button,
 					onPress: () => dispatch(resetActivityState()),
 				},
 				{
-					title: 'Reset Blocktank Store',
+					title: 'Reset Backup State',
+					type: EItemType.button,
+					onPress: () => dispatch(resetBackupState()),
+				},
+				{
+					title: 'Reset Blocktank State',
 					type: EItemType.button,
 					onPress: () => dispatch(resetBlocktankState()),
 				},
 				{
-					title: 'Reset Current Wallet Store',
+					title: 'Reset Current Wallet State',
 					type: EItemType.button,
 					onPress: async (): Promise<void> => {
 						await resetSelectedWallet({ selectedWallet });
 					},
 				},
 				{
-					title: 'Reset Fees Store',
+					title: 'Reset Fees State',
 					type: EItemType.button,
 					onPress: () => dispatch(resetFeesState()),
 				},
 				{
-					title: 'Reset Lightning Store',
+					title: 'Reset Lightning State',
 					type: EItemType.button,
 					onPress: () => dispatch(resetLightningState()),
 				},
 				{
-					title: 'Reset Metadata Store',
+					title: 'Reset Metadata State',
 					type: EItemType.button,
 					onPress: () => dispatch(resetMetadataState()),
 				},
 				{
-					title: 'Reset Settings Store',
+					title: 'Reset Settings State',
 					type: EItemType.button,
 					onPress: () => dispatch(resetSettingsState()),
 				},
 				{
-					title: 'Reset Slashtags Store',
+					title: 'Reset Slashtags State',
 					type: EItemType.button,
 					onPress: () => dispatch(resetSlashtagsState()),
 				},
 				{
-					title: 'Reset Todos Store',
+					title: 'Reset Todos State',
 					type: EItemType.button,
 					onPress: resetTodos,
 				},
 				{
-					title: 'Reset User Store',
+					title: 'Reset User State',
 					type: EItemType.button,
 					onPress: () => dispatch(resetUserState()),
 				},
 				{
-					title: 'Reset Widgets Store',
+					title: 'Reset Widgets State',
 					type: EItemType.button,
 					onPress: () => dispatch(resetWidgetsState()),
 				},

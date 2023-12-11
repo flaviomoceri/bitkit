@@ -1,7 +1,6 @@
 import { err, ok, Result } from '@synonymdev/result';
 import lm, { ldk, ENetworks, TLdkData } from '@synonymdev/react-native-ldk';
 
-import actions from './actions';
 import { getBackupStore, dispatch } from '../helpers';
 import {
 	EBackupCategories,
@@ -20,7 +19,7 @@ import {
 } from '../../utils/lightning';
 import { EAvailableNetwork } from '../../utils/networks';
 import { getSelectedNetwork } from '../../utils/wallet';
-import { IBackup, TAccountBackup } from '../types/backup';
+import { TBackupState, TAccountBackup } from '../types/backup';
 import { isObjPartialMatch } from '../../utils/helpers';
 import { getDefaultSettingsShape } from '../shapes/settings';
 import { addActivityItems, TActivity } from '../slices/activity';
@@ -45,6 +44,11 @@ import {
 	__BACKUPS_SERVER_HOST__,
 	__BACKUPS_SERVER_PUBKEY__,
 } from '../../constants/env';
+import {
+	endBackupSeederCheck,
+	startBackupSeederCheck,
+	updateBackup,
+} from '../slices/backup';
 
 /**
  * Triggers a full remote backup
@@ -71,10 +75,7 @@ export const performRemoteLdkBackup = async (
 	slashtag: Slashtag,
 	backup?: TAccountBackup<TLdkData>,
 ): Promise<Result<string>> => {
-	dispatch({
-		type: actions.BACKUP_UPDATE,
-		payload: { remoteLdkBackupSynced: false },
-	});
+	dispatch(updateBackup({ remoteLdkBackupSynced: false }));
 
 	let ldkBackup: TAccountBackup<TLdkData>;
 	//Automated backup events pass the latest state through
@@ -117,14 +118,13 @@ export const performRemoteLdkBackup = async (
 		return err(res.error);
 	}
 
-	dispatch({
-		type: actions.BACKUP_UPDATE,
-		payload: {
+	dispatch(
+		updateBackup({
 			remoteLdkBackupSynced: true,
 			remoteLdkBackupLastSync: new Date().getTime(),
 			remoteLdkBackupLastSyncRequired: undefined,
-		},
-	});
+		}),
+	);
 
 	return ok('Backup success');
 };
@@ -139,9 +139,9 @@ export const performRemoteBackup = async <T>({
 	selectedNetwork,
 }: {
 	slashtag: Slashtag;
-	isSyncedKey: keyof IBackup;
-	syncRequiredKey: keyof IBackup;
-	syncCompletedKey: keyof IBackup;
+	isSyncedKey: keyof TBackupState;
+	syncRequiredKey: keyof TBackupState;
+	syncCompletedKey: keyof TBackupState;
 	backupCategory: EBackupCategories;
 	backup?: T;
 	selectedNetwork?: EAvailableNetwork;
@@ -169,14 +169,13 @@ export const performRemoteBackup = async <T>({
 		return err(res.error);
 	}
 
-	dispatch({
-		type: actions.BACKUP_UPDATE,
-		payload: {
+	dispatch(
+		updateBackup({
 			[isSyncedKey]: true,
 			[syncRequiredKey]: undefined,
 			[syncCompletedKey]: new Date().getTime(),
-		},
-	});
+		}),
+	);
 
 	return ok('Backup success');
 };
@@ -410,7 +409,7 @@ export const performSettingsRestore = async ({
 			pinOnLaunch: true,
 		}),
 	);
-	updateBackup({ remoteSettingsBackupSynced: true });
+	dispatch(updateBackup({ remoteSettingsBackupSynced: true }));
 
 	// Restore success
 	return ok({ backupExists: true });
@@ -453,7 +452,7 @@ export const performWidgetsRestore = async ({
 			onboardedWidgets: true,
 		}),
 	);
-	updateBackup({ remoteWidgetsBackupSynced: true });
+	dispatch(updateBackup({ remoteWidgetsBackupSynced: true }));
 
 	// Restore success
 	return ok({ backupExists: true });
@@ -494,7 +493,7 @@ export const performMetadataRestore = async ({
 	}
 
 	dispatch(updateMetadata({ ...expectedBackupShape, ...backup }));
-	updateBackup({ remoteMetadataBackupSynced: true });
+	dispatch(updateBackup({ remoteMetadataBackupSynced: true }));
 
 	// Restore success
 	return ok({ backupExists: true });
@@ -536,7 +535,7 @@ export const performLdkActivityRestore = async ({
 	}
 
 	dispatch(addActivityItems(backup));
-	updateBackup({ remoteLdkActivityBackupSynced: true });
+	dispatch(updateBackup({ remoteLdkActivityBackupSynced: true }));
 
 	// Restore success
 	return ok({ backupExists: true });
@@ -573,7 +572,7 @@ export const performBlocktankRestore = async ({
 	}
 
 	dispatch(updateBlocktank(backup));
-	updateBackup({ remoteBlocktankBackupSynced: true });
+	dispatch(updateBackup({ remoteBlocktankBackupSynced: true }));
 
 	// Restore success
 	return ok({ backupExists: true });
@@ -610,7 +609,7 @@ export const performSlashtagsRestore = async ({
 	}
 
 	dispatch(addContacts(backup.contacts!));
-	updateBackup({ remoteSlashtagsBackupSynced: true });
+	dispatch(updateBackup({ remoteSlashtagsBackupSynced: true }));
 
 	// Restore success
 	return ok({ backupExists: true });
@@ -706,24 +705,12 @@ export const performFullRestoreFromLatestBackup = async (
 	}
 };
 
-export const setRemoteBackupsEnabled = (
-	remoteBackupsEnabled: boolean,
-): void => {
-	dispatch({
-		type: actions.BACKUP_UPDATE,
-		payload: {
-			remoteBackupsEnabled,
-			remoteLdkBackupLastSync: undefined,
-		},
-	});
-};
-
 export const checkProfileAndContactsBackup = async (
 	slashtag: Slashtag,
 ): Promise<void> => {
-	dispatch({ type: actions.BACKUP_SEEDER_CHECK_START });
+	dispatch(startBackupSeederCheck());
 	const payload = await checkBackup(slashtag);
-	dispatch({ type: actions.BACKUP_SEEDER_CHECK_END, payload });
+	dispatch(endBackupSeederCheck(payload));
 
 	// now check if backup is too old and show warning if it is
 	const now = new Date().getTime();
@@ -740,23 +727,4 @@ export const checkProfileAndContactsBackup = async (
 			description: i18n.t('settings:backup.failed_message'),
 		});
 	}
-};
-
-/*
- * This resets the backup store to defaultBackupShape
- */
-export const resetBackupStore = (): Result<string> => {
-	dispatch({
-		type: actions.RESET_BACKUP_STORE,
-	});
-
-	return ok('');
-};
-
-export const updateBackup = (payload: Partial<IBackup>): Result<string> => {
-	dispatch({
-		type: actions.BACKUP_UPDATE,
-		payload,
-	});
-	return ok('');
 };

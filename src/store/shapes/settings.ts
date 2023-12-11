@@ -75,7 +75,7 @@ const defaultReceivePreference = [
 	},
 ];
 
-export const defaultSettingsShape: Readonly<TSettings> = {
+export const initialSettingsState: TSettings = {
 	enableAutoReadClipboard: false,
 	enableSendAmountWarning: false,
 	pin: false,
@@ -106,5 +106,5 @@ export const defaultSettingsShape: Readonly<TSettings> = {
 };
 
 export const getDefaultSettingsShape = (): TSettings => {
-	return cloneDeep(defaultSettingsShape);
+	return cloneDeep(initialSettingsState);
 };

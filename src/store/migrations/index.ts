@@ -5,8 +5,8 @@ import { initialActivityState } from '../slices/activity';
 import { defaultBlocktankInfoShape } from '../shapes/blocktank';
 import { defaultTodosShape } from '../shapes/todos';
 import { defaultViewControllers } from '../shapes/ui';
-import { defaultChecksState } from '../slices/checks';
-import { defaultBackupShape } from '../shapes/backup';
+import { initialChecksState } from '../slices/checks';
+import { initialBackupState } from '../shapes/backup';
 import { initialWidgetsState } from '../slices/widgets';
 import { getNetworkContent } from '../shapes/wallet';
 import { __WEB_RELAY__ } from '../../constants/env';
@@ -85,7 +85,7 @@ const migrations = {
 	9: (state): PersistedState => {
 		return {
 			...state,
-			checks: defaultChecksState,
+			checks: initialChecksState,
 		};
 	},
 	10: (state): PersistedState => {
@@ -106,7 +106,7 @@ const migrations = {
 		return {
 			...state,
 			backup: {
-				...defaultBackupShape,
+				...initialBackupState,
 				...state.backup,
 			},
 		};

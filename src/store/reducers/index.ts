@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { storage } from '../mmkv-storage';
 import actions from '../actions/actions';
 import activity from '../slices/activity';
-import backup from './backup';
+import backup from '../slices/backup';
 import blocktank from '../slices/blocktank';
 import checks from '../slices/checks';
 import fees from '../slices/fees';

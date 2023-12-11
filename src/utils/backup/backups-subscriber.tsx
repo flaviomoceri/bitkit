@@ -7,7 +7,7 @@ import {
 	checkProfileAndContactsBackup,
 	performRemoteBackup,
 	performRemoteLdkBackup,
-} from '../../store/actions/backup';
+} from '../../store/utils/backup';
 import { __DISABLE_SLASHTAGS__ } from '../../constants/env';
 import { useSelectedSlashtag } from '../../hooks/slashtags';
 import { backupSelector } from '../../store/reselect/backup';

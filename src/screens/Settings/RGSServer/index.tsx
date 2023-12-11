@@ -19,7 +19,7 @@ import {
 } from '../../../store/reselect/wallet';
 import { rapidGossipSyncUrlSelector } from '../../../store/reselect/settings';
 
-import { defaultSettingsShape } from '../../../store/shapes/settings';
+import { initialSettingsState } from '../../../store/shapes/settings';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
@@ -51,7 +51,7 @@ const RGSServer = ({
 	const dispatch = useAppDispatch();
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const selectedWallet = useAppSelector(selectedWalletSelector);
-	const defaultRGSServer = defaultSettingsShape.rapidGossipSyncUrl;
+	const defaultRGSServer = initialSettingsState.rapidGossipSyncUrl;
 	const rapidGossipSyncUrl = useAppSelector((state) =>
 		rapidGossipSyncUrlSelector(state),
 	);
