@@ -5,11 +5,9 @@ import b4a from 'b4a';
 
 import { __SLASHTAGS_SEEDER_BASE_URL__ } from '../../constants/env';
 import actions from './actions';
-import { getDispatch, getSlashtagsStore } from '../helpers';
+import { dispatch, getSlashtagsStore } from '../helpers';
 import { BasicProfile, ISlashtags, Link, LocalLink } from '../types/slashtags';
 import { seedDrives } from '../../utils/slashtags';
-
-const dispatch = getDispatch();
 
 /**
  * Sets the onboarding profile state.

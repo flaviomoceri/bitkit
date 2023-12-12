@@ -40,8 +40,8 @@ import {
 	rescanAddresses,
 } from '../../utils/wallet';
 import {
+	dispatch,
 	getBlocktankStore,
-	getDispatch,
 	getFeesStore,
 	getSettingsStore,
 	getWalletStore,
@@ -86,8 +86,6 @@ import { getActivityItemById } from '../../utils/activity';
 import { getFakeTransaction } from '../../utils/wallet/testing';
 import { EActivityType, TOnchainActivityItem } from '../types/activity';
 import i18n from '../../utils/i18n';
-
-const dispatch = getDispatch();
 
 export const updateWallet = (
 	payload: Partial<IWalletStore>,

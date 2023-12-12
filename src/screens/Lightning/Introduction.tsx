@@ -12,7 +12,7 @@ import { useBalance } from '../../hooks/wallet';
 import { isGeoBlockedSelector } from '../../store/reselect/user';
 import { TRANSACTION_DEFAULTS } from '../../utils/wallet/constants';
 import type { LightningScreenProps } from '../../navigation/types';
-import { lightningSelector } from '../../store/reselect/lightning';
+import { accountVersionSelector } from '../../store/reselect/lightning';
 import { showToast } from '../../utils/notifications';
 
 const imageSrc = require('../../assets/illustrations/lightning.png');
@@ -23,7 +23,7 @@ const Introduction = ({
 	const { t } = useTranslation('lightning');
 	const { onchainBalance } = useBalance();
 	const isGeoBlocked = useSelector(isGeoBlockedSelector);
-	const lightning = useSelector(lightningSelector);
+	const accountVersion = useSelector(accountVersionSelector);
 
 	const txt = useMemo(
 		() => t(isGeoBlocked ? 'int_blocked' : 'int_text'),
@@ -71,7 +71,7 @@ const Introduction = ({
 								disabled={isDisabled}
 								testID="QuickSetupButton"
 								onPress={(): void => {
-									if (lightning.accountVersion < 2) {
+									if (accountVersion < 2) {
 										showToast({
 											type: 'error',
 											title: t('migrating_ldk_title'),
@@ -91,7 +91,7 @@ const Introduction = ({
 								disabled={isDisabled}
 								testID="CustomSetupButton"
 								onPress={(): void => {
-									if (lightning.accountVersion < 2) {
+									if (accountVersion < 2) {
 										showToast({
 											type: 'error',
 											title: t('migrating_ldk_title'),

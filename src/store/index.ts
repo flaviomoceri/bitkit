@@ -1,4 +1,4 @@
-import { configureStore, ConfigureStoreOptions } from '@reduxjs/toolkit';
+import { configureStore, Middleware } from '@reduxjs/toolkit';
 import createDebugger from 'redux-flipper';
 import logger from 'redux-logger';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
@@ -22,16 +22,19 @@ import {
 	__JEST__,
 } from '../constants/env';
 import mmkvStorage from './mmkv-storage';
-import reducers, { RootReducer } from './reducers';
+import rootReducer, { RootReducer } from './reducers';
 import migrations from './migrations';
 
-const middleware: ConfigureStoreOptions['middleware'] = [];
-const devMiddleware = [
-	...(__ENABLE_REDUX_FLIPPER__ ? [createDebugger()] : []),
-	...(__ENABLE_REDUX_LOGGER__ ? [logger] : []),
-];
-
-const enhancers: ConfigureStoreOptions['enhancers'] = [];
+const devMiddleware: Middleware[] = [];
+if (__ENABLE_REDUX_FLIPPER__) {
+	const reduxFlipperDebugger = createDebugger();
+	// @ts-ignore
+	devMiddleware.push(reduxFlipperDebugger);
+}
+if (__ENABLE_REDUX_LOGGER__) {
+	// @ts-ignore
+	devMiddleware.push(logger);
+}
 
 const persistConfig = {
 	key: 'root',
@@ -42,11 +45,11 @@ const persistConfig = {
 	blacklist: ['receive', 'ui'],
 	migrate: createMigrate(migrations, { debug: __ENABLE_MIGRATION_DEBUG__ }),
 };
-const persistedReducer = persistReducer<RootReducer>(persistConfig, reducers);
+
+const persisted = persistReducer<RootReducer>(persistConfig, rootReducer);
 
 const store = configureStore({
-	reducer: persistedReducer,
-	enhancers: enhancers,
+	reducer: persisted,
 	middleware: (getDefaultMiddleware) => {
 		const defaultMiddleware = getDefaultMiddleware({
 			// specifically ignore redux-persist action types
@@ -60,9 +63,9 @@ const store = configureStore({
 		});
 
 		if (__DEV__ && !__JEST__) {
-			return defaultMiddleware.concat([...middleware, ...devMiddleware]);
+			return defaultMiddleware.concat(devMiddleware);
 		} else {
-			return defaultMiddleware.concat(middleware);
+			return defaultMiddleware;
 		}
 	},
 });

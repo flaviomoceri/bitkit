@@ -1,4 +1,3 @@
-import { Dispatch } from 'redux';
 import cloneDeep from 'lodash/cloneDeep';
 
 import store from '../store';
@@ -81,6 +80,6 @@ export const getBackupStore = (): IBackup => {
 };
 
 /*
-Used to get dispatch outside of a component.
+Used to dispatch outside of a component.
  */
-export const getDispatch = (): Dispatch<any> => store.dispatch;
+export const { dispatch } = store;

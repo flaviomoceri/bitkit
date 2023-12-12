@@ -3,7 +3,7 @@ import { err, ok, Result } from '@synonymdev/result';
 import actions from './actions';
 import { resetSendTransaction, updateSendTransaction } from './wallet';
 import { setLightningSettingUpStep } from './user';
-import { getBlocktankStore, getDispatch, getWalletStore } from '../helpers';
+import { getBlocktankStore, getWalletStore, dispatch } from '../helpers';
 import * as blocktank from '../../utils/blocktank';
 import {
 	createOrder,
@@ -41,8 +41,6 @@ import {
 	ICJitEntry,
 } from '@synonymdev/blocktank-lsp-http-client';
 import { CJitStateEnum } from '@synonymdev/blocktank-lsp-http-client/dist/shared/CJitStateEnum';
-
-const dispatch = getDispatch();
 
 /**
  * Retrieves & updates the status of stored orders that may have changed.

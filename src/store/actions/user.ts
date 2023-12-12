@@ -1,11 +1,9 @@
 import { ok, Result } from '@synonymdev/result';
 
 import actions from './actions';
-import { getDispatch } from '../helpers';
+import { dispatch } from '../helpers';
 import { isGeoBlocked } from '../../utils/blocktank';
 import { IUser } from '../types/user';
-
-const dispatch = getDispatch();
 
 export const updateUser = (payload: Partial<IUser>): Result<string> => {
 	dispatch({

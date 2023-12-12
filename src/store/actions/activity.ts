@@ -6,7 +6,7 @@ import {
 	IActivityItem,
 	TLightningActivityItem,
 } from '../types/activity';
-import { getBlocktankStore, getDispatch } from '../helpers';
+import { getBlocktankStore, dispatch } from '../helpers';
 import { onChainTransactionToActivityItem } from '../../utils/activity';
 import { getCurrentWallet } from '../../utils/wallet';
 import { formatBoostedActivityItems } from '../../utils/boost';
@@ -16,8 +16,6 @@ import { closeBottomSheet, showBottomSheet } from './ui';
 import { checkPendingCJitEntries } from './blocktank';
 import { getLightningChannels } from '../../utils/lightning';
 import { updateSettings } from './settings';
-
-const dispatch = getDispatch();
 
 /**
  * Adds the provided activity item to the activity list.

@@ -61,7 +61,7 @@ import {
 import { receiveSelector } from '../../../store/reselect/receive';
 import { ReceiveScreenProps } from '../../../navigation/types';
 import { isGeoBlockedSelector } from '../../../store/reselect/user';
-import { lightningSelector } from '../../../store/reselect/lightning';
+import { accountVersionSelector } from '../../../store/reselect/lightning';
 
 type Slide = () => ReactElement;
 
@@ -84,7 +84,7 @@ const ReceiveQR = ({
 	const selectedNetwork = useSelector(selectedNetworkSelector);
 	const addressType = useSelector(addressTypeSelector);
 	const isGeoBlocked = useSelector(isGeoBlockedSelector);
-	const lightning = useSelector(lightningSelector);
+	const accountVersion = useSelector(accountVersionSelector);
 	const { id, amount, message, tags, jitOrder } = useSelector(receiveSelector);
 	const lightningBalance = useLightningBalance(false);
 	const receiveNavigationIsOpen = useSelector((state) =>
@@ -113,7 +113,7 @@ const ReceiveQR = ({
 			!receiveNavigationIsOpen ||
 			!lightningBalance.remoteBalance ||
 			lightningBalance.remoteBalance < amount ||
-			lightning.accountVersion < 2
+			accountVersion < 2
 		) {
 			return;
 		}
@@ -313,11 +313,11 @@ const ReceiveQR = ({
 	const qrSize = Math.min(qrMaxWidth, qrMaxHeight);
 
 	const displayReceiveInstantlySwitch = useMemo((): boolean => {
-		if (lightning.accountVersion < 2) {
+		if (accountVersion < 2) {
 			return false;
 		}
 		return !(isGeoBlocked && !lightningBalance.remoteBalance);
-	}, [isGeoBlocked, lightning.accountVersion, lightningBalance.remoteBalance]);
+	}, [isGeoBlocked, accountVersion, lightningBalance.remoteBalance]);
 
 	const QrIcon = useCallback((): ReactElement => {
 		return (

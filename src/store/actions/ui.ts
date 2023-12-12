@@ -8,13 +8,11 @@ import {
 	TProfileLink,
 	ViewControllerParamList,
 } from '../types/ui';
-import { getActivityStore, getDispatch } from '../helpers';
+import { getActivityStore, dispatch } from '../helpers';
 import actions from './actions';
 
 const releaseUrl =
 	'https://github.com/synonymdev/bitkit/releases/download/updater/release.json';
-
-const dispatch = getDispatch();
 
 export const updateUi = (payload: Partial<IUi>): Result<string> => {
 	dispatch({

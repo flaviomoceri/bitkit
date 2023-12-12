@@ -1,4 +1,4 @@
-import { AnyAction, CombinedState, combineReducers } from 'redux';
+import { UnknownAction, combineReducers } from 'redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { storage } from '../mmkv-storage';
@@ -39,8 +39,8 @@ const appReducer = combineReducers({
 
 const rootReducer = (
 	state: ReturnType<typeof appReducer> | undefined,
-	action: AnyAction,
-): CombinedState<ReturnType<typeof appReducer>> => {
+	action: UnknownAction,
+): ReturnType<typeof appReducer> => {
 	if (action.type === actions.WIPE_APP) {
 		console.log('Wiping app data...');
 		// Clear mmkv persisted storage

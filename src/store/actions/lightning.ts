@@ -4,7 +4,7 @@ import { TChannel, TInvoice } from '@synonymdev/react-native-ldk';
 import { getLNURLParams, lnurlChannel } from '@synonymdev/react-native-lnurl';
 
 import actions from './actions';
-import { getDispatch, getLightningStore, getMetaDataStore } from '../helpers';
+import { dispatch, getLightningStore, getMetaDataStore } from '../helpers';
 import { TAvailableNetworks } from '../../utils/networks';
 import { getActivityItemById } from '../../utils/activity';
 import { getSelectedNetwork, getSelectedWallet } from '../../utils/wallet';
@@ -28,8 +28,6 @@ import {
 } from '../types/lightning';
 import { EPaymentType, TWalletName } from '../types/wallet';
 import { EActivityType, TLightningActivityItem } from '../types/activity';
-
-const dispatch = getDispatch();
 
 /**
  * Attempts to update the node id for the given wallet and network.

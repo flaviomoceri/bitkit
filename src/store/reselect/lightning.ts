@@ -15,9 +15,9 @@ import { selectedNetworkSelector, selectedWalletSelector } from './wallet';
 export const lightningState = (state: Store): ILightning => state.lightning;
 export const nodesState = (state: Store): TNodes => state.lightning.nodes;
 
-export const lightningSelector = createSelector(
+export const accountVersionSelector = createSelector(
 	lightningState,
-	(lightning): ILightning => lightning,
+	(lightning) => lightning.accountVersion,
 );
 
 export const nodeSelector = createSelector(
