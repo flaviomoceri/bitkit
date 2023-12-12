@@ -20,6 +20,26 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>bitkit</string>
+				<string>slash</string>
+				<string>slashauth</string>
+				<string>slashfeed</string>
+				<string>bitcoin</string>
+				<string>BITCOIN</string>
+				<string>lightning</string>
+				<string>LIGHTNING</string>
+				<string>lnurl</string>
+				<string>lnurlw</string>
+				<string>lnurlp</string>
+				<string>lnurlc</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -46,7 +66,7 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>Enabling Face ID allows you quick and secure access to your account.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>The photo library is used to scan qrcodes in order to import or send Bitcoin and assets.</string>
 	<key>UIAppFonts</key>
@@ -68,25 +88,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>bitkit</string>
-				<string>slash</string>
-				<string>slashauth</string>
-				<string>slashfeed</string>
-				<string>bitcoin</string>
-				<string>BITCOIN</string>
-				<string>lightning</string>
-				<string>LIGHTNING</string>
-				<string>lnurl</string>
-				<string>lnurlw</string>
-				<string>lnurlp</string>
-				<string>lnurlc</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>

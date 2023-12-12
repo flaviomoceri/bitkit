@@ -1,14 +1,13 @@
 diff --git a/package.json b/package.json
-index 1fb98c3f..73c88464 100644
+index 935aa860..3139603f 100644
 --- a/package.json
 +++ b/package.json
-@@ -196,7 +196,8 @@
-     "_stream_duplex": "readable-stream/duplex",
-     "_stream_passthrough": "readable-stream/passthrough",
-     "stream": "stream-browserify",
--    "net": "react-native-tcp-socket"
-+    "net": "react-native-tcp-socket",
+@@ -182,5 +182,8 @@
+     "redux-flipper": "^2.0.2",
+     "rimraf": "^5.0.5",
+     "typescript": "5.2.2"
++  },
++  "react-native": {
 +    "@shopify/react-native-skia": "react-native-skia-stub"
-   },
-   "browser": {
-     "crypto": "react-native-crypto",
+   }
+ }
