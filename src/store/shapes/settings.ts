@@ -119,7 +119,6 @@ export const defaultSettingsShape: Readonly<ISettings> = {
 	enableDevOptions: __DEV__,
 	treasureChests: [],
 	webRelay: __WEB_RELAY__,
-	isWebRelayTrusted: false,
 };
 
 export const getDefaultSettingsShape = (): ISettings => {
