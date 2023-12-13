@@ -11,7 +11,7 @@ import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { closeSheet } from '../../../store/slices/ui';
-import { updateSettings } from '../../../store/actions/settings';
+import { updateSettings } from '../../../store/slices/settings';
 import { pinForPaymentsSelector } from '../../../store/reselect/settings';
 import type { PinScreenProps } from '../../../navigation/types';
 
@@ -34,7 +34,7 @@ const Result = ({ route }: PinScreenProps<'Result'>): ReactElement => {
 	);
 
 	const handleTogglePress = (): void => {
-		updateSettings({ pinForPayments: !pinForPayments });
+		dispatch(updateSettings({ pinForPayments: !pinForPayments }));
 	};
 
 	const handleButtonPress = (): void => {

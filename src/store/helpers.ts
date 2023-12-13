@@ -2,7 +2,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import store, { RootState } from '../store';
 import { IWalletStore } from './types/wallet';
-import { ISettings } from './types/settings';
+import { TSettings } from './slices/settings';
 import { IMetadata } from './types/metadata';
 import { TActivity } from './slices/activity';
 import { ILightning } from './types/lightning';
@@ -26,7 +26,7 @@ export const getWalletStore = (): IWalletStore => {
 	return cloneDeep(store.getState().wallet);
 };
 
-export const getSettingsStore = (): ISettings => {
+export const getSettingsStore = (): TSettings => {
 	return cloneDeep(store.getState().settings);
 };
 

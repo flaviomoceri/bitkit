@@ -5,7 +5,7 @@ import React, {
 	useCallback,
 	useMemo,
 } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { StyleSheet, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useNoTransactions } from '../../hooks/wallet';
 import useColors from '../../hooks/colors';
-import { updateSettings } from '../../store/actions/settings';
+import { updateSettings } from '../../store/slices/settings';
 import { refreshWallet } from '../../utils/wallet';
 import ActivityListShort from '../../screens/Activity/ActivityListShort';
 import EmptyWallet from '../../screens/Activity/EmptyWallet';
@@ -45,9 +45,10 @@ type Props = WalletScreenProps<'Wallets'> & {
 const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	const [refreshing, setRefreshing] = useState(false);
 	const colors = useColors();
-	const hideBalance = useSelector(hideBalanceSelector);
-	const hideOnboardingSetting = useSelector(hideOnboardingMessageSelector);
-	const widgets = useSelector(widgetsSelector);
+	const dispatch = useAppDispatch();
+	const hideBalance = useAppSelector(hideBalanceSelector);
+	const hideOnboardingSetting = useAppSelector(hideOnboardingMessageSelector);
+	const widgets = useAppSelector(widgetsSelector);
 	const noTransactions = useNoTransactions();
 	const insets = useSafeAreaInsets();
 	const empty = useMemo(() => {
@@ -63,7 +64,7 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	);
 
 	const toggleHideBalance = (): void => {
-		updateSettings({ hideBalance: !hideBalance });
+		dispatch(updateSettings({ hideBalance: !hideBalance }));
 	};
 
 	const navigateToScanner = (): void => {

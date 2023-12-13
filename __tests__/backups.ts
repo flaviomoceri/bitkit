@@ -34,9 +34,9 @@ import {
 	getWidgetsStore,
 } from '../src/store/helpers';
 import {
-	resetSettingsStore,
 	updateSettings,
-} from '../src/store/actions/settings';
+	resetSettingsState,
+} from '../src/store/slices/settings';
 import {
 	resetWidgetsState,
 	setFeedWidget,
@@ -147,10 +147,12 @@ describe('Remote backups', () => {
 	});
 
 	it('Backups and restores settings', async () => {
-		updateSettings({
-			selectedCurrency: 'GBP',
-			enableOfflinePayments: false,
-		});
+		dispatch(
+			updateSettings({
+				selectedCurrency: 'GBP',
+				enableOfflinePayments: false,
+			}),
+		);
 
 		const backup = getSettingsStore();
 
@@ -167,7 +169,7 @@ describe('Remote backups', () => {
 			throw uploadRes.error;
 		}
 
-		resetSettingsStore();
+		dispatch(resetSettingsState());
 		expect(store.getState().settings.selectedCurrency).toEqual('USD');
 
 		const restoreRes = await performSettingsRestore({

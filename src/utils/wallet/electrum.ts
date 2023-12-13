@@ -1,5 +1,4 @@
 import * as electrum from 'rn-electrum-client/helpers';
-import * as peers from 'rn-electrum-client/helpers/peers.json';
 import { Block } from 'bitcoinjs-lib';
 import { err, ok, Result } from '@synonymdev/result';
 
@@ -8,14 +7,12 @@ import {
 	IAddresses,
 	IAddress,
 	IUtxo,
-	IWalletItem,
 	TWalletName,
 	EAddressType,
 } from '../../store/types/wallet';
 import {
 	getAddressFromScriptPubKey,
 	getCurrentWallet,
-	getCustomElectrumPeers,
 	getScriptHash,
 	getSelectedNetwork,
 	getSelectedWallet,
@@ -26,7 +23,7 @@ import {
 import { ICustomElectrumPeer } from '../../store/types/settings';
 import { addressTypes } from '../../store/shapes/wallet';
 import { updateHeader } from '../../store/actions/wallet';
-import { getWalletStore } from '../../store/helpers';
+import { getSettingsStore, getWalletStore } from '../../store/helpers';
 import {
 	IHeader,
 	IGetHeaderResponse,
@@ -708,19 +705,6 @@ export const getScriptPubKeyHistory = async (
 	return history;
 };
 
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-type TCustomElectrumPeerOptionalProtocol = PartialBy<
-	ICustomElectrumPeer,
-	'protocol'
->;
-
-const tempElectrumServers: IWalletItem<TCustomElectrumPeerOptionalProtocol[]> =
-	{
-		bitcoin: peers.bitcoin,
-		bitcoinTestnet: peers.bitcoinTestnet,
-		bitcoinRegtest: [],
-	};
-
 /**
  * Connects to the provided electrum peer. Otherwise, it will attempt to connect to a set of default peers.
  * @param {TAvailableNetworks} [selectedNetwork]
@@ -729,11 +713,11 @@ const tempElectrumServers: IWalletItem<TCustomElectrumPeerOptionalProtocol[]> =
  * @return {Promise<Result<string>>}
  */
 export const connectToElectrum = async ({
-	customPeers,
+	peer,
 	showNotification = true,
 	selectedNetwork,
 }: {
-	customPeers?: TCustomElectrumPeerOptionalProtocol[];
+	peer?: ICustomElectrumPeer;
 	showNotification?: boolean;
 	selectedNetwork?: TAvailableNetworks;
 } = {}): Promise<Result<string>> => {
@@ -744,12 +728,10 @@ export const connectToElectrum = async ({
 	// Attempt to disconnect from any old/lingering connections
 	await electrum.stop({ network: selectedNetwork });
 
-	// Fetch any stored custom peers.
-	if (!customPeers) {
-		customPeers = getCustomElectrumPeers({ selectedNetwork });
-	}
-	if (customPeers.length < 1) {
-		customPeers = tempElectrumServers[selectedNetwork];
+	let customPeers = [peer];
+
+	if (!peer) {
+		customPeers = getSettingsStore().customElectrumPeers[selectedNetwork];
 	}
 
 	const { error, data } = await electrum.start({

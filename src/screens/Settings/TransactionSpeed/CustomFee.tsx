@@ -1,11 +1,10 @@
 import React, { ReactElement, memo, useState, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Caption13Up, Text01S } from '../../../styles/text';
 import { customFeeRateSelector } from '../../../store/reselect/settings';
-import { updateSettings } from '../../../store/actions/settings';
+import { updateSettings } from '../../../store/slices/settings';
 import { ETransactionSpeed } from '../../../store/types/settings';
 import { handleNumberPadPress } from '../../../utils/numberpad';
 import SafeAreaView from '../../../components/SafeAreaView';
@@ -14,6 +13,7 @@ import NavigationHeader from '../../../components/NavigationHeader';
 import Amount from '../../../components/Amount';
 import NumberPad from '../../../components/NumberPad';
 import Button from '../../../components/Button';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import useDisplayValues from '../../../hooks/displayValues';
 import { TRANSACTION_DEFAULTS } from '../../../utils/wallet/constants';
 import type { SettingsScreenProps } from '../../../navigation/types';
@@ -22,7 +22,8 @@ const FeeCustom = ({
 	navigation,
 }: SettingsScreenProps<'CustomFee'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const customFeeRate = useSelector(customFeeRateSelector);
+	const dispatch = useAppDispatch();
+	const customFeeRate = useAppSelector(customFeeRateSelector);
 	const [feeRate, setFeeRate] = useState(customFeeRate);
 
 	const avgTransactionSize = TRANSACTION_DEFAULTS.recommendedBaseFee;
@@ -46,10 +47,12 @@ const FeeCustom = ({
 	};
 
 	const onContinue = (): void => {
-		updateSettings({
-			customFeeRate: feeRate,
-			transactionSpeed: ETransactionSpeed.custom,
-		});
+		dispatch(
+			updateSettings({
+				customFeeRate: feeRate,
+				transactionSpeed: ETransactionSpeed.custom,
+			}),
+		);
 		navigation.goBack();
 	};
 

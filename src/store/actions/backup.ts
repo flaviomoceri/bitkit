@@ -20,8 +20,7 @@ import {
 } from '../../utils/lightning';
 import { EAvailableNetworks, TAvailableNetworks } from '../../utils/networks';
 import { getSelectedNetwork } from '../../utils/wallet';
-import { ISettings } from '../types/settings';
-import { updateSettings } from './settings';
+import { updateSettings, TSettings } from '../slices/settings';
 import { IBackup, TAccountBackup } from '../types/backup';
 import { isObjPartialMatch } from '../../utils/helpers';
 import { getDefaultSettingsShape } from '../shapes/settings';
@@ -382,7 +381,7 @@ export const performSettingsRestore = async ({
 		selectedNetwork = getSelectedNetwork();
 	}
 
-	const backupRes = await getBackup<ISettings>({
+	const backupRes = await getBackup<TSettings>({
 		slashtag,
 		backupCategory: EBackupCategories.settings,
 		selectedNetwork,
@@ -402,14 +401,16 @@ export const performSettingsRestore = async ({
 		return ok({ backupExists: false });
 	}
 
-	updateSettings({
-		...expectedBackupShape,
-		...backup,
-		biometrics: false,
-		pin: false,
-		pinForPayments: false,
-		pinOnLaunch: true,
-	});
+	dispatch(
+		updateSettings({
+			...expectedBackupShape,
+			...backup,
+			biometrics: false,
+			pin: false,
+			pinForPayments: false,
+			pinOnLaunch: true,
+		}),
+	);
 	updateBackup({ remoteSettingsBackupSynced: true });
 
 	// Restore success

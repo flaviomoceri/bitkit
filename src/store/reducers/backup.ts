@@ -11,7 +11,7 @@ const backup = (state: IBackup = defaultBackupShape, action): IBackup => {
 				...action.payload,
 			};
 
-		case actions.UPDATE_SETTINGS: {
+		case 'settings/updateSettings': {
 			const remoteSettingsBackupSyncRequired =
 				state.remoteSettingsBackupSyncRequired ?? new Date().getTime();
 			return {

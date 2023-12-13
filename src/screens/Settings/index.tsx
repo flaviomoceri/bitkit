@@ -1,19 +1,13 @@
-import React, {
-	memo,
-	ReactElement,
-	useCallback,
-	useMemo,
-	useState,
-} from 'react';
+import React, { memo, ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../styles/components';
 import { EItemType, IListData, ItemData } from '../../components/List';
 import SettingsView from './SettingsView';
 import GlowImage from '../../components/GlowImage';
-import { updateSettings } from '../../store/actions/settings';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { updateSettings } from '../../store/slices/settings';
 import { showToast } from '../../utils/notifications';
 import { SettingsScreenProps } from '../../navigation/types';
 import { enableDevOptionsSelector } from '../../store/reselect/settings';
@@ -24,17 +18,16 @@ const MainSettings = ({
 	navigation,
 }: SettingsScreenProps<'MainSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const enableDevOptions = useSelector(enableDevOptionsSelector);
+	const dispatch = useAppDispatch();
+	const enableDevOptions = useAppSelector(enableDevOptionsSelector);
 	const [enableDevOptionsCount, setEnableDevOptionsCount] = useState(0);
 
-	const updateDevOptions = useCallback(() => {
+	const updateDevOptions = (): void => {
 		const count = enableDevOptionsCount + 1;
 		setEnableDevOptionsCount(count);
 		if (count >= 5) {
 			const enabled = !enableDevOptions;
-			updateSettings({
-				enableDevOptions: enabled,
-			});
+			dispatch(updateSettings({ enableDevOptions: enabled }));
 			showToast({
 				type: 'success',
 				title: t(enabled ? 'dev_enabled_title' : 'dev_disabled_title'),
@@ -44,7 +37,7 @@ const MainSettings = ({
 			});
 			setEnableDevOptionsCount(0);
 		}
-	}, [enableDevOptions, enableDevOptionsCount, t]);
+	};
 
 	const settingsListData: IListData[] = useMemo(() => {
 		const data: ItemData[] = [

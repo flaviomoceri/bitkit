@@ -8,13 +8,13 @@ import isEqual from 'lodash/isEqual';
 import { View, TextInput, ScrollView } from '../../../styles/components';
 import { Text01S, Caption13Up } from '../../../styles/text';
 import { ScanIcon } from '../../../styles/icons';
-import { useAppSelector, useAppDispatch } from '../../../hooks/redux';
-import { addElectrumPeer } from '../../../store/actions/settings';
-import { TProtocol } from '../../../store/types/settings';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { updateUi } from '../../../store/slices/ui';
+import { addElectrumPeer } from '../../../store/slices/settings';
+import { TProtocol } from '../../../store/types/settings';
 import { selectedNetworkSelector } from '../../../store/reselect/wallet';
 import { customElectrumPeersSelector } from '../../../store/reselect/settings';
-import { origCustomElectrumPeers } from '../../../store/shapes/settings';
+import { defaultElectrumPeer } from '../../../store/shapes/settings';
 import { connectToElectrum } from '../../../utils/wallet/electrum';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
@@ -144,11 +144,13 @@ const ElectrumConfig = ({
 				[protocol]: Number(peerData.port),
 			};
 			const connectResponse = await connectToElectrum({
+				peer: connectData,
 				selectedNetwork,
-				customPeers: [connectData],
 			});
 
-			addElectrumPeer({ selectedNetwork, peer: connectData });
+			dispatch(
+				addElectrumPeer({ peer: connectData, network: selectedNetwork }),
+			);
 
 			if (connectResponse.isOk()) {
 				dispatch(updateUi({ isConnectedToElectrum: true }));
@@ -175,7 +177,7 @@ const ElectrumConfig = ({
 	};
 
 	const resetToDefault = (): void => {
-		const peer = origCustomElectrumPeers[selectedNetwork][0];
+		const peer = defaultElectrumPeer[selectedNetwork][0];
 		setHost(peer.host);
 		setPort(peer[peer.protocol].toString());
 		setProtocol(peer.protocol);

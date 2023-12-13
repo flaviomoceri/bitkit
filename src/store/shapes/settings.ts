@@ -16,15 +16,11 @@ import {
 	__ELECTRUM_SIGNET_TCP_PORT__,
 	__WEB_RELAY__,
 } from '../../constants/env';
-import {
-	ETransactionSpeed,
-	ICustomElectrumPeer,
-	ISettings,
-} from '../types/settings';
+import { TSettings } from '../slices/settings';
+import { ETransactionSpeed, ICustomElectrumPeer } from '../types/settings';
 import { EUnit } from '../types/wallet';
 
-//TODO: Remove the public Electrum servers below once we spin up our own.
-export const origCustomElectrumPeers: Record<
+export const defaultElectrumPeer: Record<
 	TAvailableNetworks,
 	ICustomElectrumPeer[]
 > = {
@@ -91,7 +87,7 @@ const defaultReceivePreference = [
 	},
 ];
 
-export const defaultSettingsShape: Readonly<ISettings> = {
+export const defaultSettingsShape: Readonly<TSettings> = {
 	enableAutoReadClipboard: false,
 	enableSendAmountWarning: false,
 	pin: false,
@@ -104,7 +100,7 @@ export const defaultSettingsShape: Readonly<ISettings> = {
 	unit: EUnit.satoshi,
 	selectedCurrency: 'USD',
 	selectedLanguage: 'english',
-	customElectrumPeers: origCustomElectrumPeers,
+	customElectrumPeers: defaultElectrumPeer,
 	rapidGossipSyncUrl: 'https://rapidsync.lightningdevkit.org/snapshot/',
 	coinSelectAuto: true,
 	coinSelectPreference: 'small',
@@ -121,6 +117,6 @@ export const defaultSettingsShape: Readonly<ISettings> = {
 	webRelay: __WEB_RELAY__,
 };
 
-export const getDefaultSettingsShape = (): ISettings => {
+export const getDefaultSettingsShape = (): TSettings => {
 	return cloneDeep(defaultSettingsShape);
 };

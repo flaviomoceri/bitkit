@@ -9,8 +9,10 @@ import {
 	updateWallet,
 } from '../src/store/actions/wallet';
 import { connectToElectrum } from '../src/utils/wallet/electrum';
-import { addElectrumPeer } from '../src/store/actions/settings';
+import { addElectrumPeer } from '../src/store/slices/settings';
 import initWaitForElectrumToSync from './utils/wait-for-electrum';
+import { dispatch } from '../src/store/helpers';
+import { getSelectedNetwork } from '../src/utils/wallet';
 
 jest.setTimeout(60_000);
 
@@ -70,12 +72,19 @@ describe('Wallet - wallet restore and receive', () => {
 		updateWallet({ selectedNetwork: 'bitcoinRegtest' });
 		expect(store.getState().wallet.selectedNetwork).toEqual('bitcoinRegtest');
 
-		res = await addElectrumPeer({
-			peer: { host: '127.0.0.1', ssl: 60002, tcp: 60001, protocol: 'tcp' },
-		});
-		if (res.isErr()) {
-			throw res.error;
-		}
+		const selectedNetwork = getSelectedNetwork();
+
+		dispatch(
+			addElectrumPeer({
+				peer: {
+					host: '127.0.0.1',
+					ssl: 60002,
+					tcp: 60001,
+					protocol: 'tcp',
+				},
+				network: selectedNetwork,
+			}),
+		);
 
 		res = await connectToElectrum();
 		if (res.isErr()) {

@@ -31,20 +31,20 @@ import {
 	useValue,
 	vec,
 } from '@shopify/react-native-skia';
-import { useSelector } from 'react-redux';
 
 import { AnimatedView, View } from '../../../styles/components';
 import { BitcoinCircleIcon } from '../../../styles/icons';
 import { Title } from '../../../styles/text';
 import NavigationHeader from '../../../components/NavigationHeader';
-import { useBalance, useSwitchUnit } from '../../../hooks/wallet';
 import useColors from '../../../hooks/colors';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { useBalance, useSwitchUnit } from '../../../hooks/wallet';
 import ActivityList from '../../Activity/ActivityList';
 import BitcoinBreakdown from './BitcoinBreakdown';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Money from '../../../components/Money';
 import BlurView from '../../../components/BlurView';
-import { updateSettings } from '../../../store/actions/settings';
+import { updateSettings } from '../../../store/slices/settings';
 import { hideBalanceSelector } from '../../../store/reselect/settings';
 import { capitalize } from '../../../utils/helpers';
 import DetectSwipe from '../../../components/DetectSwipe';
@@ -87,7 +87,8 @@ const WalletsDetail = ({
 }: WalletScreenProps<'WalletsDetail'>): ReactElement => {
 	const { assetType } = route.params;
 	const { totalBalance } = useBalance();
-	const hideBalance = useSelector(hideBalanceSelector);
+	const dispatch = useAppDispatch();
+	const hideBalance = useAppSelector(hideBalanceSelector);
 	const [_, switchUnit] = useSwitchUnit();
 	const colors = useColors();
 	const size = useValue({ width: 0, height: 0 });
@@ -107,7 +108,7 @@ const WalletsDetail = ({
 	}, [height, headerHeight]);
 
 	const toggleHideBalance = (): void => {
-		updateSettings({ hideBalance: !hideBalance });
+		dispatch(updateSettings({ hideBalance: !hideBalance }));
 	};
 
 	const onScroll = useCallback(

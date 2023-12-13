@@ -47,7 +47,6 @@ import { btcToSats } from '../conversion';
 import { getKeychainValue, setKeychainValue } from '../keychain';
 import {
 	getLightningStore,
-	getSettingsStore,
 	getUiStore,
 	getWalletStore,
 } from '../../store/helpers';
@@ -64,11 +63,8 @@ import {
 	updateTransactions,
 	updateUtxos,
 } from '../../store/actions/wallet';
-import {
-	ICustomElectrumPeer,
-	TCoinSelectPreference,
-} from '../../store/types/settings';
-import { updateActivityList } from '../../store/actions/activity';
+import { TCoinSelectPreference } from '../../store/types/settings';
+import { updateActivityList } from '../../store/utils/activity';
 import { getByteCount } from './transactions';
 import {
 	getAddressHistory,
@@ -90,7 +86,7 @@ import {
 import { moveMetaIncTxTags } from '../../store/actions/metadata';
 import { refreshOrdersList } from '../../store/actions/blocktank';
 import { IDefaultLightningShape } from '../../store/types/lightning';
-import { showNewTxPrompt } from '../../store/actions/ui';
+import { showNewTxPrompt } from '../../store/utils/ui';
 import { objectKeys } from '../objectKeys';
 
 bitcoin.initEccLib(ecc);
@@ -1624,18 +1620,6 @@ export const decodeOpReturnMessage = (opReturn = ''): string[] => {
 		console.log(e);
 		return messages;
 	}
-};
-
-export const getCustomElectrumPeers = ({
-	selectedNetwork,
-}: {
-	selectedNetwork?: TAvailableNetworks;
-}): ICustomElectrumPeer[] => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
-	return getSettingsStore().customElectrumPeers[selectedNetwork];
 };
 
 export interface IVin {

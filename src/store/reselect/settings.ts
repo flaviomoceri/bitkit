@@ -1,24 +1,24 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 import { RootState } from '..';
+import themes, { IThemeColors } from '../../styles/themes';
+import { TSettings } from '../slices/settings';
+import { TAvailableNetworks } from '@synonymdev/react-native-ldk';
+import { EUnit } from '../types/wallet';
 import {
 	ICustomElectrumPeer,
-	ISettings,
 	TCoinSelectPreference,
 	TCustomElectrumPeers,
 	TReceiveOption,
 	TTheme,
 	ETransactionSpeed,
 } from '../types/settings';
-import { TAvailableNetworks } from '../../utils/networks';
-import themes, { IThemeColors } from '../../styles/themes';
-import { EUnit } from '../types/wallet';
 
-export const settingsState = (state: RootState): ISettings => state.settings;
+export const settingsState = (state: RootState): TSettings => state.settings;
 const customElectrumPeersState = (state: RootState): TCustomElectrumPeers =>
 	state.settings.customElectrumPeers;
 
-export const settingsSelector = (state: RootState): ISettings => state.settings;
+export const settingsSelector = (state: RootState): TSettings => state.settings;
 export const selectedCurrencySelector = createSelector(
 	[settingsState],
 	(settings): string => settings.selectedCurrency,

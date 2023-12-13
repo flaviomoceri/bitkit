@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import isEqual from 'lodash/isEqual';
 
@@ -12,13 +11,14 @@ import {
 } from '../../../styles/components';
 import { Text01S, Caption13Up } from '../../../styles/text';
 import { ScanIcon } from '../../../styles/icons';
-import { updateSettings } from '../../../store/actions/settings';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { updateSettings } from '../../../store/slices/settings';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from '../../../store/reselect/wallet';
 import { rapidGossipSyncUrlSelector } from '../../../store/reselect/settings';
-import Store from '../../../store/types';
+
 import { defaultSettingsShape } from '../../../store/shapes/settings';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
@@ -48,10 +48,11 @@ const RGSServer = ({
 	navigation,
 }: SettingsScreenProps<'RGSServer'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const selectedWallet = useSelector(selectedWalletSelector);
+	const dispatch = useAppDispatch();
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const defaultRGSServer = defaultSettingsShape.rapidGossipSyncUrl;
-	const rapidGossipSyncUrl = useSelector((state: Store) =>
+	const rapidGossipSyncUrl = useAppSelector((state) =>
 		rapidGossipSyncUrlSelector(state),
 	);
 	const [loading, setLoading] = useState(false);
@@ -71,7 +72,7 @@ const RGSServer = ({
 
 	const connectToRGSServer = async (): Promise<void> => {
 		setLoading(true);
-		updateSettings({ rapidGossipSyncUrl: rgsUrl });
+		dispatch(updateSettings({ rapidGossipSyncUrl: rgsUrl }));
 		await setupLdk({
 			selectedWallet,
 			selectedNetwork,

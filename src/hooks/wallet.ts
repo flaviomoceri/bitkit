@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 
-import { useAppSelector } from '../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import {
 	claimableBalanceSelector,
 	openChannelsSelector,
 } from '../store/reselect/lightning';
-import { updateSettings } from '../store/actions/settings';
+import { updateSettings } from '../store/slices/settings';
 import { EUnit } from '../store/types/wallet';
 import { primaryUnitSelector } from '../store/reselect/settings';
 import {
@@ -82,7 +82,8 @@ export function useNoTransactions(): boolean {
 }
 
 export const useSwitchUnit = (): [EUnit, () => void] => {
-	const unit = useSelector(primaryUnitSelector);
+	const unit = useAppSelector(primaryUnitSelector);
+	const dispatch = useAppDispatch();
 
 	// BTC -> satoshi -> fiat
 	const nextUnit = useMemo(() => {
@@ -96,7 +97,7 @@ export const useSwitchUnit = (): [EUnit, () => void] => {
 	}, [unit]);
 
 	const switchUnit = (): void => {
-		updateSettings({ unit: nextUnit });
+		dispatch(updateSettings({ unit: nextUnit }));
 	};
 
 	return [nextUnit, switchUnit];
