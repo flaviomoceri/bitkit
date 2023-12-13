@@ -12,10 +12,7 @@ import { getSlashtagsPrimaryKey } from '../utils/wallet';
 import { seedHashSelector } from '../store/reselect/wallet';
 import { showToast } from '../utils/notifications';
 import { useAppSelector } from '../hooks/redux';
-import {
-	webRelaySelector,
-	webRelayTrustedSelector,
-} from '../store/reselect/settings';
+import { webRelaySelector } from '../store/reselect/settings';
 
 class Store {
 	location: string;
@@ -97,7 +94,6 @@ let profile: SlashtagsProfile;
 export interface ISlashtagsContext2 {
 	webRelayClient: Client;
 	webRelayUrl: string;
-	isWebRelayTrusted: boolean;
 	url: string;
 	profile: SlashtagsProfile;
 }
@@ -105,7 +101,6 @@ export interface ISlashtagsContext2 {
 export const SlashtagsContext2 = createContext<ISlashtagsContext2>({
 	webRelayClient: {} as Client,
 	webRelayUrl: '',
-	isWebRelayTrusted: false,
 	url: '',
 	profile: {} as SlashtagsProfile,
 });
@@ -119,7 +114,6 @@ export const SlashtagsProvider2 = ({
 	const [url, setUrl] = useState<string>('');
 	const seedHash = useAppSelector(seedHashSelector);
 	const webRelayUrl = useAppSelector(webRelaySelector);
-	const isWebRelayTrusted = useAppSelector(webRelayTrustedSelector);
 
 	useEffect(() => {
 		if (!seedHash) {
@@ -147,7 +141,6 @@ export const SlashtagsProvider2 = ({
 				relay: webRelayUrl,
 				keyPair,
 				store,
-				_skipRecordVerification: isWebRelayTrusted,
 			});
 			setClient(webRelayClient);
 
@@ -159,7 +152,7 @@ export const SlashtagsProvider2 = ({
 			});
 			setUrl(long);
 		})();
-	}, [seedHash, webRelayUrl, isWebRelayTrusted]);
+	}, [seedHash, webRelayUrl]);
 
 	return (
 		// Do not render children until we have a url
@@ -167,7 +160,6 @@ export const SlashtagsProvider2 = ({
 			value={{
 				webRelayClient: client,
 				webRelayUrl,
-				isWebRelayTrusted,
 				url,
 				profile,
 			}}>
