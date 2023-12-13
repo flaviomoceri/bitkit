@@ -22,11 +22,12 @@ import {
 	getTransactionInputValue,
 	parseOnChainPaymentRequest,
 } from './wallet/transactions';
-import { getLightningStore } from '../store/helpers';
+import { dispatch, getLightningStore } from '../store/helpers';
 import { showToast, ToastOptions } from './notifications';
 import { updateSendTransaction } from '../store/actions/wallet';
 import { getBalance, getSelectedNetwork, getSelectedWallet } from './wallet';
-import { showBottomSheet, closeBottomSheet } from '../store/actions/ui';
+import { closeSheet } from '../store/slices/ui';
+import { showBottomSheet } from '../store/utils/ui';
 import { handleSlashtagURL } from './slashtags';
 import { getSlashPayConfig2 } from './slashtags2';
 import {
@@ -851,7 +852,7 @@ export const handleData = async ({
 	switch (qrDataType) {
 		case EQRDataType.slashtagURL: {
 			handleSlashtagURL(data.url);
-			closeBottomSheet('addContactModal');
+			dispatch(closeSheet('addContactModal'));
 			return ok({ type: EQRDataType.slashtagURL });
 		}
 		case EQRDataType.slashFeedURL: {
@@ -1063,7 +1064,7 @@ export const handleData = async ({
 				});
 				return err(savePeerRes.error.message);
 			}
-			closeBottomSheet('sendNavigation');
+			dispatch(closeSheet('sendNavigation'));
 			showToast({
 				type: 'success',
 				title: savePeerRes.value,

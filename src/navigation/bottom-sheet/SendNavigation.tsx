@@ -1,5 +1,5 @@
 import React, { ReactElement, memo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { createNavigationContainerRef } from '@react-navigation/native';
 import {
 	createNativeStackNavigator,
@@ -101,9 +101,9 @@ export const sendNavigation = {
 const SendNavigation = (): ReactElement => {
 	const snapPoints = useSnapPoints('large');
 	const lightningBalance = useLightningBalance(false);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const { isOpen, screen } = useSelector((state) => {
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const { isOpen, screen } = useAppSelector((state) => {
 		return viewControllerSelector(state, 'sendNavigation');
 	});
 

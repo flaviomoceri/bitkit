@@ -50,7 +50,7 @@ const backup = (state: IBackup = defaultBackupShape, action): IBackup => {
 			};
 		}
 
-		case actions.ADD_ACTIVITY_ITEM: {
+		case 'activity/updateActivityItems': {
 			// we only listen for LN activity here
 			if (action.payload.activityType !== EActivityType.lightning) {
 				return state;

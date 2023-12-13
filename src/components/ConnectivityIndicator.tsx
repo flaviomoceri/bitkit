@@ -1,16 +1,16 @@
 import React, { memo, ReactElement, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 
-import { updateUi } from '../store/actions/ui';
 import { View, AnimatedView } from '../styles/components';
 import { Text01M, Caption13M } from '../styles/text';
 import { BrokenLinkIcon } from '../styles/icons';
 import { showToast } from '../utils/notifications';
 import { connectToElectrum } from '../utils/wallet/electrum';
 import Button from './Button';
+import { updateUi } from '../store/slices/ui';
 import {
 	isConnectedToElectrumSelector,
 	isOnlineSelector,
@@ -18,10 +18,11 @@ import {
 
 const ConnectivityIndicator = (): ReactElement => {
 	const { t } = useTranslation('other');
+	const dispatch = useAppDispatch();
 	const [isLoading, setIsLoading] = useState(false);
 
-	const isConnectedToElectrum = useSelector(isConnectedToElectrumSelector);
-	const isOnline = useSelector(isOnlineSelector);
+	const isConnectedToElectrum = useAppSelector(isConnectedToElectrumSelector);
+	const isOnline = useAppSelector(isOnlineSelector);
 
 	if (isOnline && isConnectedToElectrum) {
 		return <></>;
@@ -31,7 +32,7 @@ const ConnectivityIndicator = (): ReactElement => {
 		setIsLoading(true);
 		const connectionResponse = await connectToElectrum();
 		if (connectionResponse.isOk()) {
-			updateUi({ isConnectedToElectrum: true });
+			dispatch(updateUi({ isConnectedToElectrum: true }));
 			showToast({
 				type: 'success',
 				title: t('connection_restored_title'),

@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useMemo } from 'react';
 import { View, SectionList, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../hooks/redux';
 import { BottomSheetSectionList } from '@gorhom/bottom-sheet';
 
 import ProfileImage from './ProfileImage';
@@ -86,7 +86,7 @@ const ContactsList = ({
 	bottomSheet?: boolean;
 }): ReactElement => {
 	const { t } = useTranslation('slashtags');
-	const contacts = useSelector(contactsSelector);
+	const contacts = useAppSelector(contactsSelector);
 	const { url: myProfileURL } = useSelectedSlashtag2();
 
 	const filteredContacts = useMemo(() => {

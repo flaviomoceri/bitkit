@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { storage } from '../mmkv-storage';
 import actions from '../actions/actions';
-import ui from './ui';
+import ui from '../slices/ui';
 import user from './user';
 import wallet from './wallet';
 import receive from './receive';

@@ -1,7 +1,6 @@
 import React, { memo, ReactElement, useEffect, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 
 import { __E2E__ } from '../../constants/env';
 import { Caption13Up, Display, Text02S } from '../../styles/text';
@@ -10,10 +9,10 @@ import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationH
 import SafeAreaInset from '../../components/SafeAreaInset';
 import GlowImage from '../../components/GlowImage';
 import Button from '../../components/Button';
-import { ignoreHighBalance } from '../../store/actions/user';
-import { closeBottomSheet, showBottomSheet } from '../../store/actions/ui';
+import { ignoreHighBalance } from '../../store/slices/user';
 import { viewControllersSelector } from '../../store/reselect/ui';
 import { useBalance } from '../../hooks/wallet';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { getFiatDisplayValues } from '../../utils/displayValues';
 import { openURL } from '../../utils/helpers';
 import { objectKeys } from '../../utils/objectKeys';
@@ -22,11 +21,13 @@ import {
 	useBottomSheetBackPress,
 	useSnapPoints,
 } from '../../hooks/bottomSheet';
+import { EUnit } from '../../store/types/wallet';
+import { closeSheet } from '../../store/slices/ui';
+import { showBottomSheet } from '../../store/utils/ui';
 import {
 	ignoreHighBalanceCountSelector,
 	ignoreHighBalanceTimestampSelector,
 } from '../../store/reselect/user';
-import { EUnit } from '../../store/types/wallet';
 
 const imageSrc = require('../../assets/illustrations/exclamation-mark.png');
 
@@ -70,10 +71,11 @@ const HighBalanceWarning = ({
 	const { t } = useTranslation('other');
 	const { totalBalance } = useBalance();
 	const snapPoints = useSnapPoints('medium');
-	const count = useSelector(ignoreHighBalanceCountSelector);
-	const exchangeRates = useSelector(exchangeRatesSelector);
-	const viewControllers = useSelector(viewControllersSelector);
-	const ignoreTimestamp = useSelector(ignoreHighBalanceTimestampSelector);
+	const dispatch = useAppDispatch();
+	const count = useAppSelector(ignoreHighBalanceCountSelector);
+	const exchangeRates = useAppSelector(exchangeRatesSelector);
+	const viewControllers = useAppSelector(viewControllersSelector);
+	const ignoreTimestamp = useAppSelector(ignoreHighBalanceTimestampSelector);
 
 	useBottomSheetBackPress('highBalance');
 
@@ -141,7 +143,7 @@ const HighBalanceWarning = ({
 
 	const onDismiss = (): void => {
 		ignoreHighBalance(true);
-		closeBottomSheet('highBalance');
+		dispatch(closeSheet('highBalance'));
 	};
 
 	return (

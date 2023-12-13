@@ -12,7 +12,7 @@ import {
 	resetSelectedWallet,
 	updateWallet,
 } from '../../../store/actions/wallet';
-import { resetUserStore } from '../../../store/actions/user';
+import { resetUserState } from '../../../store/slices/user';
 import { resetActivityState } from '../../../store/slices/activity';
 import {
 	resetLightningStore,
@@ -21,10 +21,11 @@ import {
 } from '../../../store/actions/lightning';
 import { resetBlocktankStore } from '../../../store/actions/blocktank';
 import { resetSlashtagsStore } from '../../../store/actions/slashtags';
-import { resetWidgetsStore } from '../../../store/actions/widgets';
-import { resetFeesStore } from '../../../store/actions/fees';
+import { resetWidgetsState } from '../../../store/slices/widgets';
+import { resetFeesState } from '../../../store/slices/fees';
 import { resetTodos } from '../../../store/actions/todos';
-import { resetSettingsStore, wipeApp } from '../../../store/actions/settings';
+import { resetSettingsState } from '../../../store/slices/settings';
+import { wipeApp } from '../../../store/utils/settings';
 import { getStore, getWalletStore } from '../../../store/helpers';
 import { resetMetaStore } from '../../../store/actions/metadata';
 import { warningsSelector } from '../../../store/reselect/checks';
@@ -335,7 +336,7 @@ const DevSettings = ({
 				{
 					title: 'Reset Fees Store',
 					type: EItemType.button,
-					onPress: resetFeesStore,
+					onPress: () => dispatch(resetFeesState()),
 				},
 				{
 					title: 'Reset Lightning Store',
@@ -350,7 +351,7 @@ const DevSettings = ({
 				{
 					title: 'Reset Settings Store',
 					type: EItemType.button,
-					onPress: resetSettingsStore,
+					onPress: () => dispatch(resetSettingsState()),
 				},
 				{
 					title: 'Reset Slashtags Store',
@@ -365,12 +366,12 @@ const DevSettings = ({
 				{
 					title: 'Reset User Store',
 					type: EItemType.button,
-					onPress: resetUserStore,
+					onPress: () => dispatch(resetUserState()),
 				},
 				{
 					title: 'Reset Widgets Store',
 					type: EItemType.button,
-					onPress: resetWidgetsStore,
+					onPress: () => dispatch(resetWidgetsState()),
 				},
 				{
 					title: 'Wipe App',

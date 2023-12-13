@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import { err, ok, Result } from '@synonymdev/result';
 import Url from 'url-parse';
 import { useTranslation } from 'react-i18next';
@@ -9,12 +8,12 @@ import isEqual from 'lodash/isEqual';
 import { View, TextInput, ScrollView } from '../../../styles/components';
 import { Text01S, Caption13Up } from '../../../styles/text';
 import { ScanIcon } from '../../../styles/icons';
+import { useAppSelector, useAppDispatch } from '../../../hooks/redux';
 import { addElectrumPeer } from '../../../store/actions/settings';
 import { TProtocol } from '../../../store/types/settings';
-import { updateUi } from '../../../store/actions/ui';
+import { updateUi } from '../../../store/slices/ui';
 import { selectedNetworkSelector } from '../../../store/reselect/wallet';
 import { customElectrumPeersSelector } from '../../../store/reselect/settings';
-import Store from '../../../store/types';
 import { origCustomElectrumPeers } from '../../../store/shapes/settings';
 import { connectToElectrum } from '../../../utils/wallet/electrum';
 import NavigationHeader from '../../../components/NavigationHeader';
@@ -85,10 +84,11 @@ const ElectrumConfig = ({
 	navigation,
 }: SettingsScreenProps<'ElectrumConfig'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const customElectrumPeers = useSelector((state: Store) =>
-		customElectrumPeersSelector(state, selectedNetwork),
-	);
+	const dispatch = useAppDispatch();
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const customElectrumPeers = useAppSelector((state) => {
+		return customElectrumPeersSelector(state, selectedNetwork);
+	});
 	const savedPeer = customElectrumPeers[0];
 	const [connectedPeer, setConnectedPeer] = useState<IPeerData>();
 	const [loading, setLoading] = useState(false);
@@ -151,7 +151,7 @@ const ElectrumConfig = ({
 			addElectrumPeer({ selectedNetwork, peer: connectData });
 
 			if (connectResponse.isOk()) {
-				updateUi({ isConnectedToElectrum: true });
+				dispatch(updateUi({ isConnectedToElectrum: true }));
 				showToast({
 					type: 'success',
 					title: t('es.server_updated_title'),
@@ -159,7 +159,7 @@ const ElectrumConfig = ({
 				});
 			} else {
 				console.log(connectResponse.error.message);
-				updateUi({ isConnectedToElectrum: false });
+				dispatch(updateUi({ isConnectedToElectrum: false }));
 				showToast({
 					type: 'error',
 					title: t('es.server_error'),

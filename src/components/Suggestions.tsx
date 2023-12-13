@@ -15,7 +15,7 @@ import { View as ThemedView } from '../styles/components';
 import { showToast } from '../utils/notifications';
 import { TTodoType } from '../store/types/todos';
 import { channelsNotificationsShown, hideTodo } from '../store/actions/todos';
-import { showBottomSheet } from '../store/actions/ui';
+import { showBottomSheet } from '../store/utils/ui';
 import {
 	newChannelsNotificationsSelector,
 	todosFullSelector,

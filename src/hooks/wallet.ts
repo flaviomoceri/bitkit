@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 
-import Store from '../store/types';
+import { useAppSelector } from '../hooks/redux';
 import {
 	claimableBalanceSelector,
 	openChannelsSelector,
@@ -27,13 +26,13 @@ export const useBalance = (): {
 	spendableBalance: number; // Total spendable funds (onchain + spendable lightning)
 	totalBalance: number; // Total funds (all of the above)
 } => {
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const currentWallet = useSelector((state: Store) => {
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const currentWallet = useAppSelector((state) => {
 		return currentWalletSelector(state, selectedWallet);
 	});
-	const openChannels = useSelector(openChannelsSelector);
-	const claimableBalance = useSelector(claimableBalanceSelector);
+	const openChannels = useAppSelector(openChannelsSelector);
+	const claimableBalance = useAppSelector(claimableBalanceSelector);
 
 	// Get the total spending & reserved balance of all open channels
 	let spendingBalance = 0;
@@ -68,7 +67,7 @@ export const useBalance = (): {
  * Returs true, if current wallet has no transactions
  */
 export function useNoTransactions(): boolean {
-	const empty = useSelector((store: Store) => {
+	const empty = useAppSelector((store) => {
 		const wallet = store.wallet.selectedWallet;
 		const network = store.wallet.selectedNetwork;
 		if (wallet && store.wallet?.wallets[wallet]) {

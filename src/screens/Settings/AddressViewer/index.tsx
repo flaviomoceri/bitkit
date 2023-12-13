@@ -67,7 +67,8 @@ import {
 	updateSendTransaction,
 	updateWallet,
 } from '../../../store/actions/wallet';
-import { showBottomSheet, updateUi } from '../../../store/actions/ui';
+import { updateUi } from '../../../store/slices/ui';
+import { showBottomSheet } from '../../../store/utils/ui';
 import SearchInput from '../../../components/SearchInput';
 import AddressViewerListItem from './AddressViewerListItem';
 import { IThemeColors } from '../../../styles/themes';
@@ -75,7 +76,7 @@ import { updateActivityList } from '../../../store/utils/activity';
 import { resetActivityState } from '../../../store/slices/activity';
 import { setupLdk } from '../../../utils/lightning';
 import { startWalletServices } from '../../../utils/startup';
-import { updateOnchainFeeEstimates } from '../../../store/actions/fees';
+import { updateOnchainFeeEstimates } from '../../../store/utils/fees';
 import { viewControllerIsOpenSelector } from '../../../store/reselect/ui';
 
 export type TAddressViewerData = {
@@ -712,11 +713,11 @@ const AddressViewer = ({
 				selectedWallet,
 				selectedNetwork,
 			});
-			updateUi({ fromAddressViewer: true });
+			dispatch(updateUi({ fromAddressViewer: true }));
 			sendMax({ selectedWallet, selectedNetwork });
 			showBottomSheet('sendNavigation', { screen: 'ReviewAndSend' });
 		},
-		[selectedNetwork, selectedUtxos, selectedWallet, utxos],
+		[selectedNetwork, selectedUtxos, selectedWallet, utxos, dispatch],
 	);
 
 	/**

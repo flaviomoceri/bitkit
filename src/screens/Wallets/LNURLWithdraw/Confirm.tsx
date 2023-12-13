@@ -1,6 +1,5 @@
 import React, { ReactElement, memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
@@ -14,19 +13,21 @@ import {
 	selectedWalletSelector,
 } from '../../../store/reselect/wallet';
 import GlowImage from '../../../components/GlowImage';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { handleLnurlWithdraw } from '../../../utils/lnurl';
-import { closeBottomSheet } from '../../../store/actions/ui';
 import { Text01S } from '../../../styles/text';
 import { showToast } from '../../../utils/notifications';
 import LightningSyncing from '../../../components/LightningSyncing';
+import { closeSheet } from '../../../store/slices/ui';
 
 const imageSrc = require('../../../assets/illustrations/transfer.png');
 
 const Confirm = ({ route }: LNURLWithdrawProps<'Confirm'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const { amount, wParams } = route.params;
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const dispatch = useAppDispatch();
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -42,7 +43,7 @@ const Confirm = ({ route }: LNURLWithdrawProps<'Confirm'>): ReactElement => {
 		if (res.isErr()) {
 			return;
 		}
-		closeBottomSheet('lnurlWithdraw');
+		dispatch(closeSheet('lnurlWithdraw'));
 		showToast({
 			type: 'success',
 			title: t('lnurl_w_success_title'),

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { FadeIn } from 'react-native-reanimated';
 
 import { receiveIcon, sendIcon } from '../assets/icons/tabs';
-import { showBottomSheet } from '../store/actions/ui';
+import { showBottomSheet } from '../store/utils/ui';
 import { resetSendTransaction } from '../store/actions/wallet';
 import { betaRiskAcceptedSelector } from '../store/reselect/user';
 import { viewControllersSelector } from '../store/reselect/ui';

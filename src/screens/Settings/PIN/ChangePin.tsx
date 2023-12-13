@@ -18,7 +18,7 @@ import NumberPad from '../../../components/NumberPad';
 import useColors from '../../../hooks/colors';
 import { vibrate } from '../../../utils/helpers';
 import { getKeychainValue } from '../../../utils/keychain';
-import { showBottomSheet } from '../../../store/actions/ui';
+import { showBottomSheet } from '../../../store/utils/ui';
 import type { SettingsScreenProps } from '../../../navigation/types';
 
 const ChangePin = ({

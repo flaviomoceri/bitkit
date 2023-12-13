@@ -1,40 +1,20 @@
 import { Platform } from 'react-native';
 import { getBuildNumber } from 'react-native-device-info';
-import { ok, Result } from '@synonymdev/result';
 
-import {
-	IUi,
-	TAvailableUpdate,
-	TProfileLink,
-	ViewControllerParamList,
-} from '../types/ui';
 import { getActivityStore, dispatch } from '../helpers';
-import actions from './actions';
+import { closeSheet, setAppUpdateInfo, showSheet } from '../slices/ui';
+import { TAvailableUpdate, ViewControllerParamList } from '../types/ui';
 
 const releaseUrl =
 	'https://github.com/synonymdev/bitkit/releases/download/updater/release.json';
-
-export const updateUi = (payload: Partial<IUi>): Result<string> => {
-	dispatch({
-		type: actions.UPDATE_UI,
-		payload,
-	});
-	return ok('');
-};
 
 export const showBottomSheet = <View extends keyof ViewControllerParamList>(
 	...args: undefined extends ViewControllerParamList[View]
 		? [view: View] | [view: View, params: ViewControllerParamList[View]]
 		: [view: View, params: ViewControllerParamList[View]]
-): Result<string> => {
+): void => {
 	const [view, params] = args;
-
-	dispatch({
-		type: actions.SHOW_SHEET,
-		payload: { view, params },
-	});
-
-	return ok('');
+	dispatch(showSheet({ view, params }));
 };
 
 export const showNewTxPrompt = (txId: string): void => {
@@ -42,26 +22,8 @@ export const showNewTxPrompt = (txId: string): void => {
 
 	if (activityItem) {
 		showBottomSheet('newTxPrompt', { activityItem });
-		closeBottomSheet('receiveNavigation');
+		dispatch(closeSheet('receiveNavigation'));
 	}
-};
-
-export const closeBottomSheet = (id: keyof ViewControllerParamList): void => {
-	dispatch({
-		type: actions.CLOSE_SHEET,
-		payload: id,
-	});
-};
-
-export const updateProfileLink = (payload: {
-	title: TProfileLink['title'];
-	url: TProfileLink['url'];
-}): Result<string> => {
-	dispatch({
-		type: actions.UPDATE_PROFILE_LINK,
-		payload,
-	});
-	return ok('');
 };
 
 export const checkForAppUpdate = async (): Promise<void> => {
@@ -73,17 +35,6 @@ export const checkForAppUpdate = async (): Promise<void> => {
 	const updateAvailable = latestBuild > currentBuild;
 
 	if (updateAvailable) {
-		dispatch({
-			type: actions.SET_APP_UPDATE_INFO,
-			payload: release,
-		});
+		dispatch(setAppUpdateInfo(release));
 	}
-};
-
-/*
- * This reset the user store to defaultUserShape
- */
-export const resetUiStore = (): Result<string> => {
-	dispatch({ type: actions.RESET_UI_STORE });
-	return ok('');
 };

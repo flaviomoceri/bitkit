@@ -9,7 +9,7 @@ import SwipeToConfirm from '../../components/SwipeToConfirm';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import AdjustValue from '../../components/AdjustValue';
 
-import { closeBottomSheet } from '../../store/actions/ui';
+import { closeSheet } from '../../store/slices/ui';
 import { resetSendTransaction } from '../../store/actions/wallet';
 import {
 	adjustFee,
@@ -82,14 +82,14 @@ const BoostForm = ({
 
 			if (res.isErr()) {
 				console.log(res.error.message);
-				closeBottomSheet('boostPrompt');
+				dispatch(closeSheet('boostPrompt'));
 			}
 		})();
 
 		return (): void => {
 			resetSendTransaction({ selectedNetwork, selectedWallet });
 		};
-	}, [activityItem.id, selectedNetwork, selectedWallet]);
+	}, [activityItem.id, selectedNetwork, selectedWallet, dispatch]);
 
 	// Set fee to recommended value
 	useEffect(() => {
@@ -175,8 +175,7 @@ const BoostForm = ({
 						data: response.value,
 					}),
 				);
-				updateActivityItem(activityItem.id, response.value);
-				closeBottomSheet('boostPrompt');
+				dispatch(closeSheet('boostPrompt'));
 				showToast({
 					type: 'success',
 					title: t('boost_success_title'),

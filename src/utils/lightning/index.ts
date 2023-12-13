@@ -72,25 +72,21 @@ import {
 	IWalletItem,
 	TWalletName,
 } from '../../store/types/wallet';
-import {
-	closeBottomSheet,
-	showBottomSheet,
-	updateUi,
-} from '../../store/actions/ui';
+import { closeSheet, updateUi } from '../../store/slices/ui';
+import { showBottomSheet } from '../../store/utils/ui';
 import { updateSlashPayConfig2 } from '../slashtags2';
 import {
 	TLdkAccountVersions,
 	TLightningNodeVersion,
 } from '../../store/types/lightning';
 import { getBlocktankInfo, isGeoBlocked } from '../blocktank';
-import { updateOnchainFeeEstimates } from '../../store/actions/fees';
+import { updateOnchainFeeEstimates } from '../../store/utils/fees';
 import { reportLdkChannelMigrations } from '../checks';
 import {
 	__BACKUPS_SERVER_HOST__,
 	__BACKUPS_SERVER_PUBKEY__,
 	__TRUSTED_ZERO_CONF_PEERS__,
 } from '../../constants/env';
-import { EStore } from '../../store/types';
 
 let LDKIsStayingSynced = false;
 
@@ -246,8 +242,7 @@ export const setupLdk = async ({
 		if (storageRes.isErr()) {
 			return err(storageRes.error);
 		}
-		const rapidGossipSyncUrl =
-			getStore()[EStore.settings]?.rapidGossipSyncUrl ?? '';
+		const rapidGossipSyncUrl = getStore().settings.rapidGossipSyncUrl;
 		const lmStart = await lm.start({
 			account: account.value,
 			getFees: async () => {
@@ -400,7 +395,7 @@ export const handleLightningPaymentSubscription = async ({
 
 	dispatch(addActivityItem(activityItem));
 	showBottomSheet('newTxPrompt', { activityItem });
-	closeBottomSheet('receiveNavigation');
+	dispatch(closeSheet('receiveNavigation'));
 
 	await refreshLdk({ selectedWallet, selectedNetwork });
 	updateSlashPayConfig2({ selectedWallet, selectedNetwork });
@@ -562,7 +557,7 @@ export const refreshLdk = async ({
 			// Attempt to migrate on refresh.
 			await migrateToLdkV2Account(selectedWallet, selectedNetwork);
 		}
-		updateUi({ isLDKReady: true });
+		dispatch(updateUi({ isLDKReady: true }));
 
 		resolveAllPendingRefreshPromises(ok(''));
 		return ok('');

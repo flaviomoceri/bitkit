@@ -10,7 +10,7 @@ import { IBlocktank } from './types/blocktank';
 import { IFees } from './types/fees';
 import { ISlashtags } from './types/slashtags';
 import { ITodos } from './types/todos';
-import { IUi } from './types/ui';
+import { TUiState } from './types/ui';
 import { IUser } from './types/user';
 import { IWidgetsStore } from './types/widgets';
 import { IChecksShape } from './types/checks';
@@ -23,15 +23,15 @@ export const getStore = (): RootState => {
 	return cloneDeep(store.getState());
 };
 export const getWalletStore = (): IWalletStore => {
-	return cloneDeep(store.getState()[EStore.wallet]);
+	return cloneDeep(store.getState().wallet);
 };
 
 export const getSettingsStore = (): ISettings => {
-	return cloneDeep(store.getState()[EStore.settings]);
+	return cloneDeep(store.getState().settings);
 };
 
 export const getMetaDataStore = (): IMetadata => {
-	return cloneDeep(store.getState()[EStore.metadata]);
+	return cloneDeep(store.getState().metadata);
 };
 
 export const getActivityStore = (): TActivity => {
@@ -39,43 +39,43 @@ export const getActivityStore = (): TActivity => {
 };
 
 export const getLightningStore = (): ILightning => {
-	return cloneDeep(store.getState()[EStore.lightning]);
+	return cloneDeep(store.getState().lightning);
 };
 
 export const getBlocktankStore = (): IBlocktank => {
-	return cloneDeep(store.getState()[EStore.blocktank]);
+	return cloneDeep(store.getState().blocktank);
 };
 
 export const getFeesStore = (): IFees => {
-	return cloneDeep(store.getState()[EStore.fees]);
+	return cloneDeep(store.getState().fees);
 };
 
 export const getSlashtagsStore = (): ISlashtags => {
-	return cloneDeep(store.getState()[EStore.slashtags]);
+	return cloneDeep(store.getState().slashtags);
 };
 
 export const getTodosStore = (): ITodos => {
-	return cloneDeep(store.getState()[EStore.todos]);
+	return cloneDeep(store.getState().todos);
 };
 
-export const getUiStore = (): IUi => {
-	return cloneDeep(store.getState()[EStore.ui]);
+export const getUiStore = (): TUiState => {
+	return cloneDeep(store.getState().ui);
 };
 
 export const getUserStore = (): IUser => {
-	return cloneDeep(store.getState()[EStore.user]);
+	return cloneDeep(store.getState().user);
 };
 
 export const getWidgetsStore = (): IWidgetsStore => {
-	return cloneDeep(store.getState()[EStore.widgets]);
+	return cloneDeep(store.getState().widgets);
 };
 
 export const getChecksStore = (): IChecksShape => {
-	return cloneDeep(store.getState()[EStore.checks]);
+	return cloneDeep(store.getState().checks);
 };
 
 export const getBackupStore = (): IBackup => {
-	return cloneDeep(store.getState()[EStore.backup]);
+	return cloneDeep(store.getState().backup);
 };
 
 /*

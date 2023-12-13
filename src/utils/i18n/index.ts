@@ -5,7 +5,8 @@ import * as RNLocalize from 'react-native-localize';
 
 import { __ENABLE_I18NEXT_DEBUGGER__ } from '../../constants/env';
 import resources from './locales';
-import { updateUi } from '../../store/actions/ui';
+import { dispatch } from '../../store/helpers';
+import { updateUi } from '../../store/slices/ui';
 
 const getDeviceLanguage = (): string => {
 	const lang =
@@ -54,7 +55,7 @@ i18nICU
 			}
 		}
 
-		updateUi({ timeZone, language: i18n.language });
+		dispatch(updateUi({ timeZone, language: i18n.language }));
 	});
 
 export default i18nICU;

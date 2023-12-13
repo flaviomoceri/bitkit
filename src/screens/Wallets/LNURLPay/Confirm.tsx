@@ -1,30 +1,31 @@
 import React, { ReactElement, memo, useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import GradientView from '../../../components/GradientView';
 import type { LNURLPayProps } from '../../../navigation/types';
 import SafeAreaInset from '../../../components/SafeAreaInset';
+import { closeSheet } from '../../../store/slices/ui';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from '../../../store/reselect/wallet';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { handleLnurlPay } from '../../../utils/lnurl';
-import { closeBottomSheet } from '../../../store/actions/ui';
 import { sleep } from '../../../utils/helpers';
 import { processInputData } from '../../../utils/scanner';
 
 const Confirm = ({ route }: LNURLPayProps<'Confirm'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const { amount, pParams } = route.params;
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const dispatch = useAppDispatch();
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	useEffect(() => {
 		(async (): Promise<void> => {
-			closeBottomSheet('sendNavigation');
+			dispatch(closeSheet('sendNavigation'));
 			await sleep(300);
 			const invoice = await handleLnurlPay({
 				params: pParams,
@@ -34,11 +35,11 @@ const Confirm = ({ route }: LNURLPayProps<'Confirm'>): ReactElement => {
 			});
 
 			if (invoice.isErr()) {
-				closeBottomSheet('lnurlPay');
+				dispatch(closeSheet('lnurlPay'));
 				return;
 			}
 
-			closeBottomSheet('lnurlPay');
+			dispatch(closeSheet('lnurlPay'));
 			await sleep(300);
 			processInputData({
 				data: invoice.value,
@@ -46,7 +47,7 @@ const Confirm = ({ route }: LNURLPayProps<'Confirm'>): ReactElement => {
 				selectedNetwork,
 			});
 		})();
-	}, [amount, pParams, selectedNetwork, selectedWallet]);
+	}, [amount, pParams, selectedNetwork, selectedWallet, dispatch]);
 
 	return (
 		<>
