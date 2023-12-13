@@ -25,7 +25,7 @@ import { Title, Text01S } from '../../styles/text';
 import { Checkmark } from '../../styles/icons';
 import { showToast } from '../../utils/notifications';
 import { ellipsis } from '../../utils/helpers';
-import { setAuthWidget } from '../../store/actions/widgets';
+import { setAuthWidget } from '../../store/slices/widgets';
 import Divider from '../../components/Divider';
 import { useSnapPoints } from '../../hooks/bottomSheet';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
@@ -149,7 +149,7 @@ const _SlashAuthModal = (): ReactElement => {
 					: t('signin_to_success_text_noname'),
 			});
 
-			setAuthWidget(url, { magiclink: true });
+			dispatch(setAuthWidget({ url, magiclink: true }));
 			rootNavigation.navigate('Wallet');
 		} else {
 			console.log(response.message);

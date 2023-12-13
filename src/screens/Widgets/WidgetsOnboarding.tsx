@@ -7,8 +7,9 @@ import DetectSwipe from '../../components/DetectSwipe';
 import GlowingBackground from '../../components/GlowingBackground';
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { setWidgetsOnboarding } from '../../store/actions/widgets';
 import { Display, Text01S } from '../../styles/text';
+import { useAppDispatch } from '../../hooks/redux';
+import { setWidgetsOnboarding } from '../../store/slices/widgets';
 import type { RootStackScreenProps } from '../../navigation/types';
 
 const padlockImageSrc = require('../../assets/illustrations/padlock.png');
@@ -47,6 +48,7 @@ export const HelloWidgets = ({
 	navigation,
 }: RootStackScreenProps<'HelloWidgets'>): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
 
 	return (
 		<Layout
@@ -54,7 +56,7 @@ export const HelloWidgets = ({
 			illustration={puzzleImageSrc}
 			screenIndex={1}
 			onNext={(): void => {
-				setWidgetsOnboarding(true);
+				dispatch(setWidgetsOnboarding(true));
 				navigation.navigate('WidgetsSuggestions');
 			}}>
 			<Display>

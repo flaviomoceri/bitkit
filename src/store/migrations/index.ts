@@ -7,7 +7,7 @@ import { defaultTodosShape } from '../shapes/todos';
 import { defaultViewControllers } from '../shapes/ui';
 import { defaultChecksShape } from '../shapes/checks';
 import { defaultBackupShape } from '../shapes/backup';
-import { defaultWidgetsShape } from '../shapes/widgets';
+import { initialWidgetsState } from '../slices/widgets';
 import { getNetworkContent } from '../shapes/wallet';
 import { __WEB_RELAY__ } from '../../constants/env';
 
@@ -177,7 +177,7 @@ const migrations = {
 	17: (state): PersistedState => {
 		return {
 			...state,
-			widgets: defaultWidgetsShape,
+			widgets: initialWidgetsState,
 		};
 	},
 	18: (state): PersistedState => {

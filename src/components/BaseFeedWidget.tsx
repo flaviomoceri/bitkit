@@ -11,8 +11,9 @@ import {
 	TrashIcon,
 	QuestionMarkIcon,
 } from '../styles/icons';
+import { useAppDispatch } from '../hooks/redux';
 import { useSlashfeed } from '../hooks/widgets';
-import { deleteWidget } from '../store/actions/widgets';
+import { deleteWidget } from '../store/slices/widgets';
 import Dialog from './Dialog';
 import SvgImage from './SvgImage';
 import LoadingView from './LoadingView';
@@ -41,6 +42,7 @@ const BaseFeedWidget = ({
 	testID?: string;
 }): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
 	const { config, icon } = useSlashfeed({ url });
 	const [showDialog, setShowDialog] = useState(false);
 
@@ -122,7 +124,7 @@ const BaseFeedWidget = ({
 					setShowDialog(false);
 				}}
 				onConfirm={(): void => {
-					deleteWidget(url);
+					dispatch(deleteWidget(url));
 					setShowDialog(false);
 				}}
 			/>

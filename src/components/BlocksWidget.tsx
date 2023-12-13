@@ -5,7 +5,7 @@ import { Reader } from '@synonymdev/slashtags-widget-bitcoin-feed';
 
 import { Caption13M, Text01M, Text02M } from '../styles/text';
 import BaseFeedWidget from './BaseFeedWidget';
-import { IWidget } from '../store/types/widgets';
+import { TFeedWidget } from '../store/types/widgets';
 import { useSlashfeed } from '../hooks/widgets';
 import { decodeWidgetFieldValue, SUPPORTED_FEED_TYPES } from '../utils/widgets';
 import { useSlashtags2 } from '../hooks/slashtags2';
@@ -33,7 +33,7 @@ const BlocksWidget = ({
 	onPressIn,
 }: {
 	url: string;
-	widget: IWidget;
+	widget: TFeedWidget;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
 	testID?: string;

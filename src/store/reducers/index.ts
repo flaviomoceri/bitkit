@@ -17,7 +17,7 @@ import todos from './todos';
 import ui from '../slices/ui';
 import user from '../slices/user';
 import wallet from './wallet';
-import widgets from './widgets';
+import widgets from '../slices/widgets';
 
 const appReducer = combineReducers({
 	activity,

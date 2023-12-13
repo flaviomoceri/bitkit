@@ -24,15 +24,17 @@ import { ISettings } from '../types/settings';
 import { updateSettings } from './settings';
 import { IBackup, TAccountBackup } from '../types/backup';
 import { isObjPartialMatch } from '../../utils/helpers';
-import { IWidgetsStore } from '../types/widgets';
-import { updateWidgets } from './widgets';
 import { getDefaultSettingsShape } from '../shapes/settings';
-import { getDefaultWidgetsShape } from '../shapes/widgets';
 import { IMetadata } from '../types/metadata';
 import { getDefaultMetadataShape } from '../shapes/metadata';
 import { updateMetadata } from './metadata';
 import { EActivityType } from '../types/activity';
 import { addActivityItems, TActivity } from '../slices/activity';
+import {
+	initialWidgetsState,
+	TWidgetsState,
+	updateWidgets,
+} from '../slices/widgets';
 import { updateBlocktank } from './blocktank';
 import { addContacts } from './slashtags';
 import { IBlocktank } from '../types/blocktank';
@@ -424,7 +426,7 @@ export const performWidgetsRestore = async ({
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
 	}
-	const backupRes = await getBackup<IWidgetsStore>({
+	const backupRes = await getBackup<TWidgetsState>({
 		slashtag,
 		backupCategory: EBackupCategories.widgets,
 		selectedNetwork,
@@ -438,17 +440,19 @@ export const performWidgetsRestore = async ({
 		return ok({ backupExists: false });
 	}
 
-	const expectedBackupShape = getDefaultWidgetsShape();
+	const expectedBackupShape = initialWidgetsState;
 	//If the keys in the backup object are not found in the reference object assume the backup does not exist.
 	if (!isObjPartialMatch(backup, expectedBackupShape, ['widgets'])) {
 		return ok({ backupExists: false });
 	}
 
-	updateWidgets({
-		...expectedBackupShape,
-		...backup,
-		onboardedWidgets: true,
-	});
+	dispatch(
+		updateWidgets({
+			...expectedBackupShape,
+			...backup,
+			onboardedWidgets: true,
+		}),
+	);
 	updateBackup({ remoteWidgetsBackupSynced: true });
 
 	// Restore success

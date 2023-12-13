@@ -12,7 +12,7 @@ import { ISlashtags } from './types/slashtags';
 import { ITodos } from './types/todos';
 import { TUiState } from './types/ui';
 import { TUser } from './slices/user';
-import { IWidgetsStore } from './types/widgets';
+import { TWidgetsState } from './slices/widgets';
 import { IChecksShape } from './types/checks';
 import { IBackup } from './types/backup';
 
@@ -66,7 +66,7 @@ export const getUserStore = (): TUser => {
 	return cloneDeep(store.getState().user);
 };
 
-export const getWidgetsStore = (): IWidgetsStore => {
+export const getWidgetsStore = (): TWidgetsState => {
 	return cloneDeep(store.getState().widgets);
 };
 

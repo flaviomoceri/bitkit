@@ -38,10 +38,10 @@ import {
 	updateSettings,
 } from '../src/store/actions/settings';
 import {
-	resetWidgetsStore,
+	resetWidgetsState,
 	setFeedWidget,
 	updateWidgets,
-} from '../src/store/actions/widgets';
+} from '../src/store/slices/widgets';
 import {
 	addActivityItem,
 	resetActivityState,
@@ -184,18 +184,20 @@ describe('Remote backups', () => {
 	});
 
 	it('Backups and restores widgets', async () => {
-		setFeedWidget({
-			url: 'url',
-			type: 'type',
-			fields: [
-				{
-					name: 'name',
-					main: 'main',
-					files: {},
-				},
-			],
-		});
-		updateWidgets({ onboardedWidgets: true });
+		dispatch(
+			setFeedWidget({
+				url: 'url',
+				type: 'type',
+				fields: [
+					{
+						name: 'name',
+						main: 'main',
+						files: {},
+					},
+				],
+			}),
+		);
+		dispatch(updateWidgets({ onboardedWidgets: true }));
 
 		const backup = getWidgetsStore();
 
@@ -212,7 +214,7 @@ describe('Remote backups', () => {
 			throw uploadRes.error;
 		}
 
-		resetWidgetsStore();
+		dispatch(resetWidgetsState());
 		expect(store.getState().widgets.widgets).toMatchObject({});
 
 		const restoreRes = await performWidgetsRestore({
