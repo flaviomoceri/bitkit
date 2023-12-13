@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
-import { useSelector } from 'react-redux';
 import NetInfo from '@react-native-community/netinfo';
 import { useTranslation } from 'react-i18next';
 
@@ -10,8 +9,7 @@ import { startWalletServices } from './utils/startup';
 import { electrumConnection } from './utils/electrum';
 import { unsubscribeFromLightningSubscriptions } from './utils/lightning';
 import i18n from './utils/i18n';
-import { getStore } from './store/helpers';
-import { updateUi } from './store/actions/ui';
+import { useAppSelector } from './hooks/redux';
 import { isOnlineSelector } from './store/reselect/ui';
 import { pinOnLaunchSelector, pinSelector } from './store/reselect/settings';
 import { showToast } from './utils/notifications';
@@ -47,11 +45,11 @@ const onElectrumConnectionChange = (isConnected: boolean): void => {
 const AppOnboarded = (): ReactElement => {
 	const { t } = useTranslation('other');
 	const appState = useRef(AppState.currentState);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const pin = useSelector(pinSelector);
-	const pinOnLaunch = useSelector(pinOnLaunchSelector);
-	const isOnline = useSelector(isOnlineSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const pin = useAppSelector(pinSelector);
+	const pinOnLaunch = useAppSelector(pinOnLaunchSelector);
+	const isOnline = useAppSelector(isOnlineSelector);
 
 	// migrate slashtags from v1 to v2
 	useMigrateSlashtags2();

@@ -9,7 +9,7 @@ import Animated, {
 	withTiming,
 } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../hooks/redux';
 
 import { Text01S, Text02M } from '../styles/text';
 import { AnimatedView } from '../styles/components';
@@ -32,7 +32,7 @@ const LightningSyncing = ({
 	const { t } = useTranslation('lightning');
 	const glowOpacity = useSharedValue(0.5);
 	const rootOpacity = useSharedValue(1);
-	const isLDKReady = useSelector(isLDKReadySelector);
+	const isLDKReady = useAppSelector(isLDKReadySelector);
 	const [hidden, setHidden] = useState(isLDKReady);
 
 	useEffect(() => {

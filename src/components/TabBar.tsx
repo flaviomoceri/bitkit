@@ -1,6 +1,5 @@
 import React, { ReactElement, useMemo } from 'react';
 import { TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { useSelector } from 'react-redux';
 import { SvgXml } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +11,7 @@ import { resetSendTransaction } from '../store/actions/wallet';
 import { betaRiskAcceptedSelector } from '../store/reselect/user';
 import { viewControllersSelector } from '../store/reselect/ui';
 import useColors from '../hooks/colors';
+import { useAppSelector } from '../hooks/redux';
 import { Text02M } from '../styles/text';
 import { ScanIcon } from '../styles/icons';
 import { AnimatedView } from '../styles/components';
@@ -26,8 +26,8 @@ const TabBar = ({
 	const { white08 } = useColors();
 	const insets = useSafeAreaInsets();
 	const { t } = useTranslation('wallet');
-	const betaRiskAccepted = useSelector(betaRiskAcceptedSelector);
-	const viewControllers = useSelector(viewControllersSelector);
+	const betaRiskAccepted = useAppSelector(betaRiskAcceptedSelector);
+	const viewControllers = useAppSelector(viewControllersSelector);
 
 	const shouldHide = useMemo(() => {
 		const activityFilterSheets = ['timeRangePrompt', 'tagsPrompt'];

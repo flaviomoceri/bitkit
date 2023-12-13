@@ -7,7 +7,7 @@ import React, {
 	ReactElement,
 } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { ScrollView, View as ThemedView } from '../../styles/components';
@@ -26,7 +26,7 @@ import {
 	setLinks,
 	setOnboardingProfileStep,
 } from '../../store/actions/slashtags';
-import { showBottomSheet } from '../../store/actions/ui';
+import { showBottomSheet } from '../../store/utils/ui';
 import { BasicProfile } from '../../store/types/slashtags';
 import { slashtagsLinksSelector } from '../../store/reselect/slashtags';
 import { onboardingProfileStepSelector } from '../../store/reselect/slashtags';
@@ -44,8 +44,8 @@ const ProfileEdit = ({
 	const [hasEdited, setHasEdited] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [fields, setFields] = useState<Omit<BasicProfile, 'links'>>({});
-	const links = useSelector(slashtagsLinksSelector);
-	const onboardingStep = useSelector(onboardingProfileStepSelector);
+	const links = useAppSelector(slashtagsLinksSelector);
+	const onboardingStep = useAppSelector(onboardingProfileStepSelector);
 
 	const onboardedProfile = onboardingStep === 'Done';
 

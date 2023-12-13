@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Display, Text01S } from '../../styles/text';
@@ -22,8 +22,8 @@ const Introduction = ({
 }: LightningScreenProps<'Introduction'>): ReactElement => {
 	const { t } = useTranslation('lightning');
 	const { onchainBalance } = useBalance();
-	const isGeoBlocked = useSelector(isGeoBlockedSelector);
-	const accountVersion = useSelector(accountVersionSelector);
+	const isGeoBlocked = useAppSelector(isGeoBlockedSelector);
+	const accountVersion = useAppSelector(accountVersionSelector);
 
 	const txt = useMemo(
 		() => t(isGeoBlocked ? 'int_blocked' : 'int_text'),

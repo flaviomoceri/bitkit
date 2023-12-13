@@ -8,7 +8,7 @@ import React, {
 	useState,
 } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-native-qrcode-svg';
 import { err, ok, Result } from '@synonymdev/result';
@@ -68,14 +68,11 @@ import {
 	updateWallet,
 } from '../../../store/actions/wallet';
 import { showBottomSheet, updateUi } from '../../../store/actions/ui';
-import Store from '../../../store/types';
 import SearchInput from '../../../components/SearchInput';
 import AddressViewerListItem from './AddressViewerListItem';
 import { IThemeColors } from '../../../styles/themes';
-import {
-	resetActivityStore,
-	updateActivityList,
-} from '../../../store/actions/activity';
+import { updateActivityList } from '../../../store/utils/activity';
+import { resetActivityState } from '../../../store/slices/activity';
 import { setupLdk } from '../../../utils/lightning';
 import { startWalletServices } from '../../../utils/startup';
 import { updateOnchainFeeEstimates } from '../../../store/actions/fees';
@@ -233,15 +230,16 @@ const AddressViewer = ({
 	navigation,
 }: SettingsScreenProps<'AddressViewer'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const addressType = useSelector(addressTypeSelector);
-	const enableDevOptions = useSelector(enableDevOptionsSelector);
-	const currentWallet = useSelector((state: Store) =>
+	const dispatch = useAppDispatch();
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const addressType = useAppSelector(addressTypeSelector);
+	const enableDevOptions = useAppSelector(enableDevOptionsSelector);
+	const currentWallet = useAppSelector((state) =>
 		currentWalletSelector(state, selectedWallet),
 	);
 	const [sendNavigationHasOpened, setSendNavigationHasOpened] = useState(false);
-	const sendNavigationIsOpen = useSelector((state) =>
+	const sendNavigationIsOpen = useAppSelector((state) =>
 		viewControllerIsOpenSelector(state, 'sendNavigation'),
 	);
 
@@ -811,7 +809,7 @@ const AddressViewer = ({
 		// Ensure we switch networks if the user opted to do-so.
 		if (selectedNetwork !== config.selectedNetwork) {
 			// Wipe existing activity
-			resetActivityStore();
+			dispatch(resetActivityState());
 			ldk.stop();
 			// Switch to new network.
 			updateWallet({ selectedNetwork: config.selectedNetwork });
@@ -879,6 +877,7 @@ const AddressViewer = ({
 		config.selectedNetwork,
 		selectedNetwork,
 		selectedWallet,
+		dispatch,
 		t,
 	]);
 

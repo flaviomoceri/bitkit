@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Text01M, Text02M, Text02S } from '../../styles/text';
@@ -9,7 +8,7 @@ import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import SwipeToConfirm from '../../components/SwipeToConfirm';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import AdjustValue from '../../components/AdjustValue';
-import Store from '../../store/types';
+
 import { closeBottomSheet } from '../../store/actions/ui';
 import { resetSendTransaction } from '../../store/actions/wallet';
 import {
@@ -32,9 +31,9 @@ import Button from '../../components/Button';
 import ImageText from '../../components/ImageText';
 import Money from '../../components/Money';
 import { useFeeText } from '../../hooks/fees';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { viewControllerSelector } from '../../store/reselect/ui';
-import { updateActivityItem } from '../../store/actions/activity';
+import { updateOnchainActivityItem } from '../../store/slices/activity';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
@@ -47,10 +46,11 @@ const BoostForm = ({
 	activityItem: TOnchainActivityItem;
 }): ReactElement => {
 	const { t } = useTranslation('wallet');
-	const feeEstimates = useSelector((store: Store) => store.fees.onchain);
-	const transaction = useSelector(transactionSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const selectedWallet = useSelector(selectedWalletSelector);
+	const dispatch = useAppDispatch();
+	const feeEstimates = useAppSelector((store) => store.fees.onchain);
+	const transaction = useAppSelector(transactionSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
 
 	const [preparing, setPreparing] = useState(true);
 	const [loading, setLoading] = useState(false);
@@ -169,6 +169,12 @@ const BoostForm = ({
 			});
 			if (response.isOk()) {
 				// Optimistically/immediately update activity item
+				dispatch(
+					updateOnchainActivityItem({
+						id: activityItem.id,
+						data: response.value,
+					}),
+				);
 				updateActivityItem(activityItem.id, response.value);
 				closeBottomSheet('boostPrompt');
 				showToast({

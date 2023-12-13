@@ -1,5 +1,5 @@
 import React, { memo, ReactElement, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 import { ldk } from '@synonymdev/react-native-ldk';
 
@@ -9,11 +9,10 @@ import {
 	updateAddressIndexes,
 	updateWallet,
 } from '../../../store/actions/wallet';
-import {
-	resetActivityStore,
-	updateActivityList,
-} from '../../../store/actions/activity';
-import { updateOnchainFeeEstimates } from '../../../store/actions/fees';
+import { dispatch } from '../../../store/helpers';
+import { updateActivityList } from '../../../store/utils/activity';
+import { resetActivityState } from '../../../store/slices/activity';
+import { updateOnchainFeeEstimates } from '../../../store/utils/fees';
 import { selectedNetworkSelector } from '../../../store/reselect/wallet';
 import { connectToElectrum } from '../../../utils/wallet/electrum';
 import { startWalletServices } from '../../../utils/startup';
@@ -29,7 +28,7 @@ const BitcoinNetworkSelection = ({
 	navigation,
 }: SettingsScreenProps<'BitcoinNetworkSelection'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	const settingsListData: IListData[] = useMemo(
 		() => [
@@ -43,7 +42,7 @@ const BitcoinNetworkSelection = ({
 							navigation.goBack();
 							await ldk.stop();
 							// Wipe existing activity
-							resetActivityStore();
+							dispatch(resetActivityState());
 							// Switch to new network.
 							updateWallet({ selectedNetwork: network.id });
 							// Grab the selectedWallet.

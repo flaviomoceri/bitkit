@@ -1,13 +1,13 @@
 import React, { ReactElement, ReactNode, memo, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData } from '../../../components/List';
 import SettingsView from '../SettingsView';
-import { showBottomSheet } from '../../../store/actions/ui';
+import { showBottomSheet } from '../../../store/utils/ui';
 import { SettingsScreenProps } from '../../../navigation/types';
-import Store from '../../../store/types';
+
 import { Caption13M, Caption13Up, Text01M } from '../../../styles/text';
 import {
 	ScrollView,
@@ -118,8 +118,8 @@ const BackupSettings = ({
 	navigation,
 }: SettingsScreenProps<'BackupSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const pin = useSelector((state: Store) => state.settings.pin);
-	const backup = useSelector(backupSelector);
+	const pin = useAppSelector((state) => state.settings.pin);
+	const backup = useAppSelector(backupSelector);
 
 	const categories = [
 		{

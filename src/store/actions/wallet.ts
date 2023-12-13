@@ -80,11 +80,10 @@ import {
 	TAddressIndexInfo,
 } from '../shapes/wallet';
 import { TGetImpactedAddressesRes } from '../types/checks';
-import { updateActivityItem, updateActivityList } from './activity';
 import { showToast } from '../../utils/notifications';
-import { getActivityItemById } from '../../utils/activity';
 import { getFakeTransaction } from '../../utils/wallet/testing';
-import { EActivityType, TOnchainActivityItem } from '../types/activity';
+import { updateOnchainActivityItem } from '../slices/activity';
+import { updateActivityList } from '../utils/activity';
 import i18n from '../../utils/i18n';
 
 export const updateWallet = (
@@ -925,16 +924,13 @@ export const updateTransactionHeights = async (
 	txs: IUtxo[],
 ): Promise<string> => {
 	txs.forEach((tx) => {
-		const txId = tx.tx_hash;
-		const activity = getActivityItemById(txId);
-		if (activity.isOk() && activity.value) {
-			//Update the activity item to reflect that the transaction has a new height.
-			const item = {
-				...activity.value,
-				confirmed: false,
-			};
-			updateActivityItem(txId, item);
-		}
+		//Update the activity item to reflect that the transaction has a new height.
+		dispatch(
+			updateOnchainActivityItem({
+				id: tx.tx_hash,
+				data: { confirmed: false },
+			}),
+		);
 	});
 	return 'Successfully updated reorg transactions.';
 };
@@ -964,17 +960,13 @@ export const updateGhostTransactions = async ({
 		}
 
 		txIds.forEach((txId) => {
-			const activity = getActivityItemById(txId);
-			if (activity.isOk() && activity.value) {
-				if (activity.value.activityType === EActivityType.onchain) {
-					//Update the activity item to reflect that the transaction no longer exists, but that it did at one point in time.
-					const item: TOnchainActivityItem = {
-						...activity.value,
-						exists: false,
-					};
-					updateActivityItem(txId, item);
-				}
-			}
+			//Update the activity item to reflect that the transaction no longer exists, but that it did at one point in time.
+			dispatch(
+				updateOnchainActivityItem({
+					id: txId,
+					data: { exists: false, confirmed: false },
+				}),
+			);
 		});
 
 		//Rescan the addresses to get the correct balance.

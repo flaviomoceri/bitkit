@@ -1,7 +1,7 @@
 // Add migrations for every persisted store version change
 
 import { PersistedState } from 'redux-persist';
-import { defaultActivityShape } from '../shapes/activity';
+import { initialActivityState } from '../slices/activity';
 import { defaultBlocktankInfoShape } from '../shapes/blocktank';
 import { defaultTodosShape } from '../shapes/todos';
 import { defaultViewControllers } from '../shapes/ui';
@@ -64,7 +64,7 @@ const migrations = {
 	6: (state): PersistedState => {
 		return {
 			...state,
-			activity: defaultActivityShape,
+			activity: initialActivityState,
 		};
 	},
 	7: (state): PersistedState => {

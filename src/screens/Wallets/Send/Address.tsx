@@ -1,6 +1,5 @@
 import React, { ReactElement, memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -15,6 +14,7 @@ import { useSlashtagsSDK } from '../../../components/SlashtagsProvider';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import { processInputData, validateInputData } from '../../../utils/scanner';
 import useColors from '../../../hooks/colors';
+import { useAppSelector } from '../../../hooks/redux';
 import useKeyboard, { Keyboard } from '../../../hooks/keyboard';
 import type { SendScreenProps } from '../../../navigation/types';
 import {
@@ -29,8 +29,8 @@ const Address = ({}: SendScreenProps<'Address'>): ReactElement => {
 	const { keyboardShown } = useKeyboard();
 	const [textFieldValue, setTextFieldValue] = useState('');
 	const [isValid, setIsValid] = useState(false);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	const onChangeText = async (text: string): Promise<void> => {
 		const diff = Math.abs(text.length - textFieldValue.length);

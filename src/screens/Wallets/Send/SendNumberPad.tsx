@@ -1,12 +1,12 @@
 import React, { memo, ReactElement, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
 
 import NumberPad from '../../../components/NumberPad';
+import { useAppSelector } from '../../../hooks/redux';
 import { vibrate } from '../../../utils/helpers';
-import { EUnit } from '../../../store/types/wallet';
-import { handleNumberPadPress } from '../../../utils/numberpad';
 import { convertToSats } from '../../../utils/conversion';
+import { handleNumberPadPress } from '../../../utils/numberpad';
+import { EUnit } from '../../../store/types/wallet';
 import { primaryUnitSelector } from '../../../store/reselect/settings';
 
 const SendNumberPad = ({
@@ -23,7 +23,7 @@ const SendNumberPad = ({
 	style?: StyleProp<ViewStyle>;
 }): ReactElement => {
 	const [errorKey, setErrorKey] = useState<string>();
-	const unit = useSelector(primaryUnitSelector);
+	const unit = useAppSelector(primaryUnitSelector);
 
 	const maxDecimals = unit === EUnit.BTC ? 8 : 2;
 	const maxLength = unit === EUnit.satoshi ? 10 : 20;

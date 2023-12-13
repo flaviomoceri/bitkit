@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../hooks/redux';
 import {
 	blocktankOrdersSelector,
 	blocktankPaidOrdersSelector,
@@ -10,8 +10,8 @@ import { IBtOrder } from '@synonymdev/blocktank-lsp-http-client';
  * @returns {IBtOrder[]} paid Blocktank orders
  */
 export const usePaidBlocktankOrders = (): IBtOrder[] => {
-	const orders = useSelector(blocktankOrdersSelector);
-	const paidOrders = useSelector(blocktankPaidOrdersSelector);
+	const orders = useAppSelector(blocktankOrdersSelector);
+	const paidOrders = useAppSelector(blocktankPaidOrdersSelector);
 
 	const paidBlocktankOrders = orders.filter((order) => {
 		return Object.keys(paidOrders).find((orderId) => orderId === order.id);

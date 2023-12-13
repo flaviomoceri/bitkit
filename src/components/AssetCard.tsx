@@ -1,11 +1,11 @@
 import React, { memo, ReactElement } from 'react';
-import { useSelector } from 'react-redux';
 import { View, GestureResponderEvent, StyleSheet } from 'react-native';
 
 import { ClockIcon } from '../styles/icons';
 import { Text01M, Caption13M } from '../styles/text';
 import { TouchableOpacity } from '../styles/components';
 import Money from '../components/Money';
+import { useAppSelector } from '../hooks/redux';
 import { openChannelIdsSelector } from '../store/reselect/lightning';
 
 const AssetCard = ({
@@ -25,7 +25,7 @@ const AssetCard = ({
 	testID?: string;
 	onPress: (event: GestureResponderEvent) => void;
 }): ReactElement => {
-	const openChannelIds = useSelector(openChannelIdsSelector);
+	const openChannelIds = useAppSelector(openChannelIdsSelector);
 
 	const isTransferToSavings = openChannelIds.length === 0;
 

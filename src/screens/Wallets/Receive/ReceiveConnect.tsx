@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Caption13Up, Text01S } from '../../../styles/text';
@@ -11,6 +10,7 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
 import GlowImage from '../../../components/GlowImage';
 import Money from '../../../components/Money';
+import { useAppSelector } from '../../../hooks/redux';
 import { useScreenSize } from '../../../hooks/screen';
 import useDisplayValues from '../../../hooks/displayValues';
 import { useLightningBalance } from '../../../hooks/lightning';
@@ -33,9 +33,8 @@ const ReceiveConnect = ({
 	const lightningBalance = useLightningBalance(true);
 	const [feeEstimate, setFeeEstimate] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
-	const { amount } = useSelector(receiveSelector);
-	const invoice = useSelector(receiveSelector);
-	const blocktank = useSelector(blocktankInfoSelector);
+	const blocktank = useAppSelector(blocktankInfoSelector);
+	const { amount, message } = useAppSelector(receiveSelector);
 
 	const { maxChannelSizeSat } = blocktank.options;
 
@@ -59,8 +58,8 @@ const ReceiveConnect = ({
 		setIsLoading(true);
 		const cJitEntryResponse = await createCJitEntry({
 			channelSizeSat: maxChannelSizeSat,
-			invoiceSat: invoice.amount,
-			invoiceDescription: invoice.message,
+			invoiceSat: amount,
+			invoiceDescription: message,
 			channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
 			couponCode: 'bitkit',
 		});

@@ -44,8 +44,8 @@ import {
 } from '../src/store/actions/widgets';
 import {
 	addActivityItem,
-	resetActivityStore,
-} from '../src/store/actions/activity';
+	resetActivityState,
+} from '../src/store/slices/activity';
 import { EActivityType } from '../src/store/types/activity';
 import { EPaymentType } from '../src/store/types/wallet';
 import {
@@ -229,16 +229,18 @@ describe('Remote backups', () => {
 	});
 
 	it('Backups and restores LDK Activity', async () => {
-		addActivityItem({
-			id: 'id',
-			activityType: EActivityType.lightning,
-			txType: EPaymentType.received,
-			message: '',
-			address: 'invoice',
-			confirmed: true,
-			value: 1,
-			timestamp: new Date().getTime(),
-		});
+		dispatch(
+			addActivityItem({
+				id: 'id',
+				activityType: EActivityType.lightning,
+				txType: EPaymentType.received,
+				message: '',
+				address: 'invoice',
+				confirmed: true,
+				value: 1,
+				timestamp: new Date().getTime(),
+			}),
+		);
 
 		const backup = getActivityStore().items.filter(
 			(a) => a.activityType === EActivityType.lightning,
@@ -257,7 +259,7 @@ describe('Remote backups', () => {
 			throw uploadRes.error;
 		}
 
-		resetActivityStore();
+		dispatch(resetActivityState());
 		expect(store.getState().activity.items.length).toEqual(0);
 
 		const restoreRes = await performLdkActivityRestore({

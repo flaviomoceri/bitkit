@@ -7,13 +7,13 @@ import {
 	TNodes,
 	TOpenChannelIds,
 } from '../types/lightning';
-import Store from '../types';
+import { RootState } from '..';
 import { TWalletName } from '../types/wallet';
 import { TAvailableNetworks } from '../../utils/networks';
 import { selectedNetworkSelector, selectedWalletSelector } from './wallet';
 
-export const lightningState = (state: Store): ILightning => state.lightning;
-export const nodesState = (state: Store): TNodes => state.lightning.nodes;
+export const lightningState = (state: RootState): ILightning => state.lightning;
+export const nodesState = (state: RootState): TNodes => state.lightning.nodes;
 
 export const accountVersionSelector = createSelector(
 	lightningState,
@@ -32,7 +32,7 @@ export const nodeSelector = createSelector(
 
 /**
  * Returns open lightning channel ids for a given wallet and network.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {TOpenChannelIds}
  */
 export const openChannelIdsSelector = createSelector(
@@ -103,7 +103,7 @@ export const channelSelector = createSelector(
 
 /**
  * Returns all open lightning channels.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {TChannel[]}
  */
 export const openChannelsSelector = createSelector(
@@ -123,7 +123,7 @@ export const openChannelsSelector = createSelector(
 
 /**
  * Returns all pending lightning channels.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {TChannel[]}
  */
 export const pendingChannelsSelector = createSelector(
@@ -144,7 +144,7 @@ export const pendingChannelsSelector = createSelector(
 
 /**
  * Returns all closed lightning channels.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {TChannel[]}
  */
 export const closedChannelsSelector = createSelector(
@@ -162,7 +162,7 @@ export const closedChannelsSelector = createSelector(
 
 /**
  * Returns claimable balance.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {number}
  */
 export const claimableBalanceSelector = createSelector(

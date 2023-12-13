@@ -1,36 +1,18 @@
 import { ok, Result } from '@synonymdev/result';
-
-import actions from './actions';
-import {
-	EActivityType,
-	IActivityItem,
-	TLightningActivityItem,
-} from '../types/activity';
-import { getBlocktankStore, dispatch } from '../helpers';
-import { onChainTransactionToActivityItem } from '../../utils/activity';
-import { getCurrentWallet } from '../../utils/wallet';
-import { formatBoostedActivityItems } from '../../utils/boost';
 import { TChannel } from '@synonymdev/react-native-ldk';
-import { EPaymentType } from '../types/wallet';
-import { closeBottomSheet, showBottomSheet } from './ui';
-import { checkPendingCJitEntries } from './blocktank';
-import { getLightningChannels } from '../../utils/lightning';
-import { updateSettings } from './settings';
 
-/**
- * Adds the provided activity item to the activity list.
- * @param {IActivityItem} activityItem
- * @returns {Result<string>}
- */
-export const addActivityItem = (
-	activityItem: IActivityItem,
-): Result<string> => {
-	dispatch({
-		type: actions.ADD_ACTIVITY_ITEM,
-		payload: activityItem,
-	});
-	return ok('Activity Item Added.');
-};
+import { EPaymentType } from '../types/wallet';
+import { EActivityType, TLightningActivityItem } from '../types/activity';
+import { getBlocktankStore, dispatch } from '../helpers';
+import { getCurrentWallet } from '../../utils/wallet';
+import { getLightningChannels } from '../../utils/lightning';
+import { formatBoostedActivityItems } from '../../utils/boost';
+import { onChainTransactionToActivityItem } from '../../utils/activity';
+import { checkPendingCJitEntries } from '../actions/blocktank';
+import { updateSettings } from '../slices/settings';
+import { closeSheet } from '../slices/ui';
+import { addActivityItem, updateActivityItems } from '../slices/activity';
+import { showBottomSheet } from './ui';
 
 /**
  * Attempts to determine if a given channel open was in response to
@@ -78,36 +60,11 @@ export const addCJitActivityItem = async (channelId: string): Promise<void> => {
 		confirmed: true,
 		timestamp: new Date().getTime(),
 	};
-	addActivityItem(activityItem);
-	updateSettings({
-		hideOnboardingMessage: true,
-	});
-	closeBottomSheet('receiveNavigation');
+
+	dispatch(addActivityItem(activityItem));
+	dispatch(updateSettings({ hideOnboardingMessage: true }));
+	dispatch(closeSheet('receiveNavigation'));
 	showBottomSheet('newTxPrompt', { activityItem });
-};
-
-export const addActivityItems = (
-	activityItems: IActivityItem[],
-): Result<string> => {
-	dispatch({
-		type: actions.ADD_ACTIVITY_ITEMS,
-		payload: activityItems,
-	});
-	return ok('Activity Item Added.');
-};
-
-/**
- * @param {string} id
- * @param {Partial<IActivityItem>} data
- */
-export const updateActivityItem = (
-	id: string,
-	data: Partial<IActivityItem>,
-): void => {
-	dispatch({
-		type: actions.UPDATE_ACTIVITY_ITEM,
-		payload: { id, data },
-	});
 };
 
 /**
@@ -153,18 +110,7 @@ export const updateOnChainActivityList = (): Result<string> => {
 		selectedNetwork,
 	});
 
-	dispatch({
-		type: actions.UPDATE_ACTIVITY_ITEMS,
-		payload: boostFormattedItems,
-	});
+	dispatch(updateActivityItems(boostFormattedItems));
 
 	return ok('On chain transaction activity items updated');
-};
-
-/*
- * This resets the activity store to defaultActivityShape
- */
-export const resetActivityStore = (): Result<string> => {
-	dispatch({ type: actions.RESET_ACTIVITY_STORE });
-	return ok('');
 };

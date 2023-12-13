@@ -6,13 +6,13 @@ import React, {
 	useMemo,
 } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { Caption13Up, Text02M } from '../../styles/text';
 import { groupActivityItems } from '../../utils/activity';
-import { showBottomSheet } from '../../store/actions/ui';
+import { showBottomSheet } from '../../store/utils/ui';
 import { IActivityItem } from '../../store/types/activity';
 import { activityItemsSelector } from '../../store/reselect/activity';
 import Button from '../../components/Button';
@@ -24,7 +24,7 @@ const MAX_ACTIVITY_ITEMS = 3;
 const ActivityListShort = (): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const navigation = useNavigation<RootNavigationProp>();
-	const items = useSelector(activityItemsSelector);
+	const items = useAppSelector(activityItemsSelector);
 
 	const groupedItems = useMemo(() => {
 		const activityItems = items.slice(0, MAX_ACTIVITY_ITEMS);

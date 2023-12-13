@@ -28,6 +28,7 @@ import {
 } from '../types/lightning';
 import { EPaymentType, TWalletName } from '../types/wallet';
 import { EActivityType, TLightningActivityItem } from '../types/activity';
+import { updateActivityItems } from '../slices/activity';
 
 /**
  * Attempts to update the node id for the given wallet and network.
@@ -403,10 +404,7 @@ export const syncLightningTxsWithActivityList = async (): Promise<
 		}
 	});
 
-	dispatch({
-		type: actions.UPDATE_ACTIVITY_ITEMS,
-		payload: items,
-	});
+	dispatch(updateActivityItems(items));
 
 	return ok('Stored lightning transactions synced with activity list.');
 };

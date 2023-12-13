@@ -1,6 +1,5 @@
 import React, { ReactElement, memo, useState, useCallback } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { useSelector } from 'react-redux';
 import Share from 'react-native-share';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { TChannel } from '@synonymdev/react-native-ldk';
@@ -29,6 +28,7 @@ import LightningChannel, {
 } from '../../../components/LightningChannel';
 import Money from '../../../components/Money';
 import useColors from '../../../hooks/colors';
+import { useAppSelector } from '../../../hooks/redux';
 import { refreshOrdersList } from '../../../store/actions/blocktank';
 import {
 	addPeer,
@@ -40,7 +40,7 @@ import {
 	setupLdk,
 } from '../../../utils/lightning';
 import { showToast } from '../../../utils/notifications';
-import Store from '../../../store/types';
+
 import { usePaidBlocktankOrders } from '../../../hooks/blocktank';
 import {
 	useLightningChannelName,
@@ -237,17 +237,17 @@ const Channels = ({
 	const colors = useColors();
 	const { onchainBalance } = useBalance();
 	const { localBalance, remoteBalance } = useLightningBalance(false);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const enableDevOptions = useSelector(enableDevOptionsSelector);
-	const accountVersion = useSelector(accountVersionSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const enableDevOptions = useAppSelector(enableDevOptionsSelector);
+	const accountVersion = useAppSelector(accountVersionSelector);
 
-	const blocktankOrders = useSelector(blocktankOrdersSelector);
-	const paidOrders = useSelector(blocktankPaidOrdersSelector);
-	const openChannels = useSelector(openChannelsSelector);
-	const pendingChannels = useSelector(pendingChannelsSelector);
-	const closedChannels = useSelector(closedChannelsSelector);
-	const blocktankNodeKey = useSelector((state: Store) => {
+	const blocktankOrders = useAppSelector(blocktankOrdersSelector);
+	const paidOrders = useAppSelector(blocktankPaidOrdersSelector);
+	const openChannels = useAppSelector(openChannelsSelector);
+	const pendingChannels = useAppSelector(pendingChannelsSelector);
+	const closedChannels = useAppSelector(closedChannelsSelector);
+	const blocktankNodeKey = useAppSelector((state) => {
 		return state.blocktank.info.nodes[0].pubkey;
 	});
 

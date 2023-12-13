@@ -1,5 +1,4 @@
 import React, { memo, ReactElement, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import RNFS, { unlink, writeFile } from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Share from 'react-native-share';
@@ -14,7 +13,7 @@ import {
 	updateWallet,
 } from '../../../store/actions/wallet';
 import { resetUserStore } from '../../../store/actions/user';
-import { resetActivityStore } from '../../../store/actions/activity';
+import { resetActivityState } from '../../../store/slices/activity';
 import {
 	resetLightningStore,
 	updateLdkAccountVersion,
@@ -38,6 +37,7 @@ import {
 import SettingsView from './../SettingsView';
 import { EItemType, IListData } from '../../../components/List';
 import type { SettingsScreenProps } from '../../../navigation/types';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { refreshWallet } from '../../../utils/wallet';
 import { zipLogs } from '../../../utils/lightning/logs';
 import { runChecks } from '../../../utils/wallet/checks';
@@ -53,15 +53,15 @@ import Dialog from '../../../components/Dialog';
 const DevSettings = ({
 	navigation,
 }: SettingsScreenProps<'DevSettings'>): ReactElement => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const { t } = useTranslation('lightning');
 	const [showDialog, setShowDialog] = useState(false);
 	const [throwError, setThrowError] = useState(false);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const addressType = useSelector(addressTypeSelector);
-	const accountVersion = useSelector(accountVersionSelector);
-	const warnings = useSelector((state) => {
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const addressType = useAppSelector(addressTypeSelector);
+	const accountVersion = useAppSelector(accountVersionSelector);
+	const warnings = useAppSelector((state) => {
 		return warningsSelector(state, selectedWallet, selectedNetwork);
 	});
 
@@ -318,7 +318,7 @@ const DevSettings = ({
 				{
 					title: 'Reset Activity Store',
 					type: EItemType.button,
-					onPress: resetActivityStore,
+					onPress: () => dispatch(resetActivityState()),
 				},
 				{
 					title: 'Reset Blocktank Store',

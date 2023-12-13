@@ -6,7 +6,7 @@ import React, {
 	useEffect,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -52,10 +52,10 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 	const [textFieldValue, setTextFieldValue] = useState('');
 	const [showNumberPad, setShowNumberPad] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const unit = useSelector(primaryUnitSelector);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const blocktankInfo = useSelector(blocktankInfoSelector);
+	const unit = useAppSelector(primaryUnitSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const blocktankInfo = useAppSelector(blocktankInfoSelector);
 
 	useFocusEffect(
 		useCallback(() => {
@@ -69,7 +69,7 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 		return convertToSats(textFieldValue, unit);
 	}, [textFieldValue, unit]);
 
-	const lnSetup = useSelector((state) =>
+	const lnSetup = useAppSelector((state) =>
 		lnSetupSelector(state, spendingAmount),
 	);
 

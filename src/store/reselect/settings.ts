@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import Store from '../types';
+import { RootState } from '..';
 import {
 	ICustomElectrumPeer,
 	ISettings,
@@ -14,11 +14,11 @@ import { TAvailableNetworks } from '../../utils/networks';
 import themes, { IThemeColors } from '../../styles/themes';
 import { EUnit } from '../types/wallet';
 
-export const settingsState = (state: Store): ISettings => state.settings;
-const customElectrumPeersState = (state: Store): TCustomElectrumPeers =>
+export const settingsState = (state: RootState): ISettings => state.settings;
+const customElectrumPeersState = (state: RootState): TCustomElectrumPeers =>
 	state.settings.customElectrumPeers;
 
-export const settingsSelector = (state: Store): ISettings => state.settings;
+export const settingsSelector = (state: RootState): ISettings => state.settings;
 export const selectedCurrencySelector = createSelector(
 	[settingsState],
 	(settings): string => settings.selectedCurrency,
@@ -67,7 +67,7 @@ export const coinSelectPreferenceSelector = createSelector(
 
 /**
  * Returns custom Electrum peers for a given network.
- * @param {Store} state
+ * @param {RootState} state
  * @param {TAvailableNetworks} selectedNetwork
  * @returns {ICustomElectrumPeer[]}
  */

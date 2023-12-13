@@ -32,11 +32,10 @@ import { IMetadata } from '../types/metadata';
 import { getDefaultMetadataShape } from '../shapes/metadata';
 import { updateMetadata } from './metadata';
 import { EActivityType } from '../types/activity';
-import { addActivityItems } from './activity';
+import { addActivityItems, TActivity } from '../slices/activity';
 import { updateBlocktank } from './blocktank';
 import { addContacts } from './slashtags';
 import { IBlocktank } from '../types/blocktank';
-import { IActivity } from '../types/activity';
 import { checkBackup } from '../../utils/slashtags';
 import { showToast } from '../../utils/notifications';
 import { FAILED_BACKUP_CHECK_TIME } from '../../utils/backup/backups-subscriber';
@@ -511,7 +510,7 @@ export const performLdkActivityRestore = async ({
 		selectedNetwork = getSelectedNetwork();
 	}
 
-	const backupRes = await getBackup<IActivity['items']>({
+	const backupRes = await getBackup<TActivity['items']>({
 		slashtag,
 		backupCategory: EBackupCategories.ldkActivity,
 		selectedNetwork,
@@ -535,7 +534,7 @@ export const performLdkActivityRestore = async ({
 		return ok({ backupExists: false });
 	}
 
-	addActivityItems(backup);
+	dispatch(addActivityItems(backup));
 	updateBackup({ remoteLdkActivityBackupSynced: true });
 
 	// Restore success

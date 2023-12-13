@@ -1,11 +1,11 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import Share from 'react-native-share';
 import { useTranslation } from 'react-i18next';
 import RNExitApp from 'react-native-exit-app';
 
-import { wipeApp } from '../../store/actions/settings';
+import { wipeApp } from '../../store/utils/settings';
 import { openURL } from '../../utils/helpers';
 import { zipLogs } from '../../utils/lightning/logs';
 import { createSupportLink } from '../../utils/support';
@@ -24,8 +24,8 @@ const Recovery = ({
 	navigation,
 }: RecoveryStackScreenProps<'Recovery'>): ReactElement => {
 	const { t } = useTranslation('security');
-	const pin = useSelector(pinSelector);
-	const walletExists = useSelector(walletExistsSelector);
+	const pin = useAppSelector(pinSelector);
+	const walletExists = useAppSelector(walletExistsSelector);
 	const [locked, setLocked] = useState(true);
 	const [showWipeDialog, setShowWipeDialog] = useState(false);
 

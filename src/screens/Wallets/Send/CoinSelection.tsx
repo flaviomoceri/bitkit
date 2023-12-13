@@ -1,6 +1,5 @@
 import React, { ReactElement, memo, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTranslation } from 'react-i18next';
 
@@ -11,8 +10,9 @@ import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigati
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
 import Tag from '../../../components/Tag';
-import Store from '../../../store/types';
+
 import useColors from '../../../hooks/colors';
+import { useAppSelector } from '../../../hooks/redux';
 import useDisplayValues from '../../../hooks/displayValues';
 import {
 	getTotalFee,
@@ -49,7 +49,7 @@ const UtxoRow = ({
 }): ReactElement => {
 	const displayValue = useDisplayValues(item.value);
 	const { gray4 } = useColors();
-	const tags = useSelector((store: Store) => store.metadata.tags[item.tx_hash]);
+	const tags = useAppSelector((store) => store.metadata.tags[item.tx_hash]);
 
 	return (
 		<View style={[styles.coinRoot, { borderBottomColor: gray4 }]}>
@@ -82,11 +82,11 @@ const CoinSelection = ({
 	const { t } = useTranslation('wallet');
 	const { gray4 } = useColors();
 
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const transaction = useSelector(transactionSelector);
-	const utxos = useSelector(utxosSelector);
-	const coinSelectPreference = useSelector(coinSelectPreferenceSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const transaction = useAppSelector(transactionSelector);
+	const utxos = useAppSelector(utxosSelector);
+	const coinSelectPreference = useAppSelector(coinSelectPreferenceSelector);
 	const [autoSelectionEnabled, setAutoSelectionEnabled] = useState(
 		transaction.inputs.length === utxos.length,
 	);

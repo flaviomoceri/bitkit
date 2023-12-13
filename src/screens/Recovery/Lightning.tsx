@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import RNExitApp from 'react-native-exit-app';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 
 import lm, { ldk, TLdkData } from '@synonymdev/react-native-ldk';
 import { View as ThemedView } from '../../styles/components';
@@ -59,7 +59,7 @@ const LightningWithSlashtags = ({
 	const [recoveredSats, setRecoveredSats] = useState(0);
 	const [showLdkRecoverySuccessDialog, setShowLdkRecoverySuccessDialog] =
 		useState(false);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	//On mount
 	useEffect(() => {

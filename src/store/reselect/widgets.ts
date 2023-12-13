@@ -1,8 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
-import Store from '../types';
-import { IWidgetsStore, IWidget, IWidgets } from '../types/widgets';
+import { RootState } from '..';
 
-export const widgetsState = (state: Store): IWidgetsStore => state.widgets;
+export const widgetsState = (state: RootState): TWidgetsState => state.widgets;
 
 /**
  * Returns all widgets.

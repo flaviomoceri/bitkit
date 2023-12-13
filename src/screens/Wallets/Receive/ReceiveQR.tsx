@@ -7,7 +7,6 @@ import React, {
 	useRef,
 	useCallback,
 } from 'react';
-import { useSelector } from 'react-redux';
 import {
 	ActivityIndicator,
 	StyleSheet,
@@ -41,6 +40,7 @@ import { updatePendingInvoice } from '../../../store/actions/metadata';
 import { createLightningInvoice } from '../../../store/actions/lightning';
 import { generateNewReceiveAddress } from '../../../store/actions/wallet';
 import { viewControllerIsOpenSelector } from '../../../store/reselect/ui';
+import { useAppSelector } from '../../../hooks/redux';
 import { useLightningBalance } from '../../../hooks/lightning';
 import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';
 import { waitForLdk } from '../../../utils/lightning';
@@ -80,14 +80,15 @@ const ReceiveQR = ({
 	const carouselRef = useRef<ICarouselInstance>(null);
 	const qrRef = useRef<any>('');
 
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const addressType = useSelector(addressTypeSelector);
-	const isGeoBlocked = useSelector(isGeoBlockedSelector);
-	const accountVersion = useSelector(accountVersionSelector);
-	const { id, amount, message, tags, jitOrder } = useSelector(receiveSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const addressType = useAppSelector(addressTypeSelector);
+	const isGeoBlocked = useAppSelector(isGeoBlockedSelector);
+	const accountVersion = useAppSelector(accountVersionSelector);
+	const { id, amount, message, tags, jitOrder } =
+		useAppSelector(receiveSelector);
 	const lightningBalance = useLightningBalance(false);
-	const receiveNavigationIsOpen = useSelector((state) =>
+	const receiveNavigationIsOpen = useAppSelector((state) =>
 		viewControllerIsOpenSelector(state, 'receiveNavigation'),
 	);
 

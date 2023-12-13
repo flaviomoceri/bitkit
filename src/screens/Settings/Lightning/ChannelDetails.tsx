@@ -1,7 +1,6 @@
 import React, { ReactElement, memo, useState, useEffect, useMemo } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useSelector } from 'react-redux';
 import { SvgProps } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 
@@ -214,9 +213,9 @@ const ChannelDetails = ({
 	const [txTime, setTxTime] = useState<string>();
 	const { spendingAvailable, receivingAvailable, capacity } =
 		useLightningChannelBalance(channel);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const enableDevOptions = useSelector(enableDevOptionsSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const enableDevOptions = useAppSelector(enableDevOptionsSelector);
 	const paidBlocktankOrders = usePaidBlocktankOrders();
 	const blocktankOrder = Object.values(paidBlocktankOrders).find((order) => {
 		// real channel
@@ -229,7 +228,7 @@ const ChannelDetails = ({
 	});
 
 	const channelName = useLightningChannelName(channel, blocktankOrder);
-	const openChannelIds = useSelector(openChannelIdsSelector);
+	const openChannelIds = useAppSelector(openChannelIdsSelector);
 
 	useEffect(() => {
 		if (blocktankOrder) {

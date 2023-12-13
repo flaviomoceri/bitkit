@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../hooks/redux';
 import { TChannel } from '@synonymdev/react-native-ldk';
 
 import { ellipsis } from '../utils/helpers';
-import Store from '../store/types';
+
 import { TUseChannelBalance } from '../store/types/lightning';
 import {
 	selectedNetworkSelector,
@@ -28,13 +28,13 @@ export const useLightningBalance = (
 	localBalance: number;
 	remoteBalance: number;
 } => {
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const openChannelIds = useSelector(openChannelIdsSelector);
-	const channels = useSelector((state: Store) => {
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const openChannelIds = useAppSelector(openChannelIdsSelector);
+	const channels = useAppSelector((state) => {
 		return channelsSelector(state, selectedWallet, selectedNetwork);
 	});
-	const openChannels = useSelector(openChannelsSelector);
+	const openChannels = useAppSelector(openChannelsSelector);
 
 	const localBalance = useMemo(() => {
 		return openChannels.reduce((acc, channel) => {
@@ -109,7 +109,7 @@ export const useLightningChannelBalance = (
  * @returns {number}
  */
 export const useLightningMaxInboundCapacity = (): number => {
-	const openChannels = useSelector(openChannelsSelector);
+	const openChannels = useAppSelector(openChannelsSelector);
 
 	const maxInboundCapacity = useMemo(() => {
 		return openChannels.reduce((max, channel) => {

@@ -9,7 +9,7 @@ import React, {
 import { ImageSourcePropType, StyleSheet, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { AnimatedView } from '../../styles/components';
@@ -103,11 +103,11 @@ const CustomSetup = ({
 	const [nextUnit, switchUnit] = useSwitchUnit();
 	const { onchainBalance } = useBalance();
 	const { fiatValue: onchainFiatBalance } = useDisplayValues(onchainBalance);
-	const unit = useSelector(primaryUnitSelector);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const selectedCurrency = useSelector(selectedCurrencySelector);
-	const blocktankInfo = useSelector(blocktankInfoSelector);
+	const unit = useAppSelector(primaryUnitSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const selectedCurrency = useAppSelector(selectedCurrencySelector);
+	const blocktankInfo = useAppSelector(blocktankInfoSelector);
 
 	const [textFieldValue, setTextFieldValue] = useState('');
 	const [channelOpenFee, setChannelOpenFee] = useState<{

@@ -1,5 +1,6 @@
-import Store from '../types';
 import { createSelector } from '@reduxjs/toolkit';
+import { RootState } from '..';
+import { EFeeId } from '../types/fees';
 import {
 	IWalletStore,
 	IWallets,
@@ -15,15 +16,15 @@ import {
 import { defaultSendTransaction } from '../shapes/wallet';
 import { TAvailableNetworks } from '../../utils/networks';
 import { IExchangeRates } from '../../utils/exchange-rate';
-import { EFeeId } from '../types/fees';
 
-export const walletState = (state: Store): IWalletStore => state.wallet;
-export const walletsState = (state: Store): IWallets => state.wallet.wallets;
-export const exchangeRatesState = (state: Store): IExchangeRates =>
+export const walletState = (state: RootState): IWalletStore => state.wallet;
+export const walletsState = (state: RootState): IWallets =>
+	state.wallet.wallets;
+export const exchangeRatesState = (state: RootState): IExchangeRates =>
 	state.wallet.exchangeRates;
-export const selectedWalletState = (state: Store): TWalletName =>
+export const selectedWalletState = (state: RootState): TWalletName =>
 	state.wallet.selectedWallet;
-export const selectedNetworkState = (state: Store): TAvailableNetworks =>
+export const selectedNetworkState = (state: RootState): TAvailableNetworks =>
 	state.wallet.selectedNetwork;
 
 /**
@@ -44,7 +45,7 @@ export const selectedNetworkSelector = createSelector(
 
 /**
  * Returns wallet data for the currently selected wallet.
- * @param {Store} state
+ * @param {RootState} state
  * @param {TWalletName} selectedWallet
  * @returns {IWallet}
  */
@@ -60,7 +61,7 @@ export const currentWalletSelector = createSelector(
 
 /**
  * Returns the selected address type for a given wallet and network.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {EAddressType}
  */
 export const addressTypeSelector = createSelector(
@@ -81,7 +82,7 @@ export const exchangeRatesSelector = createSelector([walletState], (wallet) => {
 
 /**
  * Returns object of on-chain transactions for the currently selected wallet & network.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {IFormattedTransactions}
  */
 export const transactionsSelector = createSelector(
@@ -95,7 +96,7 @@ export const transactionsSelector = createSelector(
 
 /**
  * Returns transaction data for the currently selected wallet & network.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {ISendTransaction}
  */
 export const transactionSelector = createSelector(
@@ -112,7 +113,7 @@ export const transactionSelector = createSelector(
 
 /**
  * Returns transaction data for the currently selected wallet & network.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {IUtxo[]}
  */
 export const transactionInputsSelector = createSelector(
@@ -129,7 +130,7 @@ export const transactionInputsSelector = createSelector(
 
 /**
  * Returns transaction fee for the currently selected wallet & network.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {ISendTransaction}
  */
 export const transactionFeeSelector = createSelector(
@@ -146,7 +147,7 @@ export const transactionFeeSelector = createSelector(
 
 /**
  * Returns whether transaction is set to max for the currently selected wallet & network.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {ISendTransaction}
  */
 export const transactionMaxSelector = createSelector(
@@ -162,7 +163,7 @@ export const transactionMaxSelector = createSelector(
 
 /**
  * Returns boosted transactions for the currently selected wallet & network.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {IBoostedTransactions}
  */
 export const boostedTransactionsSelector = createSelector(
@@ -178,7 +179,7 @@ export const boostedTransactionsSelector = createSelector(
 
 /**
  * Returns unconfirmed transactions for the currently selected wallet & network.
- * @param {Store} state
+ * @param {RootState} state
  * @returns {IFormattedTransaction[]}
  */
 export const unconfirmedTransactionsSelector = createSelector(
@@ -195,7 +196,7 @@ export const unconfirmedTransactionsSelector = createSelector(
 /**
  * Returns the wallet store object.
  */
-export const walletSelector = (state: Store): IWalletStore => state.wallet;
+export const walletSelector = (state: RootState): IWalletStore => state.wallet;
 
 /**
  * Returns the current on-chain balance.

@@ -1,7 +1,7 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import SDK from '@synonymdev/slashtags-sdk';
 import { createContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../hooks/redux';
 import RAWSFactory from 'random-access-web-storage';
 import b4a from 'b4a';
 
@@ -62,7 +62,7 @@ export const SlashtagsProvider = ({
 	const [sdk, setSDK] = useState<SDK>();
 
 	// Load primaryKey from keychain
-	const seedHash = useSelector(seedHashSelector);
+	const seedHash = useAppSelector(seedHashSelector);
 
 	useEffect(() => {
 		if (!seedHash) {

@@ -1,5 +1,5 @@
 import React, { ReactElement, memo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import {
 	NativeStackNavigationOptions,
 	NativeStackNavigationProp,
@@ -31,7 +31,7 @@ const screenOptions: NativeStackNavigationOptions = {
 
 const ProfileLinkNavigation = (): ReactElement => {
 	const snapPoints = useSnapPoints('small');
-	const isOpen = useSelector((state) => {
+	const isOpen = useAppSelector((state) => {
 		return viewControllerIsOpenSelector(state, 'profileAddDataForm');
 	});
 

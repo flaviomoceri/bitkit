@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Share from 'react-native-share';
@@ -47,9 +47,9 @@ const Contact = ({
 	const [isSharing, setIsSharing] = useState(false);
 	const [loading, setLoading] = useState(false);
 
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const contacts = useSelector(contactsSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const contacts = useAppSelector(contactsSelector);
 	const sdk = useSlashtagsSDK();
 
 	const { profile } = useProfile2(url);

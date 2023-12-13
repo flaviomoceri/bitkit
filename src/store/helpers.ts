@@ -1,11 +1,10 @@
 import cloneDeep from 'lodash/cloneDeep';
 
-import store from '../store';
-import Store, { EStore } from './types';
+import store, { RootState } from '../store';
 import { IWalletStore } from './types/wallet';
 import { ISettings } from './types/settings';
 import { IMetadata } from './types/metadata';
-import { IActivity } from './types/activity';
+import { TActivity } from './slices/activity';
 import { ILightning } from './types/lightning';
 import { IBlocktank } from './types/blocktank';
 import { IFees } from './types/fees';
@@ -20,7 +19,7 @@ import { IBackup } from './types/backup';
 /*
 Used to retrieve the store outside of a component.
  */
-export const getStore = (): Store => {
+export const getStore = (): RootState => {
 	return cloneDeep(store.getState());
 };
 export const getWalletStore = (): IWalletStore => {
@@ -35,8 +34,8 @@ export const getMetaDataStore = (): IMetadata => {
 	return cloneDeep(store.getState()[EStore.metadata]);
 };
 
-export const getActivityStore = (): IActivity => {
-	return cloneDeep(store.getState()[EStore.activity]);
+export const getActivityStore = (): TActivity => {
+	return cloneDeep(store.getState().activity);
 };
 
 export const getLightningStore = (): ILightning => {

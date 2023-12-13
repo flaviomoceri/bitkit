@@ -3,8 +3,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import { TChannel } from '@synonymdev/react-native-ldk';
 
 import '../src/utils/i18n';
-import store from '../src/store';
-import Store from '../src/store/types';
+import store, { RootState } from '../src/store';
+
 import { createNewWallet } from '../src/utils/startup';
 import { updateWallet } from '../src/store/actions/wallet';
 import {
@@ -13,7 +13,7 @@ import {
 } from '../src/store/reselect/aggregations';
 
 describe('Reselect', () => {
-	let s: Store;
+	let s: RootState;
 
 	beforeAll(async () => {
 		require('../nodejs-assets/nodejs-project/main.js');

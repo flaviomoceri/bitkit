@@ -9,7 +9,7 @@ import wallet from './wallet';
 import receive from './receive';
 import settings from './settings';
 import lightning from './lightning';
-import activity from './activity';
+import activity from '../slices/activity';
 import backup from './backup';
 import blocktank from './blocktank';
 import todos from './todos';

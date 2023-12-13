@@ -1,10 +1,10 @@
-import Store from '../types';
+import { RootState } from '..';
 import { createSelector } from '@reduxjs/toolkit';
 import { TWalletName } from '../types/wallet';
 import { IChecksShape, TStorageWarning } from '../types/checks';
 import { TAvailableNetworks } from '../../utils/networks';
 
-export const checksState = (state: Store): IChecksShape => state.checks;
+export const checksState = (state: RootState): IChecksShape => state.checks;
 
 /**
  * Returns the warnings for a given wallet.

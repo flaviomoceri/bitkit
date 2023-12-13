@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Caption13Up, Display, Text01S } from '../../styles/text';
@@ -43,15 +43,15 @@ const Confirm = ({
 
 	const isTransferringToSavings = spendingAmount < lightningBalance;
 
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const orders = useSelector(blocktankOrdersSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const orders = useAppSelector(blocktankOrdersSelector);
 	const order = useMemo(() => {
 		return orders.find((o) => o.id === orderId);
 	}, [orderId, orders]);
 
 	const feeSat = order?.feeSat ?? 0;
 	const blocktankPurchaseFee = useDisplayValues(feeSat);
-	const transactionFee = useSelector(transactionFeeSelector);
+	const transactionFee = useAppSelector(transactionFeeSelector);
 	const fiatTransactionFee = useDisplayValues(transactionFee);
 	const clientBalance = useDisplayValues(order?.clientBalanceSat ?? 0);
 

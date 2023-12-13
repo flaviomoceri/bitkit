@@ -1,6 +1,5 @@
-import { useSelector } from 'react-redux';
-import { FeeText, TFeeText } from '../store/shapes/fees';
-import Store from '../store/types';
+import { useAppSelector } from '../hooks/redux';
+import { FeeText, TFeeText } from '../utils/fees';
 
 /**
  * Returns the FeeText for a given fee amount.
@@ -8,7 +7,7 @@ import Store from '../store/types';
  * @returns {TFeeText}
  */
 export const useFeeText = (satsPerByte: number): TFeeText => {
-	const feeEstimates = useSelector((store: Store) => store.fees.onchain);
+	const feeEstimates = useAppSelector((store) => store.fees.onchain);
 
 	let feeText = FeeText.none;
 

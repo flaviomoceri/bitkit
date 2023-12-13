@@ -41,6 +41,7 @@ import {
 } from '../wallet';
 import { TAvailableNetworks } from '../networks';
 import {
+	dispatch,
 	getBlocktankStore,
 	getFeesStore,
 	getLightningStore,
@@ -64,10 +65,8 @@ import {
 	EActivityType,
 	TLightningActivityItem,
 } from '../../store/types/activity';
-import {
-	addActivityItem,
-	addCJitActivityItem,
-} from '../../store/actions/activity';
+import { addActivityItem } from '../../store/slices/activity';
+import { addCJitActivityItem } from '../../store/utils/activity';
 import {
 	EPaymentType,
 	IWalletItem,
@@ -398,7 +397,8 @@ export const handleLightningPaymentSubscription = async ({
 		confirmed: true,
 		timestamp: new Date().getTime(),
 	};
-	addActivityItem(activityItem);
+
+	dispatch(addActivityItem(activityItem));
 	showBottomSheet('newTxPrompt', { activityItem });
 	closeBottomSheet('receiveNavigation');
 
@@ -1620,7 +1620,7 @@ export const payLightningInvoice = async (
 			timestamp: new Date().getTime(),
 		};
 		//TODO rather sync with ldk for txs
-		addActivityItem(activityItem);
+		dispatch(addActivityItem(activityItem));
 		refreshLdk().then();
 		return ok(payResponse.value);
 	} catch (e) {

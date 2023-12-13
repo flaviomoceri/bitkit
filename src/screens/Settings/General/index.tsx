@@ -1,5 +1,5 @@
 import React, { memo, ReactElement, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData, ItemData } from '../../../components/List';
@@ -19,11 +19,11 @@ const GeneralSettings = ({
 }: SettingsScreenProps<'GeneralSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
 
-	const lastUsedTags = useSelector(lastUsedTagsSelector);
-	const showSuggestions = useSelector(showSuggestionsSelector);
-	const selectedTransactionSpeed = useSelector(transactionSpeedSelector);
-	const selectedCurrency = useSelector(selectedCurrencySelector);
-	const selectedUnit = useSelector(primaryUnitSelector);
+	const lastUsedTags = useAppSelector(lastUsedTagsSelector);
+	const showSuggestions = useAppSelector(showSuggestionsSelector);
+	const selectedTransactionSpeed = useAppSelector(transactionSpeedSelector);
+	const selectedCurrency = useAppSelector(selectedCurrencySelector);
+	const selectedUnit = useAppSelector(primaryUnitSelector);
 
 	const settingsListData: IListData[] = useMemo(() => {
 		const transactionSpeeds = {

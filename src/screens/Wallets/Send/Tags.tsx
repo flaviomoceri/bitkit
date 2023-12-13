@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { BottomSheetTextInput } from '../../../styles/components';
@@ -12,6 +11,7 @@ import Tag from '../../../components/Tag';
 import Button from '../../../components/Button';
 import { showToast } from '../../../utils/notifications';
 import { Keyboard } from '../../../hooks/keyboard';
+import { useAppSelector } from '../../../hooks/redux';
 import { addTxTag } from '../../../store/actions/wallet';
 import { addTag } from '../../../store/actions/metadata';
 import { lastUsedTagsSelector } from '../../../store/reselect/metadata';
@@ -24,9 +24,9 @@ import type { SendScreenProps } from '../../../navigation/types';
 const Tags = ({ navigation }: SendScreenProps<'Tags'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const [text, setText] = useState('');
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const lastUsedTags = useSelector(lastUsedTagsSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const lastUsedTags = useAppSelector(lastUsedTagsSelector);
 
 	const handleSubmit = async (): Promise<void> => {
 		if (text.length === 0) {
