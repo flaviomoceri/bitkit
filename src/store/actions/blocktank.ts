@@ -2,7 +2,7 @@ import { err, ok, Result } from '@synonymdev/result';
 
 import actions from './actions';
 import { resetSendTransaction, updateSendTransaction } from './wallet';
-import { setLightningSettingUpStep } from './user';
+import { setLightningSetupStep } from '../slices/user';
 import { getBlocktankStore, getWalletStore, dispatch } from '../helpers';
 import * as blocktank from '../../utils/blocktank';
 import {
@@ -125,10 +125,10 @@ export const refreshOrder = async (
 			order.state === BtOrderState.CREATED &&
 			order.payment.state === BtPaymentState.PAID
 		) {
-			setLightningSettingUpStep(1);
+			dispatch(setLightningSetupStep(1));
 			const finalizeRes = await openChannel(orderId);
 			if (finalizeRes.isOk()) {
-				setLightningSettingUpStep(3);
+				dispatch(setLightningSetupStep(3));
 				const getUpdatedOrderResult = await blocktank.getOrder(orderId);
 				if (getUpdatedOrderResult.isErr()) {
 					return err(getUpdatedOrderResult.error.message);
@@ -410,7 +410,7 @@ export const confirmChannelPurchase = async ({
 	resetSendTransaction({ selectedWallet, selectedNetwork });
 
 	watchOrder(orderId).then();
-	setLightningSettingUpStep(0);
+	dispatch(setLightningSetupStep(0));
 	refreshWallet({
 		onchain: true,
 		lightning: false, // No need to refresh lightning wallet at this time.
@@ -450,12 +450,12 @@ export const addPaidBlocktankOrder = ({
 const handleOrderStateChange = (order: IBtOrder): void => {
 	// queued for opening
 	if (!order.channel?.state) {
-		setLightningSettingUpStep(2);
+		dispatch(setLightningSetupStep(2));
 	}
 
 	// opening connection
 	if (order.channel?.state === 'opening') {
-		setLightningSettingUpStep(3);
+		dispatch(setLightningSetupStep(3));
 	}
 
 	// given up

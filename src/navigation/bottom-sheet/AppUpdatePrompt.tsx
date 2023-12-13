@@ -12,9 +12,9 @@ import GlowImage from '../../components/GlowImage';
 import { openURL } from '../../utils/helpers';
 import { objectKeys } from '../../utils/objectKeys';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { ignoreAppUpdate } from '../../store/slices/user';
 import { closeSheet } from '../../store/slices/ui';
 import { showBottomSheet } from '../../store/utils/ui';
-import { ignoreAppUpdate } from '../../store/actions/user';
 import { ignoreAppUpdateTimestampSelector } from '../../store/reselect/user';
 import {
 	availableUpdateSelector,
@@ -78,12 +78,12 @@ const AppUpdatePrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 	}, [shouldShowBottomSheet]);
 
 	const onCancel = (): void => {
-		ignoreAppUpdate();
+		dispatch(ignoreAppUpdate());
 		dispatch(closeSheet('appUpdatePrompt'));
 	};
 
 	const onUpdate = async (): Promise<void> => {
-		ignoreAppUpdate();
+		dispatch(ignoreAppUpdate());
 		await openURL(updateInfo?.url!);
 		dispatch(closeSheet('appUpdatePrompt'));
 	};

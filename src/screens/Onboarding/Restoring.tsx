@@ -8,14 +8,14 @@ import { restoreRemoteBackups, startWalletServices } from '../../utils/startup';
 import { showToast } from '../../utils/notifications';
 import { sleep } from '../../utils/helpers';
 import { useSelectedSlashtag } from '../../hooks/slashtags';
-import { updateUser } from '../../store/actions/user';
+import { updateUser } from '../../store/slices/user';
 import GlowingBackground from '../../components/GlowingBackground';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import GlowImage from '../../components/GlowImage';
 import Button from '../../components/Button';
 import Dialog from '../../components/Dialog';
 import LoadingWalletScreen from './Loading';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useProfile2, useSelectedSlashtag2 } from '../../hooks/slashtags2';
 import { setOnboardingProfileStep } from '../../store/actions/slashtags';
 import { onboardingProfileStepSelector } from '../../store/reselect/slashtags';
@@ -30,6 +30,7 @@ const RestoringScreen = (): ReactElement => {
 	const slashtag = useSelectedSlashtag();
 	const { url } = useSelectedSlashtag2();
 	const { profile } = useProfile2(url);
+	const dispatch = useAppDispatch();
 	const onboardingStep = useAppSelector(onboardingProfileStepSelector);
 	const [showRestored, setShowRestored] = useState(false);
 	const [showFailed, setShowFailed] = useState(false);
@@ -66,8 +67,8 @@ const RestoringScreen = (): ReactElement => {
 		}
 		setProceedWBIsLoading(false);
 		// This will navigate the user to the main wallet view once startWalletServices has run successfully.
-		updateUser({ requiresRemoteRestore: false });
-	}, [t]);
+		dispatch(updateUser({ requiresRemoteRestore: false }));
+	}, [t, dispatch]);
 
 	useEffect(() => {
 		if (attemptedAutoRestore) {
@@ -101,7 +102,7 @@ const RestoringScreen = (): ReactElement => {
 		const onPress = (): void => {
 			if (showRestored) {
 				//App.tsx will show wallet now
-				updateUser({ requiresRemoteRestore: false });
+				dispatch(updateUser({ requiresRemoteRestore: false }));
 			} else {
 				onRemoteRestore().then().catch(console.error);
 				setTryAgainCount(tryAgainCount + 1);

@@ -31,11 +31,12 @@ import SafeAreaInset from '../../components/SafeAreaInset';
 import GlowingBackground from '../../components/GlowingBackground';
 import Dot from '../../components/SliderDots';
 import Button from '../../components/Button';
+import { useAppDispatch } from '../../hooks/redux';
 import { createNewWallet } from '../../utils/startup';
 import { showToast } from '../../utils/notifications';
 import { sleep } from '../../utils/helpers';
 import LoadingWalletScreen from './Loading';
-import { updateUser } from '../../store/actions/user';
+import { updateUser } from '../../store/slices/user';
 import { IColors } from '../../styles/colors';
 import type { OnboardingStackScreenProps } from '../../navigation/types';
 
@@ -62,6 +63,7 @@ const Slideshow = ({
 	const [isCreatingWallet, setIsCreatingWallet] = useState(false);
 	const insets = useSafeAreaInsets();
 	const { t } = useTranslation('onboarding');
+	const dispatch = useAppDispatch();
 
 	// because we can't properly scala image inside the <Swiper let's calculate with by hand
 	const dimensions = useWindowDimensions();
@@ -87,8 +89,8 @@ const Slideshow = ({
 			});
 		}
 
-		updateUser({ requiresRemoteRestore: false });
-	}, [bip39Passphrase, t]);
+		dispatch(updateUser({ requiresRemoteRestore: false }));
+	}, [bip39Passphrase, t, dispatch]);
 
 	const slides = useMemo(
 		(): Slide[] => [

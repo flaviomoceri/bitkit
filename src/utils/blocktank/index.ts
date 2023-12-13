@@ -19,12 +19,13 @@ import {
 } from '../../store/actions/blocktank';
 import i18n from '../../utils/i18n';
 import { sleep } from '../helpers';
-import { getBlocktankStore, getUserStore } from '../../store/helpers';
+import { dispatch, getBlocktankStore, getUserStore } from '../../store/helpers';
 import {
 	ICreateOrderRequest,
 	TGeoBlockResponse,
 } from '../../store/types/blocktank';
-import { setGeoBlock, updateUser } from '../../store/actions/user';
+import { updateUser } from '../../store/slices/user';
+import { setGeoBlock } from '../../store/utils/user';
 import { refreshWallet } from '../wallet';
 import { DEFAULT_CHANNEL_DURATION } from '../../screens/Lightning/CustomConfirm';
 import { __BLOCKTANK_HOST__ } from '../../constants/env';
@@ -45,7 +46,7 @@ export const setupBlocktank = async (
 			bt.baseUrl = 'https://blocktank.synonym.to/api/v2';
 			break;
 		case EAvailableNetworks.bitcoinRegtest:
-			updateUser({ isGeoBlocked: false });
+			dispatch(updateUser({ isGeoBlocked: false }));
 			bt.baseUrl = 'https://api.stag.blocktank.to/blocktank/api/v2';
 			break;
 	}

@@ -9,7 +9,7 @@ import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationH
 import SafeAreaInset from '../../components/SafeAreaInset';
 import GlowImage from '../../components/GlowImage';
 import Button from '../../components/Button';
-import { ignoreHighBalance } from '../../store/slices/user';
+import { ignoreHighBalance, MAX_WARNINGS } from '../../store/slices/user';
 import { viewControllersSelector } from '../../store/reselect/ui';
 import { useBalance } from '../../hooks/wallet';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
@@ -39,7 +39,6 @@ const imageSrc = require('../../assets/illustrations/exclamation-mark.png');
 const BETA = true;
 const BALANCE_THRESHOLD_USD = 100; // how high the balance must be to show this warning to the user (in USD)
 const BALANCE_THRESHOLD_SATS = 500000; // how high the balance must be to show this warning to the user (in Sats)
-const MAX_WARNINGS = 3; // how many times to show this warning to the user
 const ASK_INTERVAL = 1000 * 60 * 60 * 24; // 1 day - how long this prompt will be hidden if user taps Later
 const CHECK_DELAY = 3000; // how long user needs to stay on Wallets screen before he will see this prompt
 
@@ -142,7 +141,7 @@ const HighBalanceWarning = ({
 	};
 
 	const onDismiss = (): void => {
-		ignoreHighBalance(true);
+		dispatch(ignoreHighBalance(true));
 		dispatch(closeSheet('highBalance'));
 	};
 
@@ -151,7 +150,9 @@ const HighBalanceWarning = ({
 			view="highBalance"
 			snapPoints={snapPoints}
 			backdrop={true}
-			onClose={ignoreHighBalance}>
+			onClose={(): void => {
+				dispatch(ignoreHighBalance(false));
+			}}>
 			<View style={styles.root}>
 				<BottomSheetNavigationHeader
 					title={t('high_title')}

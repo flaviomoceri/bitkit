@@ -17,7 +17,7 @@ import {
 } from '../../hooks/bottomSheet';
 import { closeSheet } from '../../store/slices/ui';
 import { showBottomSheet } from '../../store/utils/ui';
-import { clearCoopCloseTimer } from '../../store/actions/user';
+import { clearCoopCloseTimer } from '../../store/slices/user';
 import { startCoopCloseTimestampSelector } from '../../store/reselect/user';
 import {
 	selectedNetworkSelector,
@@ -59,7 +59,7 @@ const ForceTransfer = (): ReactElement => {
 			if (closeResponse.isOk()) {
 				if (closeResponse.value.length === 0) {
 					console.log('coop close success.');
-					clearCoopCloseTimer();
+					dispatch(clearCoopCloseTimer());
 					clearInterval(interval);
 				} else {
 					console.log('coop close failed.');
@@ -72,7 +72,7 @@ const ForceTransfer = (): ReactElement => {
 			const isTimeoutOver = Number(new Date()) - startTime > GIVE_UP;
 			if (isTimeoutOver) {
 				console.log('giving up on coop close.');
-				clearCoopCloseTimer();
+				dispatch(clearCoopCloseTimer());
 				clearInterval(interval);
 				showBottomSheet('forceTransfer');
 				return;
@@ -84,7 +84,7 @@ const ForceTransfer = (): ReactElement => {
 		return (): void => {
 			clearInterval(interval);
 		};
-	}, [selectedNetwork, selectedWallet, startTime]);
+	}, [selectedNetwork, selectedWallet, startTime, dispatch]);
 
 	const onCancel = (): void => {
 		dispatch(closeSheet('forceTransfer'));

@@ -8,16 +8,18 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
 import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
-import { verifyBackup } from '../../../store/actions/user';
+import { useAppDispatch } from '../../../hooks/redux';
+import { verifyBackup } from '../../../store/slices/user';
 import { BackupScreenProps } from '../../../navigation/types';
 
 const imageSrc = require('../../../assets/illustrations/check.png');
 
 const Result = ({ navigation }: BackupScreenProps<'Result'>): ReactElement => {
 	const { t } = useTranslation('security');
+	const dispatch = useAppDispatch();
 
 	const handleButtonPress = (): void => {
-		verifyBackup();
+		dispatch(verifyBackup());
 		navigation.navigate('Warning');
 	};
 

@@ -9,7 +9,7 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import { closeSheet } from '../../../store/slices/ui';
-import { ignoreBackup } from '../../../store/actions/user';
+import { ignoreBackup } from '../../../store/slices/user';
 import { showBottomSheet } from '../../../store/utils/ui';
 import { useNoTransactions } from '../../../hooks/wallet';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
@@ -51,7 +51,7 @@ const BackupPrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 	}, [viewControllers]);
 
 	const handleLater = (): void => {
-		ignoreBackup();
+		dispatch(ignoreBackup());
 		dispatch(closeSheet('backupPrompt'));
 	};
 
@@ -101,7 +101,9 @@ const BackupPrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 			view="backupPrompt"
 			snapPoints={snapPoints}
 			backdrop={true}
-			onClose={ignoreBackup}>
+			onClose={(): void => {
+				dispatch(ignoreBackup());
+			}}>
 			<View style={styles.container}>
 				<BottomSheetNavigationHeader
 					title={t('backup_wallet')}

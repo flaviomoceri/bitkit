@@ -11,7 +11,7 @@ import { TFeesState } from './slices/fees';
 import { ISlashtags } from './types/slashtags';
 import { ITodos } from './types/todos';
 import { TUiState } from './types/ui';
-import { IUser } from './types/user';
+import { TUser } from './slices/user';
 import { IWidgetsStore } from './types/widgets';
 import { IChecksShape } from './types/checks';
 import { IBackup } from './types/backup';
@@ -62,7 +62,7 @@ export const getUiStore = (): TUiState => {
 	return cloneDeep(store.getState().ui);
 };
 
-export const getUserStore = (): IUser => {
+export const getUserStore = (): TUser => {
 	return cloneDeep(store.getState().user);
 };
 
