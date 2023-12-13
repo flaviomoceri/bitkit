@@ -7,7 +7,7 @@ import { IMetadata } from './types/metadata';
 import { TActivity } from './slices/activity';
 import { ILightning } from './types/lightning';
 import { IBlocktank } from './types/blocktank';
-import { IFees } from './types/fees';
+import { TFeesState } from './slices/fees';
 import { ISlashtags } from './types/slashtags';
 import { ITodos } from './types/todos';
 import { TUiState } from './types/ui';
@@ -46,7 +46,7 @@ export const getBlocktankStore = (): IBlocktank => {
 	return cloneDeep(store.getState().blocktank);
 };
 
-export const getFeesStore = (): IFees => {
+export const getFeesStore = (): TFeesState => {
 	return cloneDeep(store.getState().fees);
 };
 

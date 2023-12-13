@@ -1,4 +1,12 @@
-import { EFeeId, IFees } from '../types/fees';
+export enum EFeeId {
+	instant = 'instant',
+	fast = 'fast',
+	normal = 'normal',
+	slow = 'slow',
+	minimum = 'minimum',
+	custom = 'custom',
+	none = 'none',
+}
 
 export type TFeeText = {
 	title: string;
@@ -54,16 +62,4 @@ export const FeeText: TFeeTexts = {
 		shortRange: '',
 		shortDescription: '',
 	},
-};
-
-export const defaultFeesShape: IFees = {
-	//On-chain fees in sats/vbyte
-	onchain: {
-		fast: 4, // 10-20 mins
-		normal: 2, // 20-60 mins
-		slow: 1, // 1-2 hrs
-		minimum: 1,
-		timestamp: Date.now() - 60 * 30 * 1000 - 1,
-	},
-	override: false,
 };

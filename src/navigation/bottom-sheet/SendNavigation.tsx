@@ -30,7 +30,7 @@ import {
 	setupFeeForOnChainTransaction,
 } from '../../store/actions/wallet';
 import { __E2E__ } from '../../constants/env';
-import { updateOnchainFeeEstimates } from '../../store/actions/fees';
+import { updateOnchainFeeEstimates } from '../../store/utils/fees';
 import { useLightningBalance } from '../../hooks/lightning';
 import {
 	selectedNetworkSelector,

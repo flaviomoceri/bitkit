@@ -63,7 +63,7 @@ import { showToast } from '../notifications';
 import { getTransactions, subscribeToAddresses } from './electrum';
 import { TOnchainActivityItem } from '../../store/types/activity';
 import { EFeeId, IOnchainFees } from '../../store/types/fees';
-import { defaultFeesShape } from '../../store/shapes/fees';
+import { initialFeesState } from '../../store/slices/fees';
 import { TRANSACTION_DEFAULTS } from './constants';
 import i18n from '../i18n';
 
@@ -2343,14 +2343,14 @@ export const getFeeEstimates = async (
 
 		if (__E2E__) {
 			return ok({
-				...defaultFeesShape.onchain,
+				...initialFeesState.onchain,
 				timestamp: Date.now(),
 			});
 		}
 
 		if (selectedNetwork === EAvailableNetworks.bitcoinRegtest) {
 			return ok({
-				...defaultFeesShape.onchain,
+				...initialFeesState.onchain,
 				timestamp: Date.now(),
 			});
 		}

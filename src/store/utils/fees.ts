@@ -1,10 +1,9 @@
 import { ok, err, Result } from '@synonymdev/result';
 
-import actions from './actions';
 import { dispatch, getFeesStore } from '../helpers';
+import { updateOnchainFees } from '../slices/fees';
 import { getFeeEstimates } from '../../utils/wallet/transactions';
 import { TAvailableNetworks } from '../../utils/networks';
-import { IOnchainFees } from '../types/fees';
 
 export const REFRESH_INTERVAL = 60 * 30; // in seconds, 30 minutes
 
@@ -32,33 +31,7 @@ export const updateOnchainFeeEstimates = async ({
 		return err(feeEstimates.error);
 	}
 
-	dispatch({
-		type: actions.UPDATE_ONCHAIN_FEE_ESTIMATES,
-		payload: feeEstimates.value,
-	});
+	dispatch(updateOnchainFees(feeEstimates.value));
 
 	return ok('Successfully updated on-chain fee estimates.');
-};
-
-export const overrideOnchainFeeEstimates = (
-	feeEstimates: IOnchainFees,
-): Result<string> => {
-	dispatch({
-		type: actions.UPDATE_ONCHAIN_FEE_ESTIMATES,
-		payload: feeEstimates,
-	});
-	return ok('Successfully overrode on-chain fee estimates.');
-};
-
-export const updateOverrideFee = (enable: boolean): Result<string> => {
-	dispatch({ type: actions.UPDATE_OVERRIDE_FEES, payload: enable });
-	return ok('');
-};
-
-/*
- * This resets the fees store to the default shape
- */
-export const resetFeesStore = (): Result<string> => {
-	dispatch({ type: actions.RESET_FEES_STORE });
-	return ok('');
 };

@@ -13,7 +13,7 @@ import { createWallet, updateExchangeRates } from '../../store/actions/wallet';
 import { getWalletStore } from '../../store/helpers';
 import { refreshBlocktankInfo } from '../../store/actions/blocktank';
 import { connectToElectrum, subscribeToHeader } from '../wallet/electrum';
-import { updateOnchainFeeEstimates } from '../../store/actions/fees';
+import { updateOnchainFeeEstimates } from '../../store/utils/fees';
 import { keepLdkSynced, setupLdk } from '../lightning';
 import { setupBlocktank, watchPendingOrders } from '../blocktank';
 import { updateSlashPayConfig2 } from '../slashtags2';

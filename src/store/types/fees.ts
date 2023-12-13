@@ -16,8 +16,3 @@ export interface IOnchainFees {
 	minimum: number;
 	timestamp: number;
 }
-
-export interface IFees {
-	onchain: IOnchainFees;
-	override: boolean;
-}
