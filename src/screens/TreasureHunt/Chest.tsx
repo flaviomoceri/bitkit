@@ -1,6 +1,6 @@
 import React, { ReactElement, memo, useCallback } from 'react';
 import { StyleSheet, Platform, View, TouchableOpacity } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 
 import { Subtitle, Text02M } from '../../styles/text';
 import GradientView from '../../components/GradientView';
@@ -12,7 +12,7 @@ import { viewControllerSelector } from '../../store/reselect/ui';
 import GradientText from './GradientText';
 import Title from './Title';
 import BitkitLogo from '../../assets/bitkit-logo.svg';
-import Store from '../../store/types';
+
 import type { TreasureHuntScreenProps } from '../../navigation/types';
 
 const imageSrc = require('../../assets/treasure-hunt/treasure.jpg');
@@ -21,8 +21,8 @@ const Chest = ({
 	navigation,
 }: TreasureHuntScreenProps<'Chest'>): ReactElement => {
 	const { isSmallScreen } = useScreenSize();
-	const { treasureChests } = useSelector((state: Store) => state.settings);
-	const { chestId } = useSelector((state) => {
+	const { treasureChests } = useAppSelector((state) => state.settings);
+	const { chestId } = useAppSelector((state) => {
 		return viewControllerSelector(state, 'treasureHunt');
 	});
 

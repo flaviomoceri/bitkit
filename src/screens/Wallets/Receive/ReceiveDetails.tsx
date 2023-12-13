@@ -6,7 +6,6 @@ import React, {
 	useEffect,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 
@@ -22,10 +21,8 @@ import NumberPadTextField from '../../../components/NumberPadTextField';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
 import Tag from '../../../components/Tag';
-import {
-	updateInvoice,
-	removeInvoiceTag,
-} from '../../../store/actions/receive';
+import { updateInvoice, removeInvoiceTag } from '../../../store/slices/receive';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import useKeyboard, { Keyboard } from '../../../hooks/keyboard';
 import GradientView from '../../../components/GradientView';
 import ReceiveNumberPad from './ReceiveNumberPad';
@@ -62,19 +59,20 @@ const ReceiveDetails = ({
 	const { isSmallScreen } = useScreenSize();
 	const [nextUnit, switchUnit] = useSwitchUnit();
 	const [showNumberPad, setShowNumberPad] = useState(false);
-	const invoice = useSelector(receiveSelector);
+	const dispatch = useAppDispatch();
+	const invoice = useAppSelector(receiveSelector);
 	const { fiatTicker } = useCurrency();
 	const { receiveAddress, lightningInvoice, enableInstant } = route.params;
-	const blocktank = useSelector(blocktankInfoSelector);
+	const blocktank = useAppSelector(blocktankInfoSelector);
 	const lightningBalance = useLightningBalance(false);
-	const isGeoBlocked = useSelector(isGeoBlockedSelector);
-	const accountVersion = useSelector(accountVersionSelector);
+	const isGeoBlocked = useAppSelector(isGeoBlockedSelector);
+	const accountVersion = useAppSelector(accountVersionSelector);
 
 	const { maxChannelSizeSat } = blocktank.options;
 
 	const onChangeUnit = (): void => {
 		const result = getNumberPadText(invoice.amount, nextUnit);
-		updateInvoice({ numberPadText: result });
+		dispatch(updateInvoice({ numberPadText: result }));
 		switchUnit();
 	};
 
@@ -107,7 +105,7 @@ const ReceiveDetails = ({
 				return;
 			}
 			const order = cJitEntryResponse.value;
-			updateInvoice({ jitOrder: order });
+			dispatch(updateInvoice({ jitOrder: order }));
 			navigation.navigate('ReceiveConnect');
 		}
 	}, [
@@ -119,6 +117,7 @@ const ReceiveDetails = ({
 		accountVersion,
 		lightningBalance.remoteBalance,
 		navigation,
+		dispatch,
 	]);
 
 	const onNavigateBack = useCallback(async () => {
@@ -185,7 +184,7 @@ const ReceiveDetails = ({
 									returnKeyType="done"
 									testID="ReceiveNote"
 									onChangeText={(txt): void => {
-										updateInvoice({ message: txt });
+										dispatch(updateInvoice({ message: txt }));
 									}}
 								/>
 							</View>
@@ -207,7 +206,7 @@ const ReceiveDetails = ({
 											style={styles.tag}
 											value={tag}
 											onDelete={(): void => {
-												removeInvoiceTag({ tag });
+												dispatch(removeInvoiceTag(tag));
 											}}
 										/>
 									))}

@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { BottomSheetTextInput } from '../../../styles/components';
@@ -11,34 +10,36 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
 import Tag from '../../../components/Tag';
 import { Keyboard } from '../../../hooks/keyboard';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { lastUsedTagsSelector } from '../../../store/reselect/metadata';
-import { updateInvoice } from '../../../store/actions/receive';
+import { updateInvoice } from '../../../store/slices/receive';
 import { addTag } from '../../../store/actions/metadata';
 import { ReceiveScreenProps } from '../../../navigation/types';
 
 const Tags = ({ navigation }: ReceiveScreenProps<'Tags'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const [text, setText] = useState('');
-	const lastUsedTags = useSelector(lastUsedTagsSelector);
+	const dispatch = useAppDispatch();
+	const lastUsedTags = useAppSelector(lastUsedTagsSelector);
 
 	const handleSubmit = useCallback(async (): Promise<void> => {
 		if (text.length === 0) {
 			return;
 		}
-		updateInvoice({ tags: [text] });
+		dispatch(updateInvoice({ tags: [text] }));
 		addTag(text);
 		await Keyboard.dismiss();
 		navigation.goBack();
-	}, [navigation, text]);
+	}, [navigation, dispatch, text]);
 
 	const handleTagChoose = useCallback(
 		async (tag: string): Promise<void> => {
-			updateInvoice({ tags: [tag] });
+			dispatch(updateInvoice({ tags: [tag] }));
 			addTag(tag);
 			await Keyboard.dismiss();
 			navigation.goBack();
 		},
-		[navigation],
+		[navigation, dispatch],
 	);
 
 	return (

@@ -1,5 +1,5 @@
 import React, { ReactElement, memo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
 	createNativeStackNavigator,
 	NativeStackNavigationOptions,
@@ -14,8 +14,8 @@ import ReceiveAmount from '../../screens/Wallets/Receive/ReceiveAmount';
 import ReceiveConnect from '../../screens/Wallets/Receive/ReceiveConnect';
 import { useSnapPoints } from '../../hooks/bottomSheet';
 import { NavigationContainer } from '../../styles/components';
+import { resetInvoice } from '../../store/slices/receive';
 import { viewControllerIsOpenSelector } from '../../store/reselect/ui';
-import { resetInvoice } from '../../store/actions/receive';
 import { __E2E__ } from '../../constants/env';
 
 export type ReceiveNavigationProp =
@@ -42,17 +42,22 @@ const navOptions: NativeStackNavigationOptions = {
 
 const ReceiveNavigation = (): ReactElement => {
 	const snapPoints = useSnapPoints('large');
-	const isOpen = useSelector((state) =>
-		viewControllerIsOpenSelector(state, 'receiveNavigation'),
-	);
+	const dispatch = useAppDispatch();
+	const isOpen = useAppSelector((state) => {
+		return viewControllerIsOpenSelector(state, 'receiveNavigation');
+	});
+
+	const reset = (): void => {
+		dispatch(resetInvoice());
+	};
 
 	return (
 		<BottomSheetWrapper
 			view="receiveNavigation"
 			snapPoints={snapPoints}
 			testID="ReceiveScreen"
-			onOpen={resetInvoice}
-			onClose={resetInvoice}>
+			onOpen={reset}
+			onClose={reset}>
 			<NavigationContainer key={isOpen.toString()}>
 				<Stack.Navigator screenOptions={navOptions}>
 					<Stack.Screen name="ReceiveQR" component={ReceiveQR} />
