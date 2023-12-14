@@ -1,4 +1,4 @@
-import React, { memo, ReactElement } from 'react';
+import React, { memo, ReactElement, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Trans, useTranslation } from 'react-i18next';
@@ -16,7 +16,13 @@ import useDisplayValues from '../../../hooks/displayValues';
 import { useLightningBalance } from '../../../hooks/lightning';
 import { receiveSelector } from '../../../store/reselect/receive';
 import type { ReceiveScreenProps } from '../../../navigation/types';
+import { DEFAULT_CHANNEL_DURATION } from '../../Lightning/CustomConfirm';
 import { addCJitEntry } from '../../../store/actions/blocktank';
+import { createCJitEntry, estimateOrderFee } from '../../../utils/blocktank';
+import { showToast } from '../../../utils/notifications';
+import { updateInvoice } from '../../../store/actions/receive';
+import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
+import { ICreateOrderRequest } from '../../../store/types/blocktank';
 
 const imageSrc = require('../../../assets/illustrations/lightning.png');
 
@@ -26,15 +32,63 @@ const ReceiveConnect = ({
 	const { t } = useTranslation('wallet');
 	const { isSmallScreen } = useScreenSize();
 	const lightningBalance = useLightningBalance(true);
-	const { amount, jitOrder } = useSelector(receiveSelector);
+	const [feeEstimate, setFeeEstimate] = useState(0);
+	const [isLoading, setIsLoading] = useState(false);
+	const { amount } = useSelector(receiveSelector);
+	const invoice = useSelector(receiveSelector);
+	const blocktank = useSelector(blocktankInfoSelector);
 
-	const order = jitOrder!;
-	const payAmount = amount - order.feeSat;
-	const displayFee = useDisplayValues(order.feeSat);
+	const { maxChannelSizeSat } = blocktank.options;
 
-	const onContinue = (): void => {
+	const requestData: ICreateOrderRequest = {
+		lspBalanceSat: amount,
+		channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
+		options: {},
+	};
+
+	async function feeEstimation(): Promise<void> {
+		try {
+			const estimate = await estimateOrderFee(requestData);
+			if (estimate.isOk()) {
+				setFeeEstimate(estimate.value);
+			} else {
+				console.error('Error in estimate');
+			}
+		} catch (error) {
+			console.error('Error', error);
+		}
+	}
+
+	feeEstimation();
+
+	const payAmount = amount - feeEstimate;
+	const displayFee = useDisplayValues(feeEstimate);
+
+	const onContinue = async (): Promise<void> => {
+		setIsLoading(true);
+
+		const cJitEntryResponse = await createCJitEntry({
+			channelSizeSat: maxChannelSizeSat,
+			invoiceSat: invoice.amount,
+			invoiceDescription: invoice.message,
+			channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
+			couponCode: 'bitkit',
+		});
+		if (cJitEntryResponse.isErr()) {
+			setIsLoading(false);
+			console.log({ error: cJitEntryResponse.error.message });
+			showToast({
+				type: 'error',
+				title: t('receive_cjit_error'),
+				description: cJitEntryResponse.error.message,
+			});
+			return;
+		}
+		const order = cJitEntryResponse.value;
+		updateInvoice({ jitOrder: order });
 		addCJitEntry(order).then();
 		navigation.navigate('ReceiveQR');
+		setIsLoading(false);
 	};
 
 	const isInitial = lightningBalance.localBalance === 0;
@@ -81,6 +135,7 @@ const ReceiveConnect = ({
 					<Button
 						size="large"
 						text={t('continue')}
+						loading={isLoading}
 						testID="ReceiveConnectContinue"
 						onPress={onContinue}
 					/>
