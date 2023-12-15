@@ -1,4 +1,4 @@
-import React, { memo, ReactElement, useState } from 'react';
+import React, { memo, ReactElement, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Trans, useTranslation } from 'react-i18next';
@@ -22,7 +22,6 @@ import { createCJitEntry, estimateOrderFee } from '../../../utils/blocktank';
 import { showToast } from '../../../utils/notifications';
 import { updateInvoice } from '../../../store/actions/receive';
 import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
-import { ICreateOrderRequest } from '../../../store/types/blocktank';
 
 const imageSrc = require('../../../assets/illustrations/lightning.png');
 
@@ -40,33 +39,24 @@ const ReceiveConnect = ({
 
 	const { maxChannelSizeSat } = blocktank.options;
 
-	const requestData: ICreateOrderRequest = {
-		lspBalanceSat: amount,
-		channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
-		options: {},
-	};
-
-	async function feeEstimation(): Promise<void> {
-		try {
-			const estimate = await estimateOrderFee(requestData);
+	useEffect(() => {
+		const getFeeEstimation = async (): Promise<void> => {
+			const estimate = await estimateOrderFee({
+				lspBalanceSat: amount,
+				channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
+			});
 			if (estimate.isOk()) {
 				setFeeEstimate(estimate.value);
-			} else {
-				console.error('Error in estimate');
 			}
-		} catch (error) {
-			console.error('Error', error);
-		}
-	}
-
-	feeEstimation();
+		};
+		getFeeEstimation();
+	}, [amount]);
 
 	const payAmount = amount - feeEstimate;
 	const displayFee = useDisplayValues(feeEstimate);
 
 	const onContinue = async (): Promise<void> => {
 		setIsLoading(true);
-
 		const cJitEntryResponse = await createCJitEntry({
 			channelSizeSat: maxChannelSizeSat,
 			invoiceSat: invoice.amount,
@@ -75,8 +65,6 @@ const ReceiveConnect = ({
 			couponCode: 'bitkit',
 		});
 		if (cJitEntryResponse.isErr()) {
-			setIsLoading(false);
-			console.log({ error: cJitEntryResponse.error.message });
 			showToast({
 				type: 'error',
 				title: t('receive_cjit_error'),
@@ -87,8 +75,8 @@ const ReceiveConnect = ({
 		const order = cJitEntryResponse.value;
 		updateInvoice({ jitOrder: order });
 		addCJitEntry(order).then();
-		navigation.navigate('ReceiveQR');
 		setIsLoading(false);
+		navigation.navigate('ReceiveQR');
 	};
 
 	const isInitial = lightningBalance.localBalance === 0;
