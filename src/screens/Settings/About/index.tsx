@@ -104,14 +104,7 @@ const About = ({
 					{
 						title: t('about.support'),
 						type: EItemType.button,
-						onPress: async (): Promise<void> => {
-							const link = await createSupportLink();
-							const openUrlSuccess = await openURL(link);
-							if (!openUrlSuccess) {
-								//If unable to open mail app for any reason, open contact page in browser.
-								await openURL('https://synonym.to/contact');
-							}
-						},
+						onPress: (): void => navigation.navigate('ReportIssue'),
 					},
 					{
 						title: t('about.report_bug'),
@@ -147,7 +140,7 @@ const About = ({
 			},
 		],
 		// [isReviewing],
-		[t],
+		[t, navigation],
 	);
 
 	return (

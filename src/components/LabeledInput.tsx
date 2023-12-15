@@ -20,6 +20,7 @@ type LabeledInputProps = {
 	maxLength?: number;
 	testID?: string;
 	color?: keyof IThemeColors;
+	lines?: number;
 };
 
 const LabeledInput = ({
@@ -38,11 +39,14 @@ const LabeledInput = ({
 	maxLength,
 	testID,
 	color = 'white',
+	lines = 1,
 }: LabeledInputProps): ReactElement => {
 	const numberOfChildren = React.Children.toArray(children).length;
 
 	const textInputStyle =
 		numberOfChildren > 0 ? { paddingRight: 60 * numberOfChildren } : {};
+
+	const numberOfLines = Math.max(1, Math.min(lines, 10));
 
 	return (
 		<View style={style}>
@@ -69,7 +73,7 @@ const LabeledInput = ({
 						autoCapitalize="none"
 						autoCorrect={false}
 						placeholder={placeholder}
-						minHeight={multiline ? 72 : 52}
+						minHeight={multiline ? 40 * numberOfLines : 52}
 						onChangeText={onChange}
 						multiline={multiline || false}
 						editable={!!onChange}
@@ -85,7 +89,7 @@ const LabeledInput = ({
 						autoCorrect={false}
 						autoFocus={autoFocus}
 						placeholder={placeholder}
-						minHeight={multiline ? 72 : 52}
+						minHeight={multiline ? 40 * numberOfLines : 52}
 						onChangeText={onChange}
 						multiline={multiline || false}
 						editable={!!onChange}

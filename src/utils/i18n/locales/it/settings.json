@@ -73,6 +73,22 @@
     "category_profile": "Profilo",
     "category_contacts": "Contatti"
   },
+  "support": {
+    "title": "Supporto",
+    "title_text": "Hai bisogno di aiuto? Segnala il tuo problema da Bitkit, visita il centro assistenza o contattaci sui nostri canali social.",
+    "report": "Segnala un problema",
+    "help": "Help Center",
+    "help_url": "https://help.bitkit.to",
+    "report_text": "Descrivi il problema che stai riscontrando o fai una domanda generale.",
+    "label_address": "Indirizzo email",
+    "label_message": "Problema o domanda",
+    "placeholder_address": "satoshi@satoshi.com",
+    "placeholder_message": "Descrivi il problema o fai una domanda",
+    "text_button": "Invia",
+    "title_success": "Messaggio inviato",
+    "text_success": "Grazie per averci contattato! Cercheremo di risponderti il prima possibile.",
+    "text_success_button": "Ok"
+  },
   "adv": {
     "section_payments": "Pagamenti",
     "section_networks": "Reti",
