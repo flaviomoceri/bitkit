@@ -110,9 +110,14 @@ const BaseFeedWidget = ({
 					)}
 				</View>
 
-				<LoadingView style={styles.content} loading={!!isLoading} delay={1000}>
-					{children}
-				</LoadingView>
+				{!isEditing && (
+					<LoadingView
+						style={styles.content}
+						loading={!!isLoading}
+						delay={1000}>
+						{children}
+					</LoadingView>
+				)}
 			</TouchableOpacity>
 
 			<Dialog
