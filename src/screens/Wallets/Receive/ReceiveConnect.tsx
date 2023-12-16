@@ -1,4 +1,4 @@
-import React, { memo, ReactElement } from 'react';
+import React, { memo, ReactElement, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Trans, useTranslation } from 'react-i18next';
@@ -16,7 +16,12 @@ import useDisplayValues from '../../../hooks/displayValues';
 import { useLightningBalance } from '../../../hooks/lightning';
 import { receiveSelector } from '../../../store/reselect/receive';
 import type { ReceiveScreenProps } from '../../../navigation/types';
+import { DEFAULT_CHANNEL_DURATION } from '../../Lightning/CustomConfirm';
 import { addCJitEntry } from '../../../store/actions/blocktank';
+import { createCJitEntry, estimateOrderFee } from '../../../utils/blocktank';
+import { showToast } from '../../../utils/notifications';
+import { updateInvoice } from '../../../store/actions/receive';
+import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
 
 const imageSrc = require('../../../assets/illustrations/lightning.png');
 
@@ -26,14 +31,51 @@ const ReceiveConnect = ({
 	const { t } = useTranslation('wallet');
 	const { isSmallScreen } = useScreenSize();
 	const lightningBalance = useLightningBalance(true);
-	const { amount, jitOrder } = useSelector(receiveSelector);
+	const [feeEstimate, setFeeEstimate] = useState(0);
+	const [isLoading, setIsLoading] = useState(false);
+	const { amount } = useSelector(receiveSelector);
+	const invoice = useSelector(receiveSelector);
+	const blocktank = useSelector(blocktankInfoSelector);
 
-	const order = jitOrder!;
-	const payAmount = amount - order.feeSat;
-	const displayFee = useDisplayValues(order.feeSat);
+	const { maxChannelSizeSat } = blocktank.options;
 
-	const onContinue = (): void => {
+	useEffect(() => {
+		const getFeeEstimation = async (): Promise<void> => {
+			const estimate = await estimateOrderFee({
+				lspBalanceSat: amount,
+				channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
+			});
+			if (estimate.isOk()) {
+				setFeeEstimate(estimate.value);
+			}
+		};
+		getFeeEstimation();
+	}, [amount]);
+
+	const payAmount = amount - feeEstimate;
+	const displayFee = useDisplayValues(feeEstimate);
+
+	const onContinue = async (): Promise<void> => {
+		setIsLoading(true);
+		const cJitEntryResponse = await createCJitEntry({
+			channelSizeSat: maxChannelSizeSat,
+			invoiceSat: invoice.amount,
+			invoiceDescription: invoice.message,
+			channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
+			couponCode: 'bitkit',
+		});
+		if (cJitEntryResponse.isErr()) {
+			showToast({
+				type: 'error',
+				title: t('receive_cjit_error'),
+				description: cJitEntryResponse.error.message,
+			});
+			return;
+		}
+		const order = cJitEntryResponse.value;
+		updateInvoice({ jitOrder: order });
 		addCJitEntry(order).then();
+		setIsLoading(false);
 		navigation.navigate('ReceiveQR');
 	};
 
@@ -81,6 +123,7 @@ const ReceiveConnect = ({
 					<Button
 						size="large"
 						text={t('continue')}
+						loading={isLoading}
 						testID="ReceiveConnectContinue"
 						onPress={onContinue}
 					/>

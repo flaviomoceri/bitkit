@@ -1,4 +1,4 @@
-import React, { ReactElement, memo, useState, useCallback } from 'react';
+import React, { ReactElement, memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -19,16 +19,13 @@ import { useCurrency } from '../../../hooks/displayValues';
 import { updateInvoice } from '../../../store/actions/receive';
 import { receiveSelector } from '../../../store/reselect/receive';
 import { getNumberPadText } from '../../../utils/numberpad';
-import { createCJitEntry } from '../../../utils/blocktank';
-import { showToast } from '../../../utils/notifications';
-import { DEFAULT_CHANNEL_DURATION } from '../../Lightning/CustomConfirm';
 import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
 import { refreshBlocktankInfo } from '../../../store/actions/blocktank';
 import type { ReceiveScreenProps } from '../../../navigation/types';
 
 // hardcoded to be above fee (1092)
 // TODO: fee is dynamic so this should be fetched from the API
-const MINIMUM_AMOUNT = 5000;
+const MINIMUM_AMOUNT = 20500;
 
 const ReceiveAmount = ({
 	navigation,
@@ -36,7 +33,6 @@ const ReceiveAmount = ({
 	const { t } = useTranslation('wallet');
 	const { fiatTicker } = useCurrency();
 	const [nextUnit, switchUnit] = useSwitchUnit();
-	const [isLoading, setIsLoading] = useState(false);
 	const invoice = useSelector(receiveSelector);
 	const blocktank = useSelector(blocktankInfoSelector);
 
@@ -56,30 +52,8 @@ const ReceiveAmount = ({
 		switchUnit();
 	};
 
-	const onContinue = async (): Promise<void> => {
-		setIsLoading(true);
-
-		const cJitEntryResponse = await createCJitEntry({
-			channelSizeSat: maxChannelSizeSat,
-			invoiceSat: invoice.amount,
-			invoiceDescription: invoice.message,
-			channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
-			couponCode: 'bitkit',
-		});
-		if (cJitEntryResponse.isErr()) {
-			setIsLoading(false);
-			console.log({ error: cJitEntryResponse.error.message });
-			showToast({
-				type: 'error',
-				title: t('receive_cjit_error'),
-				description: cJitEntryResponse.error.message,
-			});
-			return;
-		}
-		const order = cJitEntryResponse.value;
-		updateInvoice({ jitOrder: order });
+	const onContinue = (): void => {
 		navigation.navigate('ReceiveConnect');
-		setIsLoading(false);
 	};
 
 	const continueDisabled =
@@ -132,7 +106,6 @@ const ReceiveAmount = ({
 						<Button
 							size="large"
 							text={t('continue')}
-							loading={isLoading}
 							testID="ReceiveAmountContinue"
 							onPress={onContinue}
 							disabled={continueDisabled}

@@ -21,5 +21,5 @@ export type TGeoBlockResponse = { error?: 'GEO_BLOCKED'; accept?: boolean };
 export interface ICreateOrderRequest {
 	lspBalanceSat: number;
 	channelExpiryWeeks: number;
-	options: Partial<ICreateOrderOptions>;
+	options?: Partial<ICreateOrderOptions>;
 }
