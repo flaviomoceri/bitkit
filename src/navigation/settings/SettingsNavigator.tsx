@@ -33,6 +33,7 @@ import AdvancedSettings from '../../screens/Settings/Advanced';
 import AboutSettings from '../../screens/Settings/About';
 import ReportIssue from '../../screens/Settings/ReportIssue';
 import ConfirmFormSent from '../../screens/Settings/ConfirmFormSent';
+import ErrorFormSent from '../../screens/Settings/ErrorFormSent';
 import EasterEgg from '../../screens/Settings/EasterEgg';
 import BitcoinNetworkSelection from '../../screens/Settings/Bitcoin/BitcoinNetworkSelection';
 import Channels from '../../screens/Settings/Lightning/Channels';
@@ -73,6 +74,7 @@ export type SettingsStackParamList = {
 	AboutSettings: undefined;
 	ReportIssue: undefined;
 	ConfirmFormSent: undefined;
+	ErrorFormSent: undefined;
 	EasterEgg: undefined;
 	CurrenciesSettings: undefined;
 	UnitSettings: undefined;
@@ -130,6 +132,7 @@ const SettingsNavigator = (): ReactElement => {
 			<Stack.Screen name="AboutSettings" component={AboutSettings} />
 			<Stack.Screen name="ReportIssue" component={ReportIssue} />
 			<Stack.Screen name="ConfirmFormSent" component={ConfirmFormSent} />
+			<Stack.Screen name="ErrorFormSent" component={ErrorFormSent} />
 			<Stack.Screen name="EasterEgg" component={EasterEgg} />
 			<Stack.Screen name="CurrenciesSettings" component={CurrenciesSettings} />
 			<Stack.Screen name="UnitSettings" component={UnitSettings} />

@@ -45,7 +45,7 @@ const ReportIssue = ({
 			const ldknodeIdUser = await getNodeId();
 
 			if (ldkVersionUser.isOk() && ldknodeIdUser.isOk()) {
-				ldkVersion += `ldk-${ldkVersionUser.value.ldk} c_bindings-${ldkVersionUser.value.c_bindings})`;
+				ldkVersion += `ldk-${ldkVersionUser.value.ldk} c_bindings-${ldkVersionUser.value.c_bindings}`;
 				ldkNodeId += `${ldknodeIdUser.value}`;
 			}
 			await axios.post(`${process.env.API_FORM}`, {
@@ -62,6 +62,10 @@ const ReportIssue = ({
 			setIsLoading(false);
 		} catch (error) {
 			console.error('Error', error);
+			navigation.navigate('ErrorFormSent');
+			setEmail('');
+			setMessage('');
+			setIsLoading(false);
 		}
 	};
 

@@ -99,7 +99,10 @@
 		"text_button": "Send",
 		"title_success": "Sent successfully",
 		"text_success": "Thank you for contacting us! We will try to get back to you as soon as possible.",
-		"text_success_button": "Ok"
+		"text_success_button": "Ok",
+		"title_unsuccess": "Sent unsuccessfully",
+		"text_unsuccess": "Something went wrong! We apologize for the inconvenience and invite you to try again.",
+		"text_unsuccess_button": "Ok"
 	  },
 	"adv": {
 		"section_payments": "Payments",
