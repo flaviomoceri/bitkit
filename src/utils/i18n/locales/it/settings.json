@@ -6,6 +6,7 @@
   "security_title": "Sicurezza e Privacy",
   "backup_title": "Backup o Ripristino",
   "advanced_title": "Avanzate",
+  "support_title": "Supporto",
   "about": {
     "title": "Informazioni su Bitkit",
     "text": "Bitkit ti consegna le chiavi del tuo denaro, del tuo profilo, dei tuoi contatti e dei tuoi account web.\n\nQuesta <easterEgg>Orange-Pillazione</easterEgg> è stata accuratamente realizzata da Synonym Software Ltd.",
@@ -74,10 +75,9 @@
     "category_contacts": "Contatti"
   },
   "support": {
-    "title": "Supporto",
-    "title_text": "Hai bisogno di aiuto? Segnala il tuo problema da Bitkit, visita il centro assistenza o contattaci sui nostri canali social.",
+    "text": "Hai bisogno di aiuto? Segnala il tuo problema da Bitkit, visita il centro assistenza o contattaci sui nostri canali social.",
     "report": "Segnala un problema",
-    "help": "Help Center",
+    "help": "Centro assistenza",
     "help_url": "https://help.bitkit.to",
     "report_text": "Descrivi il problema che stai riscontrando o fai una domanda generale.",
     "label_address": "Indirizzo email",

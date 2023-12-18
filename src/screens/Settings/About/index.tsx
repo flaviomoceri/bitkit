@@ -24,14 +24,15 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Text01S } from '../../../styles/text';
 import {
 	BitkitIcon,
-	EmailIcon,
+	DiscordIcon,
 	GithubIcon,
 	GlobeIcon,
 	MediumIcon,
+	TelegramIcon,
 	TwitterIcon,
 } from '../../../styles/icons';
 import { openURL } from '../../../utils/helpers';
-import { createSupportLink } from '../../../utils/support';
+//import { createSupportLink } from '../../../utils/support';
 import NavigationHeader from '../../../components/NavigationHeader';
 import List, { EItemType, IListData } from '../../../components/List';
 import GlowingBackground from '../../../components/GlowingBackground';
@@ -101,18 +102,18 @@ const About = ({
 					// 		openURL('https://www.synonym.to/').then();
 					// 	},
 					// },
-					{
-						title: t('about.support'),
-						type: EItemType.button,
-						onPress: (): void => navigation.navigate('ReportIssue'),
-					},
-					{
-						title: t('about.report_bug'),
-						type: EItemType.button,
-						onPress: (): void => {
-							openURL('https://www.github.com/synonymdev/bitkit').then();
-						},
-					},
+					// {
+					//	title: t('about.support'),
+					//	type: EItemType.button,
+					//	onPress: (): void => navigation.navigate('ReportIssue'),
+					// },
+					//{
+					//	title: t('about.report_bug'),
+					//	type: EItemType.button,
+					//	onPress: (): void => {
+					//		openURL('https://www.github.com/synonymdev/bitkit').then();
+					//	},
+					//},
 					// {
 					// 	title: 'Share Bitkit with a friend',
 					// 	type: EItemType.button,
@@ -140,7 +141,7 @@ const About = ({
 			},
 		],
 		// [isReviewing],
-		[t, navigation],
+		[t],
 	);
 
 	return (
@@ -185,19 +186,27 @@ const About = ({
 						<Image style={styles.poweredBy} source={imageSrc} />
 					</View>
 					<View style={styles.socialLinks}>
-						<Pressable
+						{/**<Pressable
 							style={styles.socialLink}
 							onPress={async (): Promise<void> => {
 								await openURL(await createSupportLink());
 							}}>
 							<EmailIcon height={24} width={24} />
 						</Pressable>
+						*/}
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
 								openURL('https://www.bitkit.to');
 							}}>
 							<GlobeIcon height={24} width={24} />
+						</Pressable>
+						<Pressable
+							style={styles.socialLink}
+							onPress={(): void => {
+								openURL('https://www.medium.com/synonym-to');
+							}}>
+							<MediumIcon height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
@@ -209,9 +218,16 @@ const About = ({
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
-								openURL('https://www.medium.com/synonym-to');
+								openURL('https://discord.gg/DxTBJXvJxn');
 							}}>
-							<MediumIcon height={24} width={24} />
+							<DiscordIcon height={24} width={24} />
+						</Pressable>
+						<Pressable
+							style={styles.socialLink}
+							onPress={(): void => {
+								openURL('https://t.me/bitkitchat');
+							}}>
+							<TelegramIcon height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}

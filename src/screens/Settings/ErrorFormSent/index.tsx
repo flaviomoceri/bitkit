@@ -18,7 +18,7 @@ const ErrorFormSent = ({
 	const { t } = useTranslation('settings');
 
 	const onOk = (): void => {
-		navigation.navigate('AboutSettings');
+		navigation.navigate('SupportSettings');
 	};
 
 	return (

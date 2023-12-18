@@ -9,6 +9,7 @@
 	"backup_title": "Back up or Restore",
 	"advanced_title": "Advanced",
 	"about_title": "About",
+	"support_title": "Support",
 	"about": {
 		"title": "About Bitkit",
 		"text": "Bitkit hands you the keys to your money, profile, contacts, and web accounts.\n\nThis <easterEgg>Orange Pill</easterEgg> was carefully crafted by Synonym Software Ltd.",
@@ -86,8 +87,7 @@
 		"category_contacts": "Contacts"
 	},
 	"support": {
-		"title": "Support",
-		"title_text": "Need help? Report your issue from within Bitkit, visit the help center or reach out to us on our social channels.",
+		"text": "Need help? Report your issue from within Bitkit, visit the help center or reach out to us on our social channels.",
 		"report": "Report issue",
 		"help": "Help Center",
 		"help_url": "https://help.bitkit.to",
@@ -103,7 +103,7 @@
 		"title_unsuccess": "Sent unsuccessfully",
 		"text_unsuccess": "Something went wrong! We apologize for the inconvenience and invite you to try again.",
 		"text_unsuccess_button": "Ok"
-	  },
+	},
 	"adv": {
 		"section_payments": "Payments",
 		"section_networks": "Networks",

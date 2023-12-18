@@ -31,6 +31,7 @@ import DisablePin from '../../screens/Settings/PIN/DisablePin';
 import BackupSettings from '../../screens/Settings/BackupSettings';
 import AdvancedSettings from '../../screens/Settings/Advanced';
 import AboutSettings from '../../screens/Settings/About';
+import SupportSettings from '../../screens/Settings/SupportSettings';
 import ReportIssue from '../../screens/Settings/ReportIssue';
 import ConfirmFormSent from '../../screens/Settings/ConfirmFormSent';
 import ErrorFormSent from '../../screens/Settings/ErrorFormSent';
@@ -72,6 +73,7 @@ export type SettingsStackParamList = {
 	BackupSettings: undefined;
 	AdvancedSettings: undefined;
 	AboutSettings: undefined;
+	SupportSettings: undefined;
 	ReportIssue: undefined;
 	ConfirmFormSent: undefined;
 	ErrorFormSent: undefined;
@@ -130,6 +132,7 @@ const SettingsNavigator = (): ReactElement => {
 			<Stack.Screen name="BackupSettings" component={BackupSettings} />
 			<Stack.Screen name="AdvancedSettings" component={AdvancedSettings} />
 			<Stack.Screen name="AboutSettings" component={AboutSettings} />
+			<Stack.Screen name="SupportSettings" component={SupportSettings} />
 			<Stack.Screen name="ReportIssue" component={ReportIssue} />
 			<Stack.Screen name="ConfirmFormSent" component={ConfirmFormSent} />
 			<Stack.Screen name="ErrorFormSent" component={ErrorFormSent} />
