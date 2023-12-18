@@ -3,14 +3,9 @@ import { EPaymentType } from './wallet';
 export enum EActivityType {
 	onchain = 'onchain',
 	lightning = 'lightning',
-	tether = 'tether',
-	// TODO: add all other activity types as we support them
 }
 
-export type IActivityItem =
-	| TOnchainActivityItem
-	| TLightningActivityItem
-	| TTetherActivityItem;
+export type IActivityItem = TOnchainActivityItem | TLightningActivityItem;
 
 export type TOnchainActivityItem = {
 	id: string;
@@ -25,8 +20,9 @@ export type TOnchainActivityItem = {
 	timestamp: number;
 	isBoosted: boolean;
 	isTransfer: boolean;
-	confirmTimestamp?: number;
 	exists: boolean; // Used to determine if the transaction exists on the blockchain or if it was reorg'd/bumped from the mempool.
+	confirmTimestamp?: number;
+	channelId?: string;
 };
 
 export type TLightningActivityItem = {
@@ -40,16 +36,3 @@ export type TLightningActivityItem = {
 	message: string;
 	timestamp: number;
 };
-
-export type TTetherActivityItem = {
-	id: string;
-	activityType: EActivityType.tether;
-	txType: EPaymentType;
-	txId: string;
-	value: number;
-	timestamp: number;
-};
-
-export interface IActivity {
-	items: IActivityItem[];
-}

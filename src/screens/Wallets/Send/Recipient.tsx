@@ -1,6 +1,5 @@
 import React, { ReactElement, memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useTranslation } from 'react-i18next';
 
@@ -19,6 +18,7 @@ import ContactImage from '../../../components/ContactImage';
 import GlowImage from '../../../components/GlowImage';
 import { processInputData } from '../../../utils/scanner';
 import { showToast } from '../../../utils/notifications';
+import { useAppSelector } from '../../../hooks/redux';
 import { useScreenSize } from '../../../hooks/screen';
 import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';
 import type { SendScreenProps } from '../../../navigation/types';
@@ -60,9 +60,9 @@ const Recipient = ({
 	const sdk = useSlashtagsSDK();
 	const { t } = useTranslation('wallet');
 	const { isSmallScreen } = useScreenSize();
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const lastPaidContacts = useSelector(lastPaidSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const lastPaidContacts = useAppSelector(lastPaidSelector);
 
 	useBottomSheetBackPress('sendNavigation');
 

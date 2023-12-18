@@ -56,3 +56,12 @@ export const resetKeychainValue = async ({
 		return err(e);
 	}
 };
+
+/**
+ * Wipes all known device keychain data.
+ * @returns {Promise<void>}
+ */
+export const wipeKeychain = async (): Promise<void> => {
+	const allServices = await getAllKeychainKeys();
+	await Promise.all(allServices.map((key) => resetKeychainValue({ key })));
+};

@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import isEqual from 'lodash/isEqual';
 
@@ -11,10 +10,11 @@ import {
 } from '../../styles/components';
 import { Caption13Up, Headline, Text01S } from '../../styles/text';
 import { ChevronRight, QuestionMarkIcon } from '../../styles/icons';
-import Store from '../../store/types';
 import { widgetSelector } from '../../store/reselect/widgets';
-import { deleteWidget, setFeedWidget } from '../../store/actions/widgets';
+import { deleteWidget, setFeedWidget } from '../../store/slices/widgets';
+import { TFeedWidget } from '../../store/types/widgets';
 import { SUPPORTED_FEED_TYPES } from '../../utils/widgets';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useSlashfeed } from '../../hooks/widgets';
 import { getDefaultSettings } from './WidgetEdit';
 import Button from '../../components/Button';
@@ -39,7 +39,10 @@ const Widget = ({
 	const { url, preview } = route.params;
 	const { t } = useTranslation('slashtags');
 	const { config, icon, loading } = useSlashfeed({ url });
-	const savedWidget = useSelector((state: Store) => widgetSelector(state, url));
+	const dispatch = useAppDispatch();
+	const savedWidget = useAppSelector((state) => {
+		return widgetSelector(state, url);
+	}) as TFeedWidget;
 
 	const defaultSettings = getDefaultSettings(config);
 	const savedSelectedFields = savedWidget?.fields.map((f) => f.name);
@@ -60,20 +63,22 @@ const Widget = ({
 	};
 
 	const onDelete = (): void => {
-		deleteWidget(url);
+		dispatch(deleteWidget(url));
 		navigation.navigate('Wallet');
 	};
 
 	const onSave = (): void => {
 		if (config) {
-			setFeedWidget({
-				url,
-				type: config.type,
-				extras: settings.extras,
-				fields: config.fields.filter((f) => {
-					return settings.fields.includes(f.name);
+			dispatch(
+				setFeedWidget({
+					url,
+					type: config.type,
+					extras: settings.extras,
+					fields: config.fields.filter((f) => {
+						return settings.fields.includes(f.name);
+					}),
 				}),
-			});
+			);
 		}
 
 		navigation.navigate('Wallet');

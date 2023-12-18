@@ -1,5 +1,5 @@
 import { getSelectedNetwork, getSelectedWallet } from './wallet';
-import { TAvailableNetworks } from './networks';
+import { EAvailableNetwork } from './networks';
 import { getActivityStore, getWalletStore } from '../store/helpers';
 import { IActivityItem, TOnchainActivityItem } from '../store/types/activity';
 import {
@@ -11,7 +11,7 @@ import {
 /**
  * Returns boosted transactions object.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {IBoostedTransactions}
  */
 export const getBoostedTransactions = ({
@@ -19,7 +19,7 @@ export const getBoostedTransactions = ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): IBoostedTransactions => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -37,7 +37,7 @@ export const getBoostedTransactions = ({
  * @param {string} txid
  * @param {IBoostedTransactions} [boostedTransactions]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {string[]}
  */
 export const getBoostedTransactionParents = ({
@@ -49,7 +49,7 @@ export const getBoostedTransactionParents = ({
 	txid: string;
 	boostedTransactions?: IBoostedTransactions;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): string[] => {
 	if (!boostedTransactions) {
 		if (!selectedWallet) {
@@ -76,7 +76,7 @@ export const getBoostedTransactionParents = ({
  * @param {string} txid
  * @param {IBoostedTransactions} [boostedTransactions]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {boolean}
  */
 export const isTransactionBoosted = ({
@@ -88,7 +88,7 @@ export const isTransactionBoosted = ({
 	txid: string;
 	boostedTransactions?: IBoostedTransactions;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): boolean => {
 	if (!boostedTransactions) {
 		if (!selectedWallet) {
@@ -110,7 +110,7 @@ export const isTransactionBoosted = ({
  * @param {string} txid
  * @param {IBoostedTransactions} [boostedTransactions]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {boolean}
  */
 export const hasBoostedParents = ({
@@ -122,7 +122,7 @@ export const hasBoostedParents = ({
 	txid: string;
 	boostedTransactions?: IBoostedTransactions;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): boolean => {
 	if (!boostedTransactions) {
 		if (!selectedWallet) {
@@ -149,7 +149,7 @@ export const hasBoostedParents = ({
  * @param {IActivityItem[]} [items]
  * @param {IBoostedTransactions} [boostedTransactions]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {TOnchainActivityItem|undefined}
  */
 export const getRootParentActivity = ({
@@ -163,7 +163,7 @@ export const getRootParentActivity = ({
 	items: TOnchainActivityItem[];
 	boostedTransactions?: IBoostedTransactions;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): TOnchainActivityItem | undefined => {
 	if (!boostedTransactions) {
 		if (!selectedWallet) {
@@ -212,7 +212,7 @@ export const getParentsActivity = ({
  * @param {TOnchainActivityItem[]} [items]
  * @param {IBoostedTransactions} [boostedTransactions]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {TOnchainActivityItem[]}
  */
 export const formatBoostedActivityItems = ({
@@ -224,7 +224,7 @@ export const formatBoostedActivityItems = ({
 	items: TOnchainActivityItem[];
 	boostedTransactions: IBoostedTransactions;
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 }): TOnchainActivityItem[] => {
 	const formattedItems: TOnchainActivityItem[] = [];
 

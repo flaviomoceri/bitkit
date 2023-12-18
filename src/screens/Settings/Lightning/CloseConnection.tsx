@@ -1,6 +1,5 @@
 import React, { ReactElement, memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../../styles/components';
@@ -9,10 +8,11 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import NavigationHeader from '../../../components/NavigationHeader';
 import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
+import { useAppSelector } from '../../../hooks/redux';
 import { showToast } from '../../../utils/notifications';
 import { closeChannel, refreshLdk } from '../../../utils/lightning';
 import { channelSelector } from '../../../store/reselect/lightning';
-import Store from '../../../store/types';
+
 import type { SettingsScreenProps } from '../../../navigation/types';
 import {
 	selectedNetworkSelector,
@@ -28,9 +28,9 @@ const CloseConnection = ({
 	const { t } = useTranslation('lightning');
 	const { channelId } = route.params;
 	const [loading, setLoading] = useState<boolean>(false);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const channel = useSelector((state: Store) => {
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const channel = useAppSelector((state) => {
 		return channelSelector(state, selectedWallet, selectedNetwork, channelId);
 	});
 

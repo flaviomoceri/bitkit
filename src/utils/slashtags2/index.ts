@@ -6,11 +6,11 @@ import { format, parse } from '@synonymdev/slashtags-url';
 import i18n from '../i18n';
 import { showToast } from '../notifications';
 import { BasicProfile, SlashPayConfig } from '../../store/types/slashtags';
-import { cacheProfile2 } from '../../store/actions/slashtags';
+import { cacheProfile2 } from '../../store/slices/slashtags';
 import { TWalletName } from '../../store/types/wallet';
-import { getSettingsStore } from '../../store/helpers';
-import { createLightningInvoice } from '../../store/actions/lightning';
-import { TAvailableNetworks } from '../networks';
+import { dispatch, getSettingsStore } from '../../store/helpers';
+import { createLightningInvoice } from '../../store/utils/lightning';
+import { EAvailableNetwork } from '../networks';
 import { webRelayClient } from '../../components/SlashtagsProvider2';
 import {
 	decodeLightningInvoice,
@@ -43,7 +43,7 @@ export const saveProfile2 = async (
 		return err(e);
 	}
 
-	cacheProfile2(url, profile);
+	dispatch(cacheProfile2({ url, profile }));
 
 	return ok('Profile saved');
 };
@@ -66,7 +66,7 @@ export const updateSlashPayConfig2 = debounce(
 	}: {
 		forceUpdate?: boolean;
 		selectedWallet?: TWalletName;
-		selectedNetwork?: TAvailableNetworks;
+		selectedNetwork?: EAvailableNetwork;
 	}): Promise<void> => {
 		if (!webRelayClient) {
 			console.debug('webRelayClient not ready yet');

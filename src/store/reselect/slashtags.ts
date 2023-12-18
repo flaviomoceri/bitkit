@@ -1,19 +1,21 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { parse } from '@synonymdev/slashtags-url';
 
-import Store from '../types';
+import { RootState } from '..';
 import {
 	BasicProfile,
 	IContactRecord,
-	ISlashtags,
+	TSlashtagsState,
 	LocalLink,
 	TOnboardingProfileStep,
 } from '../types/slashtags';
 import { TContacts } from '../../store/types/slashtags';
 
-const slashtagsState = (state: Store): ISlashtags => state.slashtags;
+const slashtagsState = (state: RootState): TSlashtagsState => state.slashtags;
 
-export const slashtagsSelector = (state: Store): ISlashtags => state.slashtags;
+export const slashtagsSelector = (state: RootState): TSlashtagsState => {
+	return state.slashtags;
+};
 
 export const lastSentSelector = createSelector(
 	[slashtagsState],

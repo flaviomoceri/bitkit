@@ -1,24 +1,24 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import Store from '../types';
+import { RootState } from '..';
+import themes, { IThemeColors } from '../../styles/themes';
+import { TSettings } from '../slices/settings';
+import { EAvailableNetwork } from '../../utils/networks';
+import { EUnit } from '../types/wallet';
 import {
 	ICustomElectrumPeer,
-	ISettings,
 	TCoinSelectPreference,
 	TCustomElectrumPeers,
 	TReceiveOption,
 	TTheme,
 	ETransactionSpeed,
 } from '../types/settings';
-import { TAvailableNetworks } from '../../utils/networks';
-import themes, { IThemeColors } from '../../styles/themes';
-import { EUnit } from '../types/wallet';
 
-export const settingsState = (state: Store): ISettings => state.settings;
-const customElectrumPeersState = (state: Store): TCustomElectrumPeers =>
+export const settingsState = (state: RootState): TSettings => state.settings;
+const customElectrumPeersState = (state: RootState): TCustomElectrumPeers =>
 	state.settings.customElectrumPeers;
 
-export const settingsSelector = (state: Store): ISettings => state.settings;
+export const settingsSelector = (state: RootState): TSettings => state.settings;
 export const selectedCurrencySelector = createSelector(
 	[settingsState],
 	(settings): string => settings.selectedCurrency,
@@ -67,8 +67,8 @@ export const coinSelectPreferenceSelector = createSelector(
 
 /**
  * Returns custom Electrum peers for a given network.
- * @param {Store} state
- * @param {TAvailableNetworks} selectedNetwork
+ * @param {RootState} state
+ * @param {EAvailableNetwork} selectedNetwork
  * @returns {ICustomElectrumPeer[]}
  */
 export const customElectrumPeersSelector = createSelector(
@@ -76,8 +76,8 @@ export const customElectrumPeersSelector = createSelector(
 		customElectrumPeersState,
 		(
 			_customElectrumPeers,
-			selectedNetwork: TAvailableNetworks,
-		): TAvailableNetworks => selectedNetwork,
+			selectedNetwork: EAvailableNetwork,
+		): EAvailableNetwork => selectedNetwork,
 	],
 	(customElectrumPeers, selectedNetwork): ICustomElectrumPeer[] =>
 		customElectrumPeers[selectedNetwork],

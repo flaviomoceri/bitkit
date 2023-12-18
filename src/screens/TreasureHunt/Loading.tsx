@@ -7,8 +7,8 @@ import GradientView from '../../components/GradientView';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Title from './Title';
 import { getNodeIdFromStorage, waitForLdk } from '../../utils/lightning';
-import { updateTreasureChest } from '../../store/actions/settings';
-import { useAppSelector } from '../../hooks/redux';
+import { updateTreasureChest } from '../../store/slices/settings';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useScreenSize } from '../../hooks/screen';
 import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
 import BitkitLogo from '../../assets/bitkit-logo.svg';
@@ -22,6 +22,7 @@ const Loading = ({
 }: TreasureHuntScreenProps<'Loading'>): ReactElement => {
 	const { chestId } = route.params;
 	const { isSmallScreen } = useScreenSize();
+	const dispatch = useAppDispatch();
 	const { treasureChests } = useAppSelector((state) => state.settings);
 	const chest = treasureChests.find((c) => c.chestId === chestId);
 
@@ -64,12 +65,14 @@ const Loading = ({
 
 			if (!result.error || hasOpened) {
 				if (!result.error) {
-					updateTreasureChest({
-						chestId,
-						state: 'opened',
-						attemptId: result.attemptId,
-						winType: result.winType,
-					});
+					dispatch(
+						updateTreasureChest({
+							chestId,
+							state: 'opened',
+							attemptId: result.attemptId,
+							winType: result.winType,
+						}),
+					);
 				}
 
 				navigation.replace('Prize', { chestId });

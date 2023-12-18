@@ -1,11 +1,11 @@
 import React, { memo, ReactElement, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData } from '../../../components/List';
 import SettingsView from '../SettingsView';
 import { mostUsedExchangeTickers } from '../../../utils/exchange-rate';
-import { updateSettings } from '../../../store/actions/settings';
+import { updateSettings } from '../../../store/slices/settings';
 import { exchangeRatesSelector } from '../../../store/reselect/wallet';
 import { selectedCurrencySelector } from '../../../store/reselect/settings';
 import type { SettingsScreenProps } from '../../../navigation/types';
@@ -14,15 +14,16 @@ const CurrenciesSettings = ({
 	navigation,
 }: SettingsScreenProps<'CurrenciesSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const exchangeRates = useSelector(exchangeRatesSelector);
-	const selectedCurrency = useSelector(selectedCurrencySelector);
+	const dispatch = useAppDispatch();
+	const exchangeRates = useAppSelector(exchangeRatesSelector);
+	const selectedCurrency = useAppSelector(selectedCurrencySelector);
 
-	const onSetCurrency = (currency: string): void => {
-		updateSettings({ selectedCurrency: currency });
-	};
+	const currencyListData: IListData[] = useMemo(() => {
+		const onSetCurrency = (currency: string): void => {
+			dispatch(updateSettings({ selectedCurrency: currency }));
+		};
 
-	const currencyListData: IListData[] = useMemo(
-		() => [
+		return [
 			{
 				title: t('general.currency_most_used'),
 				data: Object.values(mostUsedExchangeTickers).map((ticker) => {
@@ -51,9 +52,8 @@ const CurrenciesSettings = ({
 						},
 					})),
 			},
-		],
-		[selectedCurrency, exchangeRates, navigation, t],
-	);
+		];
+	}, [selectedCurrency, exchangeRates, navigation, t, dispatch]);
 
 	return (
 		<SettingsView

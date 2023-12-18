@@ -1,7 +1,7 @@
 import * as bip39 from 'bip39';
 
 // Fix 'getDispatch is not a function'
-import '../src/store/actions/ui';
+import '../src/store/utils/ui';
 import { slashtagsPrimaryKey } from '../src/utils/wallet';
 import { mnemonic } from './utils/dummy-wallet';
 

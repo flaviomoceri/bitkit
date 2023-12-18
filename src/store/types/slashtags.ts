@@ -44,15 +44,14 @@ export type TOnboardingProfileStep =
 	| 'OfflinePayments'
 	| 'Done';
 
-export interface ISlashtags {
+export type TSlashtagsState = {
+	contacts: TContacts;
+	lastPaidContacts: string[];
+	links: LocalLink[];
 	onboardedContacts: boolean;
 	onboardingProfileStep: TOnboardingProfileStep;
-	links: LocalLink[];
-	seeder?: {
-		lastSent?: number;
-	};
 	// cache seen profiles!
-	profiles?: {
+	profiles: {
 		[url: string]: {
 			fork: number;
 			version: number;
@@ -62,6 +61,7 @@ export interface ISlashtags {
 	profilesCache: {
 		[id: string]: BasicProfile;
 	};
-	contacts: TContacts;
-	lastPaidContacts: string[];
-}
+	seeder: {
+		lastSent: number;
+	};
+};

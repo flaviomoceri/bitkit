@@ -1,6 +1,6 @@
 import React, { ReactElement, memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from '@react-navigation/native';
 import {
@@ -23,7 +23,7 @@ const SettingUp = ({
 	navigation,
 }: LightningScreenProps<'SettingUp'>): ReactElement => {
 	const { t } = useTranslation('lightning');
-	const lightningSettingUpStep = useSelector(lightningSettingUpStepSelector);
+	const lightningSettingUpStep = useAppSelector(lightningSettingUpStepSelector);
 
 	const steps = [
 		{ title: t('setting_up_step1') },

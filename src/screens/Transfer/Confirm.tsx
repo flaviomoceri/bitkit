@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Caption13Up, Display, Text01S } from '../../styles/text';
@@ -12,7 +12,7 @@ import AmountToggle from '../../components/AmountToggle';
 import Percentage from '../../components/Percentage';
 import SwipeToConfirm from '../../components/SwipeToConfirm';
 import PieChart from '../Lightning/PieChart';
-import { confirmChannelPurchase } from '../../store/actions/blocktank';
+import { confirmChannelPurchase } from '../../store/utils/blocktank';
 import { useBalance } from '../../hooks/wallet';
 import useDisplayValues from '../../hooks/displayValues';
 import type { TransferScreenProps } from '../../navigation/types';
@@ -43,15 +43,15 @@ const Confirm = ({
 
 	const isTransferringToSavings = spendingAmount < lightningBalance;
 
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const orders = useSelector(blocktankOrdersSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const orders = useAppSelector(blocktankOrdersSelector);
 	const order = useMemo(() => {
 		return orders.find((o) => o.id === orderId);
 	}, [orderId, orders]);
 
 	const feeSat = order?.feeSat ?? 0;
 	const blocktankPurchaseFee = useDisplayValues(feeSat);
-	const transactionFee = useSelector(transactionFeeSelector);
+	const transactionFee = useAppSelector(transactionFeeSelector);
 	const fiatTransactionFee = useDisplayValues(transactionFee);
 	const clientBalance = useDisplayValues(order?.clientBalanceSat ?? 0);
 

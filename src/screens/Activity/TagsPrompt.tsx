@@ -5,14 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { Subtitle, Text02S, Text13UP } from '../../styles/text';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { closeBottomSheet } from '../../store/actions/ui';
+import Tag from '../../components/Tag';
+import { closeSheet } from '../../store/slices/ui';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
 	useBottomSheetBackPress,
 	useSnapPoints,
 } from '../../hooks/bottomSheet';
-import Tag from '../../components/Tag';
-import { useSelector } from 'react-redux';
-import Store from '../../store/types';
 
 const TagsPrompt = ({
 	onAddTag,
@@ -23,14 +22,15 @@ const TagsPrompt = ({
 }): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const snapPoints = useSnapPoints('medium');
-	const suggestions = useSelector((store: Store) => {
+	const dispatch = useAppDispatch();
+	const suggestions = useAppSelector((store) => {
 		return store.metadata.lastUsedTags.filter((tg) => !tags.includes(tg));
 	});
 
 	useBottomSheetBackPress('tagsPrompt');
 
 	const handleClose = (): void => {
-		closeBottomSheet('tagsPrompt');
+		dispatch(closeSheet('tagsPrompt'));
 	};
 
 	return (

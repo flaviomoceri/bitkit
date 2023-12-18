@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { Caption13M, Caption13Up, Display, Text01S } from '../../styles/text';
@@ -23,8 +23,8 @@ const LNURLChannel = ({
 }: LightningScreenProps<'LNURLChannel'>): ReactElement => {
 	const { cParams } = route.params;
 	const { t } = useTranslation('other');
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const [loading, setLoading] = useState(false);
 
 	const [node, host, port] = useMemo(() => {

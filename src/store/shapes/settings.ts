@@ -1,5 +1,4 @@
 import cloneDeep from 'lodash/cloneDeep';
-import { TAvailableNetworks } from '@synonymdev/react-native-ldk';
 
 import {
 	__ELECTRUM_BITCOIN_HOST__,
@@ -10,22 +9,15 @@ import {
 	__ELECTRUM_REGTEST_PROTO__,
 	__ELECTRUM_REGTEST_SSL_PORT__,
 	__ELECTRUM_REGTEST_TCP_PORT__,
-	__ELECTRUM_SIGNET_HOST__,
-	__ELECTRUM_SIGNET_PROTO__,
-	__ELECTRUM_SIGNET_SSL_PORT__,
-	__ELECTRUM_SIGNET_TCP_PORT__,
 	__WEB_RELAY__,
 } from '../../constants/env';
-import {
-	ETransactionSpeed,
-	ICustomElectrumPeer,
-	ISettings,
-} from '../types/settings';
+import { TSettings } from '../slices/settings';
+import { EAvailableNetwork } from '../../utils/networks';
+import { ETransactionSpeed, ICustomElectrumPeer } from '../types/settings';
 import { EUnit } from '../types/wallet';
 
-//TODO: Remove the public Electrum servers below once we spin up our own.
-export const origCustomElectrumPeers: Record<
-	TAvailableNetworks,
+export const defaultElectrumPeer: Record<
+	EAvailableNetwork,
 	ICustomElectrumPeer[]
 > = {
 	bitcoin: [
@@ -70,14 +62,6 @@ export const origCustomElectrumPeers: Record<
 			protocol: __ELECTRUM_REGTEST_PROTO__,
 		},
 	],
-	bitcoinSignet: [
-		{
-			host: __ELECTRUM_SIGNET_HOST__,
-			ssl: __ELECTRUM_SIGNET_SSL_PORT__,
-			tcp: __ELECTRUM_SIGNET_TCP_PORT__,
-			protocol: __ELECTRUM_SIGNET_PROTO__,
-		},
-	],
 };
 
 const defaultReceivePreference = [
@@ -91,7 +75,7 @@ const defaultReceivePreference = [
 	},
 ];
 
-export const defaultSettingsShape: Readonly<ISettings> = {
+export const initialSettingsState: TSettings = {
 	enableAutoReadClipboard: false,
 	enableSendAmountWarning: false,
 	pin: false,
@@ -104,7 +88,7 @@ export const defaultSettingsShape: Readonly<ISettings> = {
 	unit: EUnit.satoshi,
 	selectedCurrency: 'USD',
 	selectedLanguage: 'english',
-	customElectrumPeers: origCustomElectrumPeers,
+	customElectrumPeers: defaultElectrumPeer,
 	rapidGossipSyncUrl: 'https://rapidsync.lightningdevkit.org/snapshot/',
 	coinSelectAuto: true,
 	coinSelectPreference: 'small',
@@ -121,6 +105,6 @@ export const defaultSettingsShape: Readonly<ISettings> = {
 	webRelay: __WEB_RELAY__,
 };
 
-export const getDefaultSettingsShape = (): ISettings => {
-	return cloneDeep(defaultSettingsShape);
+export const getDefaultSettingsShape = (): TSettings => {
+	return cloneDeep(initialSettingsState);
 };

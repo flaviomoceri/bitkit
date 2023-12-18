@@ -15,11 +15,11 @@ import NumberPad from './NumberPad';
 import SafeAreaInset from './SafeAreaInset';
 import GlowingBackground from './GlowingBackground';
 import useColors from '../hooks/colors';
-import { wipeApp } from '../store/actions/settings';
+import { wipeApp } from '../store/utils/settings';
 import { vibrate } from '../utils/helpers';
 import { setKeychainValue, getKeychainValue } from '../utils/keychain';
 import BitkitLogo from '../assets/bitkit-logo.svg';
-import { showBottomSheet } from '../store/actions/ui';
+import { showBottomSheet } from '../store/utils/ui';
 import NavigationHeader from './NavigationHeader';
 import { showToast } from '../utils/notifications';
 

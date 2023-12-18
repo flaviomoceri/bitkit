@@ -1,14 +1,14 @@
 import React, { memo, ReactElement, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../../styles/components';
 import { EItemType, IListData } from '../../../components/List';
 import SettingsView from '../SettingsView';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { arraysMatch } from '../../../utils/helpers';
 import { updateSlashPayConfig2 } from '../../../utils/slashtags2';
-import { updateSettings } from '../../../store/actions/settings';
+import { updateSettings } from '../../../store/slices/settings';
 import {
 	enableOfflinePaymentsSelector,
 	receivePreferenceSelector,
@@ -20,10 +20,11 @@ import {
 
 const PaymentPreference = (): ReactElement => {
 	const { t } = useTranslation('settings');
-	const receivePreference = useSelector(receivePreferenceSelector);
-	const enableOfflinePayments = useSelector(enableOfflinePaymentsSelector);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const dispatch = useAppDispatch();
+	const receivePreference = useAppSelector(receivePreferenceSelector);
+	const enableOfflinePayments = useAppSelector(enableOfflinePaymentsSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	const settingsListData: IListData[] = useMemo(
 		() => [
@@ -35,7 +36,7 @@ const PaymentPreference = (): ReactElement => {
 						type: EItemType.draggable,
 						value: receivePreference,
 						onDragEnd: (data): void => {
-							updateSettings({ receivePreference: data });
+							dispatch(updateSettings({ receivePreference: data }));
 
 							if (!arraysMatch(receivePreference, data)) {
 								updateSlashPayConfig2({
@@ -56,7 +57,11 @@ const PaymentPreference = (): ReactElement => {
 						type: EItemType.switch,
 						enabled: enableOfflinePayments,
 						onPress: (): void => {
-							updateSettings({ enableOfflinePayments: !enableOfflinePayments });
+							dispatch(
+								updateSettings({
+									enableOfflinePayments: !enableOfflinePayments,
+								}),
+							);
 							updateSlashPayConfig2({ selectedWallet, selectedNetwork });
 						},
 					},
@@ -68,6 +73,7 @@ const PaymentPreference = (): ReactElement => {
 			enableOfflinePayments,
 			selectedWallet,
 			selectedNetwork,
+			dispatch,
 			t,
 		],
 	);

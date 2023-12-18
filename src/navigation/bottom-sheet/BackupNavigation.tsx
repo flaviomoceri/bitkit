@@ -1,5 +1,5 @@
 import React, { ReactElement, memo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import {
 	createNativeStackNavigator,
 	NativeStackNavigationOptions,
@@ -43,9 +43,9 @@ const navOptions: NativeStackNavigationOptions = {
 
 const BackupNavigation = (): ReactElement => {
 	const snapPoints = useSnapPoints('medium');
-	const isOpen = useSelector((state) =>
-		viewControllerIsOpenSelector(state, 'backupNavigation'),
-	);
+	const isOpen = useAppSelector((state) => {
+		return viewControllerIsOpenSelector(state, 'backupNavigation');
+	});
 
 	return (
 		<BottomSheetWrapper view="backupNavigation" snapPoints={snapPoints}>

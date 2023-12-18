@@ -1,4 +1,4 @@
-import React, { memo, ReactElement, useCallback } from 'react';
+import React, { memo, ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -8,8 +8,8 @@ import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigati
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
-import { closeBottomSheet } from '../../../store/actions/ui';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { closeSheet } from '../../../store/slices/ui';
 import { backupSelector } from '../../../store/reselect/backup';
 import { i18nTime } from '../../../utils/i18n';
 
@@ -18,7 +18,8 @@ const imageSrc = require('../../../assets/illustrations/tag.png');
 const Metadata = (): ReactElement => {
 	const { t } = useTranslation('security');
 	const { t: tTime } = useTranslation('intl', { i18n: i18nTime });
-	const backup = useSelector(backupSelector);
+	const dispatch = useAppDispatch();
+	const backup = useAppSelector(backupSelector);
 
 	const arr = [
 		backup.remoteLdkBackupLastSync,
@@ -31,9 +32,9 @@ const Metadata = (): ReactElement => {
 
 	const max = Math.max(...arr);
 
-	const handleButtonPress = useCallback((): void => {
-		closeBottomSheet('backupNavigation');
-	}, []);
+	const handleButtonPress = (): void => {
+		dispatch(closeSheet('backupNavigation'));
+	};
 
 	return (
 		<GradientView style={styles.container}>

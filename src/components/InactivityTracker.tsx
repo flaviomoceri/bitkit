@@ -6,9 +6,9 @@ import React, {
 	useRef,
 } from 'react';
 import { View, PanResponder, StyleSheet, Keyboard } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
 
-import { updateUi } from '../store/actions/ui';
+import { updateUi } from '../store/slices/ui';
 import { pinOnIdleSelector, pinSelector } from '../store/reselect/settings';
 import { isAuthenticatedSelector } from '../store/reselect/ui';
 import { __E2E__ } from '../constants/env';
@@ -21,9 +21,10 @@ const InactivityTracker = ({
 	children: ReactElement;
 }): ReactElement => {
 	const timeout = useRef<NodeJS.Timeout>();
-	const pin = useSelector(pinSelector);
-	const pinOnIdle = useSelector(pinOnIdleSelector);
-	const isAuthenticated = useSelector(isAuthenticatedSelector);
+	const dispatch = useAppDispatch();
+	const pin = useAppSelector(pinSelector);
+	const pinOnIdle = useAppSelector(pinOnIdleSelector);
+	const isAuthenticated = useAppSelector(isAuthenticatedSelector);
 
 	const resetInactivityTimeout = useCallback(() => {
 		clearTimeout(timeout.current);
@@ -31,13 +32,13 @@ const InactivityTracker = ({
 		if (pin && pinOnIdle && isAuthenticated) {
 			timeout.current = setTimeout(() => {
 				Keyboard.dismiss();
-				updateUi({ isAuthenticated: false });
+				dispatch(updateUi({ isAuthenticated: false }));
 				resetInactivityTimeout();
 			}, INACTIVITY_DELAY);
 		}
 
 		return false;
-	}, [pin, pinOnIdle, isAuthenticated]);
+	}, [pin, pinOnIdle, isAuthenticated, dispatch]);
 
 	useEffect(() => {
 		resetInactivityTimeout();

@@ -1,6 +1,5 @@
 import React, { ReactElement, memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -14,13 +13,14 @@ import Money from '../../../components/Money';
 import Button from '../../../components/Button';
 import GradientView from '../../../components/GradientView';
 import ReceiveNumberPad from './ReceiveNumberPad';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useSwitchUnit } from '../../../hooks/wallet';
 import { useCurrency } from '../../../hooks/displayValues';
-import { updateInvoice } from '../../../store/actions/receive';
+import { updateInvoice } from '../../../store/slices/receive';
 import { receiveSelector } from '../../../store/reselect/receive';
 import { getNumberPadText } from '../../../utils/numberpad';
 import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
-import { refreshBlocktankInfo } from '../../../store/actions/blocktank';
+import { refreshBlocktankInfo } from '../../../store/utils/blocktank';
 import type { ReceiveScreenProps } from '../../../navigation/types';
 
 // hardcoded to be above fee (1092)
@@ -33,8 +33,9 @@ const ReceiveAmount = ({
 	const { t } = useTranslation('wallet');
 	const { fiatTicker } = useCurrency();
 	const [nextUnit, switchUnit] = useSwitchUnit();
-	const invoice = useSelector(receiveSelector);
-	const blocktank = useSelector(blocktankInfoSelector);
+	const dispatch = useAppDispatch();
+	const invoice = useAppSelector(receiveSelector);
+	const blocktank = useAppSelector(blocktankInfoSelector);
 
 	const { maxChannelSizeSat } = blocktank.options;
 	// channel size must be at least 2x the invoice amount
@@ -48,7 +49,7 @@ const ReceiveAmount = ({
 
 	const onChangeUnit = (): void => {
 		const result = getNumberPadText(invoice.amount, nextUnit);
-		updateInvoice({ numberPadText: result });
+		dispatch(updateInvoice({ numberPadText: result }));
 		switchUnit();
 	};
 

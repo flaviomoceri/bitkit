@@ -1,6 +1,6 @@
 import { ENetworks, TAccount } from '@synonymdev/react-native-ldk';
 
-export interface IBackup {
+export type TBackupState = {
 	//Backpack
 	remoteBackupsEnabled: boolean;
 	remoteLdkBackupSynced: boolean;
@@ -42,7 +42,7 @@ export interface IBackup {
 	gDriveLdkBackupsSynced: boolean;
 	gDriveLdkBackupLastSync?: number;
 	//TODO transactions, slashtags, metadata, etc.
-}
+};
 
 export declare type TAccountBackup<T> = {
 	account: TAccount;

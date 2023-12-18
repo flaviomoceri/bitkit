@@ -9,14 +9,13 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Client } from '@synonymdev/slashtags-auth';
 import { SlashURL } from '@synonymdev/slashtags-sdk';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import Button from '../../components/Button';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { closeBottomSheet } from '../../store/actions/ui';
+import { closeSheet } from '../../store/slices/ui';
 import { useBottomSheetBackPress } from '../../hooks/bottomSheet';
 import { useProfile, useSelectedSlashtag } from '../../hooks/slashtags';
 import { ContactItem } from '../../components/ContactsList';
@@ -26,13 +25,13 @@ import { Title, Text01S } from '../../styles/text';
 import { Checkmark } from '../../styles/icons';
 import { showToast } from '../../utils/notifications';
 import { ellipsis } from '../../utils/helpers';
-import { setAuthWidget } from '../../store/actions/widgets';
+import { setAuthWidget } from '../../store/slices/widgets';
 import Divider from '../../components/Divider';
 import { useSnapPoints } from '../../hooks/bottomSheet';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { rootNavigation } from '../../navigation/root/RootNavigator';
 import HourglassSpinner from '../../components/HourglassSpinner';
 import GlowImage from '../../components/GlowImage';
-import { useAppSelector } from '../../hooks/redux';
 import {
 	viewControllerIsOpenSelector,
 	viewControllerSelector,
@@ -72,6 +71,7 @@ const Key = ({
 
 const _SlashAuthModal = (): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
 	const [anonymous, setAnonymous] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -113,9 +113,9 @@ const _SlashAuthModal = (): ReactElement => {
 		return t(isLoading ? 'signin_to_loading' : 'signin_to', { serviceName });
 	}, [serviceName, isLoading, t]);
 
-	const onCancel = useCallback((): void => {
-		closeBottomSheet('slashauthModal');
-	}, []);
+	const onCancel = (): void => {
+		dispatch(closeSheet('slashauthModal'));
+	};
 
 	const onContinue = useCallback(async (): Promise<void> => {
 		setIsLoading(true);
@@ -136,7 +136,7 @@ const _SlashAuthModal = (): ReactElement => {
 						: 'An error occurred. Please try again.',
 			});
 			setIsLoading(false);
-			closeBottomSheet('slashauthModal');
+			dispatch(closeSheet('slashauthModal'));
 			return;
 		}
 
@@ -149,7 +149,7 @@ const _SlashAuthModal = (): ReactElement => {
 					: t('signin_to_success_text_noname'),
 			});
 
-			setAuthWidget(url, { magiclink: true });
+			dispatch(setAuthWidget({ url, magiclink: true }));
 			rootNavigation.navigate('Wallet');
 		} else {
 			console.log(response.message);
@@ -163,8 +163,8 @@ const _SlashAuthModal = (): ReactElement => {
 		}
 
 		setIsLoading(false);
-		closeBottomSheet('slashauthModal');
-	}, [_url, server.name, slashtag, url, t]);
+		dispatch(closeSheet('slashauthModal'));
+	}, [_url, server.name, slashtag, url, t, dispatch]);
 
 	return (
 		<View style={styles.container}>
@@ -228,7 +228,7 @@ const SlashAuthModal = (): ReactElement => {
 	const snapPoints = useSnapPoints('large');
 	useBottomSheetBackPress('slashauthModal');
 
-	const isOpen = useSelector((state) =>
+	const isOpen = useAppSelector((state) =>
 		viewControllerIsOpenSelector(state, 'slashauthModal'),
 	);
 

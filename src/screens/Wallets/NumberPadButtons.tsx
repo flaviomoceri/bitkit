@@ -1,6 +1,6 @@
 import React, { memo, ReactElement, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { TouchableOpacity } from '../../styles/components';
@@ -30,7 +30,7 @@ const NumberPadButtons = ({
 }: NumberPadButtons): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const { fiatTicker } = useCurrency();
-	const unit = useSelector(primaryUnitSelector);
+	const unit = useAppSelector(primaryUnitSelector);
 
 	// BTC -> satoshi -> fiat
 	const nextUnit = useMemo(() => {

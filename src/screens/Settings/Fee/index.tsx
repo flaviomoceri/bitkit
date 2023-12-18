@@ -7,16 +7,16 @@ import { SettingsScreenProps } from '../../../navigation/types';
 import { Caption13Up, Text01S } from '../../../styles/text';
 import { ScrollView, View as ThemedView } from '../../../styles/components';
 import { i18nTime } from '../../../utils/i18n';
-import { useAppSelector } from '../../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import {
 	onChainFeesSelector,
 	overrideFeeSelector,
 } from '../../../store/reselect/fees';
 import {
-	overrideOnchainFeeEstimates,
-	updateOnchainFeeEstimates,
-	updateOverrideFee,
-} from '../../../store/actions/fees';
+	updateOnchainFees,
+	updateOverrideFees,
+} from '../../../store/slices/fees';
+import { updateOnchainFeeEstimates } from '../../../store/utils/fees';
 import { selectedNetworkSelector } from '../../../store/reselect/wallet';
 import { EItemType, IListData } from '../../../components/List';
 import Button from '../../../components/Button';
@@ -75,6 +75,7 @@ const FeeInput = ({
 
 const FeeSettings = ({}: SettingsScreenProps<'FeeSettings'>): ReactElement => {
 	const { t: tTime } = useTranslation('intl', { i18n: i18nTime });
+	const dispatch = useAppDispatch();
 	const fees = useAppSelector(onChainFeesSelector);
 	const override = useAppSelector(overrideFeeSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
@@ -92,7 +93,7 @@ const FeeSettings = ({}: SettingsScreenProps<'FeeSettings'>): ReactElement => {
 				newFees[key] = value;
 			}
 		}
-		overrideOnchainFeeEstimates(newFees);
+		dispatch(updateOnchainFees(newFees));
 	};
 
 	const handlePlus = (title: string): void => {
@@ -107,7 +108,7 @@ const FeeSettings = ({}: SettingsScreenProps<'FeeSettings'>): ReactElement => {
 				newFees[key] = value;
 			}
 		}
-		overrideOnchainFeeEstimates(newFees);
+		dispatch(updateOnchainFees(newFees));
 	};
 
 	const handleRefreshLDK = async (): Promise<void> => {
@@ -147,13 +148,13 @@ const FeeSettings = ({}: SettingsScreenProps<'FeeSettings'>): ReactElement => {
 						enabled: !!override,
 						type: EItemType.switch,
 						onPress: (): void => {
-							updateOverrideFee(!override);
+							dispatch(updateOverrideFees(!override));
 						},
 					},
 				],
 			},
 		];
-	}, [override, fees, tTime, selectedNetwork]);
+	}, [override, fees, tTime, selectedNetwork, dispatch]);
 
 	return (
 		<ThemedView style={styles.container}>

@@ -1,10 +1,11 @@
 import { createSelector } from '@reduxjs/toolkit';
-import Store from '../types';
-import { IActivity, IActivityItem } from '../types/activity';
+import { RootState } from '..';
+import { TActivity } from '../slices/activity';
+import { IActivityItem } from '../types/activity';
 
-const activityState = (state: Store): IActivity => state.activity;
+const activityState = (state: RootState): TActivity => state.activity;
 
-export const activityItemsState = (state: Store): IActivityItem[] => {
+export const activityItemsState = (state: RootState): IActivityItem[] => {
 	return state.activity.items;
 };
 
@@ -15,7 +16,7 @@ export const activityItemsSelector = createSelector(
 
 /**
  * Returns an individual activity item by the provided id.
- * @param {Store} state
+ * @param {RootState} state
  * @param {string} activityId
  * @returns {string}
  */

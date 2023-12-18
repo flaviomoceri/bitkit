@@ -22,7 +22,6 @@ import {
 	Skia,
 	vec,
 } from '@shopify/react-native-skia';
-import { useSelector } from 'react-redux';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useTranslation } from 'react-i18next';
 import { parse } from '@synonymdev/slashtags-url';
@@ -63,9 +62,9 @@ import {
 	getBlockExplorerLink,
 } from '../../utils/wallet/transactions';
 import useColors from '../../hooks/colors';
-import { useAppSelector } from '../../hooks/redux';
-import Store from '../../store/types';
-import { showBottomSheet } from '../../store/actions/ui';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+
+import { showBottomSheet } from '../../store/utils/ui';
 import { EPaymentType, EBoostType } from '../../store/types/wallet';
 import {
 	activityItemSelector,
@@ -73,8 +72,8 @@ import {
 } from '../../store/reselect/activity';
 import {
 	deleteMetaTxTag,
-	deleteMetaSlashTagsUrlTag,
-} from '../../store/actions/metadata';
+	deleteMetaTxSlashtagsUrl,
+} from '../../store/slices/metadata';
 import { getTransactions } from '../../utils/wallet/electrum';
 import { ITransaction, ITxHash } from '../../utils/wallet';
 import { openURL } from '../../utils/helpers';
@@ -167,11 +166,12 @@ const OnchainActivityDetail = ({
 	const { t } = useTranslation('wallet');
 	const { t: tTime } = useTranslation('intl', { i18n: i18nTime });
 	const [_, switchUnit] = useSwitchUnit();
-	const contacts = useSelector(contactsSelector);
+	const dispatch = useAppDispatch();
+	const contacts = useAppSelector(contactsSelector);
 	const tags = useAppSelector((state) => tagSelector(state, id));
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const activityItems = useSelector(activityItemsSelector);
-	const boostedTransactions = useSelector(boostedTransactionsSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const activityItems = useAppSelector(activityItemsSelector);
+	const boostedTransactions = useAppSelector(boostedTransactionsSelector);
 	const [txDetails, setTxDetails] = useState<ITransaction<ITxHash>['result']>();
 	const slashTagsUrl = useAppSelector((state) => {
 		return slashTagsUrlSelector(state, id);
@@ -244,7 +244,7 @@ const OnchainActivityDetail = ({
 	};
 
 	const handleRemoveTag = (tag: string): void => {
-		deleteMetaTxTag(id, tag);
+		dispatch(deleteMetaTxTag({ txId: id, tag }));
 	};
 
 	const handleAssign = (): void => {
@@ -252,7 +252,7 @@ const OnchainActivityDetail = ({
 	};
 
 	const handleDetach = (): void => {
-		deleteMetaSlashTagsUrlTag(id);
+		dispatch(deleteMetaTxSlashtagsUrl(id));
 	};
 
 	const navigateToContact = (url: string): void => {
@@ -639,9 +639,10 @@ const LightningActivityDetail = ({
 	const [_, switchUnit] = useSwitchUnit();
 	const colors = useColors();
 	const { id, txType, value, fee, message, timestamp, address } = item;
-	const total = value + (fee ?? 0);
-	const tags = useSelector((state: Store) => tagSelector(state, id));
-	const slashTagsUrl = useSelector((state: Store) => {
+
+	const dispatch = useAppDispatch();
+	const tags = useAppSelector((state) => tagSelector(state, id));
+	const slashTagsUrl = useAppSelector((state) => {
 		return slashTagsUrlSelector(state, id);
 	});
 
@@ -650,7 +651,7 @@ const LightningActivityDetail = ({
 	};
 
 	const handleRemoveTag = (tag: string): void => {
-		deleteMetaTxTag(id, tag);
+		dispatch(deleteMetaTxTag({ txId: id, tag }));
 	};
 
 	const handleAssign = (): void => {
@@ -658,7 +659,7 @@ const LightningActivityDetail = ({
 	};
 
 	const handleDetach = (): void => {
-		deleteMetaSlashTagsUrlTag(id);
+		dispatch(deleteMetaTxSlashtagsUrl(id));
 	};
 
 	const navigateToContact = (url: string): void => {
@@ -682,6 +683,7 @@ const LightningActivityDetail = ({
 	}, [id, t]);
 
 	const isSend = txType === EPaymentType.sent;
+	const total = value + (fee ?? 0);
 
 	const status = (
 		<View style={styles.row}>
@@ -953,11 +955,6 @@ const ActivityDetail = ({
 
 	if (activityType === EActivityType.lightning) {
 		glowColor = colors.purple;
-	}
-
-	if (activityType === EActivityType.tether) {
-		title = isSend ? t('activity_tether_sent') : t('activity_tether_received');
-		glowColor = colors.green;
 	}
 
 	return (

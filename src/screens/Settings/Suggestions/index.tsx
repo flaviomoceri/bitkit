@@ -1,14 +1,14 @@
 import React, { memo, ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import SettingsView from './../SettingsView';
 import Dialog from '../../../components/Dialog';
 import Button from '../../../components/Button';
 import { EItemType, IListData } from '../../../components/List';
-import { resetHiddenTodos } from '../../../store/actions/todos';
-import { updateSettings } from '../../../store/actions/settings';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { updateSettings } from '../../../store/slices/settings';
+import { resetHiddenTodos } from '../../../store/slices/todos';
 import { showSuggestionsSelector } from '../../../store/reselect/settings';
 import { SettingsScreenProps } from '../../../navigation/types';
 
@@ -16,7 +16,8 @@ const SuggestionsSettings = ({
 	navigation,
 }: SettingsScreenProps<'SuggestionsSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const showSuggestions = useSelector(showSuggestionsSelector);
+	const dispatch = useAppDispatch();
+	const showSuggestions = useAppSelector(showSuggestionsSelector);
 	const [showDialog, setShowDialog] = useState(false);
 
 	const settingsListData: IListData[] = useMemo(
@@ -29,14 +30,14 @@ const SuggestionsSettings = ({
 						enabled: showSuggestions,
 						type: EItemType.switch,
 						onPress: (): void => {
-							updateSettings({ showSuggestions: !showSuggestions });
+							dispatch(updateSettings({ showSuggestions: !showSuggestions }));
 						},
 						testID: 'DisplaySuggestions',
 					},
 				],
 			},
 		],
-		[showSuggestions, t],
+		[showSuggestions, t, dispatch],
 	);
 
 	return (
@@ -66,7 +67,7 @@ const SuggestionsSettings = ({
 					setShowDialog(false);
 				}}
 				onConfirm={(): void => {
-					resetHiddenTodos();
+					dispatch(resetHiddenTodos());
 					setShowDialog(false);
 					navigation.navigate('Wallet');
 				}}

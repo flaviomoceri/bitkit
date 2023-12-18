@@ -1,4 +1,4 @@
-import { TAvailableNetworks } from '../../utils/networks';
+import { EAvailableNetwork } from '../../utils/networks';
 import { IExchangeRates } from '../../utils/exchange-rate';
 import { IAddressTypeContent } from '../shapes/wallet';
 import { EFeeId } from './fees';
@@ -107,7 +107,7 @@ export type TWalletName = `wallet${number}`;
 
 export interface IWalletStore {
 	walletExists: boolean;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 	selectedWallet: TWalletName;
 	exchangeRates: IExchangeRates;
 	header: IWalletItem<IHeader>;
@@ -115,9 +115,9 @@ export interface IWalletStore {
 }
 
 export interface IWalletItem<T> {
-	bitcoin: T;
-	bitcoinTestnet: T;
-	bitcoinRegtest: T;
+	[EAvailableNetwork.bitcoin]: T;
+	[EAvailableNetwork.bitcoinTestnet]: T;
+	[EAvailableNetwork.bitcoinRegtest]: T;
 	timestamp?: number | null;
 }
 
@@ -141,7 +141,7 @@ export interface ICreateWallet {
 	addressAmount?: number;
 	changeAddressAmount?: number;
 	addressTypesToCreate?: Partial<IAddressTypes>;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }
 
 export interface IUtxo {

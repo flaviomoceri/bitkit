@@ -1,4 +1,4 @@
-import { ITodo } from '../types/todos';
+import { ITodo, TTodosState } from '../types/todos';
 
 const imageSafe = require('../../assets/illustrations/safe.png');
 const imageLightning = require('../../assets/illustrations/lightning.png');
@@ -80,7 +80,7 @@ export const btFailedTodo: ITodo = {
 	dismissable: true,
 };
 
-export const defaultTodosShape = {
+export const initialTodosState: TTodosState = {
 	hide: {},
 	newChannelsNotifications: {},
 };

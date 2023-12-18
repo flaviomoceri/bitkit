@@ -14,8 +14,8 @@ import { Caption13Up } from '../styles/text';
 import { View as ThemedView } from '../styles/components';
 import { showToast } from '../utils/notifications';
 import { TTodoType } from '../store/types/todos';
-import { channelsNotificationsShown, hideTodo } from '../store/actions/todos';
-import { showBottomSheet } from '../store/actions/ui';
+import { channelsNotificationsShown, hideTodo } from '../store/slices/todos';
+import { showBottomSheet } from '../store/utils/ui';
 import {
 	newChannelsNotificationsSelector,
 	todosFullSelector,
@@ -27,7 +27,7 @@ import {
 } from '../store/reselect/settings';
 import type { RootNavigationProp } from '../navigation/types';
 import { useBalance } from '../hooks/wallet';
-import { useAppSelector } from '../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import Dialog from './Dialog';
 import SuggestionCard from './SuggestionCard';
 
@@ -36,6 +36,7 @@ const Suggestions = (): ReactElement => {
 	const navigation = useNavigation<RootNavigationProp>();
 	const { width } = useWindowDimensions();
 	const { onchainBalance } = useBalance();
+	const dispatch = useAppDispatch();
 	const pinTodoDone = useAppSelector(pinSelector);
 	const suggestions = useAppSelector(todosFullSelector);
 	const showSuggestions = useAppSelector(showSuggestionsSelector);
@@ -57,11 +58,12 @@ const Suggestions = (): ReactElement => {
 		});
 
 		const timer = setTimeout(() => {
-			channelsNotificationsShown(newChannels);
+			const ids = newChannels.map((c) => c.channel_id);
+			dispatch(channelsNotificationsShown(ids));
 		}, 4000);
 
 		return () => clearTimeout(timer);
-	}, [t, newChannels]);
+	}, [t, newChannels, dispatch]);
 
 	const panGestureHandlerProps = useMemo(
 		() => ({ activeOffsetX: [-10, 10] }),
@@ -134,11 +136,13 @@ const Suggestions = (): ReactElement => {
 					description={description}
 					dismissable={item.dismissable}
 					onPress={handleOnPress}
-					onClose={hideTodo}
+					onClose={(id): void => {
+						dispatch(hideTodo(id));
+					}}
 				/>
 			);
 		},
-		[t, handleOnPress, lightningSettingUpStep],
+		[t, handleOnPress, lightningSettingUpStep, dispatch],
 	);
 
 	if (!suggestions.length || !showSuggestions) {

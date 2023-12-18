@@ -10,7 +10,7 @@ import React, {
 import Clipboard from '@react-native-clipboard/clipboard';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { View, StyleSheet, useWindowDimensions } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import QRCode from 'react-native-qrcode-svg';
 import Share from 'react-native-share';
 import { useTranslation } from 'react-i18next';
@@ -45,7 +45,7 @@ import { ProfileIntro, OfflinePayments } from './ProfileOnboarding';
 import type { RootStackScreenProps } from '../../navigation/types';
 
 const Profile = memo((props: RootStackScreenProps<'Profile'>): ReactElement => {
-	const onboardingProfileStep = useSelector(onboardingProfileStepSelector);
+	const onboardingProfileStep = useAppSelector(onboardingProfileStepSelector);
 
 	switch (onboardingProfileStep) {
 		case 'Intro':

@@ -6,10 +6,11 @@ import { Display, Text01S } from '../styles/text';
 import SafeAreaInset from '../components/SafeAreaInset';
 import GlowingBackground from '../components/GlowingBackground';
 import Button from '../components/Button';
+import { useAppDispatch } from '../hooks/redux';
 import { sleep } from '../utils/helpers';
+import { showBottomSheet } from '../store/utils/ui';
+import { acceptBetaRisk } from '../store/slices/user';
 import type { RootStackScreenProps } from '../navigation/types';
-import { showBottomSheet } from '../store/actions/ui';
-import { acceptBetaRisk } from '../store/actions/user';
 
 const imageSrc = require('../assets/illustrations/exclamation-mark.png');
 
@@ -17,9 +18,10 @@ const BetaRisk = ({
 	navigation,
 }: RootStackScreenProps<'BetaRisk'>): ReactElement => {
 	const { t } = useTranslation('other');
+	const dispatch = useAppDispatch();
 
 	const handlePress = async (): Promise<void> => {
-		acceptBetaRisk();
+		dispatch(acceptBetaRisk());
 		navigation.goBack();
 		await sleep(200);
 		showBottomSheet('receiveNavigation');

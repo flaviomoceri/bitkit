@@ -1,6 +1,6 @@
 import React, { memo, ReactElement, useState } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 
 import NumberPad from '../../components/NumberPad';
 import GradientView from '../../components/GradientView';
@@ -29,7 +29,7 @@ const NumberPadLightning = ({
 	style?: StyleProp<ViewStyle>;
 }): ReactElement => {
 	const [errorKey, setErrorKey] = useState<string>();
-	const unit = useSelector(primaryUnitSelector);
+	const unit = useAppSelector(primaryUnitSelector);
 
 	const maxDecimals = unit === EUnit.BTC ? 8 : 2;
 	const maxLength = unit === EUnit.satoshi ? 10 : 20;

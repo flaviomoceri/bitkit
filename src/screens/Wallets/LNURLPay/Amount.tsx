@@ -7,7 +7,6 @@ import React, {
 	useEffect,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { TouchableOpacity } from '../../../styles/components';
@@ -26,6 +25,7 @@ import {
 	selectedWalletSelector,
 } from '../../../store/reselect/wallet';
 import { primaryUnitSelector } from '../../../store/reselect/settings';
+import { useAppSelector } from '../../../hooks/redux';
 import { useSwitchUnit } from '../../../hooks/wallet';
 import { useCurrency } from '../../../hooks/displayValues';
 import { getNumberPadText } from '../../../utils/numberpad';
@@ -42,9 +42,9 @@ const Amount = ({
 	const { minSendable, maxSendable } = pParams;
 	const { fiatTicker } = useCurrency();
 	const [nextUnit, switchUnit] = useSwitchUnit();
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const unit = useSelector(primaryUnitSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const unit = useAppSelector(primaryUnitSelector);
 	const [text, setText] = useState('');
 	const [error, setError] = useState(false);
 

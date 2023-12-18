@@ -39,8 +39,9 @@ import {
 	getSelectedNetwork,
 	getSelectedWallet,
 } from '../wallet';
-import { TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 import {
+	dispatch,
 	getBlocktankStore,
 	getFeesStore,
 	getLightningStore,
@@ -49,49 +50,46 @@ import {
 } from '../../store/helpers';
 import { defaultHeader } from '../../store/shapes/wallet';
 import {
+	updateLdkAccountVersion,
+	updateLightningNodeId,
+} from '../../store/slices/lightning';
+import {
 	moveMetaIncPaymentTags,
 	removePeer,
 	syncLightningTxsWithActivityList,
-	updateClaimableBalance,
-	updateLdkAccountVersion,
-	updateLightningChannels,
-	updateLightningNodeId,
-	updateLightningNodeVersion,
-} from '../../store/actions/lightning';
+	updateClaimableBalanceThunk,
+	updateLightningChannelsThunk,
+	updateLightningNodeIdThunk,
+	updateLightningNodeVersionThunk,
+} from '../../store/utils/lightning';
 import { promiseTimeout, reduceValue, sleep, tryNTimes } from '../helpers';
 import { broadcastTransaction } from '../wallet/transactions';
 import {
 	EActivityType,
 	TLightningActivityItem,
 } from '../../store/types/activity';
-import {
-	addActivityItem,
-	addCJitActivityItem,
-} from '../../store/actions/activity';
+import { addActivityItem } from '../../store/slices/activity';
+import { addCJitActivityItem } from '../../store/utils/activity';
 import {
 	EPaymentType,
 	IWalletItem,
 	TWalletName,
 } from '../../store/types/wallet';
-import {
-	closeBottomSheet,
-	showBottomSheet,
-	updateUi,
-} from '../../store/actions/ui';
+import { closeSheet, updateUi } from '../../store/slices/ui';
+import { showBottomSheet } from '../../store/utils/ui';
 import { updateSlashPayConfig2 } from '../slashtags2';
 import {
-	TLdkAccountVersions,
+	TLdkAccountVersion,
 	TLightningNodeVersion,
 } from '../../store/types/lightning';
 import { getBlocktankInfo, isGeoBlocked } from '../blocktank';
-import { updateOnchainFeeEstimates } from '../../store/actions/fees';
+import { updateOnchainFeeEstimates } from '../../store/utils/fees';
 import { reportLdkChannelMigrations } from '../checks';
 import {
 	__BACKUPS_SERVER_HOST__,
 	__BACKUPS_SERVER_PUBKEY__,
 	__TRUSTED_ZERO_CONF_PEERS__,
 } from '../../constants/env';
-import { EStore } from '../../store/types';
 
 let LDKIsStayingSynced = false;
 
@@ -124,7 +122,7 @@ export const wipeLdkStorage = async ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -180,7 +178,7 @@ export const setupLdk = async ({
 	shouldPreemptivelyStopLdk = true,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	shouldRefreshLdk?: boolean;
 	staleBackupRecoveryMode?: boolean;
 	shouldPreemptivelyStopLdk?: boolean;
@@ -247,8 +245,7 @@ export const setupLdk = async ({
 		if (storageRes.isErr()) {
 			return err(storageRes.error);
 		}
-		const rapidGossipSyncUrl =
-			getStore()[EStore.settings]?.rapidGossipSyncUrl ?? '';
+		const rapidGossipSyncUrl = getStore().settings.rapidGossipSyncUrl;
 		const lmStart = await lm.start({
 			account: account.value,
 			getFees: async () => {
@@ -300,18 +297,9 @@ export const setupLdk = async ({
 			return err(lmStart.error.message);
 		}
 
-		const nodeIdRes = await ldk.nodeId();
-		if (nodeIdRes.isErr()) {
-			return err(nodeIdRes.error.message);
-		}
-
 		await Promise.all([
-			updateLightningNodeId({
-				nodeId: nodeIdRes.value,
-				selectedNetwork,
-				selectedWallet,
-			}),
-			updateLightningNodeVersion(),
+			updateLightningNodeIdThunk(),
+			updateLightningNodeVersionThunk(),
 			removeUnusedPeers({ selectedWallet, selectedNetwork }),
 		]);
 		if (shouldRefreshLdk) {
@@ -329,7 +317,7 @@ export const setupLdk = async ({
 			selectedNetwork,
 		});
 
-		return ok(nodeIdRes.value);
+		return ok('Successfully started LDK.');
 	} catch (e) {
 		return err(e.toString());
 	}
@@ -360,7 +348,7 @@ export const handleLightningPaymentSubscription = async ({
 }: {
 	payment: TChannelManagerClaim;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<void> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -398,9 +386,10 @@ export const handleLightningPaymentSubscription = async ({
 		confirmed: true,
 		timestamp: new Date().getTime(),
 	};
-	addActivityItem(activityItem);
+
+	dispatch(addActivityItem(activityItem));
 	showBottomSheet('newTxPrompt', { activityItem });
-	closeBottomSheet('receiveNavigation');
+	dispatch(closeSheet('receiveNavigation'));
 
 	await refreshLdk({ selectedWallet, selectedNetwork });
 	updateSlashPayConfig2({ selectedWallet, selectedNetwork });
@@ -409,14 +398,14 @@ export const handleLightningPaymentSubscription = async ({
 /**
  * Subscribes to incoming lightning payments.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const subscribeToLightningPayments = ({
 	selectedWallet,
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): void => {
 	if (!paymentSubscription) {
 		paymentSubscription = ldk.onEvent(
@@ -493,7 +482,7 @@ const handleRefreshError = (errorMessage: string): Result<string> => {
 /**
  * This method syncs LDK, re-adds peers & updates lightning channels.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<string>>}
  */
 export const refreshLdk = async ({
@@ -501,7 +490,7 @@ export const refreshLdk = async ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 } = {}): Promise<Result<string>> => {
 	if (isRefreshing) {
 		return new Promise((resolve) => {
@@ -551,18 +540,18 @@ export const refreshLdk = async ({
 		}
 
 		await Promise.all([
-			updateLightningChannels({ selectedWallet, selectedNetwork }),
+			updateLightningChannelsThunk({ selectedWallet, selectedNetwork }),
 			syncLightningTxsWithActivityList(),
 		]);
 
-		await updateClaimableBalance({ selectedNetwork, selectedWallet });
+		await updateClaimableBalanceThunk({ selectedNetwork, selectedWallet });
 
 		const accountVersion = getLightningStore()?.accountVersion;
 		if (!accountVersion || accountVersion < 2) {
 			// Attempt to migrate on refresh.
 			await migrateToLdkV2Account(selectedWallet, selectedNetwork);
 		}
-		updateUi({ isLDKReady: true });
+		dispatch(updateUi({ isLDKReady: true }));
 
 		resolveAllPendingRefreshPromises(ok(''));
 		return ok('');
@@ -609,13 +598,13 @@ export const setAccount = async ({
 /**
  * Checks if v1 account exists in storage. Otherwise, updates to v2.
  * @param {TWalletName} selectedWallet
- * @param {TAvailableNetworks} selectedNetwork
+ * @param {EAvailableNetwork} selectedNetwork
  * @returns {Promise<Result<string>>}
  */
 export const checkAccountVersion = async (
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-): Promise<TLdkAccountVersions> => {
+	selectedWallet: TWalletName = getSelectedWallet(),
+	selectedNetwork: EAvailableNetwork = getSelectedNetwork(),
+): Promise<TLdkAccountVersion> => {
 	let accountVersion = getLightningStore().accountVersion;
 	if (accountVersion === 1) {
 		// Check if a v1 account exists in storage.
@@ -626,7 +615,7 @@ export const checkAccountVersion = async (
 		});
 		if (v1AccountExists.isErr()) {
 			// If no v1 account exists in storage, update version number.
-			updateLdkAccountVersion(2);
+			dispatch(updateLdkAccountVersion(2));
 			accountVersion = 2;
 		}
 	}
@@ -638,7 +627,7 @@ export const checkAccountVersion = async (
  * @param {number} version
  * @param {boolean} shouldCreateAccount When set to true, it will create a new account if none is found.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const getLdkAccount = async ({
 	version = 2,
@@ -646,10 +635,10 @@ export const getLdkAccount = async ({
 	selectedWallet,
 	selectedNetwork,
 }: {
-	version?: TLdkAccountVersions;
+	version?: TLdkAccountVersion;
 	shouldCreateAccount?: boolean;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 } = {}): Promise<Result<TAccount>> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -681,9 +670,9 @@ export const createDefaultLdkAccount = async ({
 	selectedWallet = getSelectedWallet(),
 	selectedNetwork = getSelectedNetwork(),
 }: {
-	version: TLdkAccountVersions;
+	version: TLdkAccountVersion;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TAccount>> => {
 	const mnemonicPhrase = await getMnemonicPhrase(selectedWallet);
 	if (mnemonicPhrase.isErr()) {
@@ -707,9 +696,9 @@ export const createDefaultLdkAccount = async ({
 /**
  * Returns existing LDK account from storage.
  * Returns error if none exist.
- * @param {TLdkAccountVersions} version
+ * @param {TLdkAccountVersion} version
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<TAccount>>}
  */
 const getExistingLdkAccount = async ({
@@ -717,9 +706,9 @@ const getExistingLdkAccount = async ({
 	selectedWallet = getSelectedWallet(),
 	selectedNetwork = getSelectedNetwork(),
 }: {
-	version: TLdkAccountVersions;
+	version: TLdkAccountVersion;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TAccount>> => {
 	const name = getLdkAccountName({ version, selectedWallet, selectedNetwork });
 	const result = await Keychain.getGenericPassword({ service: name });
@@ -732,9 +721,9 @@ const getExistingLdkAccount = async ({
 
 /**
  * Attempts to migrate LDK accounts to the next version.
- * @param {TLdkAccountVersions} accountVersion
+ * @param {TLdkAccountVersion} accountVersion
  * @param {TWalletName} selectedWallet
- * @param {TAvailableNetworks} selectedNetwork
+ * @param {EAvailableNetwork} selectedNetwork
  * @returns {Promise<void>}
  */
 const handleAccountMigrations = async ({
@@ -742,9 +731,9 @@ const handleAccountMigrations = async ({
 	selectedWallet,
 	selectedNetwork,
 }: {
-	accountVersion: TLdkAccountVersions;
+	accountVersion: TLdkAccountVersion;
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 }): Promise<void> => {
 	if (accountVersion >= 2) {
 		return;
@@ -762,7 +751,7 @@ const handleAccountMigrations = async ({
 /**
  * Attempts to close all open channels and migrate to v2.
  * @param {TWalletName} selectedWallet
- * @param {TAvailableNetworks} selectedNetwork
+ * @param {EAvailableNetwork} selectedNetwork
  * @returns {Promise<Result<string>>}
  */
 const closeLdkV1Account = async (
@@ -803,7 +792,7 @@ const closeLdkV1Account = async (
 let isMigrating = false;
 export const migrateToLdkV2Account = async (
 	selectedWallet: TWalletName,
-	selectedNetwork: TAvailableNetworks,
+	selectedNetwork: EAvailableNetwork,
 ): Promise<Result<string>> => {
 	if (isMigrating) {
 		return err('Currently Migrating.');
@@ -847,7 +836,7 @@ export const migrateToLdkV2Account = async (
 		if (oldNodeId.isErr()) {
 			return err(oldNodeId.error.message);
 		}
-		updateLdkAccountVersion(2);
+		dispatch(updateLdkAccountVersion(2));
 		await sleep(1000);
 		await setupLdk({
 			selectedWallet,
@@ -881,14 +870,16 @@ export const migrateToLdkV2Account = async (
 		}
 		if (oldNodeId.value === newNodeId.value) {
 			// Revert version to try again later.
-			updateLdkAccountVersion(1);
+			dispatch(updateLdkAccountVersion(1));
 			return err('Failed to migrate to v2.');
 		}
-		updateLightningNodeId({
-			nodeId: newNodeId.value,
-			selectedWallet,
-			selectedNetwork,
-		});
+		dispatch(
+			updateLightningNodeId({
+				nodeId: newNodeId.value,
+				selectedWallet,
+				selectedNetwork,
+			}),
+		);
 		return ok('Migrated to v2.');
 	} catch (e) {
 		return err(e);
@@ -899,9 +890,9 @@ export const migrateToLdkV2Account = async (
 
 /**
  * Retrieves LDK account name for the provided version, wallet and network.
- * @param {TLdkAccountVersions} version
+ * @param {TLdkAccountVersion} version
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {string}
  */
 export const getLdkAccountName = ({
@@ -909,9 +900,9 @@ export const getLdkAccountName = ({
 	selectedWallet = getSelectedWallet(),
 	selectedNetwork = getSelectedNetwork(),
 }: {
-	version: TLdkAccountVersions;
+	version: TLdkAccountVersion;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): string => {
 	const suffix = version === 1 ? LDK_ACCOUNT_SUFFIX_V1 : LDK_ACCOUNT_SUFFIX_V2;
 	return `${selectedWallet}${selectedNetwork}${suffix}`;
@@ -921,7 +912,7 @@ export const getLdkAccountName = ({
  * Returns the default LDK account for the provided name, mnemonic & version.
  * @param {string} name
  * @param {string} mnemonic
- * @param {TLdkAccountVersions} version
+ * @param {TLdkAccountVersion} version
  * @returns {TAccount}
  */
 export const getDefaultLdkAccount = ({
@@ -931,7 +922,7 @@ export const getDefaultLdkAccount = ({
 }: {
 	name: string;
 	mnemonic: string;
-	version: TLdkAccountVersions;
+	version: TLdkAccountVersion;
 }): TAccount => {
 	switch (version) {
 		case 1:
@@ -991,7 +982,7 @@ export const exportBackup = async (
  * @returns {Promise<THeader>}
  */
 export const getBestBlock = async (
-	selectedNetwork?: TAvailableNetworks,
+	selectedNetwork?: EAvailableNetwork,
 ): Promise<THeader> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -1008,12 +999,12 @@ export const getBestBlock = async (
 /**
  * Returns the transaction header, height and hex (transaction) for a given txid.
  * @param {string} txId
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<TTransactionData>}
  */
 export const getTransactionData = async (
 	txId: string = '',
-	selectedNetwork?: TAvailableNetworks,
+	selectedNetwork?: EAvailableNetwork,
 ): Promise<TTransactionData | undefined> => {
 	let transactionData = DefaultTransactionDataShape;
 	try {
@@ -1074,7 +1065,7 @@ export const getTransactionData = async (
  * Returns the position/index of the provided tx_hash within a block.
  * @param {string} tx_hash
  * @param {number} height
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<number>}
  */
 export const getTransactionPosition = async ({
@@ -1084,7 +1075,7 @@ export const getTransactionPosition = async ({
 }: {
 	tx_hash: string;
 	height: number;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<TTransactionPosition> => {
 	const response = await getTransactionMerkle({
 		tx_hash,
@@ -1138,31 +1129,12 @@ export const getNodeId = async (): Promise<Result<string>> => {
 };
 
 /**
- * Returns the current LDK node id.
- * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
- * @returns {Promise<Result<string>>}
+ * Returns the current LDK node id from state
  */
-export const getNodeIdFromStorage = ({
-	selectedWallet,
-	selectedNetwork,
-}: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
-} = {}): string => {
-	try {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		return (
-			getLightningStore().nodes[selectedWallet].nodeId[selectedNetwork] ?? ''
-		);
-	} catch (e) {
-		return '';
-	}
+export const getNodeIdFromStorage = (): string => {
+	const selectedWallet = getSelectedWallet();
+	const selectedNetwork = getSelectedNetwork();
+	return getLightningStore().nodes[selectedWallet].nodeId[selectedNetwork];
 };
 
 /**
@@ -1222,14 +1194,14 @@ export const addPeer = async ({
 /**
  * Returns previously saved lightning peers from storage. (Excludes Blocktank and other default lightning peers.)
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const getCustomLightningPeers = ({
 	selectedWallet,
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): string[] => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -1253,7 +1225,7 @@ export const addPeers = async ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 } = {}): Promise<Result<string[]>> => {
 	try {
 		if (!selectedWallet) {
@@ -1311,7 +1283,7 @@ export const getLightningNodePeers = async ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 } = {}): Promise<string[]> => {
 	try {
 		if (!selectedWallet) {
@@ -1363,7 +1335,7 @@ export const getLightningChannels = (): Promise<Result<TChannel[]>> => {
  * CURRENTLY UNUSED
  * @param {boolean} [fromStorage]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<TChannel[]>>}
  */
 export const getPendingChannels = async ({
@@ -1373,7 +1345,7 @@ export const getPendingChannels = async ({
 }: {
 	fromStorage?: boolean;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TChannel[]>> => {
 	let channels: TChannel[];
 	if (fromStorage) {
@@ -1410,7 +1382,7 @@ export const getOpenChannels = async ({
 }: {
 	fromStorage?: boolean;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TChannel[]>> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -1476,7 +1448,7 @@ export const closeChannel = async ({
  * @param {TChannel[]} [channels]
  * @param {boolean} [force]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<TChannel[]>>}
  */
 export const closeAllChannels = async ({
@@ -1488,7 +1460,7 @@ export const closeAllChannels = async ({
 	channels?: TChannel[];
 	force?: boolean; // It will always try to coop close first and only force close if set to true.
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TChannel[]>> => {
 	try {
 		if (!selectedWallet) {
@@ -1620,7 +1592,7 @@ export const payLightningInvoice = async (
 			timestamp: new Date().getTime(),
 		};
 		//TODO rather sync with ldk for txs
-		addActivityItem(activityItem);
+		dispatch(addActivityItem(activityItem));
 		refreshLdk().then();
 		return ok(payResponse.value);
 	} catch (e) {
@@ -1648,7 +1620,7 @@ export const decodeLightningInvoice = ({
  * Attempts to keep LDK in sync every 2-minutes.
  * @param {number} frequency
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const keepLdkSynced = async ({
 	frequency = 120000,
@@ -1657,7 +1629,7 @@ export const keepLdkSynced = async ({
 }: {
 	frequency?: number;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<void> => {
 	if (LDKIsStayingSynced) {
 		return;
@@ -1686,7 +1658,7 @@ export const keepLdkSynced = async ({
 /**
  * Returns whether the user has any open lightning channels.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {boolean}
  */
 export const hasOpenLightningChannels = ({
@@ -1694,7 +1666,7 @@ export const hasOpenLightningChannels = ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): boolean => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -1718,7 +1690,7 @@ export const recoverOutputs = async (): Promise<Result<string>> => {
 /**
  * Returns total reserve balance for all open lightning channels.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<number>}
  */
 export const getLightningReserveBalance = ({
@@ -1726,7 +1698,7 @@ export const getLightningReserveBalance = ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): number => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -1755,7 +1727,7 @@ export const getLightningReserveBalance = ({
  * Returns the claimable balance for all lightning channels.
  * @param {boolean} [ignoreOpenChannels]
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<number>}
  */
 export const getClaimableBalance = async ({
@@ -1765,7 +1737,7 @@ export const getClaimableBalance = async ({
 }: {
 	ignoreOpenChannels?: boolean;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<number> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -1794,14 +1766,14 @@ export const getClaimableBalance = async ({
 /**
  * Returns an array of peers that have been previously added and saved to storage.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const getPeersFromStorage = ({
 	selectedWallet,
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): string[] => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -1817,7 +1789,7 @@ export const getPeersFromStorage = ({
  * Will ensure Blocktank's node is not removed if previously added.
  * TODO: This logic should be moved to react-native-ldk in future versions, but is handled here for now as a means to whitelist the Blocktank node and prevent disconnecting from Blocktank between channel purchase and channel open.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<string>>}
  */
 export const removeUnusedPeers = async ({
@@ -1825,7 +1797,7 @@ export const removeUnusedPeers = async ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -1871,7 +1843,7 @@ export const removeUnusedPeers = async ({
 /**
  * Returns the lightning balance of all known open and pending channels.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {boolean} [includeReserveBalance] Whether or not to include each channel's reserve balance (~1% per channel participant) in the returned balance.
  * @returns {{ localBalance: number; remoteBalance: number; }}
  */
@@ -1881,7 +1853,7 @@ export const getLightningBalance = ({
 	includeReserveBalance = true,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	includeReserveBalance?: boolean;
 }): {
 	localBalance: number;

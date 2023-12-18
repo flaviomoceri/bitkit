@@ -7,7 +7,7 @@ import { BIP32Factory } from 'bip32';
 import ecc from '@bitcoinerlab/secp256k1';
 import { err, ok, Result } from '@synonymdev/result';
 
-import { networks, TAvailableNetworks } from '../networks';
+import { networks, EAvailableNetwork } from '../networks';
 import {
 	getDefaultWalletShape,
 	defaultWalletStoreShape,
@@ -47,7 +47,6 @@ import { btcToSats } from '../conversion';
 import { getKeychainValue, setKeychainValue } from '../keychain';
 import {
 	getLightningStore,
-	getSettingsStore,
 	getUiStore,
 	getWalletStore,
 } from '../../store/helpers';
@@ -64,11 +63,8 @@ import {
 	updateTransactions,
 	updateUtxos,
 } from '../../store/actions/wallet';
-import {
-	ICustomElectrumPeer,
-	TCoinSelectPreference,
-} from '../../store/types/settings';
-import { updateActivityList } from '../../store/actions/activity';
+import { TCoinSelectPreference } from '../../store/types/settings';
+import { updateActivityList } from '../../store/utils/activity';
 import { getByteCount } from './transactions';
 import {
 	getAddressHistory,
@@ -87,10 +83,10 @@ import {
 	GENERATE_ADDRESS_AMOUNT,
 	CHUNK_LIMIT,
 } from './constants';
-import { moveMetaIncTxTags } from '../../store/actions/metadata';
-import { refreshOrdersList } from '../../store/actions/blocktank';
-import { IDefaultLightningShape } from '../../store/types/lightning';
-import { showNewTxPrompt } from '../../store/actions/ui';
+import { moveMetaIncTxTags } from '../../store/utils/metadata';
+import { refreshOrdersList } from '../../store/utils/blocktank';
+import { TNode } from '../../store/types/lightning';
+import { showNewTxPrompt } from '../../store/utils/ui';
 import { objectKeys } from '../objectKeys';
 
 bitcoin.initEccLib(ecc);
@@ -111,7 +107,7 @@ export const refreshWallet = async ({
 	updateAllAddressTypes?: boolean;
 	showNotification?: boolean;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 } = {}): Promise<Result<string>> => {
 	try {
 		// wait for interactions/animations to be completed
@@ -333,7 +329,7 @@ export const generateAddresses = async ({
 /**
  * Returns private key for the provided address data.
  * @param {IAddress} addressData
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @return {Promise<Result<string>>}
  */
 export const getPrivateKey = async ({
@@ -341,7 +337,7 @@ export const getPrivateKey = async ({
 	selectedNetwork,
 }: {
 	addressData: IAddress;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	try {
 		if (!addressData) {
@@ -422,7 +418,7 @@ export const getKeyDerivationAccount = (
  * @param {boolean} [changeAddress]
  * @param {TKeyDerivationAccountType} [accountType]
  * @param {string} [addressIndex]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @return {Result<{IKeyDerivationPathData}>} Derivation Path Data
  */
 export const formatKeyDerivationPath = ({
@@ -435,7 +431,7 @@ export const formatKeyDerivationPath = ({
 }: {
 	path: IKeyDerivationPath | string;
 	purpose?: TKeyDerivationPurpose;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	accountType?: TKeyDerivationAccountType;
 	changeAddress?: boolean;
 	addressIndex?: string;
@@ -482,7 +478,7 @@ export const formatKeyDerivationPath = ({
 /**
  * Returns the derivation path object for the specified addressType and network.
  * @param {EAddressType} addressType
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns Result<IKeyDerivationPath>
  */
 export const getKeyDerivationPath = ({
@@ -490,7 +486,7 @@ export const getKeyDerivationPath = ({
 	selectedNetwork,
 }: {
 	addressType: EAddressType;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Result<IKeyDerivationPath> => {
 	try {
 		if (!selectedNetwork) {
@@ -594,12 +590,12 @@ export const getSeed = async (
 /**
  * Get scriptHash for a given address
  * @param {string} address
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @return {string}
  */
 export const getScriptHash = async (
 	address: string,
-	selectedNetwork?: TAvailableNetworks,
+	selectedNetwork?: EAvailableNetwork,
 ): Promise<string> => {
 	try {
 		if (!address) {
@@ -624,7 +620,7 @@ export const getScriptHash = async (
 /**
  * Get address for a given keyPair, network and type.
  * @param {string} path
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {EAddressType} type - Determines what type of address to generate (p2pkh, p2sh, p2wpkh).
  * @return {string}
  */
@@ -701,7 +697,7 @@ export const getOnChainBalance = ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 } = {}): number => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -748,7 +744,7 @@ export const removeDuplicateAddresses = async ({
 	addresses?: IAddresses;
 	changeAddresses?: IAddresses;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<IGenerateAddressesResponse>> => {
 	try {
 		if (!selectedWallet) {
@@ -807,7 +803,7 @@ interface IGetNextAvailableAddressResponse {
 
 interface IGetNextAvailableAddress {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	addressType?: EAddressType;
 }
 
@@ -1204,7 +1200,7 @@ export const getHighestStoredAddressIndex = ({
 	addressType,
 }: {
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 	addressType: EAddressType;
 }): Result<{
 	addressIndex: IAddress;
@@ -1234,10 +1230,10 @@ export const getHighestStoredAddressIndex = ({
 };
 
 /**
- * Returns the currently selected network (bitcoin | bitcoinTestnet).
- * @return {TAvailableNetworks}
+ * Returns the currently selected network.
+ * @return {EAvailableNetwork}
  */
-export const getSelectedNetwork = (): TAvailableNetworks => {
+export const getSelectedNetwork = (): EAvailableNetwork => {
 	return getWalletStore().selectedNetwork;
 };
 
@@ -1250,7 +1246,7 @@ export const getSelectedAddressType = ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 } = {}): EAddressType => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -1277,20 +1273,20 @@ export const getSelectedWallet = (): TWalletName => {
 
 /**
  * Returns all state data for the currently selected wallet.
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
- * @return {{ currentWallet: IWallet, currentLightningNode: IDefaultLightningShape, selectedWallet: TWalletName, selectedNetwork: TAvailableNetworks }}
+ * @return {{ currentWallet: IWallet, currentLightningNode: TNode, selectedWallet: TWalletName, selectedNetwork: EAvailableNetwork }}
  */
 export const getCurrentWallet = ({
 	selectedNetwork,
 	selectedWallet,
 }: {
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 } = {}): {
 	currentWallet: IWallet;
-	currentLightningNode: IDefaultLightningShape;
-	selectedNetwork: TAvailableNetworks;
+	currentLightningNode: TNode;
+	selectedNetwork: EAvailableNetwork;
 	selectedWallet: TWalletName;
 } => {
 	const wallet = getWalletStore();
@@ -1316,7 +1312,7 @@ export const getOnChainTransactions = ({
 	selectedNetwork,
 }: {
 	selectedWallet: TWalletName;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 }): IFormattedTransactions => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -1333,7 +1329,7 @@ export const getOnChainTransactions = ({
 /**
  * @param {string} txid
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @return {Result<IFormattedTransaction>}
  */
 export const getTransactionById = ({
@@ -1343,7 +1339,7 @@ export const getTransactionById = ({
 }: {
 	txid: string;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Result<IFormattedTransaction> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -1401,7 +1397,7 @@ export const getInputData = async ({
 	selectedNetwork,
 }: {
 	inputs: { tx_hash: string; vout: number }[];
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<InputData>> => {
 	try {
 		if (!selectedNetwork) {
@@ -1443,7 +1439,7 @@ export const formatTransactions = async ({
 	selectedWallet,
 }: {
 	transactions: ITransaction<IUtxo>[];
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 }): Promise<Result<IFormattedTransactions>> => {
 	if (transactions.length < 1) {
@@ -1626,18 +1622,6 @@ export const decodeOpReturnMessage = (opReturn = ''): string[] => {
 	}
 };
 
-export const getCustomElectrumPeers = ({
-	selectedNetwork,
-}: {
-	selectedNetwork?: TAvailableNetworks;
-}): ICustomElectrumPeer[] => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
-	return getSettingsStore().customElectrumPeers[selectedNetwork];
-};
-
 export interface IVin {
 	scriptSig: {
 		asm: string;
@@ -1667,7 +1651,7 @@ export interface IRbfData {
 	outputs: IOutput[];
 	selectedWallet: TWalletName;
 	balance: number;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 	addressType: EAddressType;
 	fee: number; // Total fee in sats.
 	inputs: IUtxo[];
@@ -1679,7 +1663,7 @@ export interface IRbfData {
  * replace-by-fee transaction for any 0-conf, RBF-enabled tx.
  * @param txHash
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 
 export const getRbfData = async ({
@@ -1689,7 +1673,7 @@ export const getRbfData = async ({
 }: {
 	txHash: ITxHash;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<IRbfData>> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -2240,7 +2224,7 @@ export const autoCoinSelect = async ({
  * @param {boolean} [changeAddress]
  * @param {TKeyDerivationAccountType} [accountType]
  * @param {string} [addressIndex]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @return {Result<string>}
  */
 export const getKeyDerivationPathString = ({
@@ -2256,7 +2240,7 @@ export const getKeyDerivationPathString = ({
 	accountType?: TKeyDerivationAccountType;
 	changeAddress?: boolean;
 	addressIndex?: string;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Result<string> => {
 	try {
 		if (!path) {
@@ -2293,7 +2277,7 @@ export const getKeyDerivationPathString = ({
  * @param {boolean} [changeAddress]
  * @param {TKeyDerivationAccountType} [accountType]
  * @param {string} [addressIndex]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @return {Result<IKeyDerivationPath>}
  */
 export const getKeyDerivationPathObject = ({
@@ -2309,7 +2293,7 @@ export const getKeyDerivationPathObject = ({
 	accountType?: TKeyDerivationAccountType;
 	changeAddress?: boolean;
 	addressIndex?: string;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Result<IKeyDerivationPath> => {
 	try {
 		const parsedPath = path.replace(/'/g, '').split('/');
@@ -2354,7 +2338,7 @@ export const getKeyDerivationPathObject = ({
 /**
  * The method returns the base key derivation path for a given address type.
  * @param {EAddressType} [addressType]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  * @param {boolean} [changeAddress]
  * @return {Result<{ pathString: string, pathObject: IKeyDerivationPath }>}
@@ -2366,7 +2350,7 @@ export const getAddressTypePath = ({
 	changeAddress,
 }: {
 	addressType?: EAddressType;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 	changeAddress?: boolean;
 }): Result<IKeyDerivationPathData> => {
@@ -2403,7 +2387,7 @@ export const getAddressTypePath = ({
 /**
  * Returns the next available receive address for the given network and wallet.
  * @param {EAddressType} [addressType]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  * @return {Result<string>}
  */
@@ -2413,7 +2397,7 @@ export const getReceiveAddress = async ({
 	selectedWallet,
 }: {
 	addressType?: EAddressType;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 }): Promise<Result<string>> => {
 	try {
@@ -2465,14 +2449,14 @@ export const getReceiveAddress = async ({
 /**
  * Retrieves wallet balances for the currently selected wallet and network.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const getBalance = ({
 	selectedWallet,
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): {
 	onchainBalance: number; // Total onchain funds
 	lightningBalance: number; // Total lightning funds (spendable + reserved + claimable)
@@ -2531,7 +2515,7 @@ export const getBalance = ({
 /**
  * Returns the difference between the current address index and the last used address index.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {EAddressType} [addressType]
  * @returns {Result<{ addressDelta: number; changeAddressDelta: number }>}
  */
@@ -2541,7 +2525,7 @@ export const getGapLimit = ({
 	addressType,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	addressType?: EAddressType;
 }): Result<{ addressDelta: number; changeAddressDelta: number }> => {
 	try {
@@ -2590,7 +2574,7 @@ export const getGapLimit = ({
  */
 export const getAddressFromScriptPubKey = (
 	scriptPubKey: string,
-	selectedNetwork?: TAvailableNetworks,
+	selectedNetwork?: EAvailableNetwork,
 ): string => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -2605,7 +2589,7 @@ export const getAddressFromScriptPubKey = (
 /**
  * Returns current address index information.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {EAddressType} [addressType]
  */
 export const getAddressIndexInfo = ({
@@ -2614,7 +2598,7 @@ export const getAddressIndexInfo = ({
 	addressType,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	addressType?: EAddressType;
 }): TAddressIndexInfo => {
 	if (!selectedNetwork) {
@@ -2660,7 +2644,7 @@ export const rescanAddresses = async ({
 	shouldClearAddresses = true,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	shouldClearAddresses?: boolean;
 }): Promise<Result<string>> => {
 	if (!selectedNetwork) {
@@ -2691,7 +2675,7 @@ export const rescanAddresses = async ({
 /**
  * Creates and sets zero address indexes for each address type.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<void>}
  */
 export const createZeroIndexAddresses = async ({
@@ -2699,7 +2683,7 @@ export const createZeroIndexAddresses = async ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<void> => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
@@ -2725,7 +2709,7 @@ export const createZeroIndexAddresses = async ({
 /**
  * Returns the current wallet's unconfirmed transactions.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<IFormattedTransactions>>}
  */
 export const getUnconfirmedTransactions = async ({
@@ -2733,7 +2717,7 @@ export const getUnconfirmedTransactions = async ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<IFormattedTransactions>> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -2754,7 +2738,7 @@ export const getUnconfirmedTransactions = async ({
  * Returns the number of confirmations for a given block height.
  * @param {number} height
  * @param {number} [currentHeight]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {number}
  */
 export const blockHeightToConfirmations = ({
@@ -2764,7 +2748,7 @@ export const blockHeightToConfirmations = ({
 }: {
 	blockHeight?: number;
 	currentHeight?: number;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): number => {
 	if (!blockHeight) {
 		return 0;
@@ -2783,7 +2767,7 @@ export const blockHeightToConfirmations = ({
  * Returns the block height for a given number of confirmations.
  * @param {number} confirmations
  * @param {number} [currentHeight]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {number}
  */
 export const confirmationsToBlockHeight = ({
@@ -2793,7 +2777,7 @@ export const confirmationsToBlockHeight = ({
 }: {
 	confirmations: number;
 	currentHeight?: number;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): number => {
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();

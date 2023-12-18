@@ -1,6 +1,6 @@
-import { IBackup } from '../types/backup';
+import { TBackupState } from '../types/backup';
 
-export const defaultBackupShape: IBackup = {
+export const initialBackupState: TBackupState = {
 	remoteBackupsEnabled: false,
 	remoteLdkBackupSynced: false,
 	remoteLdkBackupLastSyncRequired: undefined,

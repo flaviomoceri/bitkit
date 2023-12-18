@@ -1,5 +1,5 @@
 // Fix 'getDispatch is not a function'
-import '../src/store/actions/ui';
+import '../src/store/utils/ui';
 import { handleNumberPadPress } from '../src/utils/numberpad';
 
 describe('Receive/Send NumberPad', () => {

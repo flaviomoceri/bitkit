@@ -11,12 +11,11 @@ import {
 import { bytesToString } from '../src/utils/converters';
 import store from '../src/store';
 import {
-	addTag,
 	addMetaTxTag,
-	resetMetaStore,
 	updatePendingInvoice,
-	addMetaSlashTagsUrlTag,
-} from '../src/store/actions/metadata';
+	addMetaTxSlashtagsUrl,
+	resetMetadataState,
+} from '../src/store/slices/metadata';
 import {
 	performBlocktankRestore,
 	performLdkActivityRestore,
@@ -24,7 +23,7 @@ import {
 	performRemoteBackup,
 	performSettingsRestore,
 	performWidgetsRestore,
-} from '../src/store/actions/backup';
+} from '../src/store/utils/backup';
 import {
 	dispatch,
 	getActivityStore,
@@ -34,26 +33,27 @@ import {
 	getWidgetsStore,
 } from '../src/store/helpers';
 import {
-	resetSettingsStore,
 	updateSettings,
-} from '../src/store/actions/settings';
+	resetSettingsState,
+} from '../src/store/slices/settings';
 import {
-	resetWidgetsStore,
+	resetWidgetsState,
 	setFeedWidget,
 	updateWidgets,
-} from '../src/store/actions/widgets';
+} from '../src/store/slices/widgets';
 import {
 	addActivityItem,
-	resetActivityStore,
-} from '../src/store/actions/activity';
+	resetActivityState,
+} from '../src/store/slices/activity';
 import { EActivityType } from '../src/store/types/activity';
 import { EPaymentType } from '../src/store/types/wallet';
 import {
 	addPaidBlocktankOrder,
-	resetBlocktankStore,
-} from '../src/store/actions/blocktank';
-import actions from '../src/store/actions/actions';
+	resetBlocktankState,
+} from '../src/store/slices/blocktank';
 import { defaultOrderResponse } from '../src/store/shapes/blocktank';
+import { updateBlocktankOrder } from '../src/store/slices/blocktank';
+import { EAvailableNetwork } from '../src/utils/networks';
 
 jest.setTimeout(30000);
 
@@ -81,7 +81,7 @@ describe('Remote backups', () => {
 			slashtag,
 			stringToBytes(message),
 			category,
-			'bitcoinRegtest',
+			EAvailableNetwork.bitcoinRegtest,
 		);
 
 		if (uploadRes.isErr()) {
@@ -94,7 +94,7 @@ describe('Remote backups', () => {
 			slashtag,
 			timestamp,
 			category,
-			'bitcoinRegtest',
+			EAvailableNetwork.bitcoinRegtest,
 		);
 
 		if (fetchRes.isErr()) {
@@ -105,15 +105,16 @@ describe('Remote backups', () => {
 	});
 
 	it('Backups and restores metadata', async () => {
-		addMetaTxTag('txid1', 'tag');
-		addTag('tag');
-		updatePendingInvoice({
-			id: 'id123',
-			tags: ['futuretag'],
-			address: 'address',
-			payReq: 'lightningInvoice',
-		});
-		addMetaSlashTagsUrlTag('txid2', 'slashtag');
+		dispatch(addMetaTxTag({ txId: 'txid1', tag: 'tag' }));
+		dispatch(
+			updatePendingInvoice({
+				id: 'id123',
+				tags: ['futuretag'],
+				address: 'address',
+				payReq: 'lightningInvoice',
+			}),
+		);
+		dispatch(addMetaTxSlashtagsUrl({ txId: 'txid2', url: 'slashtag' }));
 
 		const backup = getMetaDataStore();
 
@@ -130,7 +131,7 @@ describe('Remote backups', () => {
 			throw uploadRes.error;
 		}
 
-		resetMetaStore();
+		dispatch(resetMetadataState());
 		expect(store.getState().metadata.tags).toMatchObject({});
 
 		const restoreRes = await performMetadataRestore({
@@ -147,10 +148,12 @@ describe('Remote backups', () => {
 	});
 
 	it('Backups and restores settings', async () => {
-		updateSettings({
-			selectedCurrency: 'GBP',
-			enableOfflinePayments: false,
-		});
+		dispatch(
+			updateSettings({
+				selectedCurrency: 'GBP',
+				enableOfflinePayments: false,
+			}),
+		);
 
 		const backup = getSettingsStore();
 
@@ -167,7 +170,7 @@ describe('Remote backups', () => {
 			throw uploadRes.error;
 		}
 
-		resetSettingsStore();
+		dispatch(resetSettingsState());
 		expect(store.getState().settings.selectedCurrency).toEqual('USD');
 
 		const restoreRes = await performSettingsRestore({
@@ -184,18 +187,20 @@ describe('Remote backups', () => {
 	});
 
 	it('Backups and restores widgets', async () => {
-		setFeedWidget({
-			url: 'url',
-			type: 'type',
-			fields: [
-				{
-					name: 'name',
-					main: 'main',
-					files: {},
-				},
-			],
-		});
-		updateWidgets({ onboardedWidgets: true });
+		dispatch(
+			setFeedWidget({
+				url: 'url',
+				type: 'type',
+				fields: [
+					{
+						name: 'name',
+						main: 'main',
+						files: {},
+					},
+				],
+			}),
+		);
+		dispatch(updateWidgets({ onboardedWidgets: true }));
 
 		const backup = getWidgetsStore();
 
@@ -212,7 +217,7 @@ describe('Remote backups', () => {
 			throw uploadRes.error;
 		}
 
-		resetWidgetsStore();
+		dispatch(resetWidgetsState());
 		expect(store.getState().widgets.widgets).toMatchObject({});
 
 		const restoreRes = await performWidgetsRestore({
@@ -229,16 +234,18 @@ describe('Remote backups', () => {
 	});
 
 	it('Backups and restores LDK Activity', async () => {
-		addActivityItem({
-			id: 'id',
-			activityType: EActivityType.lightning,
-			txType: EPaymentType.received,
-			message: '',
-			address: 'invoice',
-			confirmed: true,
-			value: 1,
-			timestamp: new Date().getTime(),
-		});
+		dispatch(
+			addActivityItem({
+				id: 'id',
+				activityType: EActivityType.lightning,
+				txType: EPaymentType.received,
+				message: '',
+				address: 'invoice',
+				confirmed: true,
+				value: 1,
+				timestamp: new Date().getTime(),
+			}),
+		);
 
 		const backup = getActivityStore().items.filter(
 			(a) => a.activityType === EActivityType.lightning,
@@ -257,7 +264,7 @@ describe('Remote backups', () => {
 			throw uploadRes.error;
 		}
 
-		resetActivityStore();
+		dispatch(resetActivityState());
 		expect(store.getState().activity.items.length).toEqual(0);
 
 		const restoreRes = await performLdkActivityRestore({
@@ -274,11 +281,8 @@ describe('Remote backups', () => {
 	});
 
 	it('Backups and restores Blocktank orders', async () => {
-		addPaidBlocktankOrder({ orderId: 'id', txid: 'txid' });
-		dispatch({
-			type: actions.UPDATE_BLOCKTANK_ORDER,
-			payload: defaultOrderResponse,
-		});
+		dispatch(addPaidBlocktankOrder({ orderId: 'id', txid: 'txid' }));
+		dispatch(updateBlocktankOrder(defaultOrderResponse));
 
 		const { orders, paidOrders } = getBlocktankStore();
 		const backup = { orders, paidOrders };
@@ -296,7 +300,7 @@ describe('Remote backups', () => {
 			throw uploadRes.error;
 		}
 
-		resetBlocktankStore();
+		dispatch(resetBlocktankState());
 		expect(store.getState().blocktank.orders.length).toEqual(0);
 		expect(store.getState().blocktank.paidOrders).toMatchObject({});
 

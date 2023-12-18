@@ -1,4 +1,4 @@
-import Store from '../types';
-import { IBackup } from '../types/backup';
+import { RootState } from '..';
+import { TBackupState } from '../types/backup';
 
-export const backupSelector = (state: Store): IBackup => state.backup;
+export const backupSelector = (state: RootState): TBackupState => state.backup;

@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useMemo, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { __E2E__ } from '../../../constants/env';
@@ -9,12 +8,13 @@ import BottomSheetWrapper from '../../../components/BottomSheetWrapper';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
-import { ignoreBackup } from '../../../store/actions/user';
-import { showBottomSheet, closeBottomSheet } from '../../../store/actions/ui';
+import { closeSheet } from '../../../store/slices/ui';
+import { ignoreBackup } from '../../../store/slices/user';
+import { showBottomSheet } from '../../../store/utils/ui';
 import { useNoTransactions } from '../../../hooks/wallet';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import { useBalance } from '../../../hooks/wallet';
-import { useAppSelector } from '../../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { objectKeys } from '../../../utils/objectKeys';
 import { viewControllersSelector } from '../../../store/reselect/ui';
 import {
@@ -31,23 +31,14 @@ const imageSrc = require('../../../assets/illustrations/safe.png');
 const ASK_INTERVAL = 1000 * 60 * 60 * 24; // 1 day - how long this prompt will be hidden if user taps Later
 const CHECK_DELAY = 2000; // how long user needs to stay on Wallets screen before he will see this prompt
 
-const handleLater = (): void => {
-	ignoreBackup();
-	closeBottomSheet('backupPrompt');
-};
-
-const handleBackup = (): void => {
-	closeBottomSheet('backupPrompt');
-	showBottomSheet('backupNavigation');
-};
-
 const BackupPrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 	const { t } = useTranslation('security');
 	const snapPoints = useSnapPoints('medium');
 	const empty = useNoTransactions();
+	const dispatch = useAppDispatch();
 	const viewControllers = useAppSelector(viewControllersSelector);
-	const ignoreTimestamp = useSelector(ignoreBackupTimestampSelector);
-	const backupVerified = useSelector(backupVerifiedSelector);
+	const ignoreTimestamp = useAppSelector(ignoreBackupTimestampSelector);
+	const backupVerified = useAppSelector(backupVerifiedSelector);
 	const { totalBalance } = useBalance();
 
 	useBottomSheetBackPress('backupPrompt');
@@ -58,6 +49,16 @@ const BackupPrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 			.filter((view) => view !== 'backupPrompt')
 			.some((view) => viewControllers[view].isOpen);
 	}, [viewControllers]);
+
+	const handleLater = (): void => {
+		dispatch(ignoreBackup());
+		dispatch(closeSheet('backupPrompt'));
+	};
+
+	const handleBackup = (): void => {
+		dispatch(closeSheet('backupPrompt'));
+		showBottomSheet('backupNavigation');
+	};
 
 	// if backup has not been verified
 	// and wallet has transactions
@@ -100,7 +101,9 @@ const BackupPrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 			view="backupPrompt"
 			snapPoints={snapPoints}
 			backdrop={true}
-			onClose={ignoreBackup}>
+			onClose={(): void => {
+				dispatch(ignoreBackup());
+			}}>
 			<View style={styles.container}>
 				<BottomSheetNavigationHeader
 					title={t('backup_wallet')}

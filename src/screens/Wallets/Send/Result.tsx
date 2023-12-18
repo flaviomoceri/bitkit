@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { StyleSheet, View, Platform, ActivityIndicator } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
 import Lottie from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -17,14 +16,15 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
 import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
-import { closeBottomSheet } from '../../../store/actions/ui';
 import { rootNavigation } from '../../../navigation/root/RootNavigator';
-import Store from '../../../store/types';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+
 import type { SendScreenProps } from '../../../navigation/types';
 import {
 	resetSendTransaction,
 	setupOnChainTransaction,
 } from '../../../store/actions/wallet';
+import { closeSheet } from '../../../store/slices/ui';
 import { activityItemSelector } from '../../../store/reselect/activity';
 import {
 	selectedNetworkSelector,
@@ -44,10 +44,11 @@ const Result = ({
 	const { t } = useTranslation('wallet');
 	const { success, txId, errorTitle, errorMessage } = route.params;
 	const animationRef = useRef<Lottie>(null);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const transaction = useSelector(transactionSelector);
-	const activityItem = useSelector((state: Store) => {
+	const dispatch = useAppDispatch();
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const transaction = useAppSelector(transactionSelector);
+	const activityItem = useAppSelector((state) => {
 		// TODO: make sure txId is always defined
 		return activityItemSelector(state, txId ?? '');
 	});
@@ -118,7 +119,7 @@ const Result = ({
 
 	const navigateToTxDetails = (): void => {
 		if (activityItem) {
-			closeBottomSheet('sendNavigation');
+			dispatch(closeSheet('sendNavigation'));
 			rootNavigation.navigate('ActivityDetail', {
 				id: activityItem.id,
 				extended: true,
@@ -127,7 +128,7 @@ const Result = ({
 	};
 
 	const handleClose = (): void => {
-		closeBottomSheet('sendNavigation');
+		dispatch(closeSheet('sendNavigation'));
 	};
 
 	const handleRetry = async (): Promise<void> => {

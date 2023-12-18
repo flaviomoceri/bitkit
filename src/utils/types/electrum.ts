@@ -1,4 +1,4 @@
-import { TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 
 export interface IHeader {
 	height: number;
@@ -11,7 +11,7 @@ export interface IGetHeaderResponse {
 	error: boolean;
 	method: 'getHeader';
 	data: string;
-	network: TAvailableNetworks;
+	network: EAvailableNetwork;
 }
 
 export type TGetAddressHistory = { txid: string; height: number };

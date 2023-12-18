@@ -1,4 +1,4 @@
-import { IWalletItem, EUnit } from './wallet';
+import { IWalletItem } from './wallet';
 
 export type TTheme = 'dark' | 'light';
 
@@ -44,34 +44,3 @@ export type TChest = {
 	attemptId?: string;
 	winType?: 'winning' | 'consolation' | 'empty';
 };
-
-export interface ISettings {
-	enableAutoReadClipboard: boolean;
-	enableSendAmountWarning: boolean;
-	pin: boolean;
-	pinOnLaunch: boolean;
-	pinOnIdle: boolean;
-	pinForPayments: boolean;
-	biometrics: boolean;
-	rbf: boolean;
-	theme: TTheme;
-	unit: EUnit;
-	customElectrumPeers: TCustomElectrumPeers;
-	rapidGossipSyncUrl: string;
-	// TODO: type available currencies
-	selectedCurrency: string;
-	selectedLanguage: string;
-	coinSelectAuto: boolean;
-	coinSelectPreference: TCoinSelectPreference;
-	receivePreference: TReceiveOption[];
-	enableOfflinePayments: boolean;
-	showSuggestions: boolean;
-	transactionSpeed: ETransactionSpeed;
-	customFeeRate: number;
-	hideBalance: boolean;
-	hideOnboardingMessage: boolean;
-	hideBeta: boolean;
-	enableDevOptions: boolean;
-	treasureChests: TChest[];
-	webRelay: string;
-}

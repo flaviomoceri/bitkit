@@ -1,7 +1,7 @@
 import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import SDK from '@synonymdev/slashtags-sdk';
 import { createContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../hooks/redux';
 import RAWSFactory from 'random-access-web-storage';
 import b4a from 'b4a';
 
@@ -17,7 +17,7 @@ import {
 	getSelectedSlashtag,
 	onSDKError,
 } from '../utils/slashtags';
-import { updateSeederMaybe } from '../store/actions/slashtags';
+import { updateSeederMaybe } from '../store/utils/slashtags';
 import { seedHashSelector } from '../store/reselect/wallet';
 
 export const RAWS = RAWSFactory({
@@ -35,12 +35,12 @@ export const RAWS = RAWSFactory({
 export type TContacts = {
 	[url: string]: IContactRecord | undefined;
 };
-export interface ISlashtagsContext {
+export interface TSlashtagsStateContext {
 	sdk: SDK;
 	contacts: TContacts;
 }
 
-const SlashtagsContext = createContext<ISlashtagsContext>({
+const SlashtagsContext = createContext<TSlashtagsStateContext>({
 	sdk: {} as SDK,
 	contacts: {} as TContacts,
 });
@@ -58,11 +58,13 @@ export const SlashtagsProvider = ({
 }): ReactElement => {
 	const [primaryKey, setPrimaryKey] = useState<string>();
 	const [opened, setOpened] = useState(false);
-	const [contacts, setContacts] = useState<ISlashtagsContext['contacts']>({});
+	const [contacts, setContacts] = useState<TSlashtagsStateContext['contacts']>(
+		{},
+	);
 	const [sdk, setSDK] = useState<SDK>();
 
 	// Load primaryKey from keychain
-	const seedHash = useSelector(seedHashSelector);
+	const seedHash = useAppSelector(seedHashSelector);
 
 	useEffect(() => {
 		if (!seedHash) {
@@ -240,7 +242,7 @@ export const SlashtagsProvider = ({
 
 export const useSlashtagsSDK = (): SDK => useContext(SlashtagsContext).sdk;
 
-export const useSlashtags = (): ISlashtagsContext => {
+export const useSlashtags = (): TSlashtagsStateContext => {
 	return useContext(SlashtagsContext);
 };
 

@@ -1,15 +1,10 @@
-export type TAvailableNetworks =
-	| 'bitcoin'
-	| 'bitcoinTestnet'
-	| 'bitcoinRegtest';
-
 export const isBitcoinNetwork = (
 	network: string,
-): network is TAvailableNetworks => {
+): network is EAvailableNetwork => {
 	return ['bitcoin', 'bitcoinTestnet', 'bitcoinRegtest'].includes(network);
 };
 
-export enum EAvailableNetworks {
+export enum EAvailableNetwork {
 	bitcoin = 'bitcoin',
 	bitcoinTestnet = 'bitcoinTestnet',
 	bitcoinRegtest = 'bitcoinRegtest',
@@ -28,7 +23,7 @@ export interface INetwork {
 }
 
 export type INetworks = {
-	[key in EAvailableNetworks]: INetwork;
+	[key in EAvailableNetwork]: INetwork;
 };
 
 /*
@@ -72,23 +67,23 @@ export const networks: INetworks = {
 };
 
 export const networkLabels = {
-	[EAvailableNetworks.bitcoin]: {
-		id: EAvailableNetworks.bitcoin,
+	[EAvailableNetwork.bitcoin]: {
+		id: EAvailableNetwork.bitcoin,
 		label: 'Bitcoin Mainnet',
 		shortLabel: 'Mainnet',
 	},
-	[EAvailableNetworks.bitcoinTestnet]: {
-		id: EAvailableNetworks.bitcoinTestnet,
+	[EAvailableNetwork.bitcoinTestnet]: {
+		id: EAvailableNetwork.bitcoinTestnet,
 		label: 'Bitcoin Testnet',
 		shortLabel: 'Testnet',
 	},
-	[EAvailableNetworks.bitcoinRegtest]: {
-		id: EAvailableNetworks.bitcoinRegtest,
+	[EAvailableNetwork.bitcoinRegtest]: {
+		id: EAvailableNetwork.bitcoinRegtest,
 		label: 'Bitcoin Regtest',
 		shortLabel: 'Regtest',
 	},
 };
 
 //Returns an array of all available networks from the networks object.
-export const availableNetworks = (): EAvailableNetworks[] =>
-	Object.values(EAvailableNetworks);
+export const availableNetworks = (): EAvailableNetwork[] =>
+	Object.values(EAvailableNetwork);

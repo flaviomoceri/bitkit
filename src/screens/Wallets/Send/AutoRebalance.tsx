@@ -8,8 +8,9 @@ import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigati
 import GradientView from '../../../components/GradientView';
 import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
-import { closeBottomSheet } from '../../../store/actions/ui';
 import { Text01S } from '../../../styles/text';
+import { useAppDispatch } from '../../../hooks/redux';
+import { closeSheet } from '../../../store/slices/ui';
 import type { SendScreenProps } from '../../../navigation/types';
 
 const imageSrc = require('../../../assets/illustrations/transfer.png');
@@ -18,6 +19,7 @@ const AutoRebalance = ({
 	navigation,
 }: SendScreenProps<'AutoRebalance'>): ReactElement => {
 	const insets = useSafeAreaInsets();
+	const dispatch = useAppDispatch();
 
 	const buttonContainer = useMemo(
 		() => ({
@@ -32,7 +34,7 @@ const AutoRebalance = ({
 	};
 
 	const onContinue = (): void => {
-		closeBottomSheet('sendNavigation');
+		dispatch(closeSheet('sendNavigation'));
 	};
 
 	// TODO: get rebalance fee

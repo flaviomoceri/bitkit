@@ -3,7 +3,7 @@ import { ok, err, Result } from '@synonymdev/result';
 import { Slashtag } from '@synonymdev/slashtags-sdk';
 
 import { name as appName, version as appVersion } from '../../../package.json';
-import { TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 import {
 	__BACKUPS_SERVER_SLASHTAG__,
 	__BACKUPS_SHARED_SECRET__,
@@ -11,7 +11,7 @@ import {
 
 const categoryWithNetwork = (
 	category: EBackupCategories,
-	network: TAvailableNetworks,
+	network: EAvailableNetwork,
 ): string => `${category}.${network}`.toLowerCase();
 
 export enum EBackupCategories {
@@ -52,14 +52,14 @@ const backupsFactory = async (slashtag: Slashtag): Promise<BackupProtocol> => {
  * @param {Slashtag} slashtag
  * @param {Uint8Array} content
  * @param {EBackupCategories} category
- * @param {TAvailableNetworks} network
+ * @param {EAvailableNetwork} network
  * @returns {Promise<Result<number>>}
  */
 export const uploadBackup = async (
 	slashtag: Slashtag,
 	content: Uint8Array,
 	category: EBackupCategories,
-	network: TAvailableNetworks,
+	network: EAvailableNetwork,
 ): Promise<Result<number>> => {
 	try {
 		const backups = await backupsFactory(slashtag);
@@ -104,14 +104,14 @@ type TFetchResult = {
  * @param {Slashtag} slashtag
  * @param {number} timestamp
  * @param {EBackupCategories} category
- * @param {TAvailableNetworks} network
+ * @param {EAvailableNetwork} network
  * @returns {Promise<Result<TFetchResult>>}
  */
 export const fetchBackup = async (
 	slashtag: Slashtag,
 	timestamp: number,
 	category: EBackupCategories,
-	network: TAvailableNetworks,
+	network: EAvailableNetwork,
 ): Promise<Result<TFetchResult>> => {
 	try {
 		const backups = await backupsFactory(slashtag);
@@ -140,13 +140,13 @@ export const fetchBackup = async (
  * Returns list of backups in order of newest to oldest
  * @param {Slashtag} slashtag
  * @param {EBackupCategories} category
- * @param {TAvailableNetworks} network
+ * @param {EAvailableNetwork} network
  * @returns {Promise<Result<{ timestamp: number }[]>>}
  */
 export const listBackups = async (
 	slashtag: Slashtag,
 	category: EBackupCategories,
-	network: TAvailableNetworks,
+	network: EAvailableNetwork,
 ): Promise<Result<{ timestamp: number }[]>> => {
 	try {
 		const backups = await backupsFactory(slashtag);

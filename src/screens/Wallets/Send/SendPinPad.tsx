@@ -8,7 +8,7 @@ import { Text02S } from '../../../styles/text';
 import useColors from '../../../hooks/colors';
 import { vibrate } from '../../../utils/helpers';
 import { getKeychainValue } from '../../../utils/keychain';
-import { showBottomSheet } from '../../../store/actions/ui';
+import { showBottomSheet } from '../../../store/utils/ui';
 import NumberPad from '../../../components/NumberPad';
 
 const SendPinPad = ({ onSuccess }: { onSuccess: () => void }): ReactElement => {

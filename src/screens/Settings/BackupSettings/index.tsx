@@ -1,13 +1,12 @@
 import React, { ReactElement, ReactNode, memo, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData } from '../../../components/List';
 import SettingsView from '../SettingsView';
-import { showBottomSheet } from '../../../store/actions/ui';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { showBottomSheet } from '../../../store/utils/ui';
 import { SettingsScreenProps } from '../../../navigation/types';
-import Store from '../../../store/types';
 import { Caption13M, Caption13Up, Text01M } from '../../../styles/text';
 import {
 	ScrollView,
@@ -27,7 +26,7 @@ import {
 	UserRectangleIcon,
 } from '../../../styles/icons';
 import { FAILED_BACKUP_CHECK_TIME } from '../../../utils/backup/backups-subscriber';
-import { updateBackup } from '../../../store/actions/backup';
+import { updateBackup } from '../../../store/slices/backup';
 import { i18nTime } from '../../../utils/i18n';
 
 const Status = ({
@@ -45,6 +44,7 @@ const Status = ({
 }): ReactElement => {
 	const { t } = useTranslation('settings');
 	const { t: tTime } = useTranslation('intl', { i18n: i18nTime });
+	const dispatch = useAppDispatch();
 	const [hideRetry, setHideRetry] = useState<boolean>(false);
 
 	const failed =
@@ -91,7 +91,7 @@ const Status = ({
 			return;
 		}
 		setHideRetry(true);
-		updateBackup({ [isSyncedKey]: false });
+		dispatch(updateBackup({ [isSyncedKey]: false }));
 	};
 
 	return (
@@ -118,8 +118,8 @@ const BackupSettings = ({
 	navigation,
 }: SettingsScreenProps<'BackupSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const pin = useSelector((state: Store) => state.settings.pin);
-	const backup = useSelector(backupSelector);
+	const pin = useAppSelector((state) => state.settings.pin);
+	const backup = useAppSelector(backupSelector);
 
 	const categories = [
 		{

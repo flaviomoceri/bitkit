@@ -22,11 +22,12 @@ import {
 	getTransactionInputValue,
 	parseOnChainPaymentRequest,
 } from './wallet/transactions';
-import { getLightningStore } from '../store/helpers';
+import { dispatch, getLightningStore } from '../store/helpers';
 import { showToast, ToastOptions } from './notifications';
 import { updateSendTransaction } from '../store/actions/wallet';
 import { getBalance, getSelectedNetwork, getSelectedWallet } from './wallet';
-import { showBottomSheet, closeBottomSheet } from '../store/actions/ui';
+import { closeSheet } from '../store/slices/ui';
+import { showBottomSheet } from '../store/utils/ui';
 import { handleSlashtagURL } from './slashtags';
 import { getSlashPayConfig2 } from './slashtags2';
 import {
@@ -34,13 +35,8 @@ import {
 	decodeLightningInvoice,
 	getLightningBalance,
 } from './lightning';
-import {
-	availableNetworks,
-	EAvailableNetworks,
-	networks,
-	TAvailableNetworks,
-} from './networks';
-import { savePeer } from '../store/actions/lightning';
+import { availableNetworks, networks, EAvailableNetwork } from './networks';
+import { savePeer } from '../store/utils/lightning';
 import { TWalletName } from '../store/types/wallet';
 import { sendNavigation } from '../navigation/bottom-sheet/SendNavigation';
 import { rootNavigation } from '../navigation/root/RootNavigator';
@@ -84,7 +80,7 @@ export type TBitcoinUrl = {
 	qrDataType: EQRDataType.bitcoinAddress;
 	address: string;
 	sats: number;
-	network?: TAvailableNetworks | EAvailableNetworks;
+	network?: EAvailableNetwork | EAvailableNetwork;
 	message?: string;
 	slashTagsUrl?: string;
 };
@@ -92,7 +88,7 @@ export type TLightningUrl = {
 	qrDataType: EQRDataType.lightningPaymentRequest;
 	lightningPaymentRequest: string;
 	sats?: number;
-	network?: TAvailableNetworks;
+	network?: EAvailableNetwork;
 	message?: string;
 	slashTagsUrl?: string;
 };
@@ -103,21 +99,21 @@ export type TLnUrlAuth = {
 export type TLnUrlChannel = {
 	qrDataType: EQRDataType.lnurlChannel;
 	lnUrlParams: LNURLChannelParams;
-	network?: TAvailableNetworks;
+	network?: EAvailableNetwork;
 };
 export type TLnUrlPay = {
 	qrDataType: EQRDataType.lnurlPay;
 	lnUrlParams: LNURLPayParams;
-	network?: TAvailableNetworks;
+	network?: EAvailableNetwork;
 };
 export type TLnUrlWithdraw = {
 	qrDataType: EQRDataType.lnurlWithdraw;
 	lnUrlParams: LNURLWithdrawParams;
-	network?: TAvailableNetworks;
+	network?: EAvailableNetwork;
 };
 export type TNodeId = {
 	qrDataType: EQRDataType.nodeId;
-	network: TAvailableNetworks;
+	network: EAvailableNetwork;
 	url: string;
 };
 export type TSlashTagUrl = {
@@ -142,15 +138,15 @@ export const validateAddress = ({
 	selectedNetwork,
 }: {
 	address: string;
-	selectedNetwork?: EAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): {
 	isValid: boolean;
-	network: EAvailableNetworks;
+	network: EAvailableNetwork;
 } => {
 	try {
 		//Validate address for all available networks
 		let isValid = false;
-		let network: EAvailableNetworks = EAvailableNetworks.bitcoin;
+		let network: EAvailableNetwork = EAvailableNetwork.bitcoin;
 
 		//Validate address for a specific network
 		if (selectedNetwork !== undefined) {
@@ -180,31 +176,31 @@ export const validateAddress = ({
 		}
 		return { isValid, network };
 	} catch (e) {
-		return { isValid: false, network: EAvailableNetworks.bitcoin };
+		return { isValid: false, network: EAvailableNetwork.bitcoin };
 	}
 };
 
 /**
  * Returns if the provided string is a valid Bech32m encoded string (taproot/p2tr address).
  * @param {string} address
- * @returns { isValid: boolean; network: EAvailableNetworks }
+ * @returns { isValid: boolean; network: EAvailableNetwork }
  */
 export const isValidBech32mEncodedString = (
 	address: string,
-): { isValid: boolean; network: EAvailableNetworks } => {
+): { isValid: boolean; network: EAvailableNetwork } => {
 	try {
 		const decoded = bech32m.decode(address);
 		if (decoded.prefix === 'bc') {
-			return { isValid: true, network: EAvailableNetworks.bitcoin };
+			return { isValid: true, network: EAvailableNetwork.bitcoin };
 		} else if (decoded.prefix === 'tb') {
-			return { isValid: true, network: EAvailableNetworks.bitcoinTestnet };
+			return { isValid: true, network: EAvailableNetwork.bitcoinTestnet };
 		} else if (decoded.prefix === 'bcrt') {
-			return { isValid: true, network: EAvailableNetworks.bitcoinRegtest };
+			return { isValid: true, network: EAvailableNetwork.bitcoinRegtest };
 		}
 	} catch (error) {
-		return { isValid: false, network: EAvailableNetworks.bitcoin };
+		return { isValid: false, network: EAvailableNetwork.bitcoin };
 	}
-	return { isValid: false, network: EAvailableNetworks.bitcoin };
+	return { isValid: false, network: EAvailableNetwork.bitcoin };
 };
 
 export type TProcessedData = {
@@ -218,7 +214,7 @@ export type TProcessedData = {
  * @param {string} data
  * @param {'mainScanner' | 'send'} [source]
  * @param {SDK} sdk
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  * @param {Array} [skip]
  */
@@ -233,7 +229,7 @@ export const processInputData = async ({
 }: {
 	data: string;
 	source?: 'mainScanner' | 'send';
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 	sdk?: SDK;
 	skip?: Array<string>;
@@ -370,19 +366,19 @@ export const processInputData = async ({
  * Return all networks and their payment request details if found in QR data.
  * Can also be used to read clipboard data for any addresses or payment requests.
  * @param data
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {string}
  */
 export const decodeQRData = async (
 	data: string,
-	selectedNetwork?: TAvailableNetworks,
+	selectedNetwork?: EAvailableNetwork,
 ): Promise<Result<QRData[]>> => {
 	if (!data) {
 		return err('No data provided.');
 	}
 
 	// Treasure hunt
-	if (__DEV__ || selectedNetwork === EAvailableNetworks.bitcoin) {
+	if (__DEV__ || selectedNetwork === EAvailableNetwork.bitcoin) {
 		// Airdrop
 		if (data.includes('cutt.ly/VwQFzhJJ') || data.includes('bitkit.to/drone')) {
 			const chestId = '2gZxrqhc';
@@ -625,7 +621,7 @@ export const processSlashPayURL = async ({
  * @param {QRData[]} data
  * @param {EQRDataType} [preferredPaymentMethod]
  * @param {boolean} [showErrors]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  */
 export const processBitcoinTransactionData = async ({
@@ -638,7 +634,7 @@ export const processBitcoinTransactionData = async ({
 	data: QRData[];
 	preferredPaymentMethod?: EQRDataType;
 	showErrors?: boolean;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 }): Promise<Result<QRData>> => {
 	try {
@@ -800,7 +796,7 @@ export const processBitcoinTransactionData = async ({
  * This method will handle all actions required for each valid EQRDataType passed as data.
  * @param {QRData} data
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const handleData = async ({
 	data,
@@ -809,7 +805,7 @@ export const handleData = async ({
 }: {
 	data: QRData;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TProcessedData>> => {
 	if (!data) {
 		showToast({
@@ -851,7 +847,7 @@ export const handleData = async ({
 	switch (qrDataType) {
 		case EQRDataType.slashtagURL: {
 			handleSlashtagURL(data.url);
-			closeBottomSheet('addContactModal');
+			dispatch(closeSheet('addContactModal'));
 			return ok({ type: EQRDataType.slashtagURL });
 		}
 		case EQRDataType.slashFeedURL: {
@@ -1063,7 +1059,7 @@ export const handleData = async ({
 				});
 				return err(savePeerRes.error.message);
 			}
-			closeBottomSheet('sendNavigation');
+			dispatch(closeSheet('sendNavigation'));
 			showToast({
 				type: 'success',
 				title: savePeerRes.value,
@@ -1088,7 +1084,7 @@ export const handleData = async ({
  * @param {'mainScanner' | 'send'} [source]
  * @param {SDK} [sdk]
  * @param {boolean} [showErrors]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  */
 export const validateInputData = async ({
@@ -1103,7 +1099,7 @@ export const validateInputData = async ({
 	source?: 'mainScanner' | 'send';
 	sdk?: SDK;
 	showErrors?: boolean;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 }): Promise<Result<QRData>> => {
 	if (!data) {

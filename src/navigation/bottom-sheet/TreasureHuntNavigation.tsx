@@ -5,7 +5,6 @@ import React, {
 	useEffect,
 	useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import {
 	createStackNavigator,
 	StackNavigationProp,
@@ -22,8 +21,8 @@ import Airdrop from '../../screens/TreasureHunt/Airdrop';
 import Error from '../../screens/TreasureHunt/Error';
 import { viewControllerSelector } from '../../store/reselect/ui';
 import { NavigationContainer } from '../../styles/components';
-import { useAppSelector } from '../../hooks/redux';
-import { addTreasureChest } from '../../store/actions/settings';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { addTreasureChest } from '../../store/slices/settings';
 import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
 
 export type TreasureHuntNavigationProp =
@@ -47,11 +46,12 @@ const screenOptions: StackNavigationOptions = {
 
 const TreasureHuntNavigation = (): ReactElement => {
 	const snapPoints = useSnapPoints('large');
+	const dispatch = useAppDispatch();
 	const { treasureChests } = useAppSelector((state) => state.settings);
 	const [isLoading, setIsLoading] = useState(true);
 	const [initialScreen, setInitialScreen] =
 		useState<keyof TreasureHuntStackParamList>('Chest');
-	const { isOpen, chestId } = useSelector((state) => {
+	const { isOpen, chestId } = useAppSelector((state) => {
 		return viewControllerSelector(state, 'treasureHunt');
 	});
 
@@ -78,12 +78,14 @@ const TreasureHuntNavigation = (): ReactElement => {
 		const isAirdrop = result?.sky === 1;
 
 		if (!result.error) {
-			addTreasureChest({
-				chestId,
-				shortId: result.shortId,
-				state: 'found',
-				isAirdrop,
-			});
+			dispatch(
+				addTreasureChest({
+					chestId,
+					shortId: result.shortId,
+					state: 'found',
+					isAirdrop,
+				}),
+			);
 
 			if (isAirdrop) {
 				setInitialScreen('Airdrop');
@@ -95,7 +97,7 @@ const TreasureHuntNavigation = (): ReactElement => {
 		}
 
 		setIsLoading(false);
-	}, [chestId]);
+	}, [chestId, dispatch]);
 
 	useEffect(() => {
 		if (!isOpen) {

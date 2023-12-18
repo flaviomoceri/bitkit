@@ -8,7 +8,7 @@ import React, {
 	useState,
 } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-native-qrcode-svg';
 import { err, ok, Result } from '@synonymdev/result';
@@ -47,10 +47,7 @@ import {
 	defaultAddressContent,
 	addressTypes,
 } from '../../../store/shapes/wallet';
-import {
-	EAvailableNetworks,
-	TAvailableNetworks,
-} from '../../../utils/networks';
+import { EAvailableNetwork } from '../../../utils/networks';
 import { showToast } from '../../../utils/notifications';
 import {
 	getBlockExplorerLink,
@@ -67,18 +64,16 @@ import {
 	updateSendTransaction,
 	updateWallet,
 } from '../../../store/actions/wallet';
-import { showBottomSheet, updateUi } from '../../../store/actions/ui';
-import Store from '../../../store/types';
+import { updateUi } from '../../../store/slices/ui';
+import { showBottomSheet } from '../../../store/utils/ui';
 import SearchInput from '../../../components/SearchInput';
 import AddressViewerListItem from './AddressViewerListItem';
 import { IThemeColors } from '../../../styles/themes';
-import {
-	resetActivityStore,
-	updateActivityList,
-} from '../../../store/actions/activity';
+import { updateActivityList } from '../../../store/utils/activity';
+import { resetActivityState } from '../../../store/slices/activity';
 import { setupLdk } from '../../../utils/lightning';
 import { startWalletServices } from '../../../utils/startup';
-import { updateOnchainFeeEstimates } from '../../../store/actions/fees';
+import { updateOnchainFeeEstimates } from '../../../store/utils/fees';
 import { viewControllerIsOpenSelector } from '../../../store/reselect/ui';
 
 export type TAddressViewerData = {
@@ -99,7 +94,7 @@ export type TAddressViewerConfig = {
 	addressType: EAddressType;
 	addressIndex: number;
 	viewReceivingAddresses: boolean;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 };
 const ADDRESS_AMOUNT = 20; //How many addresses to generate at a given time.
 
@@ -107,7 +102,7 @@ const defaultConfig: TAddressViewerConfig = {
 	addressType: EAddressType.p2wpkh,
 	addressIndex: 0,
 	viewReceivingAddresses: true,
-	selectedNetwork: EAvailableNetworks.bitcoin,
+	selectedNetwork: EAvailableNetwork.bitcoin,
 };
 const defaultAllAddressesData: TAddressViewerData = {
 	[EAddressType.p2wpkh]: {
@@ -233,15 +228,16 @@ const AddressViewer = ({
 	navigation,
 }: SettingsScreenProps<'AddressViewer'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const addressType = useSelector(addressTypeSelector);
-	const enableDevOptions = useSelector(enableDevOptionsSelector);
-	const currentWallet = useSelector((state: Store) =>
+	const dispatch = useAppDispatch();
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const addressType = useAppSelector(addressTypeSelector);
+	const enableDevOptions = useAppSelector(enableDevOptionsSelector);
+	const currentWallet = useAppSelector((state) =>
 		currentWalletSelector(state, selectedWallet),
 	);
 	const [sendNavigationHasOpened, setSendNavigationHasOpened] = useState(false);
-	const sendNavigationIsOpen = useSelector((state) =>
+	const sendNavigationIsOpen = useAppSelector((state) =>
 		viewControllerIsOpenSelector(state, 'sendNavigation'),
 	);
 
@@ -282,7 +278,7 @@ const AddressViewer = ({
 	);
 	const [loadingAddresses, setLoadingAddresses] = useState(true);
 	const [loadingNetwork, setLoadingNetwork] = useState<
-		TAvailableNetworks | undefined
+		EAvailableNetwork | undefined
 	>(undefined);
 	const [isCheckingBalances, setIsCheckingBalances] = useState(false);
 	const [isGeneratingMoreAddresses, setIsGeneratingMoreAddresses] =
@@ -513,7 +509,7 @@ const AddressViewer = ({
 	 * Updates the selected network locally for the address viewer.
 	 */
 	const updateNetwork = useCallback(
-		async (n: EAvailableNetworks): Promise<void> => {
+		async (n: EAvailableNetwork): Promise<void> => {
 			if (n === config.selectedNetwork) {
 				return;
 			}
@@ -714,11 +710,11 @@ const AddressViewer = ({
 				selectedWallet,
 				selectedNetwork,
 			});
-			updateUi({ fromAddressViewer: true });
+			dispatch(updateUi({ fromAddressViewer: true }));
 			sendMax({ selectedWallet, selectedNetwork });
 			showBottomSheet('sendNavigation', { screen: 'ReviewAndSend' });
 		},
-		[selectedNetwork, selectedUtxos, selectedWallet, utxos],
+		[selectedNetwork, selectedUtxos, selectedWallet, utxos, dispatch],
 	);
 
 	/**
@@ -811,7 +807,7 @@ const AddressViewer = ({
 		// Ensure we switch networks if the user opted to do-so.
 		if (selectedNetwork !== config.selectedNetwork) {
 			// Wipe existing activity
-			resetActivityStore();
+			dispatch(resetActivityState());
 			ldk.stop();
 			// Switch to new network.
 			updateWallet({ selectedNetwork: config.selectedNetwork });
@@ -879,6 +875,7 @@ const AddressViewer = ({
 		config.selectedNetwork,
 		selectedNetwork,
 		selectedWallet,
+		dispatch,
 		t,
 	]);
 
@@ -988,31 +985,31 @@ const AddressViewer = ({
 				{enableDevOptions && (
 					<View style={styles.row}>
 						<Button
-							loading={loadingNetwork === EAvailableNetworks.bitcoinTestnet}
+							loading={loadingNetwork === EAvailableNetwork.bitcoinTestnet}
 							color={getAddressTypeButtonColor(
-								EAvailableNetworks.bitcoinTestnet,
+								EAvailableNetwork.bitcoinTestnet,
 							)}
 							text="Testnet"
 							onPress={(): void => {
-								updateNetwork(EAvailableNetworks.bitcoinTestnet).then();
+								updateNetwork(EAvailableNetwork.bitcoinTestnet).then();
 							}}
 						/>
 						<Button
-							loading={loadingNetwork === EAvailableNetworks.bitcoinRegtest}
+							loading={loadingNetwork === EAvailableNetwork.bitcoinRegtest}
 							color={getAddressTypeButtonColor(
-								EAvailableNetworks.bitcoinRegtest,
+								EAvailableNetwork.bitcoinRegtest,
 							)}
 							text="Regtest"
 							onPress={(): void => {
-								updateNetwork(EAvailableNetworks.bitcoinRegtest).then();
+								updateNetwork(EAvailableNetwork.bitcoinRegtest).then();
 							}}
 						/>
 						<Button
-							loading={loadingNetwork === EAvailableNetworks.bitcoin}
-							color={getAddressTypeButtonColor(EAvailableNetworks.bitcoin)}
+							loading={loadingNetwork === EAvailableNetwork.bitcoin}
+							color={getAddressTypeButtonColor(EAvailableNetwork.bitcoin)}
 							text="Mainnet"
 							onPress={(): void => {
-								updateNetwork(EAvailableNetworks.bitcoin).then();
+								updateNetwork(EAvailableNetwork.bitcoin).then();
 							}}
 						/>
 					</View>

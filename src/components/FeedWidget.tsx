@@ -3,7 +3,7 @@ import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Caption13M, Text01M, Text02M } from '../styles/text';
-import { IWidget } from '../store/types/widgets';
+import { TFeedWidget } from '../store/types/widgets';
 import { useSlashfeed } from '../hooks/widgets';
 import BaseFeedWidget from './BaseFeedWidget';
 
@@ -16,7 +16,7 @@ const FeedWidget = ({
 	onLongPress,
 }: {
 	url: string;
-	widget: IWidget;
+	widget: TFeedWidget;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
 	testID?: string;

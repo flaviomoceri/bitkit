@@ -1,82 +1,81 @@
 import cloneDeep from 'lodash/cloneDeep';
 
-import store from '../store';
-import Store, { EStore } from './types';
+import store, { RootState } from '../store';
 import { IWalletStore } from './types/wallet';
-import { ISettings } from './types/settings';
-import { IMetadata } from './types/metadata';
-import { IActivity } from './types/activity';
-import { ILightning } from './types/lightning';
+import { TSettings } from './slices/settings';
+import { TMetadataState } from './types/metadata';
+import { TActivity } from './slices/activity';
+import { TLightningState } from './types/lightning';
 import { IBlocktank } from './types/blocktank';
-import { IFees } from './types/fees';
-import { ISlashtags } from './types/slashtags';
-import { ITodos } from './types/todos';
-import { IUi } from './types/ui';
-import { IUser } from './types/user';
-import { IWidgetsStore } from './types/widgets';
+import { TFeesState } from './slices/fees';
+import { TSlashtagsState } from './types/slashtags';
+import { TTodosState } from './types/todos';
+import { TUiState } from './types/ui';
+import { TUser } from './slices/user';
+import { TWidgetsState } from './slices/widgets';
 import { IChecksShape } from './types/checks';
-import { IBackup } from './types/backup';
+import { TBackupState } from './types/backup';
 
 /*
 Used to retrieve the store outside of a component.
  */
-export const getStore = (): Store => {
+export const getStore = (): RootState => {
 	return cloneDeep(store.getState());
 };
 export const getWalletStore = (): IWalletStore => {
-	return cloneDeep(store.getState()[EStore.wallet]);
+	return cloneDeep(store.getState().wallet);
 };
 
-export const getSettingsStore = (): ISettings => {
-	return cloneDeep(store.getState()[EStore.settings]);
+export const getSettingsStore = (): TSettings => {
+	return cloneDeep(store.getState().settings);
 };
 
-export const getMetaDataStore = (): IMetadata => {
-	return cloneDeep(store.getState()[EStore.metadata]);
+export const getMetaDataStore = (): TMetadataState => {
+	return cloneDeep(store.getState().metadata);
 };
 
-export const getActivityStore = (): IActivity => {
-	return cloneDeep(store.getState()[EStore.activity]);
+export const getActivityStore = (): TActivity => {
+	return cloneDeep(store.getState().activity);
 };
 
-export const getLightningStore = (): ILightning => {
-	return cloneDeep(store.getState()[EStore.lightning]);
+export const getLightningStore = (): TLightningState => {
+	return cloneDeep(store.getState().lightning);
 };
 
 export const getBlocktankStore = (): IBlocktank => {
-	return cloneDeep(store.getState()[EStore.blocktank]);
+	return cloneDeep(store.getState().blocktank);
 };
 
-export const getFeesStore = (): IFees => {
-	return cloneDeep(store.getState()[EStore.fees]);
+export const getFeesStore = (): TFeesState => {
+	return cloneDeep(store.getState().fees);
 };
 
-export const getSlashtagsStore = (): ISlashtags => {
-	return cloneDeep(store.getState()[EStore.slashtags]);
+export const getSlashtagsStore = (): TSlashtagsState => {
+	return cloneDeep(store.getState().slashtags);
 };
 
-export const getTodosStore = (): ITodos => {
-	return cloneDeep(store.getState()[EStore.todos]);
+export const getTodosStore = (): TTodosState => {
+	return cloneDeep(store.getState().todos);
 };
 
-export const getUiStore = (): IUi => {
-	return cloneDeep(store.getState()[EStore.ui]);
+export const getUiStore = (): TUiState => {
+	return cloneDeep(store.getState().ui);
 };
 
-export const getUserStore = (): IUser => {
-	return cloneDeep(store.getState()[EStore.user]);
+export const getUserStore = (): TUser => {
+	return cloneDeep(store.getState().user);
 };
 
-export const getWidgetsStore = (): IWidgetsStore => {
-	return cloneDeep(store.getState()[EStore.widgets]);
+export const getWidgetsStore = (): TWidgetsState => {
+	return cloneDeep(store.getState().widgets);
 };
 
 export const getChecksStore = (): IChecksShape => {
-	return cloneDeep(store.getState()[EStore.checks]);
+	return cloneDeep(store.getState().checks);
 };
 
-export const getBackupStore = (): IBackup => {
-	return cloneDeep(store.getState()[EStore.backup]);
+export const getBackupStore = (): TBackupState => {
+	return cloneDeep(store.getState().backup);
 };
 
 /*

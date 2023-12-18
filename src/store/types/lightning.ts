@@ -1,42 +1,42 @@
-import { IWalletItem, TWalletName } from './wallet';
 import {
 	TChannel,
 	TCreatePaymentReq,
 	TInvoice,
 } from '@synonymdev/react-native-ldk';
-import { TAvailableNetworks } from '../../utils/networks';
+import { IWalletItem, TWalletName } from './wallet';
+import { EAvailableNetwork } from '../../utils/networks';
 
 export type IInvoice = {
 	[key: string]: TInvoice;
 };
 
 export type TCreateLightningInvoice = TCreatePaymentReq & {
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 };
 
 export type TOpenChannelIds = string[];
 
-export type TLdkAccountVersions = 1 | 2;
+export type TLdkAccountVersion = 1 | 2;
 
-export interface IDefaultLightningShape {
+export type TNode = {
 	nodeId: IWalletItem<string>;
 	channels: IWalletItem<{ [key: string]: TChannel }>;
 	openChannelIds: IWalletItem<TOpenChannelIds>;
 	info: IWalletItem<{}>;
 	peers: IWalletItem<string[]>;
 	claimableBalance: IWalletItem<number>;
-}
-
-export type TNodes = {
-	[key: TWalletName]: IDefaultLightningShape;
 };
 
-export interface ILightning {
-	accountVersion: TLdkAccountVersions;
+export type TNodes = {
+	[walletName: TWalletName]: TNode;
+};
+
+export type TLightningState = {
+	accountVersion: TLdkAccountVersion;
 	version: TLightningNodeVersion;
 	nodes: TNodes;
-}
+};
 
 export type TLightningNodeVersion = {
 	ldk: string;
@@ -49,4 +49,8 @@ export type TUseChannelBalance = {
 	receivingTotal: number; // How many sats the counterparty has reserved in the channel. (Inbound capacity + Punishment Reserve)
 	receivingAvailable: number; // How many sats the user is able to receive in a channel. (Inbound capacity - Punishment Reserve)
 	capacity: number; // Total capacity of the channel. (spendingTotal + receivingTotal)
+};
+
+export type TChannels = {
+	[id: string]: TChannel;
 };

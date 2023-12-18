@@ -1,6 +1,6 @@
 import React, { ReactElement, memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Display, Text01B, Text01S } from '../../styles/text';
@@ -11,8 +11,8 @@ import GlowImage from '../../components/GlowImage';
 import Button from '../../components/Button';
 import { refreshWallet } from '../../utils/wallet';
 import { closeAllChannels } from '../../utils/lightning';
-import { startCoopCloseTimer } from '../../store/actions/user';
 import type { TransferScreenProps } from '../../navigation/types';
+import { startCoopCloseTimer } from '../../store/slices/user';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
@@ -25,8 +25,9 @@ const Availability = ({
 }: TransferScreenProps<'Availability'>): ReactElement => {
 	const { t } = useTranslation('lightning');
 	const [isLoading, setIsLoading] = useState(false);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const dispatch = useAppDispatch();
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	const onCancel = (): void => {
 		navigation.goBack();
@@ -44,7 +45,7 @@ const Availability = ({
 			navigation.navigate('Success', { type: 'savings' });
 			return;
 		} else {
-			startCoopCloseTimer();
+			dispatch(startCoopCloseTimer());
 			navigation.navigate('Interrupted');
 		}
 	};

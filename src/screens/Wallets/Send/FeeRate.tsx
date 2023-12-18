@@ -1,15 +1,15 @@
 import React, { memo, ReactElement, useMemo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Caption13Up } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import GradientView from '../../../components/GradientView';
 import Button from '../../../components/Button';
-import Store from '../../../store/types';
+
 import { EFeeId } from '../../../store/types/fees';
 import { useBalance } from '../../../hooks/wallet';
+import { useAppSelector } from '../../../hooks/redux';
 import { showToast } from '../../../utils/notifications';
 import {
 	getTotalFee,
@@ -28,10 +28,10 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 const FeeRate = ({ navigation }: SendScreenProps<'FeeRate'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const { onchainBalance } = useBalance();
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const transaction = useSelector(transactionSelector);
-	const feeEstimates = useSelector((store: Store) => store.fees.onchain);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const transaction = useAppSelector(transactionSelector);
+	const feeEstimates = useAppSelector((store) => store.fees.onchain);
 
 	const selectedFeeId = transaction.selectedFeeId;
 	const satsPerByte = transaction.satsPerByte;

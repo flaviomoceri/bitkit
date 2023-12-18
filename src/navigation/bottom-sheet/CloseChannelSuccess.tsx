@@ -6,8 +6,9 @@ import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import GlowImage from '../../components/GlowImage';
 import Button from '../../components/Button';
-import { closeBottomSheet } from '../../store/actions/ui';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
+import { closeSheet } from '../../store/slices/ui';
+import { useAppDispatch } from '../../hooks/redux';
 import {
 	useBottomSheetBackPress,
 	useSnapPoints,
@@ -16,12 +17,13 @@ import {
 const imageSrc = require('../../assets/illustrations/switch.png');
 
 const CloseChannelSuccess = (): ReactElement => {
+	const dispatch = useAppDispatch();
 	const snapPoints = useSnapPoints('medium');
 
 	useBottomSheetBackPress('backupPrompt');
 
 	const onContinue = (): void => {
-		closeBottomSheet('closeChannelSuccess');
+		dispatch(closeSheet('closeChannelSuccess'));
 	};
 
 	return (

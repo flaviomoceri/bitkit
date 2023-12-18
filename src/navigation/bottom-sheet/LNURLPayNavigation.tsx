@@ -1,5 +1,5 @@
 import React, { ReactElement, memo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import {
 	NativeStackNavigationOptions,
 	NativeStackNavigationProp,
@@ -32,7 +32,7 @@ const screenOptions: NativeStackNavigationOptions = {
 
 const LNURLPayNavigation = (): ReactElement => {
 	const snapPoints = useSnapPoints('large');
-	const { isOpen, pParams } = useSelector((state) => {
+	const { isOpen, pParams } = useAppSelector((state) => {
 		return viewControllerSelector(state, 'lnurlPay');
 	});
 

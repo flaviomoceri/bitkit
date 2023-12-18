@@ -14,14 +14,14 @@ import GradientView from '../../components/GradientView';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Title from './Title';
 import GradientText from './GradientText';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import useDisplayValues from '../../hooks/displayValues';
-import { EUnit } from '../../store/types/wallet';
 import { airdrop } from './prizes';
 import { useLightningMaxInboundCapacity } from '../../hooks/lightning';
 import { getNodeIdFromStorage, waitForLdk } from '../../utils/lightning';
-import { createLightningInvoice } from '../../store/actions/lightning';
-import { useAppSelector } from '../../hooks/redux';
-import { updateTreasureChest } from '../../store/actions/settings';
+import { EUnit } from '../../store/types/wallet';
+import { updateTreasureChest } from '../../store/slices/settings';
+import { createLightningInvoice } from '../../store/utils/lightning';
 import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
 import BitkitLogo from '../../assets/bitkit-logo.svg';
 import type { TreasureHuntScreenProps } from '../../navigation/types';
@@ -50,9 +50,10 @@ const Airdrop = ({
 }: TreasureHuntScreenProps<'Airdrop'>): ReactElement => {
 	const { chestId } = route.params;
 	const interval = useRef<NodeJS.Timer>();
+	const dispatch = useAppDispatch();
 	const maxInboundCapacitySat = useLightningMaxInboundCapacity();
-
 	const { treasureChests } = useAppSelector((state) => state.settings);
+
 	const chest = treasureChests.find((c) => c.chestId === chestId)!;
 	const { attemptId, state, winType } = chest;
 	const isPaid = state === 'success';
@@ -105,12 +106,14 @@ const Airdrop = ({
 			const { result } = await response.json();
 
 			if (!result.error) {
-				updateTreasureChest({
-					chestId,
-					state: 'opened',
-					attemptId: result.attemptId,
-					winType: result.winType,
-				});
+				dispatch(
+					updateTreasureChest({
+						chestId,
+						state: 'opened',
+						attemptId: result.attemptId,
+						winType: result.winType,
+					}),
+				);
 			} else {
 				navigation.replace('Error');
 			}

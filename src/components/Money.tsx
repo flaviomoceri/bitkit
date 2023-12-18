@@ -1,6 +1,6 @@
 import React, { memo, ReactElement, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../hooks/redux';
 
 import {
 	Caption13M,
@@ -43,9 +43,9 @@ interface IMoney {
 }
 
 const Money = (props: IMoney): ReactElement => {
-	const primaryUnit = useSelector(primaryUnitSelector);
-	const secondaryUnit = useSelector(secondaryUnitSelector);
-	const hideBalance = useSelector(hideBalanceSelector);
+	const primaryUnit = useAppSelector(primaryUnitSelector);
+	const secondaryUnit = useAppSelector(secondaryUnitSelector);
+	const hideBalance = useAppSelector(hideBalanceSelector);
 
 	const sats = Math.abs(props.sats);
 	const highlight = props.highlight ?? false;

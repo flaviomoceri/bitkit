@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useMemo } from 'react';
 import { StyleSheet, View, Pressable } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Switch } from '../../../styles/components';
@@ -10,8 +9,9 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
 import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
-import { closeBottomSheet } from '../../../store/actions/ui';
-import { updateSettings } from '../../../store/actions/settings';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { closeSheet } from '../../../store/slices/ui';
+import { updateSettings } from '../../../store/slices/settings';
 import { pinForPaymentsSelector } from '../../../store/reselect/settings';
 import type { PinScreenProps } from '../../../navigation/types';
 
@@ -20,7 +20,8 @@ const imageSrc = require('../../../assets/illustrations/check.png');
 const Result = ({ route }: PinScreenProps<'Result'>): ReactElement => {
 	const { bio, type } = route.params;
 	const { t } = useTranslation('security');
-	const pinForPayments = useSelector(pinForPaymentsSelector);
+	const dispatch = useAppDispatch();
+	const pinForPayments = useAppSelector(pinForPaymentsSelector);
 
 	const biometricsName = useMemo(
 		() =>
@@ -33,11 +34,11 @@ const Result = ({ route }: PinScreenProps<'Result'>): ReactElement => {
 	);
 
 	const handleTogglePress = (): void => {
-		updateSettings({ pinForPayments: !pinForPayments });
+		dispatch(updateSettings({ pinForPayments: !pinForPayments }));
 	};
 
 	const handleButtonPress = (): void => {
-		closeBottomSheet('PINNavigation');
+		dispatch(closeSheet('PINNavigation'));
 	};
 
 	return (

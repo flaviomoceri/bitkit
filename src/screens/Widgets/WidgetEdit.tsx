@@ -7,8 +7,9 @@ import { ScrollView, View as ThemedView } from '../../styles/components';
 import { Caption13M, Text01S, Text02M } from '../../styles/text';
 import { Checkmark } from '../../styles/icons';
 import { SUPPORTED_FEED_TYPES } from '../../utils/widgets';
+import { useAppDispatch } from '../../hooks/redux';
 import { useSlashfeed } from '../../hooks/widgets';
-import { deleteWidget } from '../../store/actions/widgets';
+import { deleteWidget } from '../../store/slices/widgets';
 import {
 	SlashFeedJSON,
 	TGraphPeriod,
@@ -47,6 +48,7 @@ const WidgetEdit = ({
 }: RootStackScreenProps<'WidgetEdit'>): ReactElement => {
 	const { url, initialFields } = route.params;
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
 	const { config, fields, loading } = useSlashfeed({ url });
 	const [settings, setSettings] = useState(initialFields);
 
@@ -58,7 +60,7 @@ const WidgetEdit = ({
 	};
 
 	const onReset = (): void => {
-		deleteWidget(url);
+		dispatch(deleteWidget(url));
 		setSettings(defaultSettings);
 	};
 

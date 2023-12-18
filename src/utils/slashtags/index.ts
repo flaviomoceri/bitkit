@@ -20,11 +20,11 @@ import {
 	getClaimedLightningPayments,
 	waitForLdk,
 } from '../lightning';
-import { createLightningInvoice } from '../../store/actions/lightning';
+import { EAvailableNetwork } from '../networks';
+import { createLightningInvoice } from '../../store/utils/lightning';
 import { getSettingsStore } from '../../store/helpers';
-import { TAvailableNetworks } from '../networks';
+import { cacheProfileChecked } from '../../store/utils/slashtags';
 import { TWalletName } from '../../store/types/wallet';
-import { cacheProfile } from '../../store/actions/slashtags';
 import i18n from '../i18n';
 
 /**
@@ -101,7 +101,12 @@ export const saveProfile = async (
 		}),
 	);
 
-	cacheProfile(slashtag.url, drive.files.feed.fork, drive.version, profile);
+	cacheProfileChecked(
+		slashtag.url,
+		drive.files.feed.fork,
+		drive.version,
+		profile,
+	);
 
 	drive.close();
 };
@@ -186,7 +191,7 @@ export const updateSlashPayConfig = debounce(
 		forceUpdate?: boolean;
 		sdk?: SDK;
 		selectedWallet?: TWalletName;
-		selectedNetwork?: TAvailableNetworks;
+		selectedNetwork?: EAvailableNetwork;
 	}): Promise<void> => {
 		if (!sdk) {
 			// sdk is not ready yet

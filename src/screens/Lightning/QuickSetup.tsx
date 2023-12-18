@@ -6,7 +6,6 @@ import React, {
 	useState,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +19,7 @@ import Percentage from '../../components/Percentage';
 import Button from '../../components/Button';
 import FancySlider from '../../components/FancySlider';
 import NumberPadLightning from './NumberPadLightning';
+import { useAppSelector } from '../../hooks/redux';
 import { useSwitchUnit } from '../../hooks/wallet';
 import {
 	resetSendTransaction,
@@ -28,7 +28,7 @@ import {
 import {
 	refreshBlocktankInfo,
 	startChannelPurchase,
-} from '../../store/actions/blocktank';
+} from '../../store/utils/blocktank';
 import { showToast } from '../../utils/notifications';
 import { convertToSats } from '../../utils/conversion';
 import { getFiatDisplayValues } from '../../utils/displayValues';
@@ -43,7 +43,6 @@ import { primaryUnitSelector } from '../../store/reselect/settings';
 import { lnSetupSelector } from '../../store/reselect/aggregations';
 import NumberPadTextField from '../../components/NumberPadTextField';
 import { getNumberPadText } from '../../utils/numberpad';
-import { useAppSelector } from '../../hooks/redux';
 import { DEFAULT_CHANNEL_DURATION } from './CustomConfirm';
 
 const QuickSetup = ({
@@ -64,7 +63,7 @@ const QuickSetup = ({
 		return convertToSats(textFieldValue, unit);
 	}, [textFieldValue, unit]);
 
-	const lnSetup = useSelector((state) =>
+	const lnSetup = useAppSelector((state) =>
 		lnSetupSelector(state, spendingAmount),
 	);
 

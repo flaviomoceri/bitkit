@@ -1,5 +1,4 @@
 import React, { memo, ReactElement, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import RNFS, { unlink, writeFile } from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Share from 'react-native-share';
@@ -13,21 +12,22 @@ import {
 	resetSelectedWallet,
 	updateWallet,
 } from '../../../store/actions/wallet';
-import { resetUserStore } from '../../../store/actions/user';
-import { resetActivityStore } from '../../../store/actions/activity';
+import { resetUserState } from '../../../store/slices/user';
+import { resetActivityState } from '../../../store/slices/activity';
+import { resetBlocktankState } from '../../../store/slices/blocktank';
+import { resetFeesState } from '../../../store/slices/fees';
 import {
-	resetLightningStore,
 	updateLdkAccountVersion,
-	updateLightningNodeId,
-} from '../../../store/actions/lightning';
-import { resetBlocktankStore } from '../../../store/actions/blocktank';
-import { resetSlashtagsStore } from '../../../store/actions/slashtags';
-import { resetWidgetsStore } from '../../../store/actions/widgets';
-import { resetFeesStore } from '../../../store/actions/fees';
-import { resetTodos } from '../../../store/actions/todos';
-import { resetSettingsStore, wipeApp } from '../../../store/actions/settings';
+	resetLightningState,
+} from '../../../store/slices/lightning';
+import { resetMetadataState } from '../../../store/slices/metadata';
+import { resetSettingsState } from '../../../store/slices/settings';
+import { resetSlashtagsState } from '../../../store/slices/slashtags';
+import { resetWidgetsState } from '../../../store/slices/widgets';
+import { updateLightningNodeIdThunk } from '../../../store/utils/lightning';
+import { resetTodosState } from '../../../store/slices/todos';
+import { wipeApp } from '../../../store/utils/settings';
 import { getStore, getWalletStore } from '../../../store/helpers';
-import { resetMetaStore } from '../../../store/actions/metadata';
 import { warningsSelector } from '../../../store/reselect/checks';
 import { accountVersionSelector } from '../../../store/reselect/lightning';
 import {
@@ -38,30 +38,28 @@ import {
 import SettingsView from './../SettingsView';
 import { EItemType, IListData } from '../../../components/List';
 import type { SettingsScreenProps } from '../../../navigation/types';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { refreshWallet } from '../../../utils/wallet';
 import { zipLogs } from '../../../utils/lightning/logs';
 import { runChecks } from '../../../utils/wallet/checks';
 import { showToast } from '../../../utils/notifications';
 import { getFakeTransaction } from '../../../utils/wallet/testing';
-import {
-	createDefaultLdkAccount,
-	getNodeId,
-	setupLdk,
-} from '../../../utils/lightning';
+import { createDefaultLdkAccount, setupLdk } from '../../../utils/lightning';
 import Dialog from '../../../components/Dialog';
+import { resetBackupState } from '../../../store/slices/backup';
 
 const DevSettings = ({
 	navigation,
 }: SettingsScreenProps<'DevSettings'>): ReactElement => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const { t } = useTranslation('lightning');
 	const [showDialog, setShowDialog] = useState(false);
 	const [throwError, setThrowError] = useState(false);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const addressType = useSelector(addressTypeSelector);
-	const accountVersion = useSelector(accountVersionSelector);
-	const warnings = useSelector((state) => {
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const addressType = useAppSelector(addressTypeSelector);
+	const accountVersion = useAppSelector(accountVersionSelector);
+	const warnings = useAppSelector((state) => {
 		return warningsSelector(state, selectedWallet, selectedNetwork);
 	});
 
@@ -234,8 +232,9 @@ const DevSettings = ({
 				{
 					title: 'Force LDK V2 Account Migration',
 					type: EItemType.button,
+					testID: 'ForceV2Migration',
 					onPress: async (): Promise<void> => {
-						updateLdkAccountVersion(2);
+						dispatch(updateLdkAccountVersion(2));
 						await createDefaultLdkAccount({
 							version: 2,
 							selectedWallet,
@@ -246,22 +245,15 @@ const DevSettings = ({
 							selectedNetwork,
 							shouldRefreshLdk: true,
 						});
-						const newNodeId = await getNodeId();
-						if (newNodeId.isOk()) {
-							updateLightningNodeId({
-								nodeId: newNodeId.value,
-								selectedWallet,
-								selectedNetwork,
-							});
-						}
+						await updateLightningNodeIdThunk();
 					},
-					testID: 'ForceV2Migration',
 				},
 				{
 					title: 'Revert to LDK V1 Account',
 					type: EItemType.button,
+					testID: 'RevertToLDKV1',
 					onPress: async (): Promise<void> => {
-						updateLdkAccountVersion(1);
+						dispatch(updateLdkAccountVersion(1));
 						await createDefaultLdkAccount({
 							version: 1,
 							selectedWallet,
@@ -272,16 +264,8 @@ const DevSettings = ({
 							selectedNetwork,
 							shouldRefreshLdk: true,
 						});
-						const newNodeId = await getNodeId();
-						if (newNodeId.isOk()) {
-							updateLightningNodeId({
-								nodeId: newNodeId.value,
-								selectedWallet,
-								selectedNetwork,
-							});
-						}
+						await updateLightningNodeIdThunk();
 					},
-					testID: 'RevertToLDKV1',
 				},
 			],
 		},
@@ -309,68 +293,73 @@ const DevSettings = ({
 					onPress: exportStore,
 				},
 				{
-					title: 'Reset All Stores',
+					title: 'Reset App State',
 					type: EItemType.button,
 					onPress: (): void => {
 						dispatch({ type: actions.WIPE_APP });
 					},
 				},
 				{
-					title: 'Reset Activity Store',
+					title: 'Reset Activity State',
 					type: EItemType.button,
-					onPress: resetActivityStore,
+					onPress: () => dispatch(resetActivityState()),
 				},
 				{
-					title: 'Reset Blocktank Store',
+					title: 'Reset Backup State',
 					type: EItemType.button,
-					onPress: resetBlocktankStore,
+					onPress: () => dispatch(resetBackupState()),
 				},
 				{
-					title: 'Reset Current Wallet Store',
+					title: 'Reset Blocktank State',
+					type: EItemType.button,
+					onPress: () => dispatch(resetBlocktankState()),
+				},
+				{
+					title: 'Reset Current Wallet State',
 					type: EItemType.button,
 					onPress: async (): Promise<void> => {
 						await resetSelectedWallet({ selectedWallet });
 					},
 				},
 				{
-					title: 'Reset Fees Store',
+					title: 'Reset Fees State',
 					type: EItemType.button,
-					onPress: resetFeesStore,
+					onPress: () => dispatch(resetFeesState()),
 				},
 				{
-					title: 'Reset Lightning Store',
+					title: 'Reset Lightning State',
 					type: EItemType.button,
-					onPress: resetLightningStore,
+					onPress: () => dispatch(resetLightningState()),
 				},
 				{
-					title: 'Reset Metadata Store',
+					title: 'Reset Metadata State',
 					type: EItemType.button,
-					onPress: resetMetaStore,
+					onPress: () => dispatch(resetMetadataState()),
 				},
 				{
-					title: 'Reset Settings Store',
+					title: 'Reset Settings State',
 					type: EItemType.button,
-					onPress: resetSettingsStore,
+					onPress: () => dispatch(resetSettingsState()),
 				},
 				{
-					title: 'Reset Slashtags Store',
+					title: 'Reset Slashtags State',
 					type: EItemType.button,
-					onPress: resetSlashtagsStore,
+					onPress: () => dispatch(resetSlashtagsState()),
 				},
 				{
-					title: 'Reset Todos Store',
+					title: 'Reset Todos State',
 					type: EItemType.button,
-					onPress: resetTodos,
+					onPress: () => dispatch(resetTodosState()),
 				},
 				{
-					title: 'Reset User Store',
+					title: 'Reset User State',
 					type: EItemType.button,
-					onPress: resetUserStore,
+					onPress: () => dispatch(resetUserState()),
 				},
 				{
-					title: 'Reset Widgets Store',
+					title: 'Reset Widgets State',
 					type: EItemType.button,
-					onPress: resetWidgetsStore,
+					onPress: () => dispatch(resetWidgetsState()),
 				},
 				{
 					title: 'Wipe App',

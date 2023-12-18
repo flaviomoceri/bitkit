@@ -6,7 +6,7 @@ import { Pair } from '@synonymdev/slashtags-widget-price-feed/types/lib/reader';
 
 import { Caption13M, Text02M } from '../styles/text';
 import { useSlashfeed } from '../hooks/widgets';
-import { IWidget } from '../store/types/widgets';
+import { TFeedWidget } from '../store/types/widgets';
 import BaseFeedWidget from './BaseFeedWidget';
 import { Change, Chart, getChange } from './PriceChart';
 import { decodeWidgetFieldValue, SUPPORTED_FEED_TYPES } from '../utils/widgets';
@@ -31,7 +31,7 @@ const PriceWidget = ({
 	onPressIn,
 }: {
 	url: string;
-	widget: IWidget;
+	widget: TFeedWidget;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
 	testID?: string;

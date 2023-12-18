@@ -1,34 +1,35 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useSelector } from 'react-redux';
 
+import { Text02B, Text02S } from '../../styles/text';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import Button from '../../components/Button';
 import LabeledInput from '../../components/LabeledInput';
 import SafeAreaInset from '../../components/SafeAreaInset';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useBottomSheetBackPress } from '../../hooks/bottomSheet';
 import { Keyboard } from '../../hooks/keyboard';
 import { ProfileLinkScreenProps } from '../../navigation/types';
-import { addLink } from '../../store/actions/slashtags';
-import { closeBottomSheet, updateProfileLink } from '../../store/actions/ui';
+import { addLink } from '../../store/slices/slashtags';
+import { closeSheet, updateProfileLink } from '../../store/slices/ui';
 import { profileLinkSelector } from '../../store/reselect/ui';
-import { Text02B, Text02S } from '../../styles/text';
 import { suggestions } from './ProfileLinkSuggestions';
 
 const ProfileLink = ({
 	navigation,
 }: ProfileLinkScreenProps<'ProfileLink'>): ReactElement => {
 	const { t } = useTranslation('slashtags');
-	const form = useSelector(profileLinkSelector);
+	const dispatch = useAppDispatch();
+	const form = useAppSelector(profileLinkSelector);
 
 	useBottomSheetBackPress('profileAddDataForm');
 
 	const onSave = async (): Promise<void> => {
-		addLink(form);
-		updateProfileLink({ title: '', url: '' });
+		dispatch(addLink(form));
+		dispatch(updateProfileLink({ title: '', url: '' }));
 		await Keyboard.dismiss();
-		closeBottomSheet('profileAddDataForm');
+		dispatch(closeSheet('profileAddDataForm'));
 	};
 
 	const isValid = form.title && form.url;
@@ -50,7 +51,7 @@ const ProfileLink = ({
 				maxLength={25}
 				testID="LinkLabelInput"
 				onChange={(value: string): void => {
-					updateProfileLink({ ...form, title: value });
+					dispatch(updateProfileLink({ ...form, title: value }));
 				}}>
 				<TouchableOpacity
 					testID="ProfileLinkSuggestions"
@@ -70,7 +71,7 @@ const ProfileLink = ({
 				maxLength={2048}
 				testID="LinkValueInput"
 				onChange={(value: string): void => {
-					updateProfileLink({ ...form, url: value });
+					dispatch(updateProfileLink({ ...form, url: value }));
 				}}
 			/>
 			<Text02S style={styles.note} color="gray1">

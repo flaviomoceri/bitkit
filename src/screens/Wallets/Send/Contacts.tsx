@@ -1,11 +1,11 @@
 import React, { memo, ReactElement, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import NavigationHeader from '../../../components/NavigationHeader';
 import GradientView from '../../../components/GradientView';
 import ContactsList from '../../../components/ContactsList';
+import { useAppSelector } from '../../../hooks/redux';
 import { processInputData } from '../../../utils/scanner';
 import { showToast } from '../../../utils/notifications';
 import { useSlashtags } from '../../../components/SlashtagsProvider';
@@ -25,8 +25,8 @@ const Contacts = ({
 }: SendScreenProps<'Contacts'>): ReactElement => {
 	const { t } = useTranslation('slashtags');
 	const [loading, setLoading] = useState(false);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const { sdk } = useSlashtags();
 
 	const handlePress = async (contact: IContactRecord): Promise<void> => {

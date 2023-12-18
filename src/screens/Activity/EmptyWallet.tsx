@@ -10,15 +10,17 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { Headline } from '../../styles/text';
 import { XIcon } from '../../styles/icons';
-import { updateSettings } from '../../store/actions/settings';
+import { updateSettings } from '../../store/slices/settings';
 import Arrow from '../../assets/dotted-arrow.svg';
 import { __E2E__ } from '../../constants/env';
+import { useAppDispatch } from '../../hooks/redux';
 
 const EmptyWallet = (): ReactElement => {
-	const { height } = useWindowDimensions();
 	const insets = useSafeAreaInsets();
-	const [showClose, setShowClose] = useState(!__E2E__);
+	const { height } = useWindowDimensions();
 	const { t } = useTranslation('onboarding');
+	const dispatch = useAppDispatch();
+	const [showClose, setShowClose] = useState(!__E2E__);
 
 	useEffect(() => {
 		if (__E2E__) {
@@ -36,7 +38,7 @@ const EmptyWallet = (): ReactElement => {
 	}, [height, insets.bottom]);
 
 	const handleHide = (): void => {
-		updateSettings({ hideOnboardingMessage: true });
+		dispatch(updateSettings({ hideOnboardingMessage: true }));
 	};
 
 	return (

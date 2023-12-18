@@ -1,10 +1,10 @@
 import React, { memo, ReactElement, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData } from '../../../components/List';
 import SettingsView from '../SettingsView';
-import { updateSettings } from '../../../store/actions/settings';
+import { updateSettings } from '../../../store/slices/settings';
 import {
 	coinSelectAutoSelector,
 	coinSelectPreferenceSelector,
@@ -12,8 +12,9 @@ import {
 
 const CoinSelectSettings = (): ReactElement => {
 	const { t } = useTranslation('settings');
-	const selectedAutoPilot = useSelector(coinSelectAutoSelector);
-	const coinSelectPreference = useSelector(coinSelectPreferenceSelector);
+	const dispatch = useAppDispatch();
+	const selectedAutoPilot = useAppSelector(coinSelectAutoSelector);
+	const coinSelectPreference = useAppSelector(coinSelectPreferenceSelector);
 
 	const settingsListData: IListData[] = useMemo(
 		() => [
@@ -25,7 +26,7 @@ const CoinSelectSettings = (): ReactElement => {
 						value: !selectedAutoPilot,
 						type: EItemType.button,
 						onPress: (): void => {
-							updateSettings({ coinSelectAuto: false });
+							dispatch(updateSettings({ coinSelectAuto: false }));
 						},
 					},
 					{
@@ -33,7 +34,7 @@ const CoinSelectSettings = (): ReactElement => {
 						value: selectedAutoPilot,
 						type: EItemType.button,
 						onPress: (): void => {
-							updateSettings({ coinSelectAuto: true });
+							dispatch(updateSettings({ coinSelectAuto: true }));
 						},
 					},
 				],
@@ -47,10 +48,12 @@ const CoinSelectSettings = (): ReactElement => {
 						type: EItemType.button,
 						hide: !selectedAutoPilot,
 						onPress: (): void => {
-							updateSettings({
-								coinSelectAuto: true,
-								coinSelectPreference: 'consolidate',
-							});
+							dispatch(
+								updateSettings({
+									coinSelectAuto: true,
+									coinSelectPreference: 'consolidate',
+								}),
+							);
 						},
 					},
 					{
@@ -59,10 +62,12 @@ const CoinSelectSettings = (): ReactElement => {
 						type: EItemType.button,
 						hide: !selectedAutoPilot,
 						onPress: (): void => {
-							updateSettings({
-								coinSelectAuto: true,
-								coinSelectPreference: 'large',
-							});
+							dispatch(
+								updateSettings({
+									coinSelectAuto: true,
+									coinSelectPreference: 'large',
+								}),
+							);
 						},
 					},
 					{
@@ -71,16 +76,18 @@ const CoinSelectSettings = (): ReactElement => {
 						type: EItemType.button,
 						hide: !selectedAutoPilot,
 						onPress: (): void => {
-							updateSettings({
-								coinSelectAuto: true,
-								coinSelectPreference: 'small',
-							});
+							dispatch(
+								updateSettings({
+									coinSelectAuto: true,
+									coinSelectPreference: 'small',
+								}),
+							);
 						},
 					},
 				],
 			},
 		],
-		[selectedAutoPilot, coinSelectPreference, t],
+		[selectedAutoPilot, coinSelectPreference, t, dispatch],
 	);
 
 	return (

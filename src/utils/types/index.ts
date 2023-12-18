@@ -1,4 +1,4 @@
-import { TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 import {
 	EAddressType,
 	IAddresses,
@@ -15,7 +15,7 @@ export interface IResponse<T> {
 export interface IGetAddress {
 	path: string;
 	type: EAddressType;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }
 
 export interface IGetAddressResponse {
@@ -37,7 +37,7 @@ export interface IGenerateAddresses {
 	changeAddressAmount?: number;
 	addressIndex?: number;
 	changeAddressIndex?: number;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 	keyDerivationPath?: IKeyDerivationPath;
 	accountType?: TKeyDerivationAccountType;
 	addressType?: EAddressType;
