@@ -141,6 +141,7 @@ const PriceWidget = ({
 			style={style}
 			url={url}
 			name={t('widget_price')}
+			showTitle={widget.extras?.showTitle}
 			isLoading={loading}
 			isEditing={isEditing}
 			testID={testID}

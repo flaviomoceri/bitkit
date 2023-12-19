@@ -9,6 +9,7 @@ import { initialChecksState } from '../slices/checks';
 import { initialBackupState } from '../shapes/backup';
 import { initialWidgetsState } from '../slices/widgets';
 import { getNetworkContent } from '../shapes/wallet';
+import { getDefaultSettings } from '../../screens/Widgets/WidgetEdit';
 import { __WEB_RELAY__ } from '../../constants/env';
 
 const migrations = {
@@ -273,6 +274,30 @@ const migrations = {
 			settings: {
 				...state.settings,
 				rapidGossipSyncUrl: 'https://rapidsync.lightningdevkit.org/snapshot/',
+			},
+		};
+	},
+	29: (state): PersistedState => {
+		const newWidgets = { ...state.widgets.widgets };
+		const defaultSettings = getDefaultSettings();
+
+		for (const url in state.widgets.widgets) {
+			const widget = newWidgets[url]!;
+			const isFeedWidget = Object.hasOwn(widget, 'type');
+
+			if (isFeedWidget) {
+				widget.extras = {
+					...defaultSettings.extras,
+					...widget.extras,
+				};
+			}
+		}
+
+		return {
+			...state,
+			widgets: {
+				...state.widgets,
+				widgets: newWidgets,
 			},
 		};
 	},

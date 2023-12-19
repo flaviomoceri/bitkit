@@ -116,26 +116,21 @@ const Widget = ({
 						</Text01S>
 					)}
 
-					{(config.type === SUPPORTED_FEED_TYPES.PRICE_FEED ||
-						config.type === SUPPORTED_FEED_TYPES.BLOCKS_FEED) && (
-						<TouchableOpacity
-							style={styles.item}
-							activeOpacity={0.6}
-							testID="WidgetEdit"
-							onPress={onEdit}>
-							<View style={styles.columnLeft}>
-								<Text01S color="white">{t('widget_edit')}</Text01S>
-							</View>
-							<View style={styles.columnRight}>
-								<Text01S style={styles.valueText} testID="Value">
-									{hasEdited
-										? t('widget_edit_custom')
-										: t('widget_edit_default')}
-								</Text01S>
-								<ChevronRight color="gray1" width={24} height={24} />
-							</View>
-						</TouchableOpacity>
-					)}
+					<TouchableOpacity
+						style={styles.item}
+						activeOpacity={0.6}
+						testID="WidgetEdit"
+						onPress={onEdit}>
+						<View style={styles.columnLeft}>
+							<Text01S color="white">{t('widget_edit')}</Text01S>
+						</View>
+						<View style={styles.columnRight}>
+							<Text01S style={styles.valueText} testID="Value">
+								{hasEdited ? t('widget_edit_custom') : t('widget_edit_default')}
+							</Text01S>
+							<ChevronRight color="gray1" width={24} height={24} />
+						</View>
+					</TouchableOpacity>
 
 					<View style={styles.footer}>
 						<Caption13Up style={styles.caption} color="gray1">
@@ -151,30 +146,52 @@ const Widget = ({
 								}),
 							};
 
+							let testID: string;
+							let Component:
+								| typeof PriceWidget
+								| typeof HeadlinesWidget
+								| typeof BlocksWidget
+								| typeof FactsWidget
+								| typeof FeedWidget;
+
 							switch (config.type) {
 								case SUPPORTED_FEED_TYPES.PRICE_FEED:
-									return (
-										<PriceWidget key={url} url={url} widget={previewWidget} />
-									);
+									Component = PriceWidget;
+									testID = 'PriceWidget';
+									break;
 								case SUPPORTED_FEED_TYPES.HEADLINES_FEED:
-									return <HeadlinesWidget key={url} url={url} />;
+									Component = HeadlinesWidget;
+									testID = 'HeadlinesWidget';
+									break;
 								case SUPPORTED_FEED_TYPES.BLOCKS_FEED:
-									return (
-										<BlocksWidget key={url} url={url} widget={previewWidget} />
-									);
+									Component = BlocksWidget;
+									testID = 'BlocksWidget';
+									break;
 								case SUPPORTED_FEED_TYPES.FACTS_FEED:
-									return <FactsWidget key={url} url={url} />;
+									Component = FactsWidget;
+									testID = 'FactsWidget';
+									break;
 								case SUPPORTED_FEED_TYPES.LUGANO_FEED:
-									return <LuganoFeedWidget key={url} url={url} />;
+									Component = LuganoFeedWidget;
+									testID = 'LuganoWidget';
+									break;
 								default:
-									return !loading ? (
-										<FeedWidget key={url} url={url} widget={previewWidget} />
-									) : (
-										<ThemedView style={styles.previewLoading} color="white08">
-											<Spinner />
-										</ThemedView>
-									);
+									Component = FeedWidget;
+									testID = 'FeedWidget';
 							}
+
+							return !loading ? (
+								<Component
+									key={url}
+									url={url}
+									widget={previewWidget}
+									testID={testID}
+								/>
+							) : (
+								<ThemedView style={styles.previewLoading} color="white08">
+									<Spinner />
+								</ThemedView>
+							);
 						})()}
 
 						<View style={styles.buttonsContainer}>

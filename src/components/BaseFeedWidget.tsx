@@ -22,6 +22,7 @@ const BaseFeedWidget = ({
 	url,
 	name,
 	children,
+	showTitle,
 	isLoading,
 	isEditing,
 	style,
@@ -33,6 +34,7 @@ const BaseFeedWidget = ({
 	url: string;
 	name?: string;
 	children: ReactElement;
+	showTitle?: boolean;
 	isLoading?: boolean;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
@@ -66,49 +68,53 @@ const BaseFeedWidget = ({
 				onPress={onPress}
 				onPressIn={onPressIn}
 				onLongPress={onLongPress}>
-				<View style={styles.header}>
-					<View style={styles.title}>
-						<View style={styles.icon}>
-							{icon ? (
-								<SvgImage image={icon} size={32} />
-							) : (
-								<QuestionMarkIcon width={32} height={32} />
-							)}
+				{(showTitle || isEditing) && (
+					<View style={styles.header}>
+						<View style={styles.title}>
+							<View style={styles.icon}>
+								{icon ? (
+									<SvgImage image={icon} size={32} />
+								) : (
+									<QuestionMarkIcon width={32} height={32} />
+								)}
+							</View>
+
+							<Text01M style={styles.name} numberOfLines={1}>
+								{widgetName}
+							</Text01M>
 						</View>
 
-						<Text01M style={styles.name} numberOfLines={1}>
-							{widgetName}
-						</Text01M>
+						{isEditing && (
+							<View style={styles.actions}>
+								<TouchableOpacity
+									style={styles.actionButton}
+									color="transparent"
+									testID="WidgetActionDelete"
+									onPress={onDelete}>
+									<TrashIcon width={22} />
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={styles.actionButton}
+									color="transparent"
+									testID="WidgetActionEdit"
+									onPress={onEdit}>
+									<SettingsIcon width={22} />
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={styles.actionButton}
+									color="transparent"
+									activeOpacity={0.9}
+									testID="WidgetActionDrag"
+									onLongPress={onLongPress}
+									onPressIn={onPressIn}>
+									<ListIcon color="white" width={24} />
+								</TouchableOpacity>
+							</View>
+						)}
 					</View>
+				)}
 
-					{isEditing && (
-						<View style={styles.actions}>
-							<TouchableOpacity
-								style={styles.actionButton}
-								color="transparent"
-								testID="WidgetActionDelete"
-								onPress={onDelete}>
-								<TrashIcon width={22} />
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={styles.actionButton}
-								color="transparent"
-								testID="WidgetActionEdit"
-								onPress={onEdit}>
-								<SettingsIcon width={22} />
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={styles.actionButton}
-								color="transparent"
-								activeOpacity={0.9}
-								testID="WidgetActionDrag"
-								onLongPress={onLongPress}
-								onPressIn={onPressIn}>
-								<ListIcon color="white" width={24} />
-							</TouchableOpacity>
-						</View>
-					)}
-				</View>
+				{showTitle && !isEditing && <View style={styles.spacer} />}
 
 				{!isEditing && (
 					<LoadingView
@@ -179,9 +185,11 @@ const styles = StyleSheet.create({
 		paddingBottom: 30,
 		marginBottom: -30,
 	},
+	spacer: {
+		height: 16,
+	},
 	content: {
 		justifyContent: 'center',
-		marginTop: 16,
 	},
 });
 

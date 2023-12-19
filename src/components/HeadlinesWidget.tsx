@@ -14,6 +14,7 @@ import { openURL } from '../utils/helpers';
 import { showToast } from '../utils/notifications';
 import { useSlashtags2 } from '../hooks/slashtags2';
 import BaseFeedWidget from './BaseFeedWidget';
+import { TFeedWidget } from '../store/types/widgets';
 
 type Article = {
 	title: string;
@@ -33,6 +34,7 @@ type Article = {
 
 const HeadlinesWidget = ({
 	url,
+	widget,
 	isEditing = false,
 	style,
 	testID,
@@ -40,6 +42,7 @@ const HeadlinesWidget = ({
 	onPressIn,
 }: {
 	url: string;
+	widget: TFeedWidget;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
 	testID?: string;
@@ -92,6 +95,7 @@ const HeadlinesWidget = ({
 			style={style}
 			url={url}
 			name={t('widget_headlines')}
+			showTitle={widget.extras?.showTitle}
 			isLoading={isLoading}
 			isEditing={isEditing}
 			testID={testID}

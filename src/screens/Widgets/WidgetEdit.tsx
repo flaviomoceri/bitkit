@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import isEqual from 'lodash/isEqual';
 
 import { ScrollView, View as ThemedView } from '../../styles/components';
-import { Caption13M, Text01S, Text02M } from '../../styles/text';
-import { Checkmark } from '../../styles/icons';
+import { Caption13M, Text01M, Text01S, Text02M } from '../../styles/text';
+import { Checkmark, QuestionMarkIcon } from '../../styles/icons';
 import { SUPPORTED_FEED_TYPES } from '../../utils/widgets';
 import { useAppDispatch } from '../../hooks/redux';
 import { useSlashfeed } from '../../hooks/widgets';
@@ -21,6 +21,7 @@ import SafeAreaInset from '../../components/SafeAreaInset';
 import Divider from '../../components/Divider';
 import Button from '../../components/Button';
 import PriceChart from '../../components/PriceChart';
+import SvgImage from '../../components/SvgImage';
 import type { RootStackScreenProps } from '../../navigation/types';
 
 export const getDefaultSettings = (config?: SlashFeedJSON): TWidgetSettings => {
@@ -28,18 +29,18 @@ export const getDefaultSettings = (config?: SlashFeedJSON): TWidgetSettings => {
 		if (config.type === SUPPORTED_FEED_TYPES.PRICE_FEED) {
 			return {
 				fields: ['BTC/USD'],
-				extras: { period: '1D', showSource: false },
+				extras: { period: '1D', showSource: false, showTitle: true },
 			};
 		}
 		if (config.type === SUPPORTED_FEED_TYPES.BLOCKS_FEED) {
 			return {
 				fields: ['Block', 'Time', 'Date'],
-				extras: { showSource: false },
+				extras: { showSource: false, showTitle: true },
 			};
 		}
-		return { fields: [config.fields[0].name] };
+		return { fields: [config.fields[0].name], extras: { showTitle: true } };
 	}
-	return { fields: [] };
+	return { fields: [], extras: { showTitle: true } };
 };
 
 const WidgetEdit = ({
@@ -49,7 +50,7 @@ const WidgetEdit = ({
 	const { url, initialFields } = route.params;
 	const { t } = useTranslation('slashtags');
 	const dispatch = useAppDispatch();
-	const { config, fields, loading } = useSlashfeed({ url });
+	const { config, fields, loading, icon } = useSlashfeed({ url });
 	const [settings, setSettings] = useState(initialFields);
 
 	const defaultSettings = getDefaultSettings(config);
@@ -82,19 +83,57 @@ const WidgetEdit = ({
 						</Text01S>
 					)}
 
-					{fields.length > 0 && (
-						<ScrollView
-							showsVerticalScrollIndicator={false}
-							testID="WidgetEditScrollView">
-							{loading && (
-								<Text01S style={styles.loading} color="gray1">
-									{t('widget_loading_options')}
-								</Text01S>
-							)}
+					<ScrollView
+						showsVerticalScrollIndicator={false}
+						testID="WidgetEditScrollView">
+						{loading && (
+							<Text01S style={styles.loading} color="gray1">
+								{t('widget_loading_options')}
+							</Text01S>
+						)}
 
-							{!loading && (
-								<View style={styles.fields}>
-									{fields.map((field) => {
+						{!loading && (
+							<View style={styles.fields}>
+								{config.name && (
+									<Pressable
+										testID="WidgetEditTitle"
+										onPress={(): void => {
+											setSettings((prevState) => ({
+												...prevState,
+												extras: {
+													...prevState.extras,
+													showTitle: !prevState.extras?.showTitle,
+												},
+											}));
+										}}>
+										<View style={styles.fieldContainer}>
+											<View style={styles.title}>
+												<View style={styles.icon}>
+													{icon ? (
+														<SvgImage image={icon} size={32} />
+													) : (
+														<QuestionMarkIcon width={32} height={32} />
+													)}
+												</View>
+
+												<Text01M style={styles.name} numberOfLines={1}>
+													{config.name}
+												</Text01M>
+											</View>
+
+											<Checkmark
+												style={styles.checkmark}
+												color={settings.extras?.showTitle ? 'brand' : 'gray3'}
+												height={30}
+												width={30}
+											/>
+										</View>
+										<Divider />
+									</Pressable>
+								)}
+
+								{fields.length > 0 &&
+									fields.map((field) => {
 										const isSelected = settings.fields.includes(field.name);
 										return (
 											<Pressable
@@ -136,85 +175,82 @@ const WidgetEdit = ({
 										);
 									})}
 
-									{config.type === SUPPORTED_FEED_TYPES.PRICE_FEED && (
-										<>
-											{config.fields &&
-												Object.keys(config.fields[0].files).map((period) => {
-													const allowedPeriods = ['1D', '1W', '1M'];
-													const isSelected = settings.extras?.period === period;
+								{config.type === SUPPORTED_FEED_TYPES.PRICE_FEED && (
+									<>
+										{config.fields &&
+											Object.keys(config.fields[0].files).map((period) => {
+												const allowedPeriods = ['1D', '1W', '1M'];
+												const isSelected = settings.extras?.period === period;
 
-													if (!allowedPeriods.includes(period)) {
-														return;
-													}
+												if (!allowedPeriods.includes(period)) {
+													return;
+												}
 
-													return (
-														<Pressable
-															key={period}
-															testID={`PriceWidgetSetting-${period}`}
-															onPress={(): void => {
-																setSettings((prevState) => ({
-																	...prevState,
-																	extras: {
-																		...prevState.extras,
-																		period: period as TGraphPeriod,
-																	},
-																}));
-															}}>
-															<View style={styles.fieldContainer}>
-																<PriceChart
-																	url={url}
-																	field={config.fields[0]}
-																	period={period as TGraphPeriod}
-																/>
-																<Checkmark
-																	style={styles.checkmark}
-																	color={isSelected ? 'brand' : 'gray3'}
-																	height={30}
-																	width={30}
-																/>
-															</View>
-															<Divider />
-														</Pressable>
-													);
-												})}
-										</>
-									)}
+												return (
+													<Pressable
+														key={period}
+														testID={`PriceWidgetSetting-${period}`}
+														onPress={(): void => {
+															setSettings((prevState) => ({
+																...prevState,
+																extras: {
+																	...prevState.extras,
+																	period: period as TGraphPeriod,
+																},
+															}));
+														}}>
+														<View style={styles.fieldContainer}>
+															<PriceChart
+																url={url}
+																field={config.fields[0]}
+																period={period as TGraphPeriod}
+															/>
+															<Checkmark
+																style={styles.checkmark}
+																color={isSelected ? 'brand' : 'gray3'}
+																height={30}
+																width={30}
+															/>
+														</View>
+														<Divider />
+													</Pressable>
+												);
+											})}
+									</>
+								)}
 
-									{config.source && (
-										<Pressable
-											testID="WidgetEditSource"
-											onPress={(): void => {
-												setSettings((prevState) => ({
-													...prevState,
-													extras: {
-														...prevState.extras,
-														showSource: !prevState.extras?.showSource,
-													},
-												}));
-											}}>
-											<View style={styles.fieldContainer}>
-												<Caption13M color="gray1">Source</Caption13M>
-												<View style={styles.fieldRightContainer}>
-													<Caption13M color="gray1">
-														{config.source.name}
-													</Caption13M>
-												</View>
-												<Checkmark
-													style={styles.checkmark}
-													color={
-														settings.extras?.showSource ? 'brand' : 'gray3'
-													}
-													height={30}
-													width={30}
-												/>
+								{config.source && (
+									<Pressable
+										testID="WidgetEditSource"
+										onPress={(): void => {
+											setSettings((prevState) => ({
+												...prevState,
+												extras: {
+													...prevState.extras,
+													showSource: !prevState.extras?.showSource,
+												},
+											}));
+										}}>
+										<View style={styles.fieldContainer}>
+											<Caption13M color="gray1">Source</Caption13M>
+											<View style={styles.fieldRightContainer}>
+												<Caption13M color="gray1">
+													{config.source.name}
+												</Caption13M>
 											</View>
-											<Divider />
-										</Pressable>
-									)}
-								</View>
-							)}
-						</ScrollView>
-					)}
+											<Checkmark
+												style={styles.checkmark}
+												color={settings.extras?.showSource ? 'brand' : 'gray3'}
+												height={30}
+												width={30}
+											/>
+										</View>
+										<Divider />
+									</Pressable>
+								)}
+							</View>
+						)}
+					</ScrollView>
 
 					<View style={styles.buttonsContainer}>
 						<Button
@@ -255,6 +291,20 @@ const styles = StyleSheet.create({
 	},
 	loading: {
 		marginTop: 16,
+	},
+	title: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	icon: {
+		marginRight: 16,
+		borderRadius: 6.4,
+		overflow: 'hidden',
+		height: 32,
+		width: 32,
+	},
+	name: {
+		lineHeight: 22,
 	},
 	fields: {
 		paddingBottom: 16,
