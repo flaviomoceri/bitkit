@@ -295,6 +295,10 @@ const migrations = {
 
 		return {
 			...state,
+			settings: {
+				...state.settings,
+				showWidgets: true,
+			},
 			widgets: {
 				...state.widgets,
 				widgets: newWidgets,
