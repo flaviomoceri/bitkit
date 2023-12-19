@@ -44,7 +44,6 @@ import BoostPrompt from '../../screens/Wallets/BoostPrompt';
 import NewTxPrompt from '../../screens/Wallets/NewTxPrompt';
 import Profile from '../../screens/Profile/Profile';
 import ProfileEdit from '../../screens/Profile/ProfileEdit';
-import ProfileDetails from '../../screens/Profile/ProfileDetails';
 import Contacts from '../../screens/Contacts/Contacts';
 import Contact from '../../screens/Contacts/Contact';
 import ContactEdit from '../../screens/Contacts/ContactEdit';
@@ -217,7 +216,6 @@ const RootNavigator = (): ReactElement => {
 					options={{ gestureDirection: 'horizontal-inverted' }}
 				/>
 				<Stack.Screen name="ProfileEdit" component={ProfileEdit} />
-				<Stack.Screen name="ProfileDetails" component={ProfileDetails} />
 				<Stack.Screen name="Contacts" component={Contacts} />
 				<Stack.Screen name="ContactEdit" component={ContactEdit} />
 				<Stack.Screen name="Contact" component={Contact} />
