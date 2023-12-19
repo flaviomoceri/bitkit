@@ -305,6 +305,24 @@ const migrations = {
 			},
 		};
 	},
+	30: (state): PersistedState => {
+		const newNodes = { ...state.lightning.nodes };
+		// Loop through all nodes
+		for (const walletName in newNodes) {
+			newNodes[walletName] = {
+				...newNodes[walletName],
+				claimableBalances: getNetworkContent([]),
+			};
+		}
+
+		return {
+			...state,
+			lightning: {
+				...state.lightning,
+				nodes: newNodes,
+			},
+		};
+	},
 };
 
 export default migrations;

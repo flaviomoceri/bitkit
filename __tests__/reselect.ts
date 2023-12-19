@@ -84,7 +84,9 @@ describe('Reselect', () => {
 				'channel2',
 				'channel3',
 			];
-			lnWallet.claimableBalance.bitcoinRegtest = 3;
+			lnWallet.claimableBalances.bitcoinRegtest = [
+				{ amount_satoshis: 3, type: 'ClaimableOnChannelClose' },
+			];
 
 			assert.deepEqual(balanceSelector(state), {
 				lightningBalance: 7,
@@ -218,7 +220,9 @@ describe('Reselect', () => {
 			const lnWallet = s1.lightning.nodes.wallet0;
 			lnWallet.channels.bitcoinRegtest = { channel1 };
 			lnWallet.openChannelIds.bitcoinRegtest = ['channel1'];
-			lnWallet.claimableBalance.bitcoinRegtest = 3;
+			lnWallet.claimableBalances.bitcoinRegtest = [
+				{ amount_satoshis: 3, type: 'ClaimableOnChannelClose' },
+			];
 
 			expect(lnSetupSelector(s1, 20)).toMatchObject({
 				slider: {

@@ -1,5 +1,6 @@
 import {
 	TChannel,
+	TClaimableBalance,
 	TCreatePaymentReq,
 	TInvoice,
 } from '@synonymdev/react-native-ldk';
@@ -25,7 +26,7 @@ export type TNode = {
 	openChannelIds: IWalletItem<TOpenChannelIds>;
 	info: IWalletItem<{}>;
 	peers: IWalletItem<string[]>;
-	claimableBalance: IWalletItem<number>;
+	claimableBalances: IWalletItem<TClaimableBalance[]>;
 };
 
 export type TNodes = {
