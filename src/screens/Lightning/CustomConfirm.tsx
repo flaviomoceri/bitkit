@@ -1,6 +1,5 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useAppSelector } from '../../hooks/redux';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -12,11 +11,12 @@ import GlowingBackground from '../../components/GlowingBackground';
 import NavigationHeader from '../../components/NavigationHeader';
 import SwipeToConfirm from '../../components/SwipeToConfirm';
 import AmountToggle from '../../components/AmountToggle';
-import useDisplayValues from '../../hooks/displayValues';
+import { useAppSelector } from '../../hooks/redux';
+import useDisplayValues, { useCurrency } from '../../hooks/displayValues';
 import NumberPadWeeks from './NumberPadWeeks';
 import { LightningScreenProps } from '../../navigation/types';
 import { sleep } from '../../utils/helpers';
-
+import { blocktankOrderSelector } from '../../store/reselect/blocktank';
 import {
 	confirmChannelPurchase,
 	startChannelPurchase,
@@ -27,7 +27,6 @@ import {
 	selectedWalletSelector,
 	transactionFeeSelector,
 } from '../../store/reselect/wallet';
-import { blocktankOrderSelector } from '../../store/reselect/blocktank';
 
 export const DEFAULT_CHANNEL_DURATION = 6;
 
@@ -41,28 +40,23 @@ const CustomConfirm = ({
 	const [loading, setLoading] = useState(false);
 	const [orderId, setOrderId] = useState(route.params.orderId);
 	const [showNumberPad, setShowNumberPad] = useState(false);
+	const transactionFee = useAppSelector(transactionFeeSelector);
 	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const order = useAppSelector((state) => {
 		return blocktankOrderSelector(state, orderId);
 	});
 
-	const blocktankPurchaseFee = useDisplayValues(order?.feeSat ?? 0);
-	const transactionFee = useAppSelector(transactionFeeSelector);
+	const { fiatSymbol } = useCurrency();
+	const purchaseFee = useMemo(() => order?.feeSat ?? 0, [order]);
+	const purchaseFeeValue = useDisplayValues(purchaseFee);
 	const fiatTransactionFee = useDisplayValues(transactionFee);
 	const clientBalance = useDisplayValues(order?.clientBalanceSat ?? 0);
 
-	const channelOpenCost = useMemo(() => {
-		return (
-			blocktankPurchaseFee.fiatValue -
-			clientBalance.fiatValue +
-			fiatTransactionFee.fiatValue
-		).toFixed(2);
-	}, [
-		fiatTransactionFee.fiatValue,
-		clientBalance.fiatValue,
-		blocktankPurchaseFee.fiatValue,
-	]);
+	// avoid flashing different price after confirmation
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const txFee = useMemo(() => fiatTransactionFee.fiatValue, [orderId]);
+	const lspFee = purchaseFeeValue.fiatValue - clientBalance.fiatValue;
 
 	const handleConfirm = async (): Promise<void> => {
 		setLoading(true);
@@ -112,9 +106,7 @@ const CustomConfirm = ({
 							<Trans
 								t={t}
 								i18nKey="custom_confirm_header"
-								components={{
-									purple: <Display color="purple" />,
-								}}
+								components={{ purple: <Display color="purple" /> }}
 							/>
 						</Display>
 						<Text01S color="gray1" style={styles.text}>
@@ -133,7 +125,8 @@ const CustomConfirm = ({
 									penIcon: <PencileIcon height={16} width={13} />,
 								}}
 								values={{
-									amount: `${blocktankPurchaseFee.fiatSymbol}${channelOpenCost}`,
+									txFee: `${fiatSymbol}${txFee.toFixed(2)}`,
+									lspFee: `${fiatSymbol}${lspFee.toFixed(2)}`,
 									weeks,
 								}}
 							/>

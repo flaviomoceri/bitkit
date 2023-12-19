@@ -1,6 +1,5 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useAppSelector } from '../../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Caption13Up, Display, Text01S } from '../../styles/text';
@@ -14,7 +13,8 @@ import SwipeToConfirm from '../../components/SwipeToConfirm';
 import PieChart from './PieChart';
 import { sleep } from '../../utils/helpers';
 import { useBalance } from '../../hooks/wallet';
-import useDisplayValues from '../../hooks/displayValues';
+import { useAppSelector } from '../../hooks/redux';
+import useDisplayValues, { useCurrency } from '../../hooks/displayValues';
 import type { LightningScreenProps } from '../../navigation/types';
 import { confirmChannelPurchase } from '../../store/utils/blocktank';
 import { blocktankOrdersSelector } from '../../store/reselect/blocktank';
@@ -41,23 +41,17 @@ const QuickConfirm = ({
 	const order = useMemo(() => {
 		return orders.find((o) => o.id === orderId);
 	}, [orderId, orders]);
-	const purchaseFee = useMemo(() => {
-		return !order ? 0 : order?.feeSat ?? 0;
-	}, [order]);
-	const blocktankPurchaseFee = useDisplayValues(purchaseFee);
+
+	const { fiatSymbol } = useCurrency();
+	const purchaseFee = useMemo(() => order?.feeSat ?? 0, [order]);
+	const purchaseFeeValue = useDisplayValues(purchaseFee);
 	const fiatTransactionFee = useDisplayValues(transactionFee);
 	const clientBalance = useDisplayValues(order?.clientBalanceSat ?? 0);
 
-	const channelOpenCost = useMemo(() => {
-		return (
-			blocktankPurchaseFee.fiatValue -
-			clientBalance.fiatValue +
-			fiatTransactionFee.fiatValue
-		).toFixed(2);
-
-		// avoid flashing different price after confirmation
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [orderId]);
+	// avoid flashing different price after confirmation
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const txFee = useMemo(() => fiatTransactionFee.fiatValue, [orderId]);
+	const lspFee = purchaseFeeValue.fiatValue - clientBalance.fiatValue;
 
 	const savingsAmount = onchainBalance - spendingAmount;
 	const spendingPercentage = Math.round(
@@ -92,11 +86,10 @@ const QuickConfirm = ({
 					<Trans
 						t={t}
 						i18nKey="quick_confirm_cost"
-						components={{
-							white: <Text01S color="white" />,
-						}}
+						components={{ white: <Text01S color="white" /> }}
 						values={{
-							amount: `${blocktankPurchaseFee.fiatSymbol}${channelOpenCost}`,
+							txFee: `${fiatSymbol}${txFee.toFixed(2)}`,
+							lspFee: `${fiatSymbol}${lspFee.toFixed(2)}`,
 						}}
 					/>
 				</Text01S>
