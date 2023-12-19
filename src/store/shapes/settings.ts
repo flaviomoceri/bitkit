@@ -95,6 +95,7 @@ export const initialSettingsState: TSettings = {
 	receivePreference: defaultReceivePreference,
 	enableOfflinePayments: false,
 	showSuggestions: true,
+	showWidgets: true,
 	transactionSpeed: ETransactionSpeed.normal,
 	customFeeRate: 0,
 	hideBalance: false,

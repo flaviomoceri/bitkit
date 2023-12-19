@@ -104,6 +104,7 @@ const BlocksWidget = ({
 			style={style}
 			url={url}
 			name={t('widget_blocks')}
+			showTitle={widget.extras?.showTitle}
 			isLoading={loading}
 			isEditing={isEditing}
 			testID={testID}

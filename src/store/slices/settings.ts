@@ -32,6 +32,7 @@ export type TSettings = {
 	receivePreference: TReceiveOption[];
 	enableOfflinePayments: boolean;
 	showSuggestions: boolean;
+	showWidgets: boolean;
 	transactionSpeed: ETransactionSpeed;
 	customFeeRate: number;
 	hideBalance: boolean;

@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNoTransactions } from '../../hooks/wallet';
 import useColors from '../../hooks/colors';
 import { updateSettings } from '../../store/slices/settings';
+import { widgetsSelector } from '../../store/reselect/widgets';
 import { refreshWallet } from '../../utils/wallet';
 import ActivityListShort from '../../screens/Activity/ActivityListShort';
 import EmptyWallet from '../../screens/Activity/EmptyWallet';
@@ -30,8 +31,8 @@ import type { WalletScreenProps } from '../../navigation/types';
 import {
 	hideBalanceSelector,
 	hideOnboardingMessageSelector,
+	showWidgetsSelector,
 } from '../../store/reselect/settings';
-import { widgetsSelector } from '../../store/reselect/widgets';
 
 // Workaround for crash on Android
 // https://github.com/software-mansion/react-native-reanimated/issues/4306#issuecomment-1538184321
@@ -47,6 +48,7 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	const dispatch = useAppDispatch();
 	const hideBalance = useAppSelector(hideBalanceSelector);
 	const hideOnboardingSetting = useAppSelector(hideOnboardingMessageSelector);
+	const showWidgets = useAppSelector(showWidgetsSelector);
 	const widgets = useAppSelector(widgetsSelector);
 	const noTransactions = useNoTransactions();
 	const insets = useSafeAreaInsets();
@@ -120,7 +122,7 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 							<Suggestions />
 							<View style={styles.contentPadding}>
 								<Assets />
-								<Widgets />
+								{showWidgets && <Widgets />}
 								<ActivityListShort />
 								<BetaWarning />
 							</View>

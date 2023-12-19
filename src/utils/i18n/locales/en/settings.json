@@ -49,7 +49,8 @@
 		"tags_previously": "Previously used tags",
 		"reset_title": "Reset Suggestions?",
 		"reset_desc": "Are you sure you want to reset the suggestions? They will reappear in case you have removed them from your Bitkit wallet overview.",
-		"reset_confirm": "Yes, Reset"
+		"reset_confirm": "Yes, Reset",
+		"widgets": "Widgets"
 	},
 	"security": {
 		"title": "Security And Privacy",

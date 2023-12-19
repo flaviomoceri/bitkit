@@ -98,6 +98,10 @@ export const showSuggestionsSelector = createSelector(
 	[settingsState],
 	(settings): boolean => settings.showSuggestions,
 );
+export const showWidgetsSelector = createSelector(
+	[settingsState],
+	(settings): boolean => settings.showWidgets,
+);
 export const receivePreferenceSelector = createSelector(
 	[settingsState],
 	(settings): TReceiveOption[] => settings.receivePreference,
@@ -126,7 +130,6 @@ export const enableSendAmountWarningSelector = createSelector(
 	[settingsState],
 	(settings): boolean => settings.enableSendAmountWarning,
 );
-
 export const primaryUnitSelector = createSelector(
 	[settingsState],
 	(settings) => settings.unit,

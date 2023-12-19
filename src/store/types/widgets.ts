@@ -24,6 +24,7 @@ export type TWidgetSettings = {
 	extras?: {
 		period?: TGraphPeriod;
 		showSource?: boolean;
+		showTitle?: boolean;
 	};
 };
 
