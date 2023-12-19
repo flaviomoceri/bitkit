@@ -49,12 +49,14 @@ const ScannerComponent = ({
 			return {
 				...styles.background,
 				backgroundColor: 'rgba(0, 0, 0, 0.64)',
+				zIndex: 1,
 			};
 		}
 
 		return {
 			...styles.background,
 			backgroundColor: 'black',
+			zIndex: 1,
 		};
 	}, [bottomSheet]);
 
