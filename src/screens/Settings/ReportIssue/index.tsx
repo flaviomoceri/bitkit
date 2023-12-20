@@ -26,14 +26,13 @@ const ReportIssue = ({
 	const [isLoading, setIsLoading] = useState(false);
 
 	const validateEmail = (emailText: string): boolean => {
-		const validRegex =
-			/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
-		if (emailText.match(validRegex)) {
-			return true;
-		} else {
-			return false;
+		if (emailText.indexOf('@') !== -1) {
+			const [beforeAt, afterAt] = emailText.split('@');
+			if (beforeAt.length > 0 && afterAt.length > 0) {
+				return true;
+			}
 		}
+		return false;
 	};
 
 	const SendRequest = async (): Promise<void> => {
