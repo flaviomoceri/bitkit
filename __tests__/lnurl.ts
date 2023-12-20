@@ -5,7 +5,7 @@ import {
 	signK1,
 } from '@synonymdev/react-native-lnurl';
 import { LNURLAuthParams } from 'js-lnurl';
-
+import { EAvailableNetwork } from '../src/utils/networks';
 import { EAvailableNetworks } from '@synonymdev/react-native-lnurl/dist/utils/types';
 
 const mnemonic =
@@ -24,12 +24,10 @@ describe('LN URL', () => {
 		}
 
 		const params = lnurlRes.value as LNURLAuthParams;
-
-		const keysRes = deriveLinkingKeys(
-			params.domain,
-			EAvailableNetworks.bitcoinTestnet,
-			mnemonic,
-		);
+		// TODO: add bitcoinRegtest to react-native-lnurl
+		const network =
+			EAvailableNetwork.bitcoinTestnet as unknown as EAvailableNetworks;
+		const keysRes = deriveLinkingKeys(params.domain, network, mnemonic);
 
 		expect(keysRes.isOk()).toEqual(true);
 		if (keysRes.isErr()) {
@@ -58,7 +56,7 @@ describe('LN URL', () => {
 
 		const callbackUrlRes = await createAuthCallbackUrl({
 			params,
-			network: EAvailableNetworks.bitcoinTestnet,
+			network,
 			bip32Mnemonic: mnemonic,
 		});
 

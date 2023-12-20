@@ -1,27 +1,28 @@
 // Add migrations for every persisted store version change
 
 import { PersistedState } from 'redux-persist';
-import { defaultActivityShape } from '../shapes/activity';
+import { initialActivityState } from '../slices/activity';
 import { defaultBlocktankInfoShape } from '../shapes/blocktank';
-import { defaultTodosShape } from '../shapes/todos';
+import { initialTodosState } from '../shapes/todos';
 import { defaultViewControllers } from '../shapes/ui';
-import { defaultChecksShape } from '../shapes/checks';
-import { defaultBackupShape } from '../shapes/backup';
-import { defaultWidgetsShape } from '../shapes/widgets';
+import { initialChecksState } from '../slices/checks';
+import { initialBackupState } from '../shapes/backup';
+import { initialWidgetsState } from '../slices/widgets';
 import { getNetworkContent } from '../shapes/wallet';
+import { getDefaultSettings } from '../../screens/Widgets/WidgetEdit';
 import { __WEB_RELAY__ } from '../../constants/env';
 
 const migrations = {
 	0: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 		};
 	},
 	1: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 		};
 	},
 	2: (state): PersistedState => {
@@ -38,7 +39,7 @@ const migrations = {
 	3: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 			user: {
 				...state.user,
 				startCoopCloseTimestamp: 0,
@@ -58,13 +59,13 @@ const migrations = {
 	5: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 		};
 	},
 	6: (state): PersistedState => {
 		return {
 			...state,
-			activity: defaultActivityShape,
+			activity: initialActivityState,
 		};
 	},
 	7: (state): PersistedState => {
@@ -79,13 +80,13 @@ const migrations = {
 	8: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 		};
 	},
 	9: (state): PersistedState => {
 		return {
 			...state,
-			checks: defaultChecksShape,
+			checks: initialChecksState,
 		};
 	},
 	10: (state): PersistedState => {
@@ -106,7 +107,7 @@ const migrations = {
 		return {
 			...state,
 			backup: {
-				...defaultBackupShape,
+				...initialBackupState,
 				...state.backup,
 			},
 		};
@@ -114,7 +115,7 @@ const migrations = {
 	12: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 			user: {
 				...state.user,
 				lightningSettingUpStep: 0,
@@ -177,7 +178,7 @@ const migrations = {
 	17: (state): PersistedState => {
 		return {
 			...state,
-			widgets: defaultWidgetsShape,
+			widgets: initialWidgetsState,
 		};
 	},
 	18: (state): PersistedState => {
@@ -228,7 +229,7 @@ const migrations = {
 	23: (state): PersistedState => {
 		return {
 			...state,
-			todos: defaultTodosShape,
+			todos: initialTodosState,
 		};
 	},
 	24: (state): PersistedState => {
@@ -273,6 +274,34 @@ const migrations = {
 			settings: {
 				...state.settings,
 				rapidGossipSyncUrl: 'https://rapidsync.lightningdevkit.org/snapshot/',
+			},
+		};
+	},
+	29: (state): PersistedState => {
+		const newWidgets = { ...state.widgets.widgets };
+		const defaultSettings = getDefaultSettings();
+
+		for (const url in state.widgets.widgets) {
+			const widget = newWidgets[url]!;
+			const isFeedWidget = Object.hasOwn(widget, 'type');
+
+			if (isFeedWidget) {
+				widget.extras = {
+					...defaultSettings.extras,
+					...widget.extras,
+				};
+			}
+		}
+
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				showWidgets: true,
+			},
+			widgets: {
+				...state.widgets,
+				widgets: newWidgets,
 			},
 		};
 	},

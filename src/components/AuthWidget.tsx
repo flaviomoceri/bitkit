@@ -11,15 +11,15 @@ import { useTranslation } from 'react-i18next';
 
 import { Text01M } from '../styles/text';
 import { TouchableOpacity } from '../styles/components';
-import { KeyIcon, ListIcon, SettingsIcon, TrashIcon } from '../styles/icons';
+import { KeyIcon, ListIcon, TrashIcon } from '../styles/icons';
+import { useAppDispatch } from '../hooks/redux';
 import { useProfile, useSelectedSlashtag } from '../hooks/slashtags';
 import { showToast } from '../utils/notifications';
-import { IWidget } from '../store/types/widgets';
-import { deleteWidget } from '../store/actions/widgets';
+import { TAuthWidget } from '../store/types/widgets';
+import { deleteWidget } from '../store/slices/widgets';
 import Button from './Button';
 import Dialog from './Dialog';
 import ProfileImage from './ProfileImage';
-import { rootNavigation } from '../navigation/root/RootNavigator';
 
 const AuthWidget = ({
 	url,
@@ -31,7 +31,7 @@ const AuthWidget = ({
 	onPressIn,
 }: {
 	url: string;
-	widget: IWidget;
+	widget: TAuthWidget;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
 	testID?: string;
@@ -39,6 +39,7 @@ const AuthWidget = ({
 	onPressIn?: () => void;
 }): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
 	const { slashtag } = useSelectedSlashtag();
 	const { profile } = useProfile(url);
 	const [showDialog, setShowDialog] = useState(false);
@@ -75,10 +76,6 @@ const AuthWidget = ({
 
 		setIsSigningIn(false);
 	}, [client, url, t]);
-
-	const onEdit = (): void => {
-		rootNavigation.navigate('Widget', { url });
-	};
 
 	const onDelete = (): void => {
 		setShowDialog(true);
@@ -127,14 +124,6 @@ const AuthWidget = ({
 								onPress={onDelete}>
 								<TrashIcon width={22} />
 							</TouchableOpacity>
-							{widget.fields && (
-								<TouchableOpacity
-									style={styles.actionButton}
-									color="transparent"
-									onPress={onEdit}>
-									<SettingsIcon width={22} />
-								</TouchableOpacity>
-							)}
 							<TouchableOpacity
 								style={styles.actionButton}
 								color="transparent"
@@ -157,7 +146,7 @@ const AuthWidget = ({
 					setShowDialog(false);
 				}}
 				onConfirm={(): void => {
-					deleteWidget(url);
+					dispatch(deleteWidget(url));
 					setShowDialog(false);
 				}}
 			/>

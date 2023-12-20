@@ -8,7 +8,6 @@ import React, {
 	ReactNode,
 } from 'react';
 import { StyleSheet, View, TouchableOpacity, Keyboard } from 'react-native';
-import { useSelector } from 'react-redux';
 import { TInvoice } from '@synonymdev/react-native-ldk';
 import { useTranslation } from 'react-i18next';
 
@@ -43,17 +42,18 @@ import {
 } from '../../../store/actions/wallet';
 import {
 	updateMetaTxTags,
-	addMetaSlashTagsUrlTag,
-} from '../../../store/actions/metadata';
+	addMetaTxSlashtagsUrl,
+} from '../../../store/slices/metadata';
 import useColors from '../../../hooks/colors';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import useDisplayValues from '../../../hooks/displayValues';
 import { useLightningBalance } from '../../../hooks/lightning';
-import { FeeText } from '../../../store/shapes/fees';
 import { EFeeId } from '../../../store/types/fees';
 import {
 	decodeLightningInvoice,
 	payLightningInvoice,
 } from '../../../utils/lightning';
+import { FeeText } from '../../../utils/fees';
 import { getFiatDisplayValues } from '../../../utils/displayValues';
 import { showToast } from '../../../utils/notifications';
 import { refreshWallet } from '../../../utils/wallet';
@@ -62,7 +62,6 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import Dialog from '../../../components/Dialog';
 import Biometrics from '../../../components/Biometrics';
 import Button from '../../../components/Button';
-import Store from '../../../store/types';
 import {
 	exchangeRatesSelector,
 	onChainBalanceSelector,
@@ -75,11 +74,11 @@ import {
 	pinForPaymentsSelector,
 	pinSelector,
 } from '../../../store/reselect/settings';
-import { onChainFeesSelector } from '../../../store/reselect/fees';
-import { updateOnChainActivityList } from '../../../store/actions/activity';
-import { truncate } from '../../../utils/helpers';
 import { EUnit } from '../../../store/types/wallet';
-import { updateLastPaidContacts } from '../../../store/actions/slashtags';
+import { onChainFeesSelector } from '../../../store/reselect/fees';
+import { updateOnChainActivityList } from '../../../store/utils/activity';
+import { updateLastPaidContacts } from '../../../store/slices/slashtags';
+import { truncate } from '../../../utils/helpers';
 import AmountToggle from '../../../components/AmountToggle';
 import LightningSyncing from '../../../components/LightningSyncing';
 
@@ -112,17 +111,20 @@ const ReviewAndSend = ({
 	navigation,
 }: SendScreenProps<'ReviewAndSend'>): ReactElement => {
 	const { t, i18n } = useTranslation('wallet');
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const onChainBalance = useSelector(onChainBalanceSelector);
-	const transaction = useSelector(transactionSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const onChainBalance = useAppSelector(onChainBalanceSelector);
+	const transaction = useAppSelector(transactionSelector);
 	const lightningBalance = useLightningBalance(false);
-	const exchangeRates = useSelector(exchangeRatesSelector);
-	const feeEstimates = useSelector(onChainFeesSelector);
-	const enableSendAmountWarning = useSelector(enableSendAmountWarningSelector);
-	const pin = useSelector(pinSelector);
-	const pinForPayments = useSelector(pinForPaymentsSelector);
-	const biometrics = useSelector((state: Store) => state.settings.biometrics);
+	const dispatch = useAppDispatch();
+	const exchangeRates = useAppSelector(exchangeRatesSelector);
+	const feeEstimates = useAppSelector(onChainFeesSelector);
+	const enableSendAmountWarning = useAppSelector(
+		enableSendAmountWarningSelector,
+	);
+	const pin = useAppSelector(pinSelector);
+	const pinForPayments = useAppSelector(pinForPaymentsSelector);
+	const biometrics = useAppSelector((state) => state.settings.biometrics);
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [showBiotmetrics, setShowBiometrics] = useState(false);
@@ -218,14 +220,21 @@ const ReviewAndSend = ({
 		}
 
 		// save tags to metadata
-		updateMetaTxTags(payInvoiceResponse.value.payment_hash, transaction.tags);
+		dispatch(
+			updateMetaTxTags({
+				txId: payInvoiceResponse.value.payment_hash,
+				tags: transaction.tags,
+			}),
+		);
 
 		if (transaction.slashTagsUrl) {
-			updateLastPaidContacts(transaction.slashTagsUrl);
+			dispatch(updateLastPaidContacts(transaction.slashTagsUrl));
 			// save Slashtags contact to metadata
-			addMetaSlashTagsUrlTag(
-				payInvoiceResponse.value.payment_hash,
-				transaction.slashTagsUrl,
+			dispatch(
+				addMetaTxSlashtagsUrl({
+					txId: payInvoiceResponse.value.payment_hash,
+					url: transaction.slashTagsUrl,
+				}),
 			);
 		}
 
@@ -243,6 +252,7 @@ const ReviewAndSend = ({
 		transaction.lightningInvoice,
 		transaction.outputs,
 		transaction.tags,
+		dispatch,
 		t,
 	]);
 
@@ -309,17 +319,22 @@ const ReviewAndSend = ({
 		});
 
 		// save tags to metadata
-		updateMetaTxTags(rawTx.id, transaction.tags);
+		dispatch(updateMetaTxTags({ txId: rawTx.id, tags: transaction.tags }));
 		// save Slashtags contact to metadata
 		if (transaction.slashTagsUrl) {
-			addMetaSlashTagsUrlTag(rawTx.id, transaction.slashTagsUrl);
+			dispatch(
+				addMetaTxSlashtagsUrl({
+					txId: rawTx.id,
+					url: transaction.slashTagsUrl,
+				}),
+			);
 		}
 
 		updateOnChainActivityList();
 		setIsLoading(false);
 
 		if (transaction.slashTagsUrl) {
-			updateLastPaidContacts(transaction.slashTagsUrl);
+			dispatch(updateLastPaidContacts(transaction.slashTagsUrl));
 		}
 
 		navigation.navigate('Result', { success: true, txId: rawTx.id });
@@ -332,6 +347,7 @@ const ReviewAndSend = ({
 		_onError,
 		navigation,
 		transaction,
+		dispatch,
 		t,
 	]);
 

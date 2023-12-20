@@ -7,7 +7,7 @@ import React, {
 	useState,
 } from 'react';
 import { AppState, Linking } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
 	LinkingOptions,
 	createNavigationContainerRef,
@@ -25,7 +25,7 @@ import { processInputData } from '../../utils/scanner';
 import { checkClipboardData } from '../../utils/clipboard';
 import { useRenderCount } from '../../hooks/helpers';
 import { getStore } from '../../store/helpers';
-import { updateUi } from '../../store/actions/ui';
+import { updateUi } from '../../store/slices/ui';
 import { resetSendTransaction } from '../../store/actions/wallet';
 import { isAuthenticatedSelector } from '../../store/reselect/ui';
 import AuthCheck from '../../components/AuthCheck';
@@ -105,7 +105,8 @@ const RootNavigator = (): ReactElement => {
 	const appState = useRef(AppState.currentState);
 	const [showDialog, setShowDialog] = useState(false);
 	const [shouldCheckClipboard, setShouldCheckClipboard] = useState(false);
-	const isAuthenticated = useSelector(isAuthenticatedSelector);
+	const dispatch = useAppDispatch();
+	const isAuthenticated = useAppSelector(isAuthenticatedSelector);
 	const renderCount = useRenderCount();
 
 	const linking: LinkingOptions<{}> = {
@@ -161,8 +162,8 @@ const RootNavigator = (): ReactElement => {
 		}
 
 		setShouldCheckClipboard(false);
-		updateUi({ isAuthenticated: true });
-	}, [shouldCheckClipboard]);
+		dispatch(updateUi({ isAuthenticated: true }));
+	}, [shouldCheckClipboard, dispatch]);
 
 	useEffect(() => {
 		// a bit hacky, but we want to only call this on launch / after launch AuthCheck

@@ -1,8 +1,9 @@
-import Store from '../types';
 import { createSelector } from '@reduxjs/toolkit';
-import { IFees, IOnchainFees } from '../types/fees';
+import { RootState } from '..';
+import { TFeesState } from '../slices/fees';
+import { IOnchainFees } from '../types/fees';
 
-const feesState = (state: Store): IFees => state.fees;
+const feesState = (state: RootState): TFeesState => state.fees;
 
 export const onChainFeesSelector = createSelector(
 	[feesState],

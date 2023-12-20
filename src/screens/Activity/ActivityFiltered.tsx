@@ -20,11 +20,13 @@ import BlurView from '../../components/BlurView';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Tag from '../../components/Tag';
 import useColors from '../../hooks/colors';
+import { useAppDispatch } from '../../hooks/redux';
+import { closeSheet } from '../../store/slices/ui';
+import { showBottomSheet } from '../../store/utils/ui';
 import { EPaymentType } from '../../store/types/wallet';
 import DetectSwipe from '../../components/DetectSwipe';
 import type { WalletScreenProps } from '../../navigation/types';
 import TimeRangePrompt from './TimeRangePrompt';
-import { showBottomSheet, closeBottomSheet } from '../../store/actions/ui';
 import TagsPrompt from './TagsPrompt';
 import { TActivityFilter } from '../../utils/activity';
 
@@ -74,6 +76,7 @@ const ActivityFiltered = ({
 }: WalletScreenProps<'ActivityFiltered'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const insets = useSafeAreaInsets();
+	const dispatch = useAppDispatch();
 	const panGestureRef = useRef<GestureType>(Gesture.Pan());
 	const [radiusContainerHeight, setRadiusContainerHeight] = useState(0);
 	const [currentTab, setCurrentTab] = useState(0);
@@ -95,7 +98,7 @@ const ActivityFiltered = ({
 
 	const addTag = (tag: string): void => {
 		setTags((tg) => [...tg, tag]);
-		closeBottomSheet('tagsPrompt');
+		dispatch(closeSheet('tagsPrompt'));
 	};
 	const removeTag = (tag: string): void => {
 		setTags((tg) => tg.filter((x) => x !== tag));

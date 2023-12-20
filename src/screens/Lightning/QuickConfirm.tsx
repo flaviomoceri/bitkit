@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Caption13Up, Display, Text01S } from '../../styles/text';
@@ -16,7 +16,7 @@ import { sleep } from '../../utils/helpers';
 import { useBalance } from '../../hooks/wallet';
 import useDisplayValues from '../../hooks/displayValues';
 import type { LightningScreenProps } from '../../navigation/types';
-import { confirmChannelPurchase } from '../../store/actions/blocktank';
+import { confirmChannelPurchase } from '../../store/utils/blocktank';
 import { blocktankOrdersSelector } from '../../store/reselect/blocktank';
 import {
 	selectedNetworkSelector,
@@ -33,9 +33,9 @@ const QuickConfirm = ({
 	const { spendingAmount, orderId } = route.params;
 	const { onchainBalance } = useBalance();
 	const { t } = useTranslation('lightning');
-	const orders = useSelector(blocktankOrdersSelector);
-	const transactionFee = useSelector(transactionFeeSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const orders = useAppSelector(blocktankOrdersSelector);
+	const transactionFee = useAppSelector(transactionFeeSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const [loading, setLoading] = useState(false);
 
 	const order = useMemo(() => {

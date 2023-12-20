@@ -1,5 +1,5 @@
 import React, { memo, ReactElement, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -10,7 +10,7 @@ import {
 } from '../../../styles/icons';
 import { EItemType, IListData } from '../../../components/List';
 import SettingsView from '../SettingsView';
-import { updateSettings } from '../../../store/actions/settings';
+import { updateSettings } from '../../../store/slices/settings';
 import { transactionSpeedSelector } from '../../../store/reselect/settings';
 import { ETransactionSpeed } from '../../../store/types/settings';
 import type { SettingsScreenProps } from '../../../navigation/types';
@@ -19,7 +19,8 @@ const TransactionSpeedSettings = ({
 	navigation,
 }: SettingsScreenProps<'TransactionSpeedSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const selectedTransactionSpeed = useSelector(transactionSpeedSelector);
+	const dispatch = useAppDispatch();
+	const selectedTransactionSpeed = useAppSelector(transactionSpeedSelector);
 
 	const currencyListData: IListData[] = useMemo(() => {
 		const transactionSpeeds = [
@@ -69,13 +70,13 @@ const TransactionSpeedSettings = ({
 							navigation.navigate('CustomFee');
 						} else {
 							navigation.goBack();
-							updateSettings({ transactionSpeed: txSpeed.value });
+							dispatch(updateSettings({ transactionSpeed: txSpeed.value }));
 						}
 					},
 				})),
 			},
 		];
-	}, [selectedTransactionSpeed, navigation, t]);
+	}, [selectedTransactionSpeed, navigation, t, dispatch]);
 
 	return (
 		<SettingsView

@@ -5,7 +5,7 @@ import React, {
 	useCallback,
 	useMemo,
 } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { StyleSheet, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
@@ -14,7 +14,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useNoTransactions } from '../../hooks/wallet';
 import useColors from '../../hooks/colors';
-import { updateSettings } from '../../store/actions/settings';
+import { updateSettings } from '../../store/slices/settings';
+import { widgetsSelector } from '../../store/reselect/widgets';
 import { refreshWallet } from '../../utils/wallet';
 import ActivityListShort from '../../screens/Activity/ActivityListShort';
 import EmptyWallet from '../../screens/Activity/EmptyWallet';
@@ -22,7 +23,6 @@ import DetectSwipe from '../../components/DetectSwipe';
 import BalanceHeader from '../../components/BalanceHeader';
 import Suggestions from '../../components/Suggestions';
 import Widgets from '../../components/Widgets';
-import ConnectivityIndicator from '../../components/ConnectivityIndicator';
 import SafeAreaView from '../../components/SafeAreaView';
 import BetaWarning from '../../components/BetaWarning';
 import Assets from '../../components/Assets';
@@ -31,8 +31,8 @@ import type { WalletScreenProps } from '../../navigation/types';
 import {
 	hideBalanceSelector,
 	hideOnboardingMessageSelector,
+	showWidgetsSelector,
 } from '../../store/reselect/settings';
-import { widgetsSelector } from '../../store/reselect/widgets';
 
 // Workaround for crash on Android
 // https://github.com/software-mansion/react-native-reanimated/issues/4306#issuecomment-1538184321
@@ -45,9 +45,11 @@ type Props = WalletScreenProps<'Wallets'> & {
 const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	const [refreshing, setRefreshing] = useState(false);
 	const colors = useColors();
-	const hideBalance = useSelector(hideBalanceSelector);
-	const hideOnboardingSetting = useSelector(hideOnboardingMessageSelector);
-	const widgets = useSelector(widgetsSelector);
+	const dispatch = useAppDispatch();
+	const hideBalance = useAppSelector(hideBalanceSelector);
+	const hideOnboardingSetting = useAppSelector(hideOnboardingMessageSelector);
+	const showWidgets = useAppSelector(showWidgetsSelector);
+	const widgets = useAppSelector(widgetsSelector);
 	const noTransactions = useNoTransactions();
 	const insets = useSafeAreaInsets();
 	const empty = useMemo(() => {
@@ -63,7 +65,7 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	);
 
 	const toggleHideBalance = (): void => {
-		updateSettings({ hideBalance: !hideBalance });
+		dispatch(updateSettings({ hideBalance: !hideBalance }));
 	};
 
 	const navigateToScanner = (): void => {
@@ -119,9 +121,8 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 						<>
 							<Suggestions />
 							<View style={styles.contentPadding}>
-								<ConnectivityIndicator />
 								<Assets />
-								<Widgets />
+								{showWidgets && <Widgets />}
 								<ActivityListShort />
 								<BetaWarning />
 							</View>

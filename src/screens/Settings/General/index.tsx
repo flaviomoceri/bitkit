@@ -1,5 +1,5 @@
 import React, { memo, ReactElement, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData, ItemData } from '../../../components/List';
@@ -10,20 +10,23 @@ import {
 	primaryUnitSelector,
 	selectedCurrencySelector,
 	showSuggestionsSelector,
+	showWidgetsSelector,
 	transactionSpeedSelector,
 } from '../../../store/reselect/settings';
 import { EUnit } from '../../../store/types/wallet';
+import { updateSettings } from '../../../store/slices/settings';
 
 const GeneralSettings = ({
 	navigation,
 }: SettingsScreenProps<'GeneralSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
-
-	const lastUsedTags = useSelector(lastUsedTagsSelector);
-	const showSuggestions = useSelector(showSuggestionsSelector);
-	const selectedTransactionSpeed = useSelector(transactionSpeedSelector);
-	const selectedCurrency = useSelector(selectedCurrencySelector);
-	const selectedUnit = useSelector(primaryUnitSelector);
+	const dispatch = useAppDispatch();
+	const lastUsedTags = useAppSelector(lastUsedTagsSelector);
+	const showSuggestions = useAppSelector(showSuggestionsSelector);
+	const showWidgets = useAppSelector(showWidgetsSelector);
+	const selectedTransactionSpeed = useAppSelector(transactionSpeedSelector);
+	const selectedCurrency = useAppSelector(selectedCurrencySelector);
+	const selectedUnit = useAppSelector(primaryUnitSelector);
 
 	const settingsListData: IListData[] = useMemo(() => {
 		const transactionSpeeds = {
@@ -71,6 +74,15 @@ const GeneralSettings = ({
 				testID: 'SuggestionsSettings',
 				onPress: (): void => navigation.navigate('SuggestionsSettings'),
 			},
+			{
+				title: t('general.widgets'),
+				type: EItemType.switch,
+				enabled: showWidgets,
+				testID: 'WidgetsSettings',
+				onPress: (): void => {
+					dispatch(updateSettings({ showWidgets: !showWidgets }));
+				},
+			},
 		];
 
 		if (lastUsedTags.length) {
@@ -85,10 +97,12 @@ const GeneralSettings = ({
 	}, [
 		lastUsedTags,
 		showSuggestions,
+		showWidgets,
 		selectedCurrency,
 		selectedUnit,
 		selectedTransactionSpeed,
 		navigation,
+		dispatch,
 		t,
 	]);
 

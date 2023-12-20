@@ -1,4 +1,4 @@
-import { TAvailableNetworks } from './networks';
+import { EAvailableNetwork } from './networks';
 import { getSelectedNetwork, getSelectedWallet } from './wallet';
 import {
 	EWarningIds,
@@ -8,8 +8,8 @@ import {
 import { getAddressBalance } from './wallet/electrum';
 import { err, ok, Result } from '@synonymdev/result';
 import { TWalletName } from '../store/types/wallet';
-import { addWarning, updateWarning } from '../store/actions/checks';
-import { getChecksStore } from '../store/helpers';
+import { addWarning, updateWarning } from '../store/slices/checks';
+import { dispatch, getChecksStore } from '../store/helpers';
 import { Platform } from 'react-native';
 import { version } from '../../package.json';
 import { TChannel } from '@synonymdev/react-native-ldk';
@@ -17,7 +17,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Reports the balance of all impacted addresses stored on the device.
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TGetImpactedAddressesRes} impactedAddressRes
  * @returns {Promise<Result<number>>}
  */
@@ -25,7 +25,7 @@ export const reportImpactedAddressBalance = async ({
 	selectedNetwork,
 	impactedAddressRes,
 }: {
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 	impactedAddressRes: TGetImpactedAddressesRes;
 }): Promise<Result<number>> => {
 	if (!selectedNetwork) {
@@ -92,15 +92,14 @@ export const reportLdkChannelMigrations = async ({
 	selectedNetwork,
 	channels,
 }: {
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 	channels: TChannel[];
 }): Promise<Result<string>> => {
+	const selectedWallet = getSelectedWallet();
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
 	}
-	const warnings = getWarnings({
-		selectedNetwork,
-	});
+	const warnings = getWarnings({ selectedNetwork });
 	const ldkMigrationWarnings = warnings.filter(
 		(w) => w.warningId === EWarningIds.ldkMigration,
 	);
@@ -133,16 +132,20 @@ export const reportLdkChannelMigrations = async ({
 		if (!res.ok) {
 			return err('Failed to report channel migrations for force-close.');
 		}
-		addWarning({
-			warning: {
-				id: uuidv4(),
-				warningId: EWarningIds.storageCheck,
-				data: channel,
-				warningReported: true,
-				timestamp: new Date().getTime(),
-			},
-			selectedNetwork,
-		});
+
+		dispatch(
+			addWarning({
+				warning: {
+					id: uuidv4(),
+					warningId: EWarningIds.storageCheck,
+					data: channel,
+					warningReported: true,
+					timestamp: new Date().getTime(),
+				},
+				selectedWallet,
+				selectedNetwork,
+			}),
+		);
 	}
 	return ok('Reported LDK channel migrations for force-close.');
 };
@@ -153,7 +156,7 @@ export const reportLdkChannelMigrations = async ({
  * the report fails to send, or the server is down.
  * @param {TStorageWarning} warnings
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<number>}
  */
 export const reportUnreportedWarnings = async ({
@@ -161,7 +164,7 @@ export const reportUnreportedWarnings = async ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<number> => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();
@@ -199,16 +202,13 @@ export const reportUnreportedWarnings = async ({
 
 			warningsReported++;
 
-			const updatedWarning: TStorageWarning = {
-				...warning,
-				warningReported: true,
-			};
-			updateWarning({
-				selectedWallet,
-				selectedNetwork,
-				id: warning.id,
-				warningData: updatedWarning,
-			});
+			dispatch(
+				updateWarning({
+					warning: { ...warning, warningReported: true },
+					selectedWallet,
+					selectedNetwork,
+				}),
+			);
 		}),
 	);
 	return warningsReported;
@@ -217,7 +217,7 @@ export const reportUnreportedWarnings = async ({
 /**
  * Returns all warnings for the selected wallet and network.
  * @param {TWalletName} [selectedWallet]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {TStorageWarning[]}
  */
 export const getWarnings = ({
@@ -225,7 +225,7 @@ export const getWarnings = ({
 	selectedNetwork,
 }: {
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): TStorageWarning[] => {
 	if (!selectedWallet) {
 		selectedWallet = getSelectedWallet();

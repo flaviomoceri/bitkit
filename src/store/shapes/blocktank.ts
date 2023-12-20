@@ -32,7 +32,7 @@ export const defaultBlocktankInfoShape: IBtInfo = {
 	},
 };
 
-export const defaultBlocktankShape: IBlocktank = {
+export const initialBlocktankState: IBlocktank = {
 	orders: [],
 	paidOrders: {},
 	info: defaultBlocktankInfoShape,

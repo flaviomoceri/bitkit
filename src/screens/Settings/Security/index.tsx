@@ -1,15 +1,15 @@
 import React, { memo, ReactElement, useMemo, useState, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../../styles/components';
-import Store from '../../../store/types';
+
 import { EItemType, IListData } from '../../../components/List';
 import { IsSensorAvailableResult } from '../../../components/Biometrics';
-import { showBottomSheet } from '../../../store/actions/ui';
-import { updateSettings } from '../../../store/actions/settings';
+import { showBottomSheet } from '../../../store/utils/ui';
+import { updateSettings } from '../../../store/slices/settings';
 import SettingsView from '../SettingsView';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import rnBiometrics from '../../../utils/biometrics';
 import type { SettingsScreenProps } from '../../../navigation/types';
 
@@ -17,6 +17,7 @@ const SecuritySettings = ({
 	navigation,
 }: SettingsScreenProps<'SecuritySettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
+	const dispatch = useAppDispatch();
 	const [biometryData, setBiometricData] = useState<IsSensorAvailableResult>();
 	const {
 		enableAutoReadClipboard,
@@ -26,7 +27,7 @@ const SecuritySettings = ({
 		pinOnLaunch,
 		pinOnIdle,
 		pinForPayments,
-	} = useSelector((state: Store) => state.settings);
+	} = useAppSelector((state) => state.settings);
 
 	useEffect(() => {
 		(async (): Promise<void> => {
@@ -60,9 +61,11 @@ const SecuritySettings = ({
 						enabled: enableAutoReadClipboard,
 						testID: 'AutoReadClipboard',
 						onPress: (): void => {
-							updateSettings({
-								enableAutoReadClipboard: !enableAutoReadClipboard,
-							});
+							dispatch(
+								updateSettings({
+									enableAutoReadClipboard: !enableAutoReadClipboard,
+								}),
+							);
 						},
 					},
 					{
@@ -71,9 +74,11 @@ const SecuritySettings = ({
 						enabled: enableSendAmountWarning,
 						testID: 'SendAmountWarning',
 						onPress: (): void => {
-							updateSettings({
-								enableSendAmountWarning: !enableSendAmountWarning,
-							});
+							dispatch(
+								updateSettings({
+									enableSendAmountWarning: !enableSendAmountWarning,
+								}),
+							);
 						},
 					},
 					{
@@ -108,7 +113,7 @@ const SecuritySettings = ({
 							navigation.navigate('AuthCheck', {
 								onSuccess: () => {
 									navigation.pop();
-									updateSettings({ pinOnLaunch: !pinOnLaunch });
+									dispatch(updateSettings({ pinOnLaunch: !pinOnLaunch }));
 								},
 							});
 						},
@@ -123,7 +128,7 @@ const SecuritySettings = ({
 							navigation.navigate('AuthCheck', {
 								onSuccess: () => {
 									navigation.pop();
-									updateSettings({ pinOnIdle: !pinOnIdle });
+									dispatch(updateSettings({ pinOnIdle: !pinOnIdle }));
 								},
 							});
 						},
@@ -138,7 +143,7 @@ const SecuritySettings = ({
 							navigation.navigate('AuthCheck', {
 								onSuccess: () => {
 									navigation.pop();
-									updateSettings({ pinForPayments: !pinForPayments });
+									dispatch(updateSettings({ pinForPayments: !pinForPayments }));
 								},
 							});
 						},
@@ -153,7 +158,7 @@ const SecuritySettings = ({
 							navigation.navigate('AuthCheck', {
 								onSuccess: () => {
 									navigation.pop();
-									updateSettings({ biometrics: !biometrics });
+									dispatch(updateSettings({ biometrics: !biometrics }));
 								},
 							});
 						},
@@ -172,6 +177,7 @@ const SecuritySettings = ({
 			pinOnIdle,
 			pinForPayments,
 			navigation,
+			dispatch,
 			t,
 		],
 	);

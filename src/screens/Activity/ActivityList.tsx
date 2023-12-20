@@ -13,7 +13,7 @@ import {
 	StyleSheet,
 	ViewStyle,
 } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { useNavigation } from '@react-navigation/native';
 import {
 	FlatList,
@@ -62,8 +62,8 @@ const ActivityList = ({
 }): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const navigation = useNavigation<RootNavigationProp>();
-	const items = useSelector(activityItemsSelector);
-	const tags = useSelector(tagsSelector);
+	const items = useAppSelector(activityItemsSelector);
+	const tags = useAppSelector(tagsSelector);
 	const [refreshing, setRefreshing] = useState(false);
 
 	const groupedItems = useMemo(() => {

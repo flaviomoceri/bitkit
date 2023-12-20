@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { BottomSheetTextInput } from '../../styles/components';
@@ -9,11 +8,11 @@ import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Tag from '../../components/Tag';
 import Button from '../../components/Button';
-import { closeBottomSheet } from '../../store/actions/ui';
+import { closeSheet } from '../../store/slices/ui';
 import { viewControllerSelector } from '../../store/reselect/ui';
-import { addMetaTxTag, addTag } from '../../store/actions/metadata';
+import { addMetaTxTag } from '../../store/slices/metadata';
 import { lastUsedTagsSelector } from '../../store/reselect/metadata';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { Keyboard } from '../../hooks/keyboard';
 import {
 	useBottomSheetBackPress,
@@ -24,32 +23,31 @@ const ActivityTagsPrompt = (): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const snapPoints = useSnapPoints('small');
 	const [text, setText] = useState('');
-	const lastUsedTags = useSelector(lastUsedTagsSelector);
+	const dispatch = useAppDispatch();
+	const lastUsedTags = useAppSelector(lastUsedTagsSelector);
 	const { isOpen, id } = useAppSelector((state) => {
 		return viewControllerSelector(state, 'activityTagsPrompt');
 	});
 
 	useBottomSheetBackPress('activityTagsPrompt');
 
-	const closeSheet = async (): Promise<void> => {
+	const closeBottomSheet = async (): Promise<void> => {
 		setText('');
 		await Keyboard.dismiss();
-		closeBottomSheet('activityTagsPrompt');
+		dispatch(closeSheet('activityTagsPrompt'));
 	};
 
 	const handleTagChoose = async (tag: string): Promise<void> => {
-		addMetaTxTag(id!, tag);
-		addTag(tag);
-		closeSheet();
+		dispatch(addMetaTxTag({ txId: id!, tag: tag }));
+		closeBottomSheet();
 	};
 
 	const handleSubmit = async (): Promise<void> => {
 		if (text.length === 0) {
 			return;
 		}
-		addMetaTxTag(id!, text);
-		addTag(text);
-		closeSheet();
+		dispatch(addMetaTxTag({ txId: id!, tag: text }));
+		closeBottomSheet();
 	};
 
 	return (
@@ -57,7 +55,7 @@ const ActivityTagsPrompt = (): ReactElement => {
 			view="activityTagsPrompt"
 			snapPoints={snapPoints}
 			backdrop={true}
-			onClose={closeSheet}>
+			onClose={closeBottomSheet}>
 			<View style={styles.root}>
 				<Subtitle style={styles.title}>{t('tags_add')}</Subtitle>
 

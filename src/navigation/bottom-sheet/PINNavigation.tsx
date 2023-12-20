@@ -1,5 +1,5 @@
 import React, { ReactElement, memo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { BiometryType } from 'react-native-biometrics';
 import {
 	createNativeStackNavigator,
@@ -35,7 +35,7 @@ const screenOptions: NativeStackNavigationOptions = {
 
 const PINNavigation = (): ReactElement => {
 	const snapPoints = useSnapPoints('medium');
-	const isOpen = useSelector((state) => {
+	const isOpen = useAppSelector((state) => {
 		return viewControllerIsOpenSelector(state, 'PINNavigation');
 	});
 

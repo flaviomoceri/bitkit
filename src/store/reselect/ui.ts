@@ -1,15 +1,15 @@
 import { createSelector } from '@reduxjs/toolkit';
-import Store from '../types';
+import { RootState } from '..';
 import {
-	IUi,
+	TUiState,
 	TViewController,
 	TUiViewController,
 	IViewControllerData,
 } from '../types/ui';
 
-const uiState = (state: Store): IUi => state.ui;
+const uiState = (state: RootState): TUiState => state.ui;
 
-const viewControllerState = (state: Store): TUiViewController => {
+const viewControllerState = (state: RootState): TUiViewController => {
 	return state.ui.viewControllers;
 };
 
@@ -23,7 +23,7 @@ export const viewControllersSelector = createSelector(
 
 /**
  * Returns specified viewController data.
- * @param {Store} state
+ * @param {RootState} state
  * @param {TViewController} viewController
  * @returns {IViewControllerData}
  */
@@ -41,7 +41,7 @@ export const viewControllerSelector = createSelector(
 
 /**
  * Returns boolean on whether a given viewController is open.
- * @param {Store} state
+ * @param {RootState} state
  * @param {TViewController} viewController
  * @returns {boolean}
  */

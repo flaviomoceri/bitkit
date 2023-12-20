@@ -1,12 +1,12 @@
 import React, { memo, ReactElement } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../../styles/components';
 import { TransferIcon, SavingsIcon, CoinsIcon } from '../../../styles/icons';
 import { useBalance } from '../../../hooks/wallet';
+import { useAppSelector } from '../../../hooks/redux';
 import { RootNavigationProp } from '../../../navigation/types';
 import { isGeoBlockedSelector } from '../../../store/reselect/user';
 import { accountVersionSelector } from '../../../store/reselect/lightning';
@@ -17,9 +17,9 @@ import NetworkRow from './NetworkRow';
 const BitcoinBreakdown = (): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const navigation = useNavigation<RootNavigationProp>();
-	const isGeoBlocked = useSelector(isGeoBlockedSelector);
-	const accountVersion = useSelector(accountVersionSelector);
-	const openChannelIds = useSelector(openChannelIdsSelector);
+	const isGeoBlocked = useAppSelector(isGeoBlockedSelector);
+	const accountVersion = useAppSelector(accountVersionSelector);
+	const openChannelIds = useAppSelector(openChannelIdsSelector);
 	const {
 		onchainBalance,
 		lightningBalance,

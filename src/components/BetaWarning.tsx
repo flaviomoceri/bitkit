@@ -2,24 +2,25 @@ import React, { memo, ReactElement, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, TouchableOpacity } from 'react-native';
 import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia';
 import { FadeOut } from 'react-native-reanimated';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { AnimatedView } from '../styles/components';
 import { Caption13M, Text01M } from '../styles/text';
 import { XIcon } from '../styles/icons';
 import useColors from '../hooks/colors';
-import Store from '../store/types';
-import { updateSettings } from '../store/actions/settings';
+
+import { updateSettings } from '../store/slices/settings';
 import Flag from '../components/Flag';
 
 const BETA_HEIGHT = 100;
 
 const BetaSoftware = (): ReactElement => {
-	const { t } = useTranslation('other');
 	const colors = useColors();
+	const dispatch = useAppDispatch();
+	const { t } = useTranslation('other');
 	const [layout, setLayout] = useState({ width: 1, height: 1 });
-	const hideBeta = useSelector((state: Store) => state.settings.hideBeta);
+	const hideBeta = useAppSelector((state) => state.settings.hideBeta);
 
 	if (hideBeta) {
 		return <></>;
@@ -33,7 +34,7 @@ const BetaSoftware = (): ReactElement => {
 	};
 
 	const handleHide = (): void => {
-		updateSettings({ hideBeta: true });
+		dispatch(updateSettings({ hideBeta: true }));
 	};
 
 	const { height, width } = layout;

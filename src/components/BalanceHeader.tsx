@@ -1,13 +1,13 @@
 import React, { memo, ReactElement } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Caption13Up } from '../styles/text';
 import { EyeIcon } from '../styles/icons';
 import Money from './Money';
 import { useBalance, useSwitchUnit } from '../hooks/wallet';
-import { updateSettings } from '../store/actions/settings';
+import { updateSettings } from '../store/slices/settings';
 import {
 	primaryUnitSelector,
 	hideBalanceSelector,
@@ -20,11 +20,12 @@ const BalanceHeader = (): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const [_, switchUnit] = useSwitchUnit();
 	const { totalBalance, claimableBalance } = useBalance();
-	const unit = useSelector(primaryUnitSelector);
-	const hideBalance = useSelector(hideBalanceSelector);
+	const dispatch = useAppDispatch();
+	const unit = useAppSelector(primaryUnitSelector);
+	const hideBalance = useAppSelector(hideBalanceSelector);
 
 	const toggleHideBalance = (): void => {
-		updateSettings({ hideBalance: !hideBalance });
+		dispatch(updateSettings({ hideBalance: !hideBalance }));
 	};
 
 	return (

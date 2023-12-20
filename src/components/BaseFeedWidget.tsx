@@ -11,8 +11,9 @@ import {
 	TrashIcon,
 	QuestionMarkIcon,
 } from '../styles/icons';
+import { useAppDispatch } from '../hooks/redux';
 import { useSlashfeed } from '../hooks/widgets';
-import { deleteWidget } from '../store/actions/widgets';
+import { deleteWidget } from '../store/slices/widgets';
 import Dialog from './Dialog';
 import SvgImage from './SvgImage';
 import LoadingView from './LoadingView';
@@ -21,6 +22,7 @@ const BaseFeedWidget = ({
 	url,
 	name,
 	children,
+	showTitle,
 	isLoading,
 	isEditing,
 	style,
@@ -32,6 +34,7 @@ const BaseFeedWidget = ({
 	url: string;
 	name?: string;
 	children: ReactElement;
+	showTitle?: boolean;
 	isLoading?: boolean;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
@@ -41,6 +44,7 @@ const BaseFeedWidget = ({
 	testID?: string;
 }): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
 	const { config, icon } = useSlashfeed({ url });
 	const [showDialog, setShowDialog] = useState(false);
 
@@ -64,53 +68,62 @@ const BaseFeedWidget = ({
 				onPress={onPress}
 				onPressIn={onPressIn}
 				onLongPress={onLongPress}>
-				<View style={styles.header}>
-					<View style={styles.title}>
-						<View style={styles.icon}>
-							{icon ? (
-								<SvgImage image={icon} size={32} />
-							) : (
-								<QuestionMarkIcon width={32} height={32} />
-							)}
+				{(showTitle || isEditing) && (
+					<View style={styles.header}>
+						<View style={styles.title}>
+							<View style={styles.icon}>
+								{icon ? (
+									<SvgImage image={icon} size={32} />
+								) : (
+									<QuestionMarkIcon width={32} height={32} />
+								)}
+							</View>
+
+							<Text01M style={styles.name} numberOfLines={1}>
+								{widgetName}
+							</Text01M>
 						</View>
 
-						<Text01M style={styles.name} numberOfLines={1}>
-							{widgetName}
-						</Text01M>
+						{isEditing && (
+							<View style={styles.actions}>
+								<TouchableOpacity
+									style={styles.actionButton}
+									color="transparent"
+									testID="WidgetActionDelete"
+									onPress={onDelete}>
+									<TrashIcon width={22} />
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={styles.actionButton}
+									color="transparent"
+									testID="WidgetActionEdit"
+									onPress={onEdit}>
+									<SettingsIcon width={22} />
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={styles.actionButton}
+									color="transparent"
+									activeOpacity={0.9}
+									testID="WidgetActionDrag"
+									onLongPress={onLongPress}
+									onPressIn={onPressIn}>
+									<ListIcon color="white" width={24} />
+								</TouchableOpacity>
+							</View>
+						)}
 					</View>
+				)}
 
-					{isEditing && (
-						<View style={styles.actions}>
-							<TouchableOpacity
-								style={styles.actionButton}
-								color="transparent"
-								testID="WidgetActionDelete"
-								onPress={onDelete}>
-								<TrashIcon width={22} />
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={styles.actionButton}
-								color="transparent"
-								testID="WidgetActionEdit"
-								onPress={onEdit}>
-								<SettingsIcon width={22} />
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={styles.actionButton}
-								color="transparent"
-								activeOpacity={0.9}
-								testID="WidgetActionDrag"
-								onLongPress={onLongPress}
-								onPressIn={onPressIn}>
-								<ListIcon color="white" width={24} />
-							</TouchableOpacity>
-						</View>
-					)}
-				</View>
+				{showTitle && !isEditing && <View style={styles.spacer} />}
 
-				<LoadingView style={styles.content} loading={!!isLoading} delay={1000}>
-					{children}
-				</LoadingView>
+				{!isEditing && (
+					<LoadingView
+						style={styles.content}
+						loading={!!isLoading}
+						delay={1000}>
+						{children}
+					</LoadingView>
+				)}
 			</TouchableOpacity>
 
 			<Dialog
@@ -122,7 +135,7 @@ const BaseFeedWidget = ({
 					setShowDialog(false);
 				}}
 				onConfirm={(): void => {
-					deleteWidget(url);
+					dispatch(deleteWidget(url));
 					setShowDialog(false);
 				}}
 			/>
@@ -172,9 +185,11 @@ const styles = StyleSheet.create({
 		paddingBottom: 30,
 		marginBottom: -30,
 	},
+	spacer: {
+		height: 16,
+	},
 	content: {
 		justifyContent: 'center',
-		marginTop: 16,
 	},
 });
 

@@ -1,6 +1,5 @@
 import React, { memo, ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Text01S } from '../../../styles/text';
@@ -8,9 +7,10 @@ import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigati
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
-import { closeBottomSheet } from '../../../store/actions/ui';
-import { showLaterButtonSelector } from '../../../store/reselect/ui';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';
+import { closeSheet } from '../../../store/slices/ui';
+import { showLaterButtonSelector } from '../../../store/reselect/ui';
 import { PinScreenProps } from '../../../navigation/types';
 
 const imageSrc = require('../../../assets/illustrations/shield.png');
@@ -19,7 +19,8 @@ const PINPrompt = ({
 	navigation,
 }: PinScreenProps<'PINPrompt'>): ReactElement => {
 	const { t } = useTranslation('security');
-	const showLaterButton = useSelector(showLaterButtonSelector);
+	const dispatch = useAppDispatch();
+	const showLaterButton = useAppSelector(showLaterButtonSelector);
 
 	useBottomSheetBackPress('PINNavigation');
 
@@ -28,7 +29,7 @@ const PINPrompt = ({
 	};
 
 	const onDismiss = (): void => {
-		closeBottomSheet('PINNavigation');
+		dispatch(closeSheet('PINNavigation'));
 	};
 
 	return (

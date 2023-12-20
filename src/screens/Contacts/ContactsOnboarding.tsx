@@ -3,12 +3,13 @@ import { View, Image, StyleSheet } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { Display, Text01S } from '../../styles/text';
 import NavigationHeader from '../../components/NavigationHeader';
 import Button from '../../components/Button';
-import { Display, Text01S } from '../../styles/text';
 import GlowingBackground from '../../components/GlowingBackground';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { setOnboardedContacts } from '../../store/actions/slashtags';
+import { useAppDispatch } from '../../hooks/redux';
+import { setOnboardedContacts } from '../../store/slices/slashtags';
 import { RootStackParamList } from '../../navigation/types';
 
 const imageSrc = require('../../assets/illustrations/book.png');
@@ -19,6 +20,7 @@ const ContactsOnboarding = ({
 	navigation,
 }: ContactsOnboardingProps): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
 
 	return (
 		<GlowingBackground topLeft="brand">
@@ -54,10 +56,10 @@ const ContactsOnboarding = ({
 						style={styles.button}
 						text={t('onboarding_button')}
 						size="large"
-						onPress={(): void => {
-							setOnboardedContacts();
-						}}
 						testID="ContactsOnboardingButton"
+						onPress={(): void => {
+							dispatch(setOnboardedContacts(true));
+						}}
 					/>
 				</View>
 			</View>

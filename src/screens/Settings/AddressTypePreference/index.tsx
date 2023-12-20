@@ -1,5 +1,5 @@
 import React, { memo, ReactElement, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData } from '../../../components/List';
@@ -14,7 +14,7 @@ const AddressTypeSettings = ({
 	navigation,
 }: SettingsScreenProps<'AddressTypePreference'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const selectedAddressType = useSelector(addressTypeSelector);
+	const selectedAddressType = useAppSelector(addressTypeSelector);
 
 	const listData: IListData[] = useMemo(
 		() => [

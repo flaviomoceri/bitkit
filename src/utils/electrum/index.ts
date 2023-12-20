@@ -1,7 +1,7 @@
 import * as electrum from 'rn-electrum-client/helpers';
 import { err, ok, Result } from '@synonymdev/result';
 
-import { TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 import { getSelectedNetwork } from '../wallet';
 import { connectToElectrum } from '../wallet/electrum';
 import { TProtocol } from '../../store/types/settings';
@@ -13,11 +13,11 @@ export const defaultElectrumPorts = ['51002', '50002', '51001', '50001'];
 
 /**
  * Returns the default port for the given network and protocol.
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @param {string} [protocol]
  */
 export const getDefaultPort = (
-	selectedNetwork: TAvailableNetworks,
+	selectedNetwork: EAvailableNetwork,
 	protocol: TProtocol,
 ): number => {
 	if (protocol === 'ssl') {
@@ -30,11 +30,11 @@ export const getDefaultPort = (
 /**
  * Returns the protocol for the given network and default port.
  * @param {string} [port]
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const getProtocolForPort = (
 	port: string,
-	selectedNetwork?: TAvailableNetworks,
+	selectedNetwork?: EAvailableNetwork,
 ): TProtocol => {
 	if (port === '443') {
 		return 'ssl';
@@ -90,13 +90,13 @@ export const formatPeerData = (
 /**
  * Returns an array of peers.
  * If unable to acquire peers from an Electrum server the method will default to the hardcoded peers in peers.json.
- * @param {TAvailableNetworks} [selectedNetwork]
+ * @param {EAvailableNetwork} [selectedNetwork]
  * @return Promise<Result<IFormattedPeerData[]>>
  */
 export const getPeers = async ({
 	selectedNetwork,
 }: {
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 }): Promise<Result<IFormattedPeerData[]>> => {
 	try {
 		if (!selectedNetwork) {

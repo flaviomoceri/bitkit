@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../styles/components';
@@ -8,6 +7,7 @@ import { Text01S, Title } from '../styles/text';
 import SafeAreaInset from '../components/SafeAreaInset';
 import GlowImage from '../components/GlowImage';
 import Button from '../components/Button';
+import { useAppSelector } from '../hooks/redux';
 import { openURL } from '../utils/helpers';
 import { availableUpdateSelector } from '../store/reselect/ui';
 
@@ -15,7 +15,7 @@ const imageSrc = require('../assets/illustrations/bitkit-logo.png');
 
 const AppUpdate = (): ReactElement => {
 	const { t } = useTranslation('other');
-	const updateInfo = useSelector(availableUpdateSelector);
+	const updateInfo = useAppSelector(availableUpdateSelector);
 
 	const onUpdate = async (): Promise<void> => {
 		await openURL(updateInfo?.url!);

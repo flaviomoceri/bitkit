@@ -1,15 +1,16 @@
 import { createSelector } from '@reduxjs/toolkit';
-import Store from '../types';
-import { IWidgetsStore, IWidget, IWidgets } from '../types/widgets';
+import { RootState } from '..';
+import { TWidgetsState } from '../slices/widgets';
+import { TWidget, TWidgets } from '../types/widgets';
 
-export const widgetsState = (state: Store): IWidgetsStore => state.widgets;
+export const widgetsState = (state: RootState): TWidgetsState => state.widgets;
 
 /**
  * Returns all widgets.
  */
 export const widgetsSelector = createSelector(
 	[widgetsState],
-	(widgets): IWidgets => widgets.widgets,
+	(widgets): TWidgets => widgets.widgets,
 );
 
 /**
@@ -17,7 +18,7 @@ export const widgetsSelector = createSelector(
  */
 export const widgetSelector = createSelector(
 	[widgetsState, (_widgets, url: string): string => url],
-	(widgets, url): IWidget | undefined => widgets.widgets[url],
+	(widgets, url): TWidget | undefined => widgets.widgets[url],
 );
 
 export const widgetsOrderSelector = createSelector(

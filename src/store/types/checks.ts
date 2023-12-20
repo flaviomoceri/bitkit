@@ -1,5 +1,5 @@
 import { EAddressType, IAddress, IWalletItem, TWalletName } from './wallet';
-import { TAvailableNetworks } from '../../utils/networks';
+import { EAvailableNetwork } from '../../utils/networks';
 import { TChannel } from '@synonymdev/react-native-ldk';
 
 export enum EWarningIds {
@@ -20,7 +20,7 @@ export type TMinMaxData = {
 	address: TMinMaxAddressData;
 	changeAddress: TMinMaxAddressData;
 	addressType: EAddressType;
-	selectedNetwork: TAvailableNetworks;
+	selectedNetwork: EAvailableNetwork;
 };
 
 export type TAddressStorageCheckRes = {

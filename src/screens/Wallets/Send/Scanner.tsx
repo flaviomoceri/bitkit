@@ -1,8 +1,8 @@
 import React, { memo, ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
+import { useAppSelector } from '../../../hooks/redux';
 import { processInputData, validateInputData } from '../../../utils/scanner';
 import { showToast } from '../../../utils/notifications';
 import { useSlashtagsSDK } from '../../../components/SlashtagsProvider';
@@ -16,8 +16,8 @@ import {
 
 const ScannerScreen = (): ReactElement => {
 	const { t } = useTranslation('other');
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const selectedWallet = useSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const sdk = useSlashtagsSDK();
 
 	const onRead = async (data: string): Promise<void> => {

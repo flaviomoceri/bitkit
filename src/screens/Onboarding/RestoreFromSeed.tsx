@@ -26,15 +26,17 @@ import SeedInput from '../../components/SeedInput';
 import SeedInputAccessory from '../../components/SeedInputAccessory';
 import VerticalShadow from '../../components/VerticalShadow';
 import Button from '../../components/Button';
+import { useAppDispatch } from '../../hooks/redux';
 import { validateMnemonic } from '../../utils/wallet';
 import { restoreSeed } from '../../utils/startup';
 import { showToast } from '../../utils/notifications';
 import LoadingWalletScreen from './Loading';
 import NavigationHeader from '../../components/NavigationHeader';
-import { updateUser, verifyBackup } from '../../store/actions/user';
+import { updateUser, verifyBackup } from '../../store/slices/user';
 
 const RestoreFromSeed = (): ReactElement => {
 	const numberOfWords = 12;
+	const dispatch = useAppDispatch();
 	const [seed, setSeed] = useState(Array(numberOfWords).fill(undefined));
 	const [isRestoringWallet, setIsRestoringWallet] = useState(false);
 	const [validWords, setValidWords] = useState(Array(numberOfWords).fill(true));
@@ -101,7 +103,7 @@ const RestoreFromSeed = (): ReactElement => {
 
 	const handleRestore = async (): Promise<void> => {
 		setIsRestoringWallet(true);
-		verifyBackup();
+		dispatch(verifyBackup());
 
 		const res = await restoreSeed({
 			mnemonic: seed.join(' '),
@@ -117,7 +119,7 @@ const RestoreFromSeed = (): ReactElement => {
 		}
 
 		//Tells component within slashtags provider that it needs to handle restoring from remote backup
-		updateUser({ requiresRemoteRestore: true });
+		dispatch(updateUser({ requiresRemoteRestore: true }));
 	};
 
 	const handleAdvanced = (): void => {

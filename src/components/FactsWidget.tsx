@@ -7,9 +7,11 @@ import { Title } from '../styles/text';
 import { showToast } from '../utils/notifications';
 import { useSlashtags2 } from '../hooks/slashtags2';
 import BaseFeedWidget from './BaseFeedWidget';
+import { TFeedWidget } from '../store/types/widgets';
 
 const FactsWidget = ({
 	url,
+	widget,
 	isEditing = false,
 	style,
 	testID,
@@ -17,6 +19,7 @@ const FactsWidget = ({
 	onLongPress,
 }: {
 	url: string;
+	widget: TFeedWidget;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
 	testID?: string;
@@ -59,6 +62,7 @@ const FactsWidget = ({
 			style={style}
 			url={url}
 			name={t('widget_facts')}
+			showTitle={widget.extras?.showTitle}
 			isLoading={isLoading}
 			isEditing={isEditing}
 			testID={testID}

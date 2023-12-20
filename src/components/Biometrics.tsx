@@ -13,7 +13,8 @@ import { useTranslation } from 'react-i18next';
 import { View, TouchableOpacity } from '../styles/components';
 import { Subtitle } from '../styles/text';
 import { FingerPrintIcon } from '../styles/icons';
-import { updateSettings } from '../store/actions/settings';
+import { useAppDispatch } from '../hooks/redux';
+import { updateSettings } from '../store/slices/settings';
 import { vibrate } from '../utils/helpers';
 import rnBiometrics from '../utils/biometrics';
 
@@ -45,8 +46,9 @@ const Biometrics = ({
 	style?: StyleProp<ViewStyle>;
 	children?: ReactElement;
 }): ReactElement => {
-	const { t } = useTranslation('security');
 	const insets = useSafeAreaInsets();
+	const { t } = useTranslation('security');
+	const dispatch = useAppDispatch();
 	const [biometryData, setBiometricData] = useState<IsSensorAvailableResult>();
 
 	useEffect(() => {
@@ -98,7 +100,7 @@ const Biometrics = ({
 				})
 				.then(({ success }) => {
 					if (success) {
-						updateSettings({ biometrics: true });
+						dispatch(updateSettings({ biometrics: true }));
 						onSuccess();
 					} else {
 						vibrate();

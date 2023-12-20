@@ -1,6 +1,6 @@
 import React, { memo, ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { processInputData } from '../../utils/scanner';
@@ -23,8 +23,8 @@ const ScannerScreen = ({
 }: RootStackScreenProps<'Scanner'>): ReactElement => {
 	const { t } = useTranslation('other');
 	const onScan = route.params?.onScan;
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const selectedWallet = useSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const sdk = useSlashtagsSDK();
 
 	const onSwipeRight = (): void => {

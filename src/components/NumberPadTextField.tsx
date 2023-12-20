@@ -1,5 +1,5 @@
 import React, { memo, ReactElement } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../hooks/redux';
 import {
 	Pressable,
 	StyleProp,
@@ -34,7 +34,7 @@ const NumberPadTextField = ({
 	testID?: string;
 	onPress?: () => void;
 }): ReactElement => {
-	const unit = useSelector(primaryUnitSelector);
+	const unit = useAppSelector(primaryUnitSelector);
 	const satoshis = convertToSats(value, unit);
 
 	let placeholder = '0';

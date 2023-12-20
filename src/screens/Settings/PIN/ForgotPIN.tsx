@@ -8,8 +8,9 @@ import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigati
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
-import { closeBottomSheet } from '../../../store/actions/ui';
-import { wipeApp } from '../../../store/actions/settings';
+import { closeSheet } from '../../../store/slices/ui';
+import { wipeApp } from '../../../store/utils/settings';
+import { useAppDispatch } from '../../../hooks/redux';
 import {
 	useBottomSheetBackPress,
 	useSnapPoints,
@@ -20,12 +21,13 @@ const imageSrc = require('../../../assets/illustrations/restore.png');
 const ForgotPIN = (): ReactElement => {
 	const { t } = useTranslation('security');
 	const snapPoints = useSnapPoints('large');
+	const dispatch = useAppDispatch();
 
 	useBottomSheetBackPress('forgotPIN');
 
 	const handlePress = (): void => {
 		wipeApp();
-		closeBottomSheet('forgotPIN');
+		dispatch(closeSheet('forgotPIN'));
 	};
 
 	return (

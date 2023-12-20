@@ -1,5 +1,5 @@
 import React, { memo, ReactElement, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData, ItemData } from '../../../components/List';
@@ -20,10 +20,10 @@ const AdvancedSettings = ({
 	navigation,
 }: SettingsScreenProps<'AdvancedSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const selectedAddressType = useSelector(addressTypeSelector);
-	const enableDevOptions = useSelector(enableDevOptionsSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const selectedAddressType = useAppSelector(addressTypeSelector);
+	const enableDevOptions = useAppSelector(enableDevOptionsSelector);
 
 	const [rescanning, setRescanning] = useState(false);
 

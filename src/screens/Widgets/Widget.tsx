@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import isEqual from 'lodash/isEqual';
 
@@ -11,10 +10,11 @@ import {
 } from '../../styles/components';
 import { Caption13Up, Headline, Text01S } from '../../styles/text';
 import { ChevronRight, QuestionMarkIcon } from '../../styles/icons';
-import Store from '../../store/types';
 import { widgetSelector } from '../../store/reselect/widgets';
-import { deleteWidget, setFeedWidget } from '../../store/actions/widgets';
+import { deleteWidget, setFeedWidget } from '../../store/slices/widgets';
+import { TFeedWidget } from '../../store/types/widgets';
 import { SUPPORTED_FEED_TYPES } from '../../utils/widgets';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useSlashfeed } from '../../hooks/widgets';
 import { getDefaultSettings } from './WidgetEdit';
 import Button from '../../components/Button';
@@ -39,7 +39,10 @@ const Widget = ({
 	const { url, preview } = route.params;
 	const { t } = useTranslation('slashtags');
 	const { config, icon, loading } = useSlashfeed({ url });
-	const savedWidget = useSelector((state: Store) => widgetSelector(state, url));
+	const dispatch = useAppDispatch();
+	const savedWidget = useAppSelector((state) => {
+		return widgetSelector(state, url);
+	}) as TFeedWidget;
 
 	const defaultSettings = getDefaultSettings(config);
 	const savedSelectedFields = savedWidget?.fields.map((f) => f.name);
@@ -60,20 +63,22 @@ const Widget = ({
 	};
 
 	const onDelete = (): void => {
-		deleteWidget(url);
+		dispatch(deleteWidget(url));
 		navigation.navigate('Wallet');
 	};
 
 	const onSave = (): void => {
 		if (config) {
-			setFeedWidget({
-				url,
-				type: config.type,
-				extras: settings.extras,
-				fields: config.fields.filter((f) => {
-					return settings.fields.includes(f.name);
+			dispatch(
+				setFeedWidget({
+					url,
+					type: config.type,
+					extras: settings.extras,
+					fields: config.fields.filter((f) => {
+						return settings.fields.includes(f.name);
+					}),
 				}),
-			});
+			);
 		}
 
 		navigation.navigate('Wallet');
@@ -111,26 +116,21 @@ const Widget = ({
 						</Text01S>
 					)}
 
-					{(config.type === SUPPORTED_FEED_TYPES.PRICE_FEED ||
-						config.type === SUPPORTED_FEED_TYPES.BLOCKS_FEED) && (
-						<TouchableOpacity
-							style={styles.item}
-							activeOpacity={0.6}
-							testID="WidgetEdit"
-							onPress={onEdit}>
-							<View style={styles.columnLeft}>
-								<Text01S color="white">{t('widget_edit')}</Text01S>
-							</View>
-							<View style={styles.columnRight}>
-								<Text01S style={styles.valueText} testID="Value">
-									{hasEdited
-										? t('widget_edit_custom')
-										: t('widget_edit_default')}
-								</Text01S>
-								<ChevronRight color="gray1" width={24} height={24} />
-							</View>
-						</TouchableOpacity>
-					)}
+					<TouchableOpacity
+						style={styles.item}
+						activeOpacity={0.6}
+						testID="WidgetEdit"
+						onPress={onEdit}>
+						<View style={styles.columnLeft}>
+							<Text01S color="white">{t('widget_edit')}</Text01S>
+						</View>
+						<View style={styles.columnRight}>
+							<Text01S style={styles.valueText} testID="Value">
+								{hasEdited ? t('widget_edit_custom') : t('widget_edit_default')}
+							</Text01S>
+							<ChevronRight color="gray1" width={24} height={24} />
+						</View>
+					</TouchableOpacity>
 
 					<View style={styles.footer}>
 						<Caption13Up style={styles.caption} color="gray1">
@@ -146,30 +146,52 @@ const Widget = ({
 								}),
 							};
 
+							let testID: string;
+							let Component:
+								| typeof PriceWidget
+								| typeof HeadlinesWidget
+								| typeof BlocksWidget
+								| typeof FactsWidget
+								| typeof FeedWidget;
+
 							switch (config.type) {
 								case SUPPORTED_FEED_TYPES.PRICE_FEED:
-									return (
-										<PriceWidget key={url} url={url} widget={previewWidget} />
-									);
+									Component = PriceWidget;
+									testID = 'PriceWidget';
+									break;
 								case SUPPORTED_FEED_TYPES.HEADLINES_FEED:
-									return <HeadlinesWidget key={url} url={url} />;
+									Component = HeadlinesWidget;
+									testID = 'HeadlinesWidget';
+									break;
 								case SUPPORTED_FEED_TYPES.BLOCKS_FEED:
-									return (
-										<BlocksWidget key={url} url={url} widget={previewWidget} />
-									);
+									Component = BlocksWidget;
+									testID = 'BlocksWidget';
+									break;
 								case SUPPORTED_FEED_TYPES.FACTS_FEED:
-									return <FactsWidget key={url} url={url} />;
+									Component = FactsWidget;
+									testID = 'FactsWidget';
+									break;
 								case SUPPORTED_FEED_TYPES.LUGANO_FEED:
-									return <LuganoFeedWidget key={url} url={url} />;
+									Component = LuganoFeedWidget;
+									testID = 'LuganoWidget';
+									break;
 								default:
-									return !loading ? (
-										<FeedWidget key={url} url={url} widget={previewWidget} />
-									) : (
-										<ThemedView style={styles.previewLoading} color="white08">
-											<Spinner />
-										</ThemedView>
-									);
+									Component = FeedWidget;
+									testID = 'FeedWidget';
 							}
+
+							return !loading ? (
+								<Component
+									key={url}
+									url={url}
+									widget={previewWidget}
+									testID={testID}
+								/>
+							) : (
+								<ThemedView style={styles.previewLoading} color="white08">
+									<Spinner />
+								</ThemedView>
+							);
 						})()}
 
 						<View style={styles.buttonsContainer}>

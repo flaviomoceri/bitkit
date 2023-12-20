@@ -10,21 +10,22 @@ import { err, ok, Result } from '@synonymdev/result';
 import { CJitStateEnum } from '@synonymdev/blocktank-lsp-http-client/dist/shared/CJitStateEnum';
 import { BtOpenChannelState } from '@synonymdev/blocktank-lsp-http-client/dist/shared/BtOpenChannelState';
 
-import { EAvailableNetworks, TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 import { addPeers, getNodeId, refreshLdk } from '../lightning';
 import {
 	refreshAllBlocktankOrders,
 	refreshOrder,
 	refreshOrdersList,
-} from '../../store/actions/blocktank';
+} from '../../store/utils/blocktank';
 import i18n from '../../utils/i18n';
 import { sleep } from '../helpers';
-import { getBlocktankStore, getUserStore } from '../../store/helpers';
+import { dispatch, getBlocktankStore, getUserStore } from '../../store/helpers';
 import {
 	ICreateOrderRequest,
 	TGeoBlockResponse,
 } from '../../store/types/blocktank';
-import { setGeoBlock, updateUser } from '../../store/actions/user';
+import { updateUser } from '../../store/slices/user';
+import { setGeoBlock } from '../../store/utils/user';
 import { refreshWallet } from '../wallet';
 import { DEFAULT_CHANNEL_DURATION } from '../../screens/Lightning/CustomConfirm';
 import { __BLOCKTANK_HOST__ } from '../../constants/env';
@@ -36,16 +37,16 @@ const bt = new BlocktankClient();
  * @returns {void}
  */
 export const setupBlocktank = async (
-	selectedNetwork: TAvailableNetworks,
+	selectedNetwork: EAvailableNetwork,
 ): Promise<void> => {
 	let isGeoBlocked = false;
 	switch (selectedNetwork) {
-		case EAvailableNetworks.bitcoin:
+		case EAvailableNetwork.bitcoin:
 			isGeoBlocked = await setGeoBlock();
 			bt.baseUrl = 'https://blocktank.synonym.to/api/v2';
 			break;
-		case EAvailableNetworks.bitcoinRegtest:
-			updateUser({ isGeoBlocked: false });
+		case EAvailableNetwork.bitcoinRegtest:
+			dispatch(updateUser({ isGeoBlocked: false }));
 			bt.baseUrl = 'https://api.stag.blocktank.to/blocktank/api/v2';
 			break;
 	}

@@ -1,8 +1,8 @@
 import { createSelector } from '@reduxjs/toolkit';
-import Store from '../types';
-import { IUser } from '../types/user';
+import { RootState } from '..';
+import { TUser } from '../slices/user';
 
-const userState = (state: Store): IUser => state.user;
+const userState = (state: RootState): TUser => state.user;
 
 export const isGeoBlockedSelector = createSelector(
 	[userState],

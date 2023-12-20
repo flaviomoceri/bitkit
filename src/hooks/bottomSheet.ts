@@ -5,10 +5,10 @@ import {
 	useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 
-import { closeBottomSheet } from '../store/actions/ui';
+import { useAppDispatch, useAppSelector } from './redux';
+import { closeSheet } from '../store/slices/ui';
 import { viewControllerIsOpenSelector } from '../store/reselect/ui';
 import { TViewController } from '../store/types/ui';
-import { useAppSelector } from './redux';
 
 export const useSnapPoints = (
 	size: 'small' | 'medium' | 'large' | 'calendar',
@@ -47,9 +47,10 @@ export const useSnapPoints = (
 export const useBottomSheetBackPress = (
 	viewController: TViewController,
 ): void => {
-	const isBottomSheetOpen = useAppSelector((state) =>
-		viewControllerIsOpenSelector(state, viewController),
-	);
+	const dispatch = useAppDispatch();
+	const isBottomSheetOpen = useAppSelector((state) => {
+		return viewControllerIsOpenSelector(state, viewController);
+	});
 
 	const backHandlerSubscriptionRef = useRef<NativeEventSubscription | null>(
 		null,
@@ -63,7 +64,7 @@ export const useBottomSheetBackPress = (
 		backHandlerSubscriptionRef.current = BackHandler.addEventListener(
 			'hardwareBackPress',
 			() => {
-				closeBottomSheet(viewController);
+				dispatch(closeSheet(viewController));
 				return true;
 			},
 		);
@@ -72,5 +73,5 @@ export const useBottomSheetBackPress = (
 			backHandlerSubscriptionRef.current?.remove();
 			backHandlerSubscriptionRef.current = null;
 		};
-	}, [isBottomSheetOpen, viewController]);
+	}, [isBottomSheetOpen, viewController, dispatch]);
 };

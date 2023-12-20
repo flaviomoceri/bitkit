@@ -5,8 +5,8 @@ import { IBtOrder } from '@synonymdev/blocktank-lsp-http-client';
 
 import '../src/utils/i18n';
 import { todosFullSelector } from '../src/store/reselect/todos';
-import store from '../src/store';
-import Store from '../src/store/types';
+import store, { RootState } from '../src/store';
+
 import { updateWallet } from '../src/store/actions/wallet';
 import {
 	backupSeedPhraseTodo,
@@ -23,9 +23,10 @@ import {
 	transferToSpendingTodo,
 } from '../src/store/shapes/todos';
 import { createNewWallet } from '../src/utils/startup';
+import { EAvailableNetwork } from '../src/utils/networks';
 
 describe('Todos selector', () => {
-	let s: Store;
+	let s: RootState;
 
 	beforeAll(async () => {
 		require('../nodejs-assets/nodejs-project/main.js');
@@ -33,7 +34,7 @@ describe('Todos selector', () => {
 		if (res.isErr()) {
 			throw res.error;
 		}
-		updateWallet({ selectedNetwork: 'bitcoinRegtest' });
+		updateWallet({ selectedNetwork: EAvailableNetwork.bitcoinRegtest });
 		s = store.getState();
 	});
 

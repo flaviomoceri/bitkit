@@ -63,7 +63,7 @@ export type TAvailableUpdate = {
 	critical: boolean;
 };
 
-export interface IUi {
+export type TUiState = {
 	availableUpdate: TAvailableUpdate | null;
 	isAuthenticated: boolean;
 	isConnectedToElectrum: boolean;
@@ -74,4 +74,4 @@ export interface IUi {
 	timeZone: string;
 	language: string;
 	fromAddressViewer: boolean;
-}
+};

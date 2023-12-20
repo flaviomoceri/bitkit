@@ -1,13 +1,13 @@
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import lm from '@synonymdev/react-native-ldk';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import {
 	checkProfileAndContactsBackup,
 	performRemoteBackup,
 	performRemoteLdkBackup,
-} from '../../store/actions/backup';
+} from '../../store/utils/backup';
 import { __DISABLE_SLASHTAGS__ } from '../../constants/env';
 import { useSelectedSlashtag } from '../../hooks/slashtags';
 import { backupSelector } from '../../store/reselect/backup';
@@ -31,15 +31,15 @@ const FAILED_BACKUP_NOTIFICATION_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
 const EnabledSlashtag = (): ReactElement => {
 	const { t } = useTranslation('settings');
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const { slashtag } = useSelectedSlashtag();
-	const backup = useSelector(backupSelector);
-	const settings = useSelector(settingsSelector);
-	const metadata = useSelector(metadataState);
-	const widgets = useSelector(widgetsState);
-	const activity = useSelector(activityItemsState);
-	const blocktank = useSelector(blocktankSelector);
-	const slashtags = useSelector(slashtagsSelector);
+	const backup = useAppSelector(backupSelector);
+	const settings = useAppSelector(settingsSelector);
+	const metadata = useAppSelector(metadataState);
+	const widgets = useAppSelector(widgetsState);
+	const activity = useAppSelector(activityItemsState);
+	const blocktank = useAppSelector(blocktankSelector);
+	const slashtags = useAppSelector(slashtagsSelector);
 	const [now, setNow] = useState<number>(new Date().getTime());
 
 	useEffect(() => {

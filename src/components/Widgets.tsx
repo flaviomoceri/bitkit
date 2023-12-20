@@ -6,7 +6,6 @@ import React, {
 	useState,
 } from 'react';
 import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import DraggableFlatList, {
@@ -19,8 +18,9 @@ import { rootNavigation } from '../navigation/root/RootNavigator';
 import { TouchableOpacity, View } from '../styles/components';
 import { Caption13Up, Text, Text01M } from '../styles/text';
 import { PlusIcon, SortAscendingIcon, Checkmark } from '../styles/icons';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { SUPPORTED_FEED_TYPES } from '../utils/widgets';
-import { setWidgetsSortOrder } from '../store/actions/widgets';
+import { setWidgetsSortOrder } from '../store/slices/widgets';
 import PriceWidget from './PriceWidget';
 import AuthWidget from './AuthWidget';
 import FeedWidget from './FeedWidget';
@@ -28,7 +28,7 @@ import HeadlinesWidget from './HeadlinesWidget';
 import BlocksWidget from './BlocksWidget';
 import FactsWidget from './FactsWidget';
 import LuganoFeedWidget from './LuganoFeedWidget';
-import { IWidget } from '../store/types/widgets';
+import { TAuthWidget, TFeedWidget, TWidget } from '../store/types/widgets';
 import {
 	onboardedWidgetsSelector,
 	widgetsOrderSelector,
@@ -37,24 +37,28 @@ import {
 
 const Widgets = (): ReactElement => {
 	const { t } = useTranslation('slashtags');
-	const widgets = useSelector(widgetsSelector);
-	const sortOrder = useSelector(widgetsOrderSelector);
-	const onboardedWidgets = useSelector(onboardedWidgetsSelector);
+	const dispatch = useAppDispatch();
+	const widgets = useAppSelector(widgetsSelector);
+	const sortOrder = useAppSelector(widgetsOrderSelector);
+	const onboardedWidgets = useAppSelector(onboardedWidgetsSelector);
 	const [editing, setEditing] = useState(false);
 
 	useFocusEffect(useCallback(() => setEditing(false), []));
 
 	const sortedWidgets = useMemo(() => {
-		const savedWidgets = Object.entries(widgets) as [string, IWidget][];
+		const savedWidgets = Object.entries(widgets) as [string, TWidget][];
 		return savedWidgets.sort(
 			([a], [b]) => sortOrder.indexOf(a) - sortOrder.indexOf(b),
 		);
 	}, [widgets, sortOrder]);
 
-	const onDragEnd = useCallback(({ data }) => {
-		const order = data.map((i): string => i[0]);
-		setWidgetsSortOrder(order);
-	}, []);
+	const onDragEnd = useCallback(
+		({ data }) => {
+			const order = data.map((i): string => i[0]);
+			dispatch(setWidgetsSortOrder(order));
+		},
+		[dispatch],
+	);
 
 	const onAdd = (): void => {
 		const screen = onboardedWidgets ? 'WidgetsSuggestions' : 'GoodbyePasswords';
@@ -62,7 +66,7 @@ const Widgets = (): ReactElement => {
 	};
 
 	const renderItem = useCallback(
-		({ item, drag }: RenderItemParams<[string, IWidget]>): ReactElement => {
+		({ item, drag }: RenderItemParams<[string, TWidget]>): ReactElement => {
 			let [url, widget] = item;
 
 			const _drag = (): void => {
@@ -72,13 +76,14 @@ const Widgets = (): ReactElement => {
 				}
 			};
 
-			if (!widget.fields) {
+			if (!Object.hasOwn(widget, 'type')) {
+				const authWidget = widget as TAuthWidget;
 				return (
 					<ScaleDecorator>
 						<AuthWidget
 							style={styles.widget}
 							url={url}
-							widget={widget}
+							widget={authWidget}
 							isEditing={editing}
 							onLongPress={_drag}
 							onPressIn={_drag}
@@ -86,6 +91,8 @@ const Widgets = (): ReactElement => {
 					</ScaleDecorator>
 				);
 			}
+
+			const feedWidget = widget as TFeedWidget;
 
 			let testID: string;
 			let Component:
@@ -95,7 +102,7 @@ const Widgets = (): ReactElement => {
 				| typeof FactsWidget
 				| typeof FeedWidget;
 
-			switch (widget.type) {
+			switch (feedWidget.type) {
 				case SUPPORTED_FEED_TYPES.PRICE_FEED:
 					Component = PriceWidget;
 					testID = 'PriceWidget';
@@ -126,7 +133,7 @@ const Widgets = (): ReactElement => {
 					<Component
 						style={styles.widget}
 						url={url}
-						widget={widget}
+						widget={feedWidget}
 						isEditing={editing}
 						onLongPress={_drag}
 						onPressIn={_drag}

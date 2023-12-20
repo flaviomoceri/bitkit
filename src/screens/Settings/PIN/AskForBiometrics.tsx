@@ -18,9 +18,10 @@ import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import Glow from '../../../components/Glow';
 import { IsSensorAvailableResult } from '../../../components/Biometrics';
+import { useAppDispatch } from '../../../hooks/redux';
 import rnBiometrics from '../../../utils/biometrics';
 import { showToast } from '../../../utils/notifications';
-import { updateSettings } from '../../../store/actions/settings';
+import { updateSettings } from '../../../store/slices/settings';
 import type { PinScreenProps } from '../../../navigation/types';
 
 const imageSrc = require('../../../assets/illustrations/cog.png');
@@ -29,6 +30,7 @@ const AskForBiometrics = ({
 	navigation,
 }: PinScreenProps<'AskForBiometrics'>): ReactElement => {
 	const { t } = useTranslation('security');
+	const dispatch = useAppDispatch();
 	const [biometryData, setBiometricData] = useState<IsSensorAvailableResult>();
 	const [shouldEnableBiometrics, setShouldEnableBiometrics] = useState(false);
 
@@ -69,7 +71,7 @@ const AskForBiometrics = ({
 			.simplePrompt({ promptMessage: t('bio_confirm', { biometricsName }) })
 			.then(({ success }) => {
 				if (success) {
-					updateSettings({ biometrics: true });
+					dispatch(updateSettings({ biometrics: true }));
 					navigation.navigate('Result', { bio: true, type: bioType });
 				}
 			})
@@ -86,6 +88,7 @@ const AskForBiometrics = ({
 		shouldEnableBiometrics,
 		biometricsName,
 		navigation,
+		dispatch,
 		t,
 	]);
 

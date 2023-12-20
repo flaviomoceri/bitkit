@@ -1,10 +1,9 @@
 import React, { memo, ReactElement, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData } from '../../../components/List';
 import SettingsView from '../SettingsView';
-import { updateSettings } from '../../../store/actions/settings';
+import { updateSettings } from '../../../store/slices/settings';
 import {
 	UnitBitcoinIcon,
 	UnitSatoshiIcon,
@@ -15,6 +14,7 @@ import {
 	selectedCurrencySelector,
 } from '../../../store/reselect/settings';
 import { EUnit } from '../../../store/types/wallet';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useCurrency } from '../../../hooks/displayValues';
 import type { SettingsScreenProps } from '../../../navigation/types';
 
@@ -23,8 +23,9 @@ const UnitSettings = ({
 }: SettingsScreenProps<'UnitSettings'>): ReactElement => {
 	const { fiatSymbol } = useCurrency();
 	const { t } = useTranslation('settings');
-	const selectedUnit = useSelector(primaryUnitSelector);
-	const selectedCurrency = useSelector(selectedCurrencySelector);
+	const dispatch = useAppDispatch();
+	const selectedUnit = useAppSelector(primaryUnitSelector);
+	const selectedCurrency = useAppSelector(selectedCurrencySelector);
 
 	const currencyListData: IListData[] = useMemo(() => {
 		const units = [
@@ -58,13 +59,13 @@ const UnitSettings = ({
 					Icon: unit.Icon,
 					onPress: (): void => {
 						navigation.goBack();
-						updateSettings({ unit: unit.unit });
+						dispatch(updateSettings({ unit: unit.unit }));
 					},
 					testID: unit.label,
 				})),
 			},
 		];
-	}, [selectedUnit, selectedCurrency, fiatSymbol, navigation, t]);
+	}, [selectedUnit, selectedCurrency, fiatSymbol, navigation, t, dispatch]);
 
 	return (
 		<SettingsView

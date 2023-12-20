@@ -1,10 +1,10 @@
 // NOTE: 'ui' reducer is not persisted to storage
 
-import { IUi } from '../types/ui';
+import { TUiState } from '../types/ui';
 
 export const defaultViewController = { isOpen: false };
 
-export const defaultViewControllers: IUi['viewControllers'] = {
+export const defaultViewControllers: TUiState['viewControllers'] = {
 	activityTagsPrompt: defaultViewController,
 	addContactModal: defaultViewController,
 	appUpdatePrompt: defaultViewController,
@@ -28,7 +28,7 @@ export const defaultViewControllers: IUi['viewControllers'] = {
 	lnurlPay: defaultViewController,
 };
 
-export const defaultUiShape: IUi = {
+export const initialUiState: TUiState = {
 	availableUpdate: null,
 	isAuthenticated: false,
 	isConnectedToElectrum: true,

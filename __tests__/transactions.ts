@@ -1,5 +1,5 @@
 // Fix 'getDispatch is not a function'
-import '../src/store/actions/ui';
+import '../src/store/utils/ui';
 import {
 	createWallet,
 	setupOnChainTransaction,
@@ -7,12 +7,12 @@ import {
 	updateWallet,
 } from '../src/store/actions/wallet';
 import { getSelectedWallet } from '../src/utils/wallet';
-import { TAvailableNetworks } from '../src/utils/networks';
+import { EAvailableNetwork } from '../src/utils/networks';
 import { mnemonic, walletState } from './utils/dummy-wallet';
 import { createTransaction } from '../src/utils/wallet/transactions';
 import { isValidBech32mEncodedString } from '../src/utils/scanner';
 
-const selectedNetwork: TAvailableNetworks = 'bitcoinTestnet';
+const selectedNetwork = EAvailableNetwork.bitcoinTestnet;
 
 describe('On chain transactions', () => {
 	beforeAll(async () => {

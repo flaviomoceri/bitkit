@@ -9,8 +9,8 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import Dialog from '../../../components/Dialog';
 import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
-import { wipeApp } from '../../../store/actions/settings';
-import { showBottomSheet } from '../../../store/actions/ui';
+import { wipeApp } from '../../../store/utils/settings';
+import { showBottomSheet } from '../../../store/utils/ui';
 import type { SettingsScreenProps } from '../../../navigation/types';
 
 const imageSrc = require('../../../assets/illustrations/restore.png');

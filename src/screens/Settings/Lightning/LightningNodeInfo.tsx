@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useTranslation } from 'react-i18next';
 
@@ -11,6 +10,7 @@ import {
 import { Subtitle, Caption13Up } from '../../../styles/text';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
+import { useAppSelector } from '../../../hooks/redux';
 import { getNodeId } from '../../../utils/lightning';
 import { showToast } from '../../../utils/notifications';
 import { selectedNetworkSelector } from '../../../store/reselect/wallet';
@@ -22,7 +22,7 @@ const LightningNodeInfo = ({
 	const { t } = useTranslation('lightning');
 	const [nodeId, setNodeId] = useState('');
 	const [error, setError] = useState('');
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	useEffect(() => {
 		(async (): Promise<void> => {

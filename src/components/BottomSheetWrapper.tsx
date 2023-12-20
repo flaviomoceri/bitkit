@@ -10,9 +10,9 @@
  * </BottomSheetWrapper>
  *
  * Usage Throughout App:
- * showBottomSheet('viewName');
- * showBottomSheet('viewName', { option1: 'value' });
- * closeBottomSheet('viewName');
+ * dispatch(showBottomSheet('viewName'));
+ * dispatch(showBottomSheet('viewName', { option1: 'value' }));
+ * dispatch(closeSheet('viewName'));
  *
  * Check if a given view is open:
  * getStore().user.viewController['viewName'].isOpen;
@@ -38,10 +38,10 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import { useTheme } from 'styled-components/native';
 
-import { closeBottomSheet } from '../store/actions/ui';
+import { closeSheet } from '../store/slices/ui';
 import { TViewController } from '../store/types/ui';
 import { viewControllerSelector } from '../store/reselect/ui';
-import { useAppSelector } from '../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import BottomSheetBackground from './BottomSheetBackground';
 import { __E2E__ } from '../constants/env';
 
@@ -69,6 +69,7 @@ const BottomSheetWrapper = forwardRef(
 		ref,
 	): ReactElement => {
 		const bottomSheetRef = useRef<BottomSheet>(null);
+		const dispatch = useAppDispatch();
 		const data = useAppSelector((state) => viewControllerSelector(state, view));
 		const theme = useTheme();
 		const handleIndicatorStyle = useMemo(
@@ -107,10 +108,10 @@ const BottomSheetWrapper = forwardRef(
 
 		const _onClose = useCallback(() => {
 			if (data.isOpen) {
-				closeBottomSheet(view);
+				dispatch(closeSheet(view));
 			}
 			onClose?.();
-		}, [data.isOpen, view, onClose]);
+		}, [data.isOpen, view, onClose, dispatch]);
 
 		// callbacks
 		const handleSheetChanges = useCallback(

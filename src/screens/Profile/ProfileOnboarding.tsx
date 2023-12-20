@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { View, StyleSheet, Image, ImageSourcePropType } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Display, Text01S, Text02S } from '../../styles/text';
@@ -16,10 +16,10 @@ import NavigationHeader from '../../components/NavigationHeader';
 import Button from '../../components/Button';
 import GlowingBackground from '../../components/GlowingBackground';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { setOnboardingProfileStep } from '../../store/actions/slashtags';
-import { ISlashtags } from '../../store/types/slashtags';
+import { TSlashtagsState } from '../../store/types/slashtags';
 import SwitchRow from '../../components/SwitchRow';
-import { updateSettings } from '../../store/actions/settings';
+import { updateSettings } from '../../store/slices/settings';
+import { setOnboardingProfileStep } from '../../store/slices/slashtags';
 import DetectSwipe from '../../components/DetectSwipe';
 import type {
 	RootStackParamList,
@@ -67,14 +67,15 @@ export const OfflinePayments = ({
 	navigation,
 }: RootStackScreenProps<'Profile'>): ReactElement => {
 	const { t } = useTranslation('slashtags');
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const dispatch = useAppDispatch();
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const [enableOfflinePayments, setOfflinePayments] = useState(true);
 
 	const savePaymentConfig = useCallback((): void => {
-		updateSettings({ enableOfflinePayments });
+		dispatch(updateSettings({ enableOfflinePayments }));
 		updateSlashPayConfig2({ selectedWallet, selectedNetwork });
-	}, [enableOfflinePayments, selectedNetwork, selectedWallet]);
+	}, [enableOfflinePayments, selectedNetwork, selectedWallet, dispatch]);
 
 	return (
 		<Layout
@@ -120,13 +121,15 @@ const Layout = memo(
 	}: {
 		navigation: StackNavigationProp<RootStackParamList, 'Profile'>;
 		illustration: ImageSourcePropType;
-		nextStep: ISlashtags['onboardingProfileStep'];
+		nextStep: TSlashtagsState['onboardingProfileStep'];
 		buttonText: string;
 		header: string;
 		children: ReactNode;
 		onNext?: () => void;
 	}): ReactElement => {
 		const { isSmallScreen } = useScreenSize();
+		const dispatch = useAppDispatch();
+
 		const onSwipeLeft = (): void => {
 			navigation.navigate('Wallet');
 		};
@@ -160,7 +163,7 @@ const Layout = memo(
 							size="large"
 							onPress={(): void => {
 								onNext?.();
-								setOnboardingProfileStep(nextStep);
+								dispatch(setOnboardingProfileStep(nextStep));
 							}}
 							testID="OnboardingContinue"
 						/>

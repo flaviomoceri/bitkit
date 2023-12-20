@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import { View, StyleSheet, Keyboard } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -13,7 +13,7 @@ import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import SearchInput from '../../components/SearchInput';
 import ContactsList from '../../components/ContactsList';
-import { showBottomSheet } from '../../store/actions/ui';
+import { showBottomSheet } from '../../store/utils/ui';
 import { useProfile2, useSelectedSlashtag2 } from '../../hooks/slashtags2';
 import { RootStackScreenProps } from '../../navigation/types';
 import AddContact from './AddContact';
@@ -25,8 +25,8 @@ import ProfileImage from '../../components/ProfileImage';
 import { parse } from '@synonymdev/slashtags-url';
 
 const Contacts = (props: RootStackScreenProps<'Contacts'>): ReactElement => {
-	const onboarded = useSelector(onboardedContactsSelector);
-	const contacts = useSelector(contactsSelector);
+	const onboarded = useAppSelector(onboardedContactsSelector);
+	const contacts = useAppSelector(contactsSelector);
 	const showOnboarding = !onboarded && Object.keys(contacts).length === 0;
 
 	return showOnboarding ? (

@@ -1,6 +1,6 @@
 import React, { memo, useMemo, ReactElement } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../hooks/redux';
 import {
 	Edge,
 	NativeSafeAreaViewProps,
@@ -17,7 +17,7 @@ const SafeAreaView = ({
 	style,
 	...props
 }: SafeAreaViewProps): ReactElement => {
-	const colors = useSelector(themeColorsSelector);
+	const colors = useAppSelector(themeColorsSelector);
 
 	const safeAreaStyles = useMemo(() => {
 		return {

@@ -1,13 +1,15 @@
-import Store from '../types';
+import { RootState } from '..';
 import { createSelector } from '@reduxjs/toolkit';
 import {
-	IMetadata,
+	TMetadataState,
 	TLastUsedTags,
 	TSlashTagsUrls,
 	TTags,
 } from '../types/metadata';
 
-export const metadataState = (state: Store): IMetadata => state.metadata;
+export const metadataState = (state: RootState): TMetadataState => {
+	return state.metadata;
+};
 
 export const tagsSelector = createSelector(
 	[metadataState],

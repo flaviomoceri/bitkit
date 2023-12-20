@@ -3,7 +3,7 @@ import {
 	createNativeStackNavigator,
 	NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 
 import TermsOfUse from '../../screens/Onboarding/TermsOfUse';
 import WelcomeScreen from '../../screens/Onboarding/Welcome';
@@ -35,7 +35,7 @@ const navOptionHandler = {
 };
 
 const OnboardingNavigator = (): ReactElement => {
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	useEffect(() => {
 		connectToElectrum({ selectedNetwork });

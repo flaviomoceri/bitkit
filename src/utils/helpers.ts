@@ -403,6 +403,14 @@ export const openURL = async (url: string): Promise<boolean> => {
 	}
 };
 
+export const openAppURL = async (url: string): Promise<void> => {
+	try {
+		await Linking.openURL(url);
+	} catch (error) {
+		console.log('Cannot open url: ', url);
+	}
+};
+
 /**
  * Applies an alpha opacity to a hex color
  * @param hexColor

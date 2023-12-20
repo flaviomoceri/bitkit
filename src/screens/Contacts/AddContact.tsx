@@ -5,21 +5,22 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { parse } from '@synonymdev/slashtags-url';
 import { useTranslation } from 'react-i18next';
 
-import { closeBottomSheet } from '../../store/actions/ui';
+import { closeSheet } from '../../store/slices/ui';
 import { handleSlashtagURL } from '../../utils/slashtags';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import LabeledInput from '../../components/LabeledInput';
+import Button from '../../components/Button';
+import SafeAreaInset from '../../components/SafeAreaInset';
+import { Text01S } from '../../styles/text';
+import { ClipboardTextIcon, CornersOutIcon } from '../../styles/icons';
+import type { RootStackParamList } from '../../navigation/types';
+import { useAppDispatch } from '../../hooks/redux';
+import { useSelectedSlashtag2 } from '../../hooks/slashtags2';
 import {
 	useBottomSheetBackPress,
 	useSnapPoints,
 } from '../../hooks/bottomSheet';
-import { Text01S } from '../../styles/text';
-import { ClipboardTextIcon, CornersOutIcon } from '../../styles/icons';
-import type { RootStackParamList } from '../../navigation/types';
-import { useSelectedSlashtag2 } from '../../hooks/slashtags2';
-import Button from '../../components/Button';
-import SafeAreaInset from '../../components/SafeAreaInset';
 
 const AddContact = ({
 	navigation,
@@ -28,6 +29,7 @@ const AddContact = ({
 }): ReactElement => {
 	const { t } = useTranslation('slashtags');
 	const snapPoints = useSnapPoints('small');
+	const dispatch = useAppDispatch();
 	const [url, setUrl] = useState('');
 	const [error, setError] = useState<undefined | string>();
 	const { url: myProfileURL } = useSelectedSlashtag2();
@@ -66,7 +68,7 @@ const AddContact = ({
 
 		const onContact = (): void => {
 			setUrl('');
-			closeBottomSheet('addContactModal');
+			dispatch(closeSheet('addContactModal'));
 		};
 
 		handleSlashtagURL(contactUrl, onError, onContact);

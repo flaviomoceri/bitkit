@@ -7,7 +7,6 @@ import React, {
 	useState,
 } from 'react';
 import { Platform, NativeModules } from 'react-native';
-import { useSelector } from 'react-redux';
 import Toast from 'react-native-toast-message';
 import QuickActions from 'react-native-quick-actions';
 import { ThemeProvider } from 'styled-components/native';
@@ -25,7 +24,8 @@ import AppOnboarded from './AppOnboarded';
 
 import './utils/i18n';
 import './utils/quick-actions';
-import { checkForAppUpdate } from './store/actions/ui';
+import { useAppSelector } from './hooks/redux';
+import { checkForAppUpdate } from './store/utils/ui';
 import { themeSelector } from './store/reselect/settings';
 import { walletExistsSelector } from './store/reselect/wallet';
 import { requiresRemoteRestoreSelector } from './store/reselect/user';
@@ -34,10 +34,10 @@ import { criticalUpdateSelector } from './store/reselect/ui';
 const App = (): ReactElement => {
 	const [isReady, setIsReady] = useState(false);
 	const [showRecovery, setShowRecovery] = useState(false);
-	const theme = useSelector(themeSelector);
-	const walletExists = useSelector(walletExistsSelector);
-	const hasCriticalUpdate = useSelector(criticalUpdateSelector);
-	const requiresRemoteRestore = useSelector(requiresRemoteRestoreSelector);
+	const theme = useAppSelector(themeSelector);
+	const walletExists = useAppSelector(walletExistsSelector);
+	const hasCriticalUpdate = useAppSelector(criticalUpdateSelector);
+	const requiresRemoteRestore = useAppSelector(requiresRemoteRestoreSelector);
 
 	// on App start
 	useEffect(() => {

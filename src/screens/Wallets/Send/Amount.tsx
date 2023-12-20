@@ -7,7 +7,6 @@ import React, {
 	useEffect,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useRoute } from '@react-navigation/native';
 
@@ -39,6 +38,7 @@ import {
 	primaryUnitSelector,
 	coinSelectAutoSelector,
 } from '../../../store/reselect/settings';
+import { useAppSelector } from '../../../hooks/redux';
 import { useSwitchUnit } from '../../../hooks/wallet';
 import { useCurrency } from '../../../hooks/displayValues';
 import { EUnit } from '../../../store/types/wallet';
@@ -54,12 +54,12 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const { fiatTicker } = useCurrency();
 	const [nextUnit, switchUnit] = useSwitchUnit();
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const coinSelectAuto = useSelector(coinSelectAutoSelector);
-	const transaction = useSelector(transactionSelector);
-	const unit = useSelector(primaryUnitSelector);
-	const isMaxSendAmount = useSelector(transactionMaxSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const coinSelectAuto = useAppSelector(coinSelectAutoSelector);
+	const transaction = useAppSelector(transactionSelector);
+	const unit = useAppSelector(primaryUnitSelector);
+	const isMaxSendAmount = useAppSelector(transactionMaxSelector);
 	const [text, setText] = useState('');
 	const [error, setError] = useState(false);
 

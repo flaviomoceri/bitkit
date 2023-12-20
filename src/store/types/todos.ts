@@ -26,9 +26,7 @@ export interface IOpenChannelNotification {
 	[key: string]: number;
 }
 
-export type ITodos = {
-	hide: Partial<{
-		[K in TTodoType]: number;
-	}>;
+export type TTodosState = {
+	hide: Partial<{ [K in TTodoType]: number }>;
 	newChannelsNotifications: IOpenChannelNotification;
 };

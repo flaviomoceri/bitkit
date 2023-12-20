@@ -11,7 +11,7 @@ import { openURL } from '../../utils/helpers';
 import type { OnboardingStackScreenProps } from '../../navigation/types';
 
 import termsOfUseText from '../../assets/tos';
-import { wipeApp } from '../../store/actions/settings';
+import { wipeApp } from '../../store/utils/settings';
 
 const TermsOfUse = ({
 	navigation,

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { View, TextInput, ScrollView } from '../../../styles/components';
 import { Caption13Up, Text01S } from '../../../styles/text';
 import { ScanIcon } from '../../../styles/icons';
-import { updateSettings } from '../../../store/actions/settings';
+import { updateSettings } from '../../../store/slices/settings';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
@@ -15,6 +15,7 @@ import { showToast } from '../../../utils/notifications';
 import { saveProfile2, updateSlashPayConfig2 } from '../../../utils/slashtags2';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import { __WEB_RELAY__ } from '../../../constants/env';
+import { useAppDispatch } from '../../../hooks/redux';
 import {
 	useProfile2,
 	useSelectedSlashtag2,
@@ -43,6 +44,7 @@ const WebRelay = ({
 	navigation,
 }: SettingsScreenProps<'WebRelay'>): ReactElement => {
 	const { t } = useTranslation('settings');
+	const dispatch = useAppDispatch();
 	const {
 		webRelayClient,
 		webRelayUrl,
@@ -79,7 +81,7 @@ const WebRelay = ({
 				});
 				return;
 			}
-			updateSettings({ webRelay: newUrl });
+			dispatch(updateSettings({ webRelay: newUrl }));
 			setUpdated((prev) => prev + 1);
 			showToast({
 				type: 'success',

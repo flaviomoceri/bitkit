@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../hooks/redux';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -16,11 +16,11 @@ import useDisplayValues from '../../hooks/displayValues';
 import NumberPadWeeks from './NumberPadWeeks';
 import { LightningScreenProps } from '../../navigation/types';
 import { sleep } from '../../utils/helpers';
-import Store from '../../store/types';
+
 import {
 	confirmChannelPurchase,
 	startChannelPurchase,
-} from '../../store/actions/blocktank';
+} from '../../store/utils/blocktank';
 import { showToast } from '../../utils/notifications';
 import {
 	selectedNetworkSelector,
@@ -41,14 +41,14 @@ const CustomConfirm = ({
 	const [loading, setLoading] = useState(false);
 	const [orderId, setOrderId] = useState(route.params.orderId);
 	const [showNumberPad, setShowNumberPad] = useState(false);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const order = useSelector((state: Store) => {
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const order = useAppSelector((state) => {
 		return blocktankOrderSelector(state, orderId);
 	});
 
 	const blocktankPurchaseFee = useDisplayValues(order?.feeSat ?? 0);
-	const transactionFee = useSelector(transactionFeeSelector);
+	const transactionFee = useAppSelector(transactionFeeSelector);
 	const fiatTransactionFee = useDisplayValues(transactionFee);
 	const clientBalance = useDisplayValues(order?.clientBalanceSat ?? 0);
 

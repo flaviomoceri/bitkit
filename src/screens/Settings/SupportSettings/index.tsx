@@ -11,13 +11,13 @@ import {
 	TelegramIcon,
 	TwitterIcon,
 } from '../../../styles/icons';
-import { openURL } from '../../../utils/helpers';
 import NavigationHeader from '../../../components/NavigationHeader';
 import List, { EItemType, IListData } from '../../../components/List';
 import GlowingBackground from '../../../components/GlowingBackground';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import GlowImage from '../../../components/GlowImage';
+import { openAppURL, openURL } from '../../../utils/helpers';
 
 const imageSrc = require('../../../assets/illustrations/question-mark.png');
 
@@ -78,42 +78,42 @@ const SupportSettings = ({
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
-								openURL('https://www.bitkit.to');
+								openAppURL('https://www.bitkit.to');
 							}}>
 							<GlobeIcon color="white" height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
-								openURL('https://www.medium.com/synonym-to');
+								openAppURL('https://www.medium.com/synonym-to');
 							}}>
 							<MediumIcon color="white" height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
-								openURL('https://www.twitter.com/bitkitwallet');
+								openAppURL('https://www.twitter.com/bitkitwallet');
 							}}>
 							<TwitterIcon color="white" height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
-								openURL('https://discord.gg/DxTBJXvJxn');
+								openAppURL('https://discord.gg/DxTBJXvJxn');
 							}}>
 							<DiscordIcon color="white" height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
-								openURL('https://t.me/bitkitchat');
+								openAppURL('https://t.me/bitkitchat');
 							}}>
 							<TelegramIcon color="white" height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
-								openURL('https://www.github.com/synonymdev');
+								openAppURL('https://www.github.com/synonymdev');
 							}}>
 							<GithubIcon color="white" height={24} width={24} />
 						</Pressable>

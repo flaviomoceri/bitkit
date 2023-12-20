@@ -11,16 +11,16 @@ import {
 } from '../wallet';
 import { createWallet, updateExchangeRates } from '../../store/actions/wallet';
 import { getWalletStore } from '../../store/helpers';
-import { refreshBlocktankInfo } from '../../store/actions/blocktank';
+import { refreshBlocktankInfo } from '../../store/utils/blocktank';
 import { connectToElectrum, subscribeToHeader } from '../wallet/electrum';
-import { updateOnchainFeeEstimates } from '../../store/actions/fees';
+import { updateOnchainFeeEstimates } from '../../store/utils/fees';
 import { keepLdkSynced, setupLdk } from '../lightning';
 import { setupBlocktank, watchPendingOrders } from '../blocktank';
 import { updateSlashPayConfig2 } from '../slashtags2';
 import { Slashtag } from '../../hooks/slashtags';
-import { performFullRestoreFromLatestBackup } from '../../store/actions/backup';
+import { performFullRestoreFromLatestBackup } from '../../store/utils/backup';
 import { promiseTimeout } from '../helpers';
-import { TAvailableNetworks } from '../networks';
+import { EAvailableNetwork } from '../networks';
 import { TWalletName } from '../../store/types/wallet';
 import { runChecks } from '../wallet/checks';
 
@@ -93,7 +93,7 @@ export const startWalletServices = async ({
 	restore?: boolean;
 	staleBackupRecoveryMode?: boolean;
 	selectedWallet?: TWalletName;
-	selectedNetwork?: TAvailableNetworks;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	try {
 		// wait for interactions/animations to be completed

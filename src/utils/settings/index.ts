@@ -1,5 +1,6 @@
 import { resetKeychainValue, setKeychainValue } from '../keychain';
-import { updateSettings } from '../../store/actions/settings';
+import { dispatch } from '../../store/helpers';
+import { updateSettings } from '../../store/slices/settings';
 import { PIN_ATTEMPTS } from '../../components/PinPad';
 
 /**
@@ -15,7 +16,7 @@ export const addPin = async (newPin: string): Promise<void> => {
  * Edit PIN keychain data and update settings state
  */
 export const editPin = async (newPin: string): Promise<void> => {
-	updateSettings({ pin: true });
+	dispatch(updateSettings({ pin: true }));
 
 	await Promise.all([
 		setKeychainValue({ key: 'pin', value: newPin }),
@@ -29,13 +30,15 @@ export const editPin = async (newPin: string): Promise<void> => {
  */
 export const removePin = async (): Promise<void> => {
 	// reset to defaults
-	updateSettings({
-		pin: false,
-		pinOnLaunch: true,
-		pinOnIdle: false,
-		pinForPayments: false,
-		biometrics: false,
-	});
+	dispatch(
+		updateSettings({
+			pin: false,
+			pinOnLaunch: true,
+			pinOnIdle: false,
+			pinForPayments: false,
+			biometrics: false,
+		}),
+	);
 
 	await Promise.all([
 		setKeychainValue({ key: 'pinAttemptsRemaining', value: PIN_ATTEMPTS }),

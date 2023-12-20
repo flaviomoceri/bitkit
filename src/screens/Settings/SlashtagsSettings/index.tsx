@@ -1,10 +1,10 @@
 import React, { memo, ReactElement, useState, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import b4a from 'b4a';
 
 import { __SLASHTAGS_SEEDER_BASE_URL__ } from '../../../constants/env';
 import { EItemType, IListData } from '../../../components/List';
 import SettingsView from '../SettingsView';
+import { useAppSelector } from '../../../hooks/redux';
 import { useSelectedSlashtag } from '../../../hooks/slashtags';
 import { useSlashtagsSDK } from '../../../components/SlashtagsProvider';
 import { lastSentSelector } from '../../../store/reselect/slashtags';
@@ -20,7 +20,7 @@ const SlashtagsSettings = (): ReactElement => {
 	const [driveVersion, setDriveVersion] = useState(1);
 	const [profileError, setProfileError] = useState();
 
-	const lastSeed = useSelector(lastSentSelector);
+	const lastSeed = useAppSelector(lastSentSelector);
 
 	const [seederStatus, setSeederStatus] = useState({
 		seeded: false,

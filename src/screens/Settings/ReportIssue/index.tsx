@@ -72,7 +72,7 @@ const ReportIssue = ({
 	const isValid = validateEmail(email) && message;
 
 	return (
-		<GlowingBackground bottomRight="green">
+		<GlowingBackground>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('support.report')}

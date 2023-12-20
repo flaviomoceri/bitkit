@@ -11,9 +11,10 @@ import Button from '../../components/Button';
 import GlowImage from '../../components/GlowImage';
 import { openURL } from '../../utils/helpers';
 import { objectKeys } from '../../utils/objectKeys';
-import { useAppSelector } from '../../hooks/redux';
-import { ignoreAppUpdate } from '../../store/actions/user';
-import { showBottomSheet, closeBottomSheet } from '../../store/actions/ui';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { ignoreAppUpdate } from '../../store/slices/user';
+import { closeSheet } from '../../store/slices/ui';
+import { showBottomSheet } from '../../store/utils/ui';
 import { ignoreAppUpdateTimestampSelector } from '../../store/reselect/user';
 import {
 	availableUpdateSelector,
@@ -32,6 +33,7 @@ const CHECK_DELAY = 2500; // how long user needs to stay on Wallets screen befor
 const AppUpdatePrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 	const { t } = useTranslation('other');
 	const snapPoints = useSnapPoints('large');
+	const dispatch = useAppDispatch();
 	const viewControllers = useAppSelector(viewControllersSelector);
 	const updateInfo = useAppSelector(availableUpdateSelector);
 	const ignoreTimestamp = useAppSelector(ignoreAppUpdateTimestampSelector);
@@ -76,14 +78,14 @@ const AppUpdatePrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 	}, [shouldShowBottomSheet]);
 
 	const onCancel = (): void => {
-		ignoreAppUpdate();
-		closeBottomSheet('appUpdatePrompt');
+		dispatch(ignoreAppUpdate());
+		dispatch(closeSheet('appUpdatePrompt'));
 	};
 
 	const onUpdate = async (): Promise<void> => {
-		ignoreAppUpdate();
+		dispatch(ignoreAppUpdate());
 		await openURL(updateInfo?.url!);
-		closeBottomSheet('appUpdatePrompt');
+		dispatch(closeSheet('appUpdatePrompt'));
 	};
 
 	return (

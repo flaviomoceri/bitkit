@@ -1,6 +1,5 @@
 import React, { ReactElement, memo, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Caption13Up, Text01S } from '../../../styles/text';
@@ -13,6 +12,7 @@ import NumberPad from '../../../components/NumberPad';
 import { getTotalFee, updateFee } from '../../../utils/wallet/transactions';
 import { handleNumberPadPress } from '../../../utils/numberpad';
 import { showToast } from '../../../utils/notifications';
+import { useAppSelector } from '../../../hooks/redux';
 import useDisplayValues from '../../../hooks/displayValues';
 import {
 	selectedNetworkSelector,
@@ -25,9 +25,9 @@ const FeeCustom = ({
 	navigation,
 }: SendScreenProps<'FeeCustom'>): ReactElement => {
 	const { t } = useTranslation('wallet');
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const transaction = useSelector(transactionSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const transaction = useAppSelector(transactionSelector);
 	const [feeRate, setFeeRate] = useState(transaction.satsPerByte);
 
 	const totalFee = getTotalFee({

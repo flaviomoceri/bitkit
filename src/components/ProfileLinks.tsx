@@ -5,17 +5,18 @@ import {
 	StyleProp,
 	StyleSheet,
 	ViewStyle,
-	Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Caption13Up, Text02M, Text02S } from '../styles/text';
 import { TrashIcon } from '../styles/icons';
 import { LocalLink } from '../store/types/slashtags';
-import { editLink, removeLink } from '../store/actions/slashtags';
+import { useAppDispatch } from '../hooks/redux';
+import { editLink, deleteLink } from '../store/slices/slashtags';
 import LabeledInput from './LabeledInput';
 import Divider from './Divider';
 import { suggestions } from '../screens/Profile/ProfileLinkSuggestions';
+import { openAppURL } from '../utils/helpers';
 
 const trimLink = (link: LocalLink): string => {
 	let trimmedUrl = link.url;
@@ -33,14 +34,6 @@ const trimLink = (link: LocalLink): string => {
 	return trimmedUrl.replace('https://', '').replace('www.', '');
 };
 
-const openURL = async (url: string): Promise<void> => {
-	try {
-		await Linking.openURL(url);
-	} catch (err) {
-		console.log('Cannot open url: ', url);
-	}
-};
-
 const ProfileLinks = ({
 	links,
 	editable = false,
@@ -51,6 +44,15 @@ const ProfileLinks = ({
 	style?: StyleProp<ViewStyle>;
 }): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
+
+	const onChange = (link: LocalLink): void => {
+		dispatch(editLink(link));
+	};
+
+	const onRemove = (id: LocalLink['id']): void => {
+		dispatch(deleteLink(id));
+	};
 
 	return (
 		<View style={style}>
@@ -70,17 +72,11 @@ const ProfileLinks = ({
 							label={link.title}
 							value={link.url}
 							onChange={(value: string): void => {
-								editLink({
-									id: link.id,
-									title: link.title,
-									url: value,
-								});
+								onChange({ ...link, url: value });
 							}}>
 							<TouchableOpacity
 								testID="RemoveLinkButton"
-								onPress={(): void => {
-									removeLink(link.id);
-								}}>
+								onPress={(): void => onRemove(link.id)}>
 								<TrashIcon color="brand" width={16} />
 							</TouchableOpacity>
 						</LabeledInput>
@@ -88,7 +84,7 @@ const ProfileLinks = ({
 						<TouchableOpacity
 							key={link.id}
 							onPress={(): void => {
-								openURL(link.url);
+								openAppURL(link.url);
 							}}>
 							<Caption13Up style={styles.label} color="gray1">
 								{link.title}

@@ -24,22 +24,22 @@ export type TWidgetSettings = {
 	extras?: {
 		period?: TGraphPeriod;
 		showSource?: boolean;
+		showTitle?: boolean;
 	};
 };
 
-export interface IWidget {
+export type TFeedWidget = {
 	type: string;
 	fields: SlashFeedJSON['fields'];
 	extras?: TWidgetSettings['extras'];
-	magiclink?: boolean;
-}
+};
 
-export interface IWidgets {
-	[url: string]: IWidget | undefined;
-}
+export type TAuthWidget = {
+	magiclink: boolean;
+};
 
-export interface IWidgetsStore {
-	widgets: IWidgets;
-	onboardedWidgets: boolean;
-	sortOrder: string[];
-}
+export type TWidget = TFeedWidget | TAuthWidget;
+
+export type TWidgets = {
+	[url: string]: TWidget | undefined;
+};

@@ -1,4 +1,6 @@
-import Store from '../types';
-import { IReceive } from '../types/receive';
+import { RootState } from '..';
+import { TReceiveState } from '../slices/receive';
 
-export const receiveSelector = (state: Store): IReceive => state.receive;
+export const receiveSelector = (state: RootState): TReceiveState => {
+	return state.receive;
+};

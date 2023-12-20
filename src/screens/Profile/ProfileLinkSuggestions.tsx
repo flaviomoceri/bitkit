@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import Button from '../../components/Button';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import GradientView from '../../components/GradientView';
-import { updateProfileLink } from '../../store/actions/ui';
+import { useAppDispatch } from '../../hooks/redux';
+import { updateProfileLink } from '../../store/slices/ui';
 import { TProfileLink } from '../../store/types/ui';
 import type { ProfileLinkScreenProps } from '../../navigation/types';
 
@@ -38,9 +39,12 @@ const ProfileLinkSuggestions = ({
 	navigation,
 }: ProfileLinkScreenProps<'ProfileLinkSuggestions'>): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
 
 	const handleChoose = (suggestion: TSuggestion): void => {
-		updateProfileLink({ title: suggestion.title, url: suggestion.prefix });
+		dispatch(
+			updateProfileLink({ title: suggestion.title, url: suggestion.prefix }),
+		);
 		navigation.goBack();
 	};
 

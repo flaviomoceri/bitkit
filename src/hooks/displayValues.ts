@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../hooks/redux';
 
 import { getExchangeRate } from '../utils/exchange-rate';
 import { getDisplayValues } from '../utils/displayValues';
@@ -15,9 +15,9 @@ export default function useDisplayValues(
 	satoshis: number,
 	unit?: EUnit,
 ): IDisplayValues {
-	const primaryUnit = useSelector(primaryUnitSelector);
-	const selectedCurrency = useSelector(selectedCurrencySelector);
-	const exchangeRates = useSelector(exchangeRatesSelector);
+	const primaryUnit = useAppSelector(primaryUnitSelector);
+	const selectedCurrency = useAppSelector(selectedCurrencySelector);
+	const exchangeRates = useAppSelector(exchangeRatesSelector);
 	const exchangeRate = useMemo(
 		() => getExchangeRate(selectedCurrency),
 		[selectedCurrency],
@@ -54,8 +54,8 @@ export const useCurrency = (): {
 	fiatTicker: string;
 	fiatSymbol: string;
 } => {
-	const selectedCurrency = useSelector(selectedCurrencySelector);
-	const exchangeRates = useSelector(exchangeRatesSelector);
+	const selectedCurrency = useAppSelector(selectedCurrencySelector);
+	const exchangeRates = useAppSelector(exchangeRatesSelector);
 	const symbol = exchangeRates[selectedCurrency]?.currencySymbol;
 
 	return {
@@ -68,7 +68,7 @@ export const useCurrency = (): {
  * Returns 0 if no exchange rate for currency found or something goes wrong
  */
 export const useExchangeRate = (currency = 'EUR'): number => {
-	const exchangeRates = useSelector(exchangeRatesSelector);
+	const exchangeRates = useAppSelector(exchangeRatesSelector);
 	return useMemo(
 		() => exchangeRates[currency]?.rate ?? 0,
 		[currency, exchangeRates],

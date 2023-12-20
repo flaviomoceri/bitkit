@@ -1,6 +1,6 @@
 import React, { memo, ReactElement, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { Text01S } from '../../styles/text';
@@ -8,7 +8,6 @@ import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Button from '../../components/Button';
-import { closeBottomSheet, showBottomSheet } from '../../store/actions/ui';
 import GlowImage from '../../components/GlowImage';
 import { closeAllChannels } from '../../utils/lightning';
 import { showToast } from '../../utils/notifications';
@@ -16,12 +15,14 @@ import {
 	useBottomSheetBackPress,
 	useSnapPoints,
 } from '../../hooks/bottomSheet';
+import { closeSheet } from '../../store/slices/ui';
+import { showBottomSheet } from '../../store/utils/ui';
+import { clearCoopCloseTimer } from '../../store/slices/user';
+import { startCoopCloseTimestampSelector } from '../../store/reselect/user';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from '../../store/reselect/wallet';
-import { startCoopCloseTimestampSelector } from '../../store/reselect/user';
-import { clearCoopCloseTimer } from '../../store/actions/user';
 
 const imageSrc = require('../../assets/illustrations/exclamation-mark.png');
 
@@ -31,9 +32,10 @@ const GIVE_UP = 1000 * 60 * 30;
 const ForceTransfer = (): ReactElement => {
 	const { t } = useTranslation('lightning');
 	const snapPoints = useSnapPoints('large');
-	const startTime = useSelector(startCoopCloseTimestampSelector);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
+	const dispatch = useAppDispatch();
+	const startTime = useAppSelector(startCoopCloseTimestampSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	useBottomSheetBackPress('forceTransfer');
 
@@ -57,7 +59,7 @@ const ForceTransfer = (): ReactElement => {
 			if (closeResponse.isOk()) {
 				if (closeResponse.value.length === 0) {
 					console.log('coop close success.');
-					clearCoopCloseTimer();
+					dispatch(clearCoopCloseTimer());
 					clearInterval(interval);
 				} else {
 					console.log('coop close failed.');
@@ -70,7 +72,7 @@ const ForceTransfer = (): ReactElement => {
 			const isTimeoutOver = Number(new Date()) - startTime > GIVE_UP;
 			if (isTimeoutOver) {
 				console.log('giving up on coop close.');
-				clearCoopCloseTimer();
+				dispatch(clearCoopCloseTimer());
 				clearInterval(interval);
 				showBottomSheet('forceTransfer');
 				return;
@@ -82,10 +84,10 @@ const ForceTransfer = (): ReactElement => {
 		return (): void => {
 			clearInterval(interval);
 		};
-	}, [selectedNetwork, selectedWallet, startTime]);
+	}, [selectedNetwork, selectedWallet, startTime, dispatch]);
 
 	const onCancel = (): void => {
-		closeBottomSheet('forceTransfer');
+		dispatch(closeSheet('forceTransfer'));
 	};
 
 	const onContinue = async (): Promise<void> => {
@@ -112,7 +114,7 @@ const ForceTransfer = (): ReactElement => {
 					title: t('force_init_title'),
 					description: t('force_init_msg'),
 				});
-				closeBottomSheet('forceTransfer');
+				dispatch(closeSheet('forceTransfer'));
 			} else {
 				console.log('force close failed.');
 				showToast({

@@ -16,16 +16,16 @@ import GradientView from '../../components/GradientView';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Title from './Title';
 import GradientText from './GradientText';
-import useDisplayValues from '../../hooks/displayValues';
 import { EUnit } from '../../store/types/wallet';
 import { emptyPrize, prizes } from './prizes';
 import BitkitLogo from '../../assets/bitkit-logo.svg';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { useScreenSize } from '../../hooks/screen';
+import useDisplayValues from '../../hooks/displayValues';
 import { useLightningMaxInboundCapacity } from '../../hooks/lightning';
 import { getNodeIdFromStorage, waitForLdk } from '../../utils/lightning';
-import { createLightningInvoice } from '../../store/actions/lightning';
-import { useAppSelector } from '../../hooks/redux';
-import { updateTreasureChest } from '../../store/actions/settings';
-import { useScreenSize } from '../../hooks/screen';
+import { updateTreasureChest } from '../../store/slices/settings';
+import { createLightningInvoice } from '../../store/utils/lightning';
 import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
 import type { TreasureHuntScreenProps } from '../../navigation/types';
 
@@ -58,6 +58,7 @@ const Prize = ({
 	const animationRef = useRef<Lottie>(null);
 	const appState = useRef(AppState.currentState);
 	const { isSmallScreen } = useScreenSize();
+	const dispatch = useAppDispatch();
 	const { treasureChests } = useAppSelector((state) => state.settings);
 	const maxInboundCapacitySat = useLightningMaxInboundCapacity();
 
@@ -177,11 +178,13 @@ const Prize = ({
 					console.log(result.error);
 					return;
 				} else {
-					updateTreasureChest({
-						chestId,
-						attemptId,
-						state: 'claimed',
-					});
+					dispatch(
+						updateTreasureChest({
+							chestId,
+							attemptId,
+							state: 'claimed',
+						}),
+					);
 				}
 			}
 		};
@@ -215,10 +218,12 @@ const Prize = ({
 
 				clearTimeout(interval.current);
 
-				updateTreasureChest({
-					chestId,
-					state: result.state === 'SUCCESS' ? 'success' : 'failed',
-				});
+				dispatch(
+					updateTreasureChest({
+						chestId,
+						state: result.state === 'SUCCESS' ? 'success' : 'failed',
+					}),
+				);
 
 				if (result.state === 'FAILED') {
 					navigation.replace('Error');

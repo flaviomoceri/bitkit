@@ -1,13 +1,13 @@
 import React, { memo, ReactElement, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../hooks/redux';
 import { RouteProp } from '@react-navigation/native';
 import Animated, { FadeOut } from 'react-native-reanimated';
 
 import GlowingBackground from './GlowingBackground';
 import Biometrics from './Biometrics';
 import PinPad from './PinPad';
-import Store from '../store/types';
+import { biometricsSelector } from '../store/reselect/settings';
 
 type AuthCheckProps = {
 	showBackNavigation?: boolean;
@@ -25,7 +25,7 @@ const AuthCheck = ({
 	route,
 	onSuccess,
 }: AuthCheckProps): ReactElement => {
-	const biometrics = useSelector((state: Store) => state.settings.biometrics);
+	const biometrics = useAppSelector(biometricsSelector);
 	const [requireBiometrics, setRequireBiometrics] = useState(biometrics);
 
 	const requirePin = route?.params?.requirePin ?? false;
@@ -49,6 +49,8 @@ const AuthCheck = ({
 			<PinPad
 				showBackNavigation={showBackNavigation}
 				showLogoOnPIN={showLogoOnPIN}
+				allowBiometrics={biometrics && !requirePin}
+				onShowBiotmetrics={(): void => setRequireBiometrics(true)}
 				onSuccess={(): void => onSuccess?.()}
 			/>
 		</Animated.View>

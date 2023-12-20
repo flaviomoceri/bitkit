@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
-import { useSelector } from 'react-redux';
 import NetInfo from '@react-native-community/netinfo';
 import { useTranslation } from 'react-i18next';
 
@@ -10,8 +9,10 @@ import { startWalletServices } from './utils/startup';
 import { electrumConnection } from './utils/electrum';
 import { unsubscribeFromLightningSubscriptions } from './utils/lightning';
 import i18n from './utils/i18n';
-import { getStore } from './store/helpers';
-import { updateUi } from './store/actions/ui';
+import { useAppSelector } from './hooks/redux';
+import { useMigrateSlashtags2 } from './hooks/slashtags2';
+import { dispatch, getStore } from './store/helpers';
+import { updateUi } from './store/slices/ui';
 import { isOnlineSelector } from './store/reselect/ui';
 import { pinOnLaunchSelector, pinSelector } from './store/reselect/settings';
 import { showToast } from './utils/notifications';
@@ -19,14 +20,13 @@ import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from './store/reselect/wallet';
-import { useMigrateSlashtags2 } from './hooks/slashtags2';
 
 const onElectrumConnectionChange = (isConnected: boolean): void => {
 	// get state fresh from store everytime
 	const { isConnectedToElectrum } = getStore().ui;
 
 	if (!isConnectedToElectrum && isConnected) {
-		updateUi({ isConnectedToElectrum: isConnected });
+		dispatch(updateUi({ isConnectedToElectrum: isConnected }));
 		showToast({
 			type: 'success',
 			title: i18n.t('other:connection_restored_title'),
@@ -35,7 +35,7 @@ const onElectrumConnectionChange = (isConnected: boolean): void => {
 	}
 
 	if (isConnectedToElectrum && !isConnected) {
-		updateUi({ isConnectedToElectrum: isConnected });
+		dispatch(updateUi({ isConnectedToElectrum: isConnected }));
 		showToast({
 			type: 'error',
 			title: i18n.t('other:connection_reconnect_title'),
@@ -47,11 +47,11 @@ const onElectrumConnectionChange = (isConnected: boolean): void => {
 const AppOnboarded = (): ReactElement => {
 	const { t } = useTranslation('other');
 	const appState = useRef(AppState.currentState);
-	const selectedWallet = useSelector(selectedWalletSelector);
-	const selectedNetwork = useSelector(selectedNetworkSelector);
-	const pin = useSelector(pinSelector);
-	const pinOnLaunch = useSelector(pinOnLaunchSelector);
-	const isOnline = useSelector(isOnlineSelector);
+	const selectedWallet = useAppSelector(selectedWalletSelector);
+	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const pin = useAppSelector(pinSelector);
+	const pinOnLaunch = useAppSelector(pinOnLaunchSelector);
+	const isOnline = useAppSelector(isOnlineSelector);
 
 	// migrate slashtags from v1 to v2
 	useMigrateSlashtags2();
@@ -61,7 +61,7 @@ const AppOnboarded = (): ReactElement => {
 		startWalletServices({ selectedNetwork, selectedWallet });
 
 		const needsAuth = pin && pinOnLaunch;
-		updateUi({ isAuthenticated: !needsAuth });
+		dispatch(updateUi({ isAuthenticated: !needsAuth }));
 
 		return () => {
 			unsubscribeFromLightningSubscriptions();
@@ -122,14 +122,14 @@ const AppOnboarded = (): ReactElement => {
 						description: t('connection_back_msg'),
 					});
 				}
-				updateUi({ isOnline: true });
+				dispatch(updateUi({ isOnline: true }));
 			} else {
 				showToast({
 					type: 'error',
 					title: t('connection_issue'),
 					description: t('connection_issue_explain'),
 				});
-				updateUi({ isOnline: false });
+				dispatch(updateUi({ isOnline: false }));
 			}
 		});
 

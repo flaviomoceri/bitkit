@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { parse } from '@synonymdev/slashtags-url';
 
+import { Text02S } from '../../styles/text';
 import { View as ThemedView } from '../../styles/components';
 import Button from '../../components/Button';
 import Divider from '../../components/Divider';
@@ -12,17 +13,17 @@ import NavigationHeader from '../../components/NavigationHeader';
 import KeyboardAvoidingView from '../../components/KeyboardAvoidingView';
 import ProfileCard, { MAX_NAME_LENGTH } from '../../components/ProfileCard';
 import { RootStackScreenProps } from '../../navigation/types';
-import { addContact } from '../../store/actions/slashtags';
-import { contactSelector } from '../../store/reselect/slashtags';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useProfile2, useSelectedSlashtag2 } from '../../hooks/slashtags2';
-import { Text02S } from '../../styles/text';
+import { addContact } from '../../store/slices/slashtags';
+import { contactSelector } from '../../store/reselect/slashtags';
 
 const ContactEdit = ({
 	navigation,
 	route,
 }: RootStackScreenProps<'ContactEdit'>): ReactElement => {
 	const { t } = useTranslation('slashtags');
+	const dispatch = useAppDispatch();
 	const url = route.params.url;
 	const savedContact = useAppSelector((state) => {
 		return contactSelector(state, url);
@@ -60,7 +61,7 @@ const ContactEdit = ({
 			return;
 		}
 		// To avoid phishing attacks, a name should always be saved in contact record
-		addContact(contact.url, name);
+		dispatch(addContact({ url: contact.url, name }));
 		navigation.navigate('Contact', { url: contact.url });
 	};
 

@@ -22,11 +22,11 @@ import { ClockIcon, LightningIcon } from '../../styles/icons';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import Glow from '../../components/Glow';
 import AmountToggle from '../../components/AmountToggle';
-import { closeBottomSheet } from '../../store/actions/ui';
+import { closeSheet } from '../../store/slices/ui';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import { rootNavigation } from '../../navigation/root/RootNavigator';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
 	useBottomSheetBackPress,
 	useSnapPoints,
@@ -43,6 +43,7 @@ const NewTxPrompt = (): ReactElement => {
 	const snapPoints = useSnapPoints('large');
 	const animationRef = useRef<Lottie>(null);
 	const appState = useRef(AppState.currentState);
+	const dispatch = useAppDispatch();
 	const { activityItem } = useAppSelector((state) => {
 		return viewControllerSelector(state, 'newTxPrompt');
 	});
@@ -84,7 +85,7 @@ const NewTxPrompt = (): ReactElement => {
 	}, []);
 
 	const handlePress = (): void => {
-		closeBottomSheet('newTxPrompt');
+		dispatch(closeSheet('newTxPrompt'));
 		rootNavigation.navigate('ActivityDetail', { id: activityItem!.id });
 	};
 

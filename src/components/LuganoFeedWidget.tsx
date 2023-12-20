@@ -16,6 +16,7 @@ import { useSlashfeed } from '../hooks/widgets';
 import Button from './Button';
 import { CalendarIcon, MapPinLineIcon, MapTrifoldIcon } from '../styles/icons';
 import { useAppSelector } from '../hooks/redux';
+import { TFeedWidget } from '../store/types/widgets';
 
 const cache = {
 	banner: '',
@@ -25,6 +26,7 @@ const cache = {
 
 const LuganoWidget = ({
 	url,
+	widget,
 	isEditing = false,
 	style,
 	testID,
@@ -32,6 +34,7 @@ const LuganoWidget = ({
 	onPressIn,
 }: {
 	url: string;
+	widget: TFeedWidget;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
 	testID?: string;
@@ -117,7 +120,8 @@ const LuganoWidget = ({
 		<BaseFeedWidget
 			url={url}
 			style={style}
-			name={'Plan ₿ Forum'}
+			name="Plan ₿ Forum"
+			showTitle={widget.extras?.showTitle}
 			isLoading={false}
 			isEditing={isEditing}
 			testID={testID}

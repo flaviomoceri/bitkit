@@ -7,8 +7,9 @@ import SafeAreaInset from '../components/SafeAreaInset';
 import GlowingBackground from '../components/GlowingBackground';
 import NavigationHeader from '../components/NavigationHeader';
 import Button from '../components/Button';
+import { useAppDispatch } from '../hooks/redux';
 import { openURL } from '../utils/helpers';
-import { hideTodo } from '../store/actions/todos';
+import { hideTodo } from '../store/slices/todos';
 import type { RootStackScreenProps } from '../navigation/types';
 
 const imageSrc = require('../assets/illustrations/b-emboss.png');
@@ -17,6 +18,7 @@ const BuyBitcoin = ({
 	navigation,
 }: RootStackScreenProps<'BuyBitcoin'>): ReactElement => {
 	const { t } = useTranslation('other');
+	const dispatch = useAppDispatch();
 
 	return (
 		<GlowingBackground topLeft="orange">
@@ -51,7 +53,7 @@ const BuyBitcoin = ({
 						text={t('buy_button')}
 						size="large"
 						onPress={(): void => {
-							hideTodo('buyBitcoin');
+							dispatch(hideTodo('buyBitcoin'));
 							openURL('https://bitcoin.org/en/exchanges');
 						}}
 					/>
