@@ -94,7 +94,6 @@ export const initialSettingsState: TSettings = {
 	coinSelectPreference: 'small',
 	receivePreference: defaultReceivePreference,
 	enableOfflinePayments: false,
-	showSuggestions: true,
 	showWidgets: true,
 	transactionSpeed: ETransactionSpeed.normal,
 	customFeeRate: 0,

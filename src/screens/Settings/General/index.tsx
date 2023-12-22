@@ -9,7 +9,6 @@ import { lastUsedTagsSelector } from '../../../store/reselect/metadata';
 import {
 	primaryUnitSelector,
 	selectedCurrencySelector,
-	showSuggestionsSelector,
 	showWidgetsSelector,
 	transactionSpeedSelector,
 } from '../../../store/reselect/settings';
@@ -22,7 +21,6 @@ const GeneralSettings = ({
 	const { t } = useTranslation('settings');
 	const dispatch = useAppDispatch();
 	const lastUsedTags = useAppSelector(lastUsedTagsSelector);
-	const showSuggestions = useAppSelector(showSuggestionsSelector);
 	const showWidgets = useAppSelector(showWidgetsSelector);
 	const selectedTransactionSpeed = useAppSelector(transactionSpeedSelector);
 	const selectedCurrency = useAppSelector(selectedCurrencySelector);
@@ -64,17 +62,6 @@ const GeneralSettings = ({
 				onPress: (): void => navigation.navigate('TransactionSpeedSettings'),
 			},
 			{
-				title: t('general.suggestions'),
-				value: t(
-					showSuggestions
-						? 'general.suggestions_visible'
-						: 'general.suggestions_hidden',
-				),
-				type: EItemType.button,
-				testID: 'SuggestionsSettings',
-				onPress: (): void => navigation.navigate('SuggestionsSettings'),
-			},
-			{
 				title: t('general.widgets'),
 				type: EItemType.switch,
 				enabled: showWidgets,
@@ -96,7 +83,6 @@ const GeneralSettings = ({
 		return [{ data }];
 	}, [
 		lastUsedTags,
-		showSuggestions,
 		showWidgets,
 		selectedCurrency,
 		selectedUnit,

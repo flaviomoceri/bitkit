@@ -94,10 +94,6 @@ export const customFeeRateSelector = createSelector(
 	[settingsState],
 	(settings): number => settings.customFeeRate,
 );
-export const showSuggestionsSelector = createSelector(
-	[settingsState],
-	(settings): boolean => settings.showSuggestions,
-);
 export const showWidgetsSelector = createSelector(
 	[settingsState],
 	(settings): boolean => settings.showWidgets,

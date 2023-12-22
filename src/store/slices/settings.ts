@@ -31,7 +31,6 @@ export type TSettings = {
 	coinSelectPreference: TCoinSelectPreference;
 	receivePreference: TReceiveOption[];
 	enableOfflinePayments: boolean;
-	showSuggestions: boolean;
 	showWidgets: boolean;
 	transactionSpeed: ETransactionSpeed;
 	customFeeRate: number;
