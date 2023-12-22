@@ -18,6 +18,7 @@ const d = checkComplete([
 	'settings-unit',
 	'settings-speed',
 	'settings-tags',
+	'settings-security-balance',
 	'settings-backup',
 	'settings-addr-type',
 	'settings-ln-settings',
@@ -185,6 +186,52 @@ d('Settings', () => {
 
 				markComplete('settings-about');
 			});
+		});
+	});
+
+	d('Security and Privacy', () => {
+		it('Can swipe to hide balance', async () => {
+			// test plan:
+			// - swipe to hide balance
+			// - disable 'swipe to hide balance'
+			// - enable 'hide balance on open'
+
+			if (checkComplete('settings-security-balance')) {
+				return;
+			}
+
+			// Balance should be visible
+			await expect(element(by.id('ShowBalance'))).not.toBeVisible();
+			// Swipe to hide balance
+			await element(by.id('TotalBalance')).swipe('right');
+			// Balance should be hidden
+			await expect(element(by.id('ShowBalance'))).toBeVisible();
+
+			// Disable 'swipe to hide balance'
+			await element(by.id('Settings')).tap();
+			await element(by.id('SecuritySettings')).tap();
+			await element(by.id('SwipeBalanceToHide')).tap();
+			await element(by.id('NavigationClose')).tap();
+
+			// Balance should be visible
+			await expect(element(by.id('ShowBalance'))).not.toBeVisible();
+			// Should not be able to hide balance
+			await element(by.id('TotalBalance')).swipe('right');
+			// Balance should still be visible
+			await expect(element(by.id('ShowBalance'))).not.toBeVisible();
+
+			// Enable 'hide balance on open'
+			await element(by.id('Settings')).tap();
+			await element(by.id('SecuritySettings')).tap();
+			await element(by.id('SwipeBalanceToHide')).tap();
+			await element(by.id('HideBalanceOnOpen')).tap();
+
+			// Restart the app
+			await launchAndWait();
+			// Balance should be hidden
+			await expect(element(by.id('ShowBalance'))).toBeVisible();
+
+			markComplete('settings-security-balance');
 		});
 	});
 

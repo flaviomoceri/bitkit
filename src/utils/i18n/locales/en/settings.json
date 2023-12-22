@@ -46,6 +46,8 @@
 	},
 	"security": {
 		"title": "Security And Privacy",
+		"swipe_balance_to_hide": "Swipe balance to hide",
+		"hide_balance_on_open": "Hide balance on open",
 		"clipboard": "Read clipboard for ease of use",
 		"warn_100": "Warn when sending over $100",
 		"pin": "PIN Code",

@@ -78,6 +78,7 @@ const defaultReceivePreference = [
 export const initialSettingsState: TSettings = {
 	enableAutoReadClipboard: false,
 	enableSendAmountWarning: false,
+	enableSwipeToHideBalance: true,
 	pin: false,
 	pinOnLaunch: true,
 	pinOnIdle: false,
@@ -98,8 +99,9 @@ export const initialSettingsState: TSettings = {
 	transactionSpeed: ETransactionSpeed.normal,
 	customFeeRate: 0,
 	hideBalance: false,
-	hideOnboardingMessage: false,
+	hideBalanceOnOpen: false,
 	hideBeta: false,
+	hideOnboardingMessage: false,
 	enableDevOptions: __DEV__,
 	treasureChests: [],
 	webRelay: __WEB_RELAY__,

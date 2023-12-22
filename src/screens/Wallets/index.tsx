@@ -29,6 +29,7 @@ import Assets from '../../components/Assets';
 import Header, { HEADER_HEIGHT } from './Header';
 import type { WalletScreenProps } from '../../navigation/types';
 import {
+	enableSwipeToHideBalanceSelector,
 	hideBalanceSelector,
 	hideOnboardingMessageSelector,
 	showWidgetsSelector,
@@ -46,6 +47,9 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	const [refreshing, setRefreshing] = useState(false);
 	const colors = useColors();
 	const dispatch = useAppDispatch();
+	const enableSwipeToHideBalance = useAppSelector(
+		enableSwipeToHideBalanceSelector,
+	);
 	const hideBalance = useAppSelector(hideBalanceSelector);
 	const hideOnboardingSetting = useAppSelector(hideOnboardingMessageSelector);
 	const showWidgets = useAppSelector(showWidgetsSelector);
@@ -110,6 +114,7 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 						/>
 					}>
 					<DetectSwipe
+						enabled={enableSwipeToHideBalance}
 						onSwipeLeft={toggleHideBalance}
 						onSwipeRight={toggleHideBalance}>
 						<View>

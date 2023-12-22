@@ -6,6 +6,8 @@ import {
 } from 'react-native-gesture-handler';
 
 export interface IDetectSwipe {
+	children: ReactElement;
+	enabled?: boolean;
 	panGestureRef?: MutableRefObject<GestureType>;
 	onSwipeLeft?: () => void;
 	onSwipeRight?: () => void;
@@ -15,10 +17,11 @@ export interface IDetectSwipe {
 	swipeRightSensitivity?: number;
 	swipeUpSensitivity?: number;
 	swipeDownSensitivity?: number;
-	children?: ReactElement;
 }
 
 const DetectSwipe = ({
+	children,
+	enabled = true,
 	panGestureRef,
 	onSwipeLeft,
 	onSwipeRight,
@@ -28,7 +31,6 @@ const DetectSwipe = ({
 	swipeRightSensitivity = 600,
 	swipeUpSensitivity = 600,
 	swipeDownSensitivity = 600,
-	children,
 }: IDetectSwipe): ReactElement => {
 	const activated = useRef(false);
 
@@ -36,7 +38,7 @@ const DetectSwipe = ({
 		.runOnJS(true)
 		.minDistance(10)
 		.onUpdate((event) => {
-			if (activated.current) {
+			if (!enabled || activated.current) {
 				return;
 			}
 
