@@ -46,7 +46,7 @@ const LabeledInput = ({
 	const textInputStyle =
 		numberOfChildren > 0 ? { paddingRight: 60 * numberOfChildren } : {};
 
-	const numberOfLines = Math.max(1, Math.min(lines, 10));
+	const numberOfLines = Math.max(1, Math.min(lines, 5.5));
 
 	return (
 		<View style={style}>
@@ -73,7 +73,7 @@ const LabeledInput = ({
 						autoCapitalize="none"
 						autoCorrect={false}
 						placeholder={placeholder}
-						minHeight={multiline ? 40 * numberOfLines : 52}
+						minHeight={multiline ? 72 * numberOfLines : 52}
 						onChangeText={onChange}
 						multiline={multiline || false}
 						editable={!!onChange}
@@ -89,7 +89,7 @@ const LabeledInput = ({
 						autoCorrect={false}
 						autoFocus={autoFocus}
 						placeholder={placeholder}
-						minHeight={multiline ? 40 * numberOfLines : 52}
+						minHeight={multiline ? 72 * numberOfLines : 52}
 						onChangeText={onChange}
 						multiline={multiline || false}
 						editable={!!onChange}

@@ -89,7 +89,7 @@
 	},
 	"support": {
 		"text": "Need help? Report your issue from within Bitkit, visit the help center or reach out to us on our social channels.",
-		"report": "Report issue",
+		"report": "Report Issue",
 		"help": "Help Center",
 		"help_url": "https://help.bitkit.to",
 		"report_text": "Please describe the issue you are experiencing or ask a general question.",
@@ -100,10 +100,10 @@
 		"text_button": "Send",
 		"title_success": "Sent successfully",
 		"text_success": "Thank you for contacting us! We will try to get back to you as soon as possible.",
-		"text_success_button": "Ok",
+		"text_success_button": "OK",
 		"title_unsuccess": "Sent unsuccessfully",
 		"text_unsuccess": "Something went wrong! We apologize for the inconvenience and invite you to try again.",
-		"text_unsuccess_button": "Ok"
+		"text_unsuccess_button": "OK"
 	},
 	"adv": {
 		"section_payments": "Payments",

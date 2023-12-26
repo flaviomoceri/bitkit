@@ -31,6 +31,7 @@ import {
 	TRUSTED_ZERO_CONF_PEERS,
 	WALLET_DEFAULT_SELECTED_NETWORK,
 	WEB_RELAY,
+	CHATWOOT_API,
 } from '@env';
 import { isProtocol } from '../store/types/settings';
 import { isBitcoinNetwork } from '../utils/networks';
@@ -110,3 +111,4 @@ export const __WALLET_DEFAULT_SELECTED_NETWORK__ =
 
 export const __E2E__ = E2E === 'true';
 export const __WEB_RELAY__ = WEB_RELAY;
+export const __CHATWOOT_API__ = CHATWOOT_API;

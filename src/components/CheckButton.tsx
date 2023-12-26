@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 
 import { Text01S, Caption13S } from '../styles/text';
+import { View as StyledView } from '../styles/components';
 import { Checkmark } from '../styles/icons';
 
 interface CheckButtonProps extends TouchableOpacityProps {
@@ -37,11 +38,11 @@ const CheckButton = memo(
 					</View>
 				</View>
 				<View style={styles.rightColumn}>
-					<Checkmark
-						color={checked ? 'brand' : 'gray4'}
-						height={30}
-						width={30}
-					/>
+					<StyledView
+						style={[styles.checkbox, checked && styles.checked]}
+						color={checked ? 'brand32' : 'white1'}>
+						{checked && <Checkmark color="brand" height={22} width={22} />}
+					</StyledView>
 				</View>
 			</TouchableOpacity>
 		);
@@ -67,6 +68,18 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'flex-end',
 		marginLeft: 'auto',
+	},
+	checkbox: {
+		borderRadius: 8,
+		borderColor: '#515151',
+		borderWidth: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+		height: 32,
+		width: 32,
+	},
+	checked: {
+		borderColor: '#FF6600',
 	},
 });
 

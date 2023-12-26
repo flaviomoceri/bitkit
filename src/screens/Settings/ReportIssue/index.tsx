@@ -6,16 +6,17 @@ import {
 	getSystemVersion,
 	getVersion,
 } from 'react-native-device-info';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { getNodeId, getNodeVersion } from '../../../utils/lightning';
 import { Text01S } from '../../../styles/text';
+import { View as ThemedView } from '../../../styles/components';
 import NavigationHeader from '../../../components/NavigationHeader';
-import GlowingBackground from '../../../components/GlowingBackground';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import LabeledInput from '../../../components/LabeledInput';
 import Button from '../../../components/Button';
+import { __CHATWOOT_API__ } from '../../../constants/env';
 
 const ReportIssue = ({
 	navigation,
@@ -47,7 +48,7 @@ const ReportIssue = ({
 				ldkVersion += `ldk-${ldkVersionUser.value.ldk} c_bindings-${ldkVersionUser.value.c_bindings}`;
 				ldkNodeId += `${ldknodeIdUser.value}`;
 			}
-			await axios.post(`${process.env.API_FORM}`, {
+			await axios.post(`${__CHATWOOT_API__}`, {
 				email,
 				message,
 				platform: `${Platform.OS} ${getSystemVersion()}`,
@@ -55,13 +56,13 @@ const ReportIssue = ({
 				ldkVersion: ldkVersion,
 				ldkNodeId: ldkNodeId,
 			});
-			navigation.navigate('ConfirmFormSent');
+			navigation.navigate('FormSuccess');
 			setEmail('');
 			setMessage('');
 			setIsLoading(false);
 		} catch (error) {
 			console.error('Error', error);
-			navigation.navigate('ErrorFormSent');
+			navigation.navigate('FormError');
 			setEmail('');
 			setMessage('');
 			setIsLoading(false);
@@ -71,7 +72,7 @@ const ReportIssue = ({
 	const isValid = validateEmail(email) && message;
 
 	return (
-		<GlowingBackground>
+		<ThemedView style={styles.fullHeight}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('support.report')}
@@ -81,13 +82,7 @@ const ReportIssue = ({
 			/>
 			<View style={styles.content}>
 				<Text01S style={styles.text} color="gray1">
-					<Trans
-						t={t}
-						i18nKey="support.report_text"
-						components={{
-							easterEgg: <Text01S color="gray1" />,
-						}}
-					/>
+					{t('support.report_text')}
 				</Text01S>
 
 				<LabeledInput
@@ -109,7 +104,7 @@ const ReportIssue = ({
 					label={t('support.label_message')}
 					maxLength={5048}
 					testID="LinkValueInput"
-					lines={10}
+					lines={5.5}
 					onChange={(value: string): void => {
 						setMessage(value);
 					}}
@@ -128,11 +123,14 @@ const ReportIssue = ({
 				</View>
 				<SafeAreaInset type="bottom" minPadding={16} />
 			</View>
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
+	fullHeight: {
+		flex: 1,
+	},
 	content: {
 		flexGrow: 1,
 		paddingHorizontal: 16,

@@ -1,6 +1,6 @@
 import React, { memo, ReactElement, useMemo } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { Text01S } from '../../../styles/text';
 import {
@@ -11,9 +11,9 @@ import {
 	TelegramIcon,
 	TwitterIcon,
 } from '../../../styles/icons';
+import { View as ThemedView } from '../../../styles/components';
 import NavigationHeader from '../../../components/NavigationHeader';
 import List, { EItemType, IListData } from '../../../components/List';
-import GlowingBackground from '../../../components/GlowingBackground';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import GlowImage from '../../../components/GlowImage';
@@ -51,7 +51,7 @@ const SupportSettings = ({
 	);
 
 	return (
-		<GlowingBackground>
+		<ThemedView style={styles.fullHeight}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('support_title')}
@@ -61,7 +61,7 @@ const SupportSettings = ({
 			/>
 			<View style={styles.content}>
 				<Text01S style={styles.text} color="gray1">
-					<Trans t={t} i18nKey="support.text" />
+					{t('support.text')}
 				</Text01S>
 
 				<List
@@ -70,7 +70,7 @@ const SupportSettings = ({
 					bounces={false}
 				/>
 				<View style={styles.logoContainer}>
-					<GlowImage image={imageSrc} imageSize={200} glowColor={'green'} />
+					<GlowImage image={imageSrc} imageSize={192} glowColor={'green'} />
 				</View>
 
 				<View style={styles.footer}>
@@ -120,11 +120,14 @@ const SupportSettings = ({
 					</View>
 				</View>
 			</View>
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
+	fullHeight: {
+		flex: 1,
+	},
 	content: {
 		flexGrow: 1,
 		paddingHorizontal: 16,
@@ -148,7 +151,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	socialLinks: {
-		width: 300,
+		width: 375,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-evenly',
@@ -156,9 +159,7 @@ const styles = StyleSheet.create({
 	socialLink: {
 		padding: 14,
 		backgroundColor: '#2a2a2a',
-		borderRadius: 100,
-		marginLeft: 38,
-		marginRight: 38,
+		borderRadius: 32,
 	},
 });
 

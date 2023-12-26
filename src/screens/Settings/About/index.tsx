@@ -103,18 +103,6 @@ const About = ({
 					// 	},
 					// },
 					// {
-					//	title: t('about.support'),
-					//	type: EItemType.button,
-					//	onPress: (): void => navigation.navigate('ReportIssue'),
-					// },
-					//{
-					//	title: t('about.report_bug'),
-					//	type: EItemType.button,
-					//	onPress: (): void => {
-					//		openURL('https://www.github.com/synonymdev/bitkit').then();
-					//	},
-					//},
-					// {
 					// 	title: 'Share Bitkit with a friend',
 					// 	type: EItemType.button,
 					// 	onPress: onShare,

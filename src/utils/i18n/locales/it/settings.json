@@ -87,10 +87,10 @@
     "text_button": "Invia",
     "title_success": "Messaggio inviato",
     "text_success": "Grazie per averci contattato! Cercheremo di risponderti il prima possibile.",
-    "text_success_button": "Ok",
+    "text_success_button": "OK",
     "title_unsuccess": "Messaggio non inviato",
     "text_unsuccess": "Qualcosa è andato storto! Ci scusiamo per il disagio e ti invitiamo a riprovare.",
-    "text_unsuccess_button": "Ok"
+    "text_unsuccess_button": "OK"
   },
   "adv": {
     "section_payments": "Pagamenti",
