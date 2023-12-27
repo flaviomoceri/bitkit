@@ -23,7 +23,7 @@ import DetectSwipe from '../../components/DetectSwipe';
 import BalanceHeader from '../../components/BalanceHeader';
 import Suggestions from '../../components/Suggestions';
 import Widgets from '../../components/Widgets';
-import SafeAreaView from '../../components/SafeAreaView';
+import SafeAreaInset from '../../components/SafeAreaInset';
 import BetaWarning from '../../components/BetaWarning';
 import Assets from '../../components/Assets';
 import Header, { HEADER_HEIGHT } from './Header';
@@ -89,7 +89,8 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	const hideOnboarding = hideOnboardingSetting || !empty;
 
 	return (
-		<SafeAreaView>
+		<>
+			<SafeAreaInset type="top" />
 			<View style={[styles.header, { top: insets.top }]}>
 				<Header />
 			</View>
@@ -137,23 +138,23 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 					)}
 				</ScrollView>
 			</DetectSwipe>
-		</SafeAreaView>
+		</>
 	);
 };
 
 const styles = StyleSheet.create({
+	header: {
+		position: 'absolute',
+		left: 0,
+		right: 0,
+		zIndex: 1,
+	},
 	content: {
 		flexGrow: 1,
 		paddingTop: HEADER_HEIGHT,
 	},
 	scrollView: {
 		paddingBottom: 130,
-	},
-	header: {
-		position: 'absolute',
-		left: 0,
-		right: 0,
-		zIndex: 1,
 	},
 	contentPadding: {
 		paddingHorizontal: 16,
