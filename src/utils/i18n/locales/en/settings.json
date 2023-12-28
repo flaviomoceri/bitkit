@@ -98,12 +98,12 @@
 		"placeholder_address": "satoshi@satoshi.com",
 		"placeholder_message": "Describe the issue or ask a question",
 		"text_button": "Send",
-		"title_success": "Sent successfully",
+		"title_success": "Sent Successfully",
 		"text_success": "Thank you for contacting us! We will try to get back to you as soon as possible.",
 		"text_success_button": "OK",
-		"title_unsuccess": "Sent unsuccessfully",
-		"text_unsuccess": "Something went wrong! We apologize for the inconvenience and invite you to try again.",
-		"text_unsuccess_button": "OK"
+		"title_unsuccess": "Failed To Send",
+		"text_unsuccess": "Something went wrong while trying to send your issue or question. Please try again.",
+		"text_unsuccess_button": "Try Again"
 	},
 	"adv": {
 		"section_payments": "Payments",

@@ -17,8 +17,8 @@ const FormError = ({
 }: SettingsScreenProps<'FormError'>): ReactElement => {
 	const { t } = useTranslation('settings');
 
-	const onOk = (): void => {
-		navigation.navigate('SupportSettings');
+	const onTryAgain = (): void => {
+		navigation.navigate('ReportIssue');
 	};
 
 	return (
@@ -43,7 +43,7 @@ const FormError = ({
 						text={t('support.text_unsuccess_button')}
 						size="large"
 						testID="SuccessButton"
-						onPress={onOk}
+						onPress={onTryAgain}
 					/>
 				</View>
 				<SafeAreaInset type="bottom" minPadding={16} />

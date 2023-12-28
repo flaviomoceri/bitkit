@@ -89,8 +89,8 @@
     "text_success": "Grazie per averci contattato! Cercheremo di risponderti il prima possibile.",
     "text_success_button": "OK",
     "title_unsuccess": "Messaggio non inviato",
-    "text_unsuccess": "Qualcosa è andato storto! Ci scusiamo per il disagio e ti invitiamo a riprovare.",
-    "text_unsuccess_button": "OK"
+    "text_unsuccess": "Qualcosa è andato storto durante il tentativo di inviare il problema o la domanda. Per favore riprova.",
+    "text_unsuccess_button": "Riprova"
   },
   "adv": {
     "section_payments": "Pagamenti",
