@@ -58,10 +58,6 @@ export const lnSetupSelector = createSelector(
 		(_, spendingAmount): number => spendingAmount,
 	],
 	(blocktankInfo, balance, spendingAmount: number): TLnSetup => {
-		if (balance.onchainBalance === 0) {
-			throw new TypeError('Cannot setup LN with 0 onchain balance');
-		}
-
 		const totalBalance = balance.totalBalance;
 		const lightningBalance = balance.lightningBalance;
 

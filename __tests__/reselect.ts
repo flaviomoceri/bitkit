@@ -99,11 +99,6 @@ describe('Reselect', () => {
 	});
 
 	describe('lnSetupSelector', () => {
-		it('should throw if onchain balance is 0', () => {
-			const state = cloneDeep(s);
-			expect(() => lnSetupSelector(state, 0)).toThrow(TypeError);
-		});
-
 		it('should calculate percentage corectly', () => {
 			const state = cloneDeep(s);
 			// balance under maxChannelSizeSat
