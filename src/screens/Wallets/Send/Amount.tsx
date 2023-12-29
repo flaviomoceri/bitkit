@@ -245,9 +245,9 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 										style={styles.actionButtonText}
 										size="12px"
 										color="brand">
-										{nextUnit === EUnit.BTC && 'BTC'}
-										{nextUnit === EUnit.satoshi && 'sats'}
-										{nextUnit === EUnit.fiat && fiatTicker}
+										{nextUnit === EUnit.BTC && fiatTicker}
+										{nextUnit === EUnit.satoshi && 'BTC'}
+										{nextUnit === EUnit.fiat && 'sats'}
 									</Text02B>
 								</TouchableOpacity>
 							</View>

@@ -1,4 +1,4 @@
-import React, { memo, ReactElement, useMemo } from 'react';
+import React, { memo, ReactElement } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
@@ -32,17 +32,6 @@ const NumberPadButtons = ({
 	const { fiatTicker } = useCurrency();
 	const unit = useAppSelector(primaryUnitSelector);
 
-	// BTC -> satoshi -> fiat
-	const nextUnit = useMemo(() => {
-		if (unit === EUnit.BTC) {
-			return EUnit.satoshi;
-		}
-		if (unit === EUnit.satoshi) {
-			return EUnit.fiat;
-		}
-		return EUnit.BTC;
-	}, [unit]);
-
 	return (
 		<View style={styles.container}>
 			<View style={styles.buttonContainer}>
@@ -68,9 +57,9 @@ const NumberPadButtons = ({
 						onPress={onChangeUnit}>
 						<SwitchIcon color={color} width={16.44} height={13.22} />
 						<Caption13Up color={color} style={styles.middleButtonText}>
-							{nextUnit === 'BTC' && 'BTC'}
-							{nextUnit === 'satoshi' && 'sats'}
-							{nextUnit === 'fiat' && fiatTicker}
+							{unit === EUnit.BTC && 'BTC'}
+							{unit === EUnit.satoshi && 'sats'}
+							{unit === EUnit.fiat && fiatTicker}
 						</Caption13Up>
 					</TouchableOpacity>
 				)}
