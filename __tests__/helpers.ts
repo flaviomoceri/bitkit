@@ -1,5 +1,6 @@
 import {
 	removeKeysFromObject,
+	reduceValue,
 	timeAgo,
 	isObjPartialMatch,
 	ellipsis,
@@ -36,6 +37,57 @@ describe('removeKeysFromObject', () => {
 
 		const result = removeKeysFromObject(input, ['a', 'b']);
 		expect(result).toEqual(expected);
+	});
+});
+
+describe('reduceValue', () => {
+	it('takes an array of objects, and sums all values pertaining to a specific key', () => {
+		const input = [
+			{
+				a: 1,
+				b: 2,
+			},
+			{
+				a: 4,
+				b: 5,
+			},
+		];
+
+		const expected = { value: 7 };
+		const result = reduceValue(input, 'b');
+		expect(result).toEqual(expected);
+	});
+
+	it('works with optional values', () => {
+		const input = [
+			{
+				a: 1,
+				b: 2,
+			},
+			{
+				b: 5,
+			},
+		];
+
+		const expected = { value: 1 };
+		const result = reduceValue(input, 'a');
+		expect(result).toEqual(expected);
+	});
+
+	it('returns an error where the lookup value is not a number', () => {
+		const input = [
+			{
+				a: 1,
+				b: 2,
+			},
+			{
+				a: 'string1',
+				b: 'string2',
+			},
+		];
+
+		const result = reduceValue(input, 'a');
+		expect(result).toHaveProperty('error');
 	});
 });
 

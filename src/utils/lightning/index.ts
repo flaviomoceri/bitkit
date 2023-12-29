@@ -15,6 +15,7 @@ import lm, {
 	TChannelManagerClaim,
 	TChannelManagerPaymentSent,
 	TChannelUpdate,
+	TClaimableBalance,
 	TCloseChannelReq,
 	TCreatePaymentReq,
 	THeader,
@@ -33,7 +34,6 @@ import {
 	transactionExists,
 } from '../wallet/electrum';
 import {
-	getBalance,
 	getMnemonicPhrase,
 	getReceiveAddress,
 	getSelectedNetwork,
@@ -57,7 +57,7 @@ import {
 	moveMetaIncPaymentTags,
 	removePeer,
 	syncLightningTxsWithActivityList,
-	updateClaimableBalanceThunk,
+	updateClaimableBalancesThunk,
 	updateLightningChannelsThunk,
 	updateLightningNodeIdThunk,
 	updateLightningNodeVersionThunk,
@@ -544,7 +544,7 @@ export const refreshLdk = async ({
 			syncLightningTxsWithActivityList(),
 		]);
 
-		await updateClaimableBalanceThunk({ selectedNetwork, selectedWallet });
+		await updateClaimableBalancesThunk();
 
 		const accountVersion = getLightningStore()?.accountVersion;
 		if (!accountVersion || accountVersion < 2) {
@@ -814,10 +814,10 @@ export const migrateToLdkV2Account = async (
 		if (openChannels.isErr()) {
 			return err(openChannels.error.message);
 		}
-		const claimableBalance = await getClaimableBalance({
-			selectedWallet,
-			selectedNetwork,
-		});
+		const claimableBalances = await getClaimableBalances();
+		const result = reduceValue(claimableBalances, 'amount_satoshis');
+		const claimableBalance = result.isOk() ? result.value : 0;
+
 		const nodeId = await getNodeId();
 		if (nodeId.isErr()) {
 			return err(nodeId.error.message);
@@ -1713,54 +1713,24 @@ export const getLightningReserveBalance = ({
 		return openChannelIds.includes(channel.channel_id);
 	});
 
-	const reserveBalances = reduceValue({
-		arr: openChannels,
-		value: 'unspendable_punishment_reserve',
-	});
-	if (reserveBalances.isErr()) {
-		return 0;
-	}
-	return reserveBalances.value;
+	const result = reduceValue(openChannels, 'unspendable_punishment_reserve');
+	const reserveBalances = result.isOk() ? result.value : 0;
+	return reserveBalances;
 };
 
 /**
  * Returns the claimable balance for all lightning channels.
  * @param {boolean} [ignoreOpenChannels]
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<number>}
  */
-export const getClaimableBalance = async ({
-	ignoreOpenChannels = false,
-	selectedWallet,
-	selectedNetwork,
+export const getClaimableBalances = async ({
+	ignoreOpenChannels = true,
 }: {
 	ignoreOpenChannels?: boolean;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): Promise<number> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	const { spendingBalance, reserveBalance } = getBalance({
-		selectedWallet,
-		selectedNetwork,
-	});
-	const claimableBalanceRes = await ldk.claimableBalances(ignoreOpenChannels);
-	if (claimableBalanceRes.isErr()) {
-		return 0;
-	}
-	const claimableBalance = reduceValue({
-		arr: claimableBalanceRes.value,
-		value: 'amount_satoshis',
-	});
-	if (claimableBalance.isErr()) {
-		return 0;
-	}
-	return Math.abs(spendingBalance + reserveBalance - claimableBalance.value);
+} = {}): Promise<TClaimableBalance[]> => {
+	const result = await ldk.claimableBalances(ignoreOpenChannels);
+	const claimableBalances = result.isOk() ? result.value : [];
+	return claimableBalances;
 };
 
 /**

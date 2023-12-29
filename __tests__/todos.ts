@@ -171,7 +171,9 @@ describe('Todos selector', () => {
 		} as TChannel;
 		state.lightning.nodes.wallet0.channels.bitcoinRegtest = { channel1 };
 		state.lightning.nodes.wallet0.openChannelIds.bitcoinRegtest = ['channel1'];
-		state.lightning.nodes.wallet0.claimableBalance.bitcoinRegtest = 123;
+		state.lightning.nodes.wallet0.claimableBalances.bitcoinRegtest = [
+			{ amount_satoshis: 123, type: 'ClaimableOnChannelClose' },
+		];
 
 		expect(todosFullSelector(state)).toEqual(
 			expect.arrayContaining([transferToSavingsTodo]),

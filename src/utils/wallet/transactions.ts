@@ -982,7 +982,7 @@ export const getTransactionOutputValue = ({
 			}
 			outputs = transaction.value.outputs;
 		}
-		const response = reduceValue({ arr: outputs, value: 'value' });
+		const response = reduceValue(outputs, 'value');
 		if (response.isOk()) {
 			return response.value;
 		}
@@ -1026,7 +1026,7 @@ export const getTransactionInputValue = ({
 			inputs = transaction.value.inputs;
 		}
 		if (inputs) {
-			const response = reduceValue({ arr: inputs, value: 'value' });
+			const response = reduceValue(inputs, 'value');
 			if (response.isOk()) {
 				return response.value;
 			}
@@ -1380,10 +1380,7 @@ export const validateTransaction = (
 			}
 		}
 
-		const inputsReduce = reduceValue({
-			arr: inputs,
-			value: 'value',
-		});
+		const inputsReduce = reduceValue(inputs, 'value');
 		if (inputsReduce.isErr()) {
 			return err(inputsReduce.error.message);
 		}
@@ -1394,10 +1391,7 @@ export const validateTransaction = (
 				return output.address !== transaction.changeAddress;
 			});
 		}
-		const outputsReduce = reduceValue({
-			arr: filteredOutputs,
-			value: 'value',
-		});
+		const outputsReduce = reduceValue(filteredOutputs, 'value');
 		if (outputsReduce.isErr()) {
 			return err(outputsReduce.error.message);
 		}
