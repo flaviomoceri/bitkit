@@ -131,9 +131,9 @@ const Amount = ({
 										style={styles.actionButtonText}
 										size="12px"
 										color="brand">
-										{nextUnit === 'BTC' && 'BTC'}
-										{nextUnit === 'satoshi' && 'sats'}
-										{nextUnit === 'fiat' && fiatTicker}
+										{nextUnit === 'BTC' && fiatTicker}
+										{nextUnit === 'satoshi' && 'BTC'}
+										{nextUnit === 'fiat' && 'sats'}
 									</Text02B>
 								</TouchableOpacity>
 							</View>
