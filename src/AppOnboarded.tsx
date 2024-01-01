@@ -14,12 +14,17 @@ import { useMigrateSlashtags2 } from './hooks/slashtags2';
 import { dispatch, getStore } from './store/helpers';
 import { updateUi } from './store/slices/ui';
 import { isOnlineSelector } from './store/reselect/ui';
-import { pinOnLaunchSelector, pinSelector } from './store/reselect/settings';
+import {
+	hideBalanceOnOpenSelector,
+	pinOnLaunchSelector,
+	pinSelector,
+} from './store/reselect/settings';
 import { showToast } from './utils/notifications';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from './store/reselect/wallet';
+import { updateSettings } from './store/slices/settings';
 
 const onElectrumConnectionChange = (isConnected: boolean): void => {
 	// get state fresh from store everytime
@@ -49,6 +54,7 @@ const AppOnboarded = (): ReactElement => {
 	const appState = useRef(AppState.currentState);
 	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const hideBalanceOnOpen = useAppSelector(hideBalanceOnOpenSelector);
 	const pin = useAppSelector(pinSelector);
 	const pinOnLaunch = useAppSelector(pinOnLaunchSelector);
 	const isOnline = useAppSelector(isOnlineSelector);
@@ -62,6 +68,10 @@ const AppOnboarded = (): ReactElement => {
 
 		const needsAuth = pin && pinOnLaunch;
 		dispatch(updateUi({ isAuthenticated: !needsAuth }));
+
+		if (hideBalanceOnOpen) {
+			dispatch(updateSettings({ hideBalance: true }));
+		}
 
 		return () => {
 			unsubscribeFromLightningSubscriptions();

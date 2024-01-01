@@ -7,7 +7,6 @@ import { customFeeRateSelector } from '../../../store/reselect/settings';
 import { updateSettings } from '../../../store/slices/settings';
 import { ETransactionSpeed } from '../../../store/types/settings';
 import { handleNumberPadPress } from '../../../utils/numberpad';
-import SafeAreaView from '../../../components/SafeAreaView';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import NavigationHeader from '../../../components/NavigationHeader';
 import Amount from '../../../components/Amount';
@@ -59,7 +58,8 @@ const FeeCustom = ({
 	const isValid = feeRate !== 0;
 
 	return (
-		<SafeAreaView>
+		<>
+			<SafeAreaInset type="top" />
 			<NavigationHeader title={t('general.speed_fee_custom')} />
 			<View style={styles.container} testID="CustomFee">
 				<Caption13Up color="gray1" style={styles.title}>
@@ -84,7 +84,7 @@ const FeeCustom = ({
 				</View>
 				<SafeAreaInset type="bottom" minPadding={16} />
 			</View>
-		</SafeAreaView>
+		</>
 	);
 };
 

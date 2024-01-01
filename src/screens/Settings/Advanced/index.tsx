@@ -1,11 +1,13 @@
 import React, { memo, ReactElement, useMemo, useState } from 'react';
-import { useAppSelector } from '../../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData, ItemData } from '../../../components/List';
+import Dialog from '../../../components/Dialog';
 import SettingsView from '../SettingsView';
 import { enableDevOptionsSelector } from '../../../store/reselect/settings';
 import { updateTransactions } from '../../../store/actions/wallet';
+import { resetHiddenTodos } from '../../../store/slices/todos';
 import { addressTypes } from '../../../store/shapes/wallet';
 import {
 	addressTypeSelector,
@@ -20,12 +22,13 @@ const AdvancedSettings = ({
 	navigation,
 }: SettingsScreenProps<'AdvancedSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
+	const dispatch = useAppDispatch();
 	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const selectedAddressType = useAppSelector(addressTypeSelector);
 	const enableDevOptions = useAppSelector(enableDevOptionsSelector);
-
 	const [rescanning, setRescanning] = useState(false);
+	const [showDialog, setShowDialog] = useState(false);
 
 	const SettingsListData: IListData[] = useMemo(() => {
 		const payments: ItemData[] = [
@@ -112,6 +115,12 @@ const AdvancedSettings = ({
 					setRescanning(false);
 				},
 			},
+			{
+				title: t('adv.suggestions_reset'),
+				type: EItemType.button,
+				testID: 'ResetSuggestions',
+				onPress: (): void => setShowDialog(true),
+			},
 		];
 
 		return [
@@ -139,11 +148,26 @@ const AdvancedSettings = ({
 	]);
 
 	return (
-		<SettingsView
-			title={t('advanced_title')}
-			listData={SettingsListData}
-			showBackNavigation={true}
-		/>
+		<>
+			<SettingsView
+				title={t('advanced_title')}
+				listData={SettingsListData}
+				showBackNavigation={true}
+			/>
+
+			<Dialog
+				visible={showDialog}
+				title={t('adv.reset_title')}
+				description={t('adv.reset_desc')}
+				confirmText={t('adv.reset_confirm')}
+				onCancel={(): void => setShowDialog(false)}
+				onConfirm={(): void => {
+					dispatch(resetHiddenTodos());
+					setShowDialog(false);
+					navigation.navigate('Wallet');
+				}}
+			/>
+		</>
 	);
 };
 

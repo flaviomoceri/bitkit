@@ -41,7 +41,6 @@ import AddConnection from '../../screens/Settings/Lightning/AddConnection';
 import AddConnectionResult from '../../screens/Settings/Lightning/AddConnectionResult';
 import ExportToPhone from '../../screens/Settings/Backup/ExportToPhone';
 import ResetAndRestore from '../../screens/Settings/Backup/ResetAndRestore';
-import SuggestionsSettings from '../../screens/Settings/Suggestions';
 import TagsSettings from '../../screens/Settings/Tags';
 import FeeSettings from '../../screens/Settings/Fee';
 import SlashtagsSettings from '../../screens/Settings/SlashtagsSettings';
@@ -92,7 +91,6 @@ export type SettingsStackParamList = {
 	LightningAddConnectionResult: undefined;
 	LightningRoot: NavigatorScreenParams<LightningStackParamList>;
 	SlashtagsSettings: undefined;
-	SuggestionsSettings: undefined;
 	TagsSettings: undefined;
 	AddressViewer: undefined;
 	FeeSettings: undefined;
@@ -166,10 +164,6 @@ const SettingsNavigator = (): ReactElement => {
 			/>
 			<Stack.Screen name="LightningRoot" component={LightningNavigator} />
 			<Stack.Screen name="SlashtagsSettings" component={SlashtagsSettings} />
-			<Stack.Screen
-				name="SuggestionsSettings"
-				component={SuggestionsSettings}
-			/>
 			<Stack.Screen name="TagsSettings" component={TagsSettings} />
 			<Stack.Screen name="FeeSettings" component={FeeSettings} />
 			<Stack.Screen name="WebRelay" component={WebRelay} />

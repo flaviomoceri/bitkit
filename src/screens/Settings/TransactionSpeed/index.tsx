@@ -59,11 +59,11 @@ const TransactionSpeedSettings = ({
 				title: t('general.speed_default'),
 				data: transactionSpeeds.map((txSpeed) => ({
 					title: txSpeed.label,
+					subtitle: txSpeed.description,
 					value: txSpeed.value === selectedTransactionSpeed,
 					type: EItemType.button,
 					Icon: txSpeed.Icon,
 					iconColor: txSpeed.iconColor,
-					description: txSpeed.description,
 					testID: txSpeed.value,
 					onPress: (): void => {
 						if (txSpeed.value === ETransactionSpeed.custom) {

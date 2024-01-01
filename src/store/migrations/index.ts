@@ -323,6 +323,16 @@ const migrations = {
 			},
 		};
 	},
+	31: (state): PersistedState => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				enableSwipeToHideBalance: true,
+				hideBalanceOnOpen: false,
+			},
+		};
+	},
 };
 
 export default migrations;

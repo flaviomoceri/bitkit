@@ -66,7 +66,10 @@ const BalanceHeader = (): ReactElement => {
 					symbol={true}
 				/>
 				{hideBalance && (
-					<TouchableOpacity style={styles.toggle} onPress={toggleHideBalance}>
+					<TouchableOpacity
+						style={styles.toggle}
+						testID="ShowBalance"
+						onPress={toggleHideBalance}>
 						<EyeIcon />
 					</TouchableOpacity>
 				)}

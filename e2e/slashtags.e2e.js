@@ -118,10 +118,6 @@ d('Profile and Contacts', () => {
 			await element(by.id('ProfileSaveButton')).tap();
 			await expect(element(by.text('NewTestName'))).toExist();
 			await expect(element(by.text('Still testing Bitkit'))).toExist();
-
-			await element(by.id('DetailsButton')).tap();
-			await expect(element(by.text('some@email.value'))).toExist();
-			await expect(element(by.text('link-value'))).not.toExist();
 			await element(by.id('NavigationClose')).tap();
 
 			// ADD CONTACTS

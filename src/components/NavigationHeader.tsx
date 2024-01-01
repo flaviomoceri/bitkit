@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Subtitle, Title } from '../styles/text';
 import { BackIcon, XIcon } from '../styles/icons';
 import { Keyboard } from '../hooks/keyboard';
+import { HEADER_HEIGHT } from '../screens/Wallets/Header';
 
 const ActionButton = memo(
 	({
@@ -149,8 +150,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 	},
 	containerLg: {
-		marginTop: 17,
-		paddingBottom: 35,
+		height: HEADER_HEIGHT,
+		marginBottom: 32,
 	},
 	containerSm: {
 		marginTop: 2,

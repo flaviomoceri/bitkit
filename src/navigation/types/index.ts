@@ -42,7 +42,6 @@ export type RootStackParamList = {
 	Settings: NavigatorScreenParams<SettingsStackParamList>;
 	Profile: undefined;
 	ProfileEdit: undefined;
-	ProfileDetails: undefined;
 	Contacts: undefined;
 	ContactEdit: { url: string };
 	Contact: { url: string };

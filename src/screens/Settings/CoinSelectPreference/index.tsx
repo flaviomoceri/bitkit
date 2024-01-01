@@ -43,21 +43,8 @@ const CoinSelectSettings = (): ReactElement => {
 				title: selectedAutoPilot ? t('adv.cs_auto_mode') : '',
 				data: [
 					{
-						title: t('adv.cs_consolidate'),
-						value: coinSelectPreference === 'consolidate',
-						type: EItemType.button,
-						hide: !selectedAutoPilot,
-						onPress: (): void => {
-							dispatch(
-								updateSettings({
-									coinSelectAuto: true,
-									coinSelectPreference: 'consolidate',
-								}),
-							);
-						},
-					},
-					{
 						title: t('adv.cs_max'),
+						description: t('adv.cs_max_description'),
 						value: coinSelectPreference === 'large',
 						type: EItemType.button,
 						hide: !selectedAutoPilot,
@@ -72,6 +59,7 @@ const CoinSelectSettings = (): ReactElement => {
 					},
 					{
 						title: t('adv.cs_min'),
+						description: t('adv.cs_min_description'),
 						value: coinSelectPreference === 'small',
 						type: EItemType.button,
 						hide: !selectedAutoPilot,
@@ -80,6 +68,21 @@ const CoinSelectSettings = (): ReactElement => {
 								updateSettings({
 									coinSelectAuto: true,
 									coinSelectPreference: 'small',
+								}),
+							);
+						},
+					},
+					{
+						title: t('adv.cs_consolidate'),
+						description: t('adv.cs_consolidate_description'),
+						value: coinSelectPreference === 'consolidate',
+						type: EItemType.button,
+						hide: !selectedAutoPilot,
+						onPress: (): void => {
+							dispatch(
+								updateSettings({
+									coinSelectAuto: true,
+									coinSelectPreference: 'consolidate',
 								}),
 							);
 						},

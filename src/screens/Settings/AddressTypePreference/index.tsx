@@ -23,7 +23,7 @@ const AddressTypeSettings = ({
 				data: Object.values(addressTypes).map((addressType) => ({
 					type: EItemType.button,
 					title: `${addressType.name} ${addressType.example}`,
-					description: addressType.description,
+					subtitle: addressType.description,
 					value: addressType.type === selectedAddressType,
 					useCheckmark: true,
 					onPress: async (): Promise<void> => {
