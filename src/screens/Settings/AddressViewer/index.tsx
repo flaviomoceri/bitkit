@@ -60,7 +60,6 @@ import { enableDevOptionsSelector } from '../../../store/reselect/settings';
 import {
 	resetSendTransaction,
 	setupOnChainTransaction,
-	updateAddressIndexes,
 	updateSendTransaction,
 	updateWallet,
 } from '../../../store/actions/wallet';
@@ -167,7 +166,6 @@ const EmptyComponent = memo(
 
 const getAllAddresses = async ({
 	config,
-	selectedWallet,
 	addressAmount = ADDRESS_AMOUNT,
 }: {
 	config: TAddressViewerConfig;
@@ -188,7 +186,6 @@ const getAllAddresses = async ({
 			const keyDerivationPath = keyDerivationPathResponse.value;
 			const generateAddressResponse = await generateAddresses({
 				...config,
-				selectedWallet,
 				keyDerivationPath,
 				addressAmount,
 				changeAddressAmount: addressAmount,
@@ -682,13 +679,8 @@ const AddressViewer = ({
 			if (utxosLength <= 0) {
 				return;
 			}
-			resetSendTransaction({
-				selectedWallet,
-				selectedNetwork,
-			});
+			resetSendTransaction();
 			const transactionRes = await setupOnChainTransaction({
-				selectedWallet,
-				selectedNetwork,
 				utxos: selectedUtxosLength > 0 ? selectedUtxos : utxos,
 				rbf: true,
 			});
@@ -696,7 +688,6 @@ const AddressViewer = ({
 				return;
 			}
 			const receiveAddress = await getReceiveAddress({
-				selectedWallet,
 				selectedNetwork,
 			});
 			if (receiveAddress.isErr()) {
@@ -707,14 +698,12 @@ const AddressViewer = ({
 					...transactionRes.value,
 					outputs: [{ address: receiveAddress.value, value: 0, index: 0 }],
 				},
-				selectedWallet,
-				selectedNetwork,
 			});
 			dispatch(updateUi({ fromAddressViewer: true }));
-			sendMax({ selectedWallet, selectedNetwork });
+			sendMax({});
 			showBottomSheet('sendNavigation', { screen: 'ReviewAndSend' });
 		},
-		[selectedNetwork, selectedUtxos, selectedWallet, utxos, dispatch],
+		[selectedNetwork, selectedUtxos, utxos, dispatch],
 	);
 
 	/**
@@ -811,12 +800,6 @@ const AddressViewer = ({
 			ldk.stop();
 			// Switch to new network.
 			updateWallet({ selectedNetwork: config.selectedNetwork });
-			// Generate addresses if none exist for the newly selected wallet and network.
-			await updateAddressIndexes({
-				selectedWallet,
-				selectedNetwork: config.selectedNetwork,
-				addressType: config.addressType,
-			});
 			// Switching networks requires us to reset LDK.
 			await setupLdk({ selectedWallet, selectedNetwork });
 			// Start wallet services with the newly selected network.
@@ -843,7 +826,6 @@ const AddressViewer = ({
 				];
 				if (_allAddresses.length > 0) {
 					const utxosRes = await getAddressUtxos({
-						selectedNetwork,
 						allAddresses: _allAddresses,
 					});
 					if (utxosRes.isErr()) {
@@ -871,7 +853,6 @@ const AddressViewer = ({
 		setIsCheckingBalances(false);
 	}, [
 		allAddresses,
-		config.addressType,
 		config.selectedNetwork,
 		selectedNetwork,
 		selectedWallet,

@@ -134,14 +134,8 @@ const Result = ({
 	const handleRetry = async (): Promise<void> => {
 		if (transaction.lightningInvoice && transaction.slashTagsUrl) {
 			setLoading(true);
-			resetSendTransaction({
-				selectedWallet,
-				selectedNetwork,
-			});
-			await setupOnChainTransaction({
-				selectedNetwork,
-				selectedWallet,
-			});
+			await resetSendTransaction();
+			await setupOnChainTransaction({});
 			const res = await processInputData({
 				data: transaction.slashTagsUrl,
 				source: 'send',
@@ -170,11 +164,8 @@ const Result = ({
 			If unable to properly create a valid transaction for any reason, reset the tx state as done below.
 		*/
 		//If unable to broadcast for any reason, reset the transaction object and try again.
-		resetSendTransaction({ selectedWallet, selectedNetwork });
-		await setupOnChainTransaction({
-			selectedWallet,
-			selectedNetwork,
-		});
+		await resetSendTransaction();
+		await setupOnChainTransaction({});
 		// The transaction was reset due to an unknown broadcast or construction error.
 		// Navigate back to the main send screen to re-enter information.
 		navigation.navigate('Recipient');

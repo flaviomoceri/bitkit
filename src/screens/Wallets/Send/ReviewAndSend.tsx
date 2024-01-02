@@ -33,10 +33,8 @@ import {
 	createTransaction,
 	getTotalFee,
 	getTransactionOutputValue,
-	validateTransaction,
 } from '../../../utils/wallet/transactions';
 import {
-	updateWalletBalance,
 	setupFeeForOnChainTransaction,
 	removeTxTag,
 } from '../../../store/actions/wallet';
@@ -81,6 +79,7 @@ import { updateLastPaidContacts } from '../../../store/slices/slashtags';
 import { truncate } from '../../../utils/helpers';
 import AmountToggle from '../../../components/AmountToggle';
 import LightningSyncing from '../../../components/LightningSyncing';
+import { validateTransaction } from 'beignet';
 
 const Section = memo(
 	({
@@ -172,7 +171,6 @@ const ReviewAndSend = ({
 
 	// TODO: add support for multiple outputs
 	const outputIndex = 0;
-	const transactionTotal = amount + transaction.fee;
 	const selectedFeeId = transaction.selectedFeeId;
 	const satsPerByte = transaction.satsPerByte;
 	const address = transaction?.outputs[outputIndex]?.address ?? '';
@@ -311,13 +309,6 @@ const ReviewAndSend = ({
 			return;
 		}
 
-		//Temporarily update the balance until the Electrum mempool catches up in a few seconds.
-		updateWalletBalance({
-			balance: onChainBalance - transactionTotal,
-			selectedWallet,
-			selectedNetwork,
-		});
-
 		// save tags to metadata
 		dispatch(updateMetaTxTags({ txId: rawTx.id, tags: transaction.tags }));
 		// save Slashtags contact to metadata
@@ -338,18 +329,7 @@ const ReviewAndSend = ({
 		}
 
 		navigation.navigate('Result', { success: true, txId: rawTx.id });
-	}, [
-		onChainBalance,
-		rawTx,
-		selectedNetwork,
-		selectedWallet,
-		transactionTotal,
-		_onError,
-		navigation,
-		transaction,
-		dispatch,
-		t,
-	]);
+	}, [rawTx, selectedNetwork, _onError, navigation, transaction, dispatch, t]);
 
 	useEffect(() => {
 		if (rawTx) {
@@ -446,7 +426,7 @@ const ReviewAndSend = ({
 
 	const handleTagRemove = useCallback(
 		(tag: string) => {
-			const res = removeTxTag({ tag, selectedNetwork, selectedWallet });
+			const res = removeTxTag({ tag });
 			if (res.isErr()) {
 				console.log(res.error.message);
 				showToast({
@@ -456,7 +436,7 @@ const ReviewAndSend = ({
 				});
 			}
 		},
-		[selectedWallet, selectedNetwork, t],
+		[t],
 	);
 
 	const onSwipeToPay = useCallback(async () => {

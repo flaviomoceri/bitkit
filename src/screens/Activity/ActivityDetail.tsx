@@ -182,29 +182,27 @@ const OnchainActivityDetail = ({
 			return;
 		}
 
-		getTransactions({ txHashes: [{ tx_hash: id }], selectedNetwork }).then(
-			(txResponse) => {
-				if (txResponse.isErr()) {
-					showToast({
-						type: 'error',
-						title: t('activity_error_get'),
-						description: t('activity_error_get_description'),
-					});
-					return;
-				}
-				const txData = txResponse.value.data;
-				if (txData.length === 0) {
-					showToast({
-						type: 'error',
-						title: t('activity_error_get'),
-						description: t('activity_error_tx_not_found'),
-					});
-					return;
-				}
-				const data = txData[0].result;
-				setTxDetails(data);
-			},
-		);
+		getTransactions({ txHashes: [{ tx_hash: id }] }).then((txResponse) => {
+			if (txResponse.isErr()) {
+				showToast({
+					type: 'error',
+					title: t('activity_error_get'),
+					description: t('activity_error_get_description'),
+				});
+				return;
+			}
+			const txData = txResponse.value.data;
+			if (txData.length === 0) {
+				showToast({
+					type: 'error',
+					title: t('activity_error_get'),
+					description: t('activity_error_tx_not_found'),
+				});
+				return;
+			}
+			const data = txData[0].result;
+			setTxDetails(data);
+		});
 	}, [id, activityType, extended, selectedNetwork, txDetails, t]);
 
 	const showBoost = useMemo(() => {

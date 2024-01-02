@@ -48,15 +48,15 @@ const ScannerScreen = ({
 			return;
 		}
 
-		resetSendTransaction({ selectedNetwork, selectedWallet });
-
-		processInputData({
-			data,
-			source: 'mainScanner',
-			sdk,
-			selectedNetwork,
-			selectedWallet,
-		}).then();
+		resetSendTransaction().then(() => {
+			processInputData({
+				data,
+				source: 'mainScanner',
+				sdk,
+				selectedNetwork,
+				selectedWallet,
+			}).then();
+		});
 	};
 
 	return (

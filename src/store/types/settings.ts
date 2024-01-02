@@ -1,11 +1,13 @@
+import { EProtocol } from 'beignet';
 import { IWalletItem } from './wallet';
 
 export type TTheme = 'dark' | 'light';
 
-export type TProtocol = 'ssl' | 'tcp';
-
-export const isProtocol = (protocol: string): protocol is TProtocol => {
-	return ['tcp', 'ssl'].includes(protocol);
+export const isProtocol = (protocol: unknown): protocol is EProtocol => {
+	if (typeof protocol === 'string') {
+		return Object.values(EProtocol).includes(protocol as EProtocol);
+	}
+	return false;
 };
 
 export enum ETransactionSpeed {
@@ -26,7 +28,7 @@ export interface ICustomElectrumPeer {
 	host: string;
 	ssl: number; //ssl port
 	tcp: number; //tcp port
-	protocol: TProtocol;
+	protocol: EProtocol;
 }
 
 export type TReceiveOption = {

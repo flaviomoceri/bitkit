@@ -15,25 +15,19 @@ import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { addTxTag } from '../../../store/actions/wallet';
 import { addLastUsedTag } from '../../../store/slices/metadata';
 import { lastUsedTagsSelector } from '../../../store/reselect/metadata';
-import {
-	selectedNetworkSelector,
-	selectedWalletSelector,
-} from '../../../store/reselect/wallet';
 import type { SendScreenProps } from '../../../navigation/types';
 
 const Tags = ({ navigation }: SendScreenProps<'Tags'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const [text, setText] = useState('');
 	const dispatch = useAppDispatch();
-	const selectedWallet = useAppSelector(selectedWalletSelector);
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const lastUsedTags = useAppSelector(lastUsedTagsSelector);
 
 	const handleSubmit = async (): Promise<void> => {
 		if (text.length === 0) {
 			return;
 		}
-		const res = addTxTag({ tag: text, selectedNetwork, selectedWallet });
+		const res = addTxTag({ tag: text });
 		if (res.isErr()) {
 			console.log(res.error.message);
 			showToast({
@@ -50,7 +44,7 @@ const Tags = ({ navigation }: SendScreenProps<'Tags'>): ReactElement => {
 	};
 
 	const handleTagChoose = async (tag: string): Promise<void> => {
-		const res = addTxTag({ tag, selectedNetwork, selectedWallet });
+		const res = addTxTag({ tag });
 		if (res.isErr()) {
 			console.log(res.error.message);
 			showToast({

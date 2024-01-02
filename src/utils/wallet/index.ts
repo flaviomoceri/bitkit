@@ -7,91 +7,97 @@ import { BIP32Factory } from 'bip32';
 import ecc from '@bitcoinerlab/secp256k1';
 import { err, ok, Result } from '@synonymdev/result';
 
-import { networks, EAvailableNetwork } from '../networks';
+import { EAvailableNetwork, networks } from '../networks';
 import {
-	getDefaultWalletShape,
-	defaultWalletStoreShape,
-	TAddressIndexInfo,
 	addressTypes,
+	getDefaultWalletShape,
+	TAddressIndexInfo,
 } from '../../store/shapes/wallet';
 import {
+	EAddressType,
 	EPaymentType,
-	IAddresses,
 	IAddress,
-	IWallets,
-	IWallet,
-	IFormattedTransactions,
+	IAddresses,
+	IAddressTypes,
 	IFormattedTransaction,
+	IFormattedTransactions,
 	IKeyDerivationPath,
+	IKeyDerivationPathData,
 	IOutput,
 	IUtxo,
-	EAddressType,
+	IWallet,
+	IWallets,
 	TKeyDerivationAccount,
 	TKeyDerivationAccountType,
-	TKeyDerivationPurpose,
-	IKeyDerivationPathData,
-	TWalletName,
-	TKeyDerivationCoinType,
 	TKeyDerivationChange,
-	IAddressTypes,
+	TKeyDerivationCoinType,
+	TKeyDerivationPurpose,
+	TWalletName,
 } from '../../store/types/wallet';
 import {
 	IGetAddress,
 	IGenerateAddresses,
-	IGetInfoFromAddressPath,
-	IGenerateAddressesResponse,
 	IGetAddressResponse,
+	IGetInfoFromAddressPath,
 } from '../types';
 import i18n from '../i18n';
 import { btcToSats } from '../conversion';
 import { getKeychainValue, setKeychainValue } from '../keychain';
 import {
+	dispatch,
 	getLightningStore,
-	getUiStore,
+	getSettingsStore,
+	getStore,
 	getWalletStore,
 } from '../../store/helpers';
 import {
-	addAddresses,
-	clearAddresses,
-	clearTransactions,
-	clearUtxos,
-	generateNewReceiveAddress,
-	resetAddressIndexes,
-	setZeroIndexAddresses,
-	updateAddressIndexes,
-	updateExchangeRates,
-	updateTransactions,
-	updateUtxos,
+	createDefaultWalletStructure,
+	getNetworkFromBeignet,
+	getWalletData,
+	setWalletData,
 } from '../../store/actions/wallet';
 import { TCoinSelectPreference } from '../../store/types/settings';
 import { updateActivityList } from '../../store/utils/activity';
-import { getByteCount } from './transactions';
 import {
-	getAddressHistory,
 	getBlockHeader,
-	getTransactions,
 	getTransactionsFromInputs,
-	isConnectedElectrum,
-	subscribeToAddresses,
 	TTxResult,
 } from './electrum';
 import { invokeNodeJsMethod } from '../nodejs-mobile';
 import { DefaultNodeJsMethodsShape } from '../nodejs-mobile/shapes';
 import { refreshLdk } from '../lightning';
-import {
-	BITKIT_WALLET_SEED_HASH_PREFIX,
-	GENERATE_ADDRESS_AMOUNT,
-	CHUNK_LIMIT,
-} from './constants';
+import { BITKIT_WALLET_SEED_HASH_PREFIX, CHUNK_LIMIT } from './constants';
 import { moveMetaIncTxTags } from '../../store/utils/metadata';
 import { refreshOrdersList } from '../../store/utils/blocktank';
 import { TNode } from '../../store/types/lightning';
-import { showNewTxPrompt } from '../../store/utils/ui';
+import { showNewOnchainTxPrompt, showNewTxPrompt } from '../../store/utils/ui';
 import { reduceValue } from '../helpers';
 import { objectKeys } from '../objectKeys';
+import {
+	EAvailableNetworks,
+	EElectrumNetworks,
+	Electrum,
+	getByteCount,
+	ICustomGetAddress,
+	IGenerateAddressesResponse,
+	IRbfData,
+	ISendTransaction,
+	IWalletData,
+	TOnMessage,
+	Transaction,
+	TTransactionMessage,
+	Wallet,
+} from 'beignet';
+import { TServer } from 'beignet/src/types/electrum';
+import { showToast } from '../notifications';
+import { updateUi } from '../../store/slices/ui';
+import { startWalletServices } from '../startup';
+import { ICustomGetScriptHash } from 'beignet/src/types/wallet';
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);
+
+let wallet: Wallet;
 
 export const refreshWallet = async ({
 	onchain = true,
@@ -115,7 +121,6 @@ export const refreshWallet = async ({
 		await new Promise((resolve) => {
 			InteractionManager.runAfterInteractions(() => resolve(null));
 		});
-		const { isConnectedToElectrum } = getUiStore();
 		if (!selectedWallet) {
 			selectedWallet = getSelectedWallet();
 		}
@@ -126,48 +131,9 @@ export const refreshWallet = async ({
 		let notificationTxid: string | undefined;
 
 		if (onchain) {
-			let addressType: EAddressType | undefined;
-			if (!updateAllAddressTypes) {
-				addressType = getSelectedAddressType({
-					selectedNetwork,
-					selectedWallet,
-				});
-			}
-			await updateAddressIndexes({
-				selectedWallet,
-				selectedNetwork,
-				addressType,
-			});
-			if (isConnectedToElectrum) {
-				const [_result1, _result2, updateTransactionResult] = await Promise.all(
-					[
-						subscribeToAddresses({
-							selectedWallet,
-							selectedNetwork,
-						}),
-						updateUtxos({
-							selectedWallet,
-							selectedNetwork,
-							scanAllAddresses,
-						}),
-						updateTransactions({
-							scanAllAddresses,
-							selectedWallet,
-							selectedNetwork,
-						}),
-					],
-				);
-
-				if (updateTransactionResult.isOk()) {
-					notificationTxid = updateTransactionResult.value;
-				}
-			}
-
-			updateExchangeRates().then();
-
-			await setZeroIndexAddresses({
-				selectedWallet,
-				selectedNetwork,
+			await wallet.refreshWallet({
+				scanAllAddresses,
+				updateAllAddressTypes,
 			});
 		}
 
@@ -205,123 +171,22 @@ export const refreshWallet = async ({
  * @param {string} [addressType] - Determines what type of address to generate (p2pkh, p2sh, p2wpkh).
  */
 export const generateAddresses = async ({
-	selectedWallet,
 	addressAmount = 10,
 	changeAddressAmount = 10,
 	addressIndex = 0,
 	changeAddressIndex = 0,
-	selectedNetwork,
 	keyDerivationPath,
-	accountType = 'onchain',
 	addressType,
 }: IGenerateAddresses): Promise<Result<IGenerateAddressesResponse>> => {
 	try {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!addressType) {
-			addressType = getSelectedAddressType({ selectedNetwork, selectedWallet });
-		}
-
-		if (!keyDerivationPath) {
-			// Set derivation path accordingly based on address type.
-			const keyDerivationPathResponse = getKeyDerivationPath({
-				selectedNetwork,
-				addressType,
-			});
-			if (keyDerivationPathResponse.isErr()) {
-				return err(keyDerivationPathResponse.error.message);
-			}
-			keyDerivationPath = keyDerivationPathResponse.value;
-		}
-
-		const type = addressType;
-		const addresses = {} as IAddresses;
-		const changeAddresses = {} as IAddresses;
-		const addressArray = new Array(addressAmount).fill(null);
-		const changeAddressArray = new Array(changeAddressAmount).fill(null);
-
-		await Promise.all(
-			addressArray.map(async (_item, i) => {
-				const index = i + addressIndex;
-				const path = { ...keyDerivationPath! };
-				path.addressIndex = `${index}`;
-				const addressPath = formatKeyDerivationPath({
-					path,
-					selectedNetwork,
-					accountType,
-					changeAddress: false,
-					addressIndex: `${index}`,
-				});
-				if (addressPath.isErr()) {
-					throw addressPath.error;
-				}
-				const address = await getAddress({
-					path: addressPath.value.pathString,
-					selectedNetwork,
-					type,
-				});
-				if (address.isErr()) {
-					throw address.error;
-				}
-				const scriptHash = await getScriptHash(
-					address.value.address,
-					selectedNetwork,
-				);
-				if (!scriptHash) {
-					throw new Error('Unable to get script hash.');
-				}
-				addresses[scriptHash] = {
-					...address.value,
-					index,
-					scriptHash,
-				};
-			}),
-		);
-
-		await Promise.all(
-			changeAddressArray.map(async (_item, i) => {
-				const index = i + changeAddressIndex;
-				const path = { ...keyDerivationPath! };
-				path.addressIndex = `${index}`;
-				const changeAddressPath = formatKeyDerivationPath({
-					path,
-					selectedNetwork,
-					accountType,
-					changeAddress: true,
-					addressIndex: `${index}`,
-				});
-				if (changeAddressPath.isErr()) {
-					throw changeAddressPath.error;
-				}
-
-				const address = await getAddress({
-					path: changeAddressPath.value.pathString,
-					selectedNetwork,
-					type,
-				});
-				if (address.isErr()) {
-					throw address.error;
-				}
-				const scriptHash = await getScriptHash(
-					address.value.address,
-					selectedNetwork,
-				);
-				if (!scriptHash) {
-					throw new Error('Unable to get script hash.');
-				}
-				changeAddresses[scriptHash] = {
-					...address.value,
-					index,
-					scriptHash,
-				};
-			}),
-		);
-
-		return ok({ addresses, changeAddresses });
+		return await wallet.generateAddresses({
+			addressAmount,
+			changeAddressAmount,
+			addressIndex,
+			changeAddressIndex,
+			keyDerivationPath,
+			addressType,
+		});
 	} catch (e) {
 		return err(e);
 	}
@@ -619,6 +484,46 @@ export const getScriptHash = async (
 };
 
 /**
+ * Get scriptHash for a given address
+ * @param {string} address
+ * @param {EAvailableNetwork} [selectedNetwork]
+ * @return {string}
+ */
+export const getCustomScriptHash = async ({
+	address,
+	selectedNetwork,
+}: ICustomGetScriptHash): Promise<string> => {
+	try {
+		if (!address) {
+			return '';
+		}
+		const data = DefaultNodeJsMethodsShape.getScriptHash();
+		data.data.address = address;
+		data.data.selectedNetwork = electrumNetworkToBitkitNetwork(selectedNetwork);
+		const getScriptHashResponse = await invokeNodeJsMethod<string>(data);
+		if (getScriptHashResponse.error) {
+			return '';
+		}
+		return getScriptHashResponse.value;
+	} catch {
+		return '';
+	}
+};
+
+export const electrumNetworkToBitkitNetwork = (
+	network: EElectrumNetworks,
+): EAvailableNetwork => {
+	switch (network) {
+		case EElectrumNetworks.bitcoin:
+			return EAvailableNetwork.bitcoin;
+		case EElectrumNetworks.bitcoinRegtest:
+			return EAvailableNetwork.bitcoinRegtest;
+		case EElectrumNetworks.bitcoinTestnet:
+			return EAvailableNetwork.bitcoinTestnet;
+	}
+};
+
+/**
  * Get address for a given keyPair, network and type.
  * @param {string} path
  * @param {EAvailableNetwork} [selectedNetwork]
@@ -641,6 +546,33 @@ export const getAddress = async ({
 		data.data.path = path;
 		data.data.type = type;
 		data.data.selectedNetwork = selectedNetwork;
+		const addressResponse = await invokeNodeJsMethod<IGetAddressResponse>(data);
+		return ok(addressResponse.value);
+	} catch (e) {
+		return err(e);
+	}
+};
+
+/**
+ * Get address for a given keyPair, network and type.
+ * @param {string} path
+ * @param {EAvailableNetwork} [selectedNetwork]
+ * @param {EAddressType} type - Determines what type of address to generate (p2pkh, p2sh, p2wpkh).
+ * @return {string}
+ */
+export const customGetAddress = async ({
+	path,
+	selectedNetwork,
+	type,
+}: ICustomGetAddress): Promise<Result<IGetAddressResponse>> => {
+	if (!path) {
+		return err('No path specified');
+	}
+	try {
+		const data = DefaultNodeJsMethodsShape.getAddress();
+		data.data.path = path;
+		data.data.type = type;
+		data.data.selectedNetwork = electrumNetworkToBitkitNetwork(selectedNetwork);
 		const addressResponse = await invokeNodeJsMethod<IGetAddressResponse>(data);
 		return ok(addressResponse.value);
 	} catch (e) {
@@ -794,350 +726,6 @@ export const removeDuplicateAddresses = async ({
 interface ITxHashes extends TTxResult {
 	scriptHash: string;
 }
-
-interface IGetNextAvailableAddressResponse {
-	addressIndex: IAddress;
-	lastUsedAddressIndex: IAddress;
-	changeAddressIndex: IAddress;
-	lastUsedChangeAddressIndex: IAddress;
-}
-
-interface IGetNextAvailableAddress {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-	addressType?: EAddressType;
-}
-
-export const getNextAvailableAddress = async ({
-	selectedWallet,
-	selectedNetwork,
-	addressType,
-}: IGetNextAvailableAddress): Promise<
-	Result<IGetNextAvailableAddressResponse>
-> => {
-	const isConnected = await isConnectedElectrum();
-	if (!isConnected) {
-		return err('Not connected to Electrum Server.');
-	}
-
-	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		const { currentWallet } = getCurrentWallet({
-			selectedNetwork,
-			selectedWallet,
-		});
-		if (!addressType) {
-			addressType = getSelectedAddressType({
-				selectedNetwork,
-				selectedWallet,
-			});
-		}
-		const { path } = addressTypes[addressType];
-
-		const result = formatKeyDerivationPath({ path, selectedNetwork });
-		if (result.isErr()) {
-			return err(result.error.message);
-		}
-		const { pathObject: keyDerivationPath } = result.value;
-
-		//The currently known/stored address index.
-		let addressIndex = currentWallet.addressIndex[selectedNetwork][addressType];
-		let lastUsedAddressIndex =
-			currentWallet.lastUsedAddressIndex[selectedNetwork][addressType];
-		let changeAddressIndex =
-			currentWallet.changeAddressIndex[selectedNetwork][addressType];
-		let lastUsedChangeAddressIndex =
-			currentWallet.lastUsedChangeAddressIndex[selectedNetwork][addressType];
-
-		if (!addressIndex.address) {
-			const generatedAddresses = await generateAddresses({
-				selectedWallet,
-				selectedNetwork,
-				addressAmount: GENERATE_ADDRESS_AMOUNT,
-				changeAddressAmount: 0,
-				keyDerivationPath,
-				addressType,
-			});
-			if (generatedAddresses.isErr()) {
-				return err(generatedAddresses.error);
-			}
-			const addresses = generatedAddresses.value.addresses;
-			const sorted = Object.values(addresses).sort((a, b) => a.index - b.index);
-			addressIndex = sorted[0];
-		}
-
-		if (!changeAddressIndex.address) {
-			const generatedAddresses = await generateAddresses({
-				selectedWallet,
-				selectedNetwork,
-				addressAmount: 0,
-				changeAddressAmount: GENERATE_ADDRESS_AMOUNT,
-				keyDerivationPath,
-				addressType,
-			});
-			if (generatedAddresses.isErr()) {
-				return err(generatedAddresses.error);
-			}
-			const addresses = generatedAddresses.value.changeAddresses;
-			const sorted = Object.values(addresses).sort((a, b) => a.index - b.index);
-			changeAddressIndex = sorted[0];
-		}
-
-		let addresses = currentWallet.addresses[selectedNetwork][addressType];
-		let changeAddresses =
-			currentWallet.changeAddresses[selectedNetwork][addressType];
-
-		//How many addresses/changeAddresses are currently stored
-		const addressCount = Object.values(addresses).length;
-		const changeAddressCount = Object.values(changeAddresses).length;
-
-		/*
-		 *	Create more addresses if none exist or the highest address index matches the current address count
-		 */
-		if (addressCount <= 0 || addressIndex.index === addressCount) {
-			const newAddresses = await addAddresses({
-				addressAmount: GENERATE_ADDRESS_AMOUNT,
-				changeAddressAmount: 0,
-				addressIndex: addressIndex.index,
-				changeAddressIndex: 0,
-				selectedNetwork,
-				selectedWallet,
-				keyDerivationPath,
-				addressType,
-			});
-			if (!newAddresses.isErr()) {
-				addresses = newAddresses.value.addresses;
-			}
-		}
-
-		/*
-		 *	Create more change addresses if none exist or the highest change address index matches the current
-		 *	change address count
-		 */
-		if (
-			changeAddressCount <= 0 ||
-			changeAddressIndex.index === changeAddressCount
-		) {
-			const newChangeAddresses = await addAddresses({
-				addressAmount: 0,
-				changeAddressAmount: GENERATE_ADDRESS_AMOUNT,
-				addressIndex: 0,
-				changeAddressIndex: changeAddressIndex.index,
-				selectedNetwork,
-				selectedWallet,
-				keyDerivationPath,
-				addressType,
-			});
-			if (!newChangeAddresses.isErr()) {
-				changeAddresses = newChangeAddresses.value.changeAddresses;
-			}
-		}
-
-		//Store all addresses that are to be searched and used in this method.
-		let allAddresses = Object.values(addresses).filter(
-			({ index }) => index >= addressIndex.index,
-		);
-		let addressesToScan = allAddresses;
-
-		//Store all change addresses that are to be searched and used in this method.
-		let allChangeAddresses = Object.values(changeAddresses).filter(
-			({ index }) => index >= changeAddressIndex.index,
-		);
-		let changeAddressesToScan = allChangeAddresses;
-
-		//Prep for batch request
-		let combinedAddressesToScan = [
-			...addressesToScan,
-			...changeAddressesToScan,
-		];
-
-		let foundLastUsedAddress = false;
-		let foundLastUsedChangeAddress = false;
-		let addressHasBeenUsed = false;
-		let changeAddressHasBeenUsed = false;
-
-		// If an error occurs, return last known/available indexes.
-		const lastKnownIndexes = ok({
-			addressIndex,
-			lastUsedAddressIndex,
-			changeAddressIndex,
-			lastUsedChangeAddressIndex,
-		});
-
-		while (!foundLastUsedAddress || !foundLastUsedChangeAddress) {
-			//Check if transactions are pending in the mempool.
-			const addressHistory = await getAddressHistory({
-				scriptHashes: combinedAddressesToScan,
-				selectedNetwork,
-				selectedWallet,
-			});
-
-			if (addressHistory.isErr()) {
-				console.log(addressHistory.error.message);
-				return lastKnownIndexes;
-			}
-
-			const txHashes = addressHistory.value;
-
-			const highestUsedIndex = getHighestUsedIndexFromTxHashes({
-				txHashes,
-				addresses,
-				changeAddresses,
-				addressIndex,
-				changeAddressIndex,
-			});
-			if (highestUsedIndex.isErr()) {
-				console.log(highestUsedIndex.error.message);
-				return lastKnownIndexes;
-			}
-
-			addressIndex = highestUsedIndex.value.addressIndex;
-			changeAddressIndex = highestUsedIndex.value.changeAddressIndex;
-			if (highestUsedIndex.value.foundAddressIndex) {
-				addressHasBeenUsed = true;
-			}
-			if (highestUsedIndex.value.foundChangeAddressIndex) {
-				changeAddressHasBeenUsed = true;
-			}
-
-			const highestStoredIndex = getHighestStoredAddressIndex({
-				selectedNetwork,
-				selectedWallet,
-				addressType,
-			});
-
-			if (highestStoredIndex.isErr()) {
-				console.log(highestStoredIndex.error.message);
-				return lastKnownIndexes;
-			}
-
-			const {
-				addressIndex: highestUsedAddressIndex,
-				changeAddressIndex: highestUsedChangeAddressIndex,
-			} = highestUsedIndex.value;
-			const {
-				addressIndex: highestStoredAddressIndex,
-				changeAddressIndex: highestStoredChangeAddressIndex,
-			} = highestStoredIndex.value;
-
-			if (highestUsedAddressIndex.index < highestStoredAddressIndex.index) {
-				foundLastUsedAddress = true;
-			}
-
-			if (
-				highestUsedChangeAddressIndex.index <
-				highestStoredChangeAddressIndex.index
-			) {
-				foundLastUsedChangeAddress = true;
-			}
-
-			if (foundLastUsedAddress && foundLastUsedChangeAddress) {
-				//Increase index by one if the current index was found in a txHash or is greater than the previous index.
-				let newAddressIndex = addressIndex.index;
-				if (
-					highestUsedAddressIndex.index > addressIndex.index ||
-					addressHasBeenUsed
-				) {
-					const index = highestUsedAddressIndex.index;
-					if (
-						highestUsedAddressIndex &&
-						index >= 0 &&
-						highestUsedIndex.value.foundAddressIndex
-					) {
-						lastUsedAddressIndex = highestUsedAddressIndex;
-					}
-					newAddressIndex = index >= 0 ? index + 1 : index;
-				}
-
-				let newChangeAddressIndex = changeAddressIndex.index;
-				if (
-					highestUsedChangeAddressIndex.index > changeAddressIndex.index ||
-					changeAddressHasBeenUsed
-				) {
-					const index = highestUsedChangeAddressIndex.index;
-					if (
-						highestUsedChangeAddressIndex &&
-						index >= 0 &&
-						highestUsedIndex.value.foundChangeAddressIndex
-					) {
-						lastUsedChangeAddressIndex = highestUsedChangeAddressIndex;
-					}
-					newChangeAddressIndex = index >= 0 ? index + 1 : index;
-				}
-
-				//Find and return the new address index.
-				const nextAvailableAddress = Object.values(allAddresses).find(
-					({ index }) => index === newAddressIndex,
-				);
-				//Find and return the new change address index.
-				const nextAvailableChangeAddress = Object.values(
-					allChangeAddresses,
-				).find(({ index }) => index === newChangeAddressIndex);
-				if (!nextAvailableAddress || !nextAvailableChangeAddress) {
-					return lastKnownIndexes;
-				}
-				return ok({
-					addressIndex: nextAvailableAddress,
-					lastUsedAddressIndex,
-					changeAddressIndex: nextAvailableChangeAddress,
-					lastUsedChangeAddressIndex,
-				});
-			}
-
-			//Create receiving addresses for the next round
-			if (!foundLastUsedAddress) {
-				const newAddresses = await addAddresses({
-					addressAmount: GENERATE_ADDRESS_AMOUNT,
-					changeAddressAmount: 0,
-					addressIndex: highestStoredIndex.value.addressIndex.index,
-					changeAddressIndex: 0,
-					selectedNetwork,
-					selectedWallet,
-					keyDerivationPath,
-					addressType,
-				});
-				if (!newAddresses.isErr()) {
-					addresses = newAddresses.value.addresses || {};
-				}
-			}
-			//Create change addresses for the next round
-			if (!foundLastUsedChangeAddress) {
-				const newChangeAddresses = await addAddresses({
-					addressAmount: 0,
-					changeAddressAmount: GENERATE_ADDRESS_AMOUNT,
-					addressIndex: 0,
-					changeAddressIndex: highestStoredIndex.value.changeAddressIndex.index,
-					selectedNetwork,
-					selectedWallet,
-					keyDerivationPath,
-					addressType,
-				});
-				if (!newChangeAddresses.isErr()) {
-					changeAddresses = newChangeAddresses.value.changeAddresses || {};
-				}
-			}
-
-			// Store newly created addresses to scan in the next round.
-			addressesToScan = Object.values(addresses);
-			changeAddressesToScan = Object.values(changeAddresses);
-			combinedAddressesToScan = [...addressesToScan, ...changeAddressesToScan];
-			// Store the newly created addresses used for this method.
-			allAddresses = [...allAddresses, ...addressesToScan];
-			allChangeAddresses = [...allChangeAddresses, ...changeAddressesToScan];
-		}
-
-		return lastKnownIndexes;
-	} catch (e) {
-		console.log(e);
-		return err(e);
-	}
-};
-
 interface IIndexes {
 	addressIndex: IAddress;
 	changeAddressIndex: IAddress;
@@ -1196,25 +784,17 @@ export const getHighestUsedIndexFromTxHashes = ({
  * Returns the highest address and change address index stored in the app for the specified wallet and network.
  */
 export const getHighestStoredAddressIndex = ({
-	selectedWallet = defaultWalletStoreShape.selectedWallet,
-	selectedNetwork = defaultWalletStoreShape.selectedNetwork,
 	addressType,
 }: {
-	selectedWallet: TWalletName;
-	selectedNetwork: EAvailableNetwork;
 	addressType: EAddressType;
 }): Result<{
 	addressIndex: IAddress;
 	changeAddressIndex: IAddress;
 }> => {
 	try {
-		const { currentWallet } = getCurrentWallet({
-			selectedWallet,
-			selectedNetwork,
-		});
-		const addresses = currentWallet.addresses[selectedNetwork][addressType];
-		const changeAddresses =
-			currentWallet.changeAddresses[selectedNetwork][addressType];
+		const currentWallet = getOnChainWalletData();
+		const addresses = currentWallet.addresses[addressType];
+		const changeAddresses = currentWallet.changeAddresses[addressType];
 
 		const addressIndex = Object.values(addresses).reduce((prev, current) => {
 			return prev.index > current.index ? prev : current;
@@ -1235,7 +815,7 @@ export const getHighestStoredAddressIndex = ({
  * @return {EAvailableNetwork}
  */
 export const getSelectedNetwork = (): EAvailableNetwork => {
-	return getWalletStore().selectedNetwork;
+	return getWalletStore()?.selectedNetwork ?? 'bitcoin';
 };
 
 /**
@@ -1243,22 +823,15 @@ export const getSelectedNetwork = (): EAvailableNetwork => {
  * @returns {EAddressType}
  */
 export const getSelectedAddressType = ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 } = {}): EAddressType => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-
-	const wallet = getWalletStore().wallets[selectedWallet];
-	if (wallet?.addressType[selectedNetwork]) {
-		return wallet.addressType[selectedNetwork];
+	const storedWallet = getWalletStore().wallets[selectedWallet];
+	if (storedWallet?.addressType[selectedNetwork]) {
+		return storedWallet.addressType[selectedNetwork];
 	} else {
 		return getDefaultWalletShape().addressType[selectedNetwork];
 	}
@@ -1269,7 +842,7 @@ export const getSelectedAddressType = ({
  * @return {TWalletName}
  */
 export const getSelectedWallet = (): TWalletName => {
-	return getWalletStore().selectedWallet;
+	return getWalletStore()?.selectedWallet ?? 'wallet0';
 };
 
 /**
@@ -1279,8 +852,8 @@ export const getSelectedWallet = (): TWalletName => {
  * @return {{ currentWallet: IWallet, currentLightningNode: TNode, selectedWallet: TWalletName, selectedNetwork: EAvailableNetwork }}
  */
 export const getCurrentWallet = ({
-	selectedNetwork,
-	selectedWallet,
+	selectedNetwork = getSelectedNetwork(),
+	selectedWallet = getSelectedWallet(),
 }: {
 	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
@@ -1290,16 +863,16 @@ export const getCurrentWallet = ({
 	selectedNetwork: EAvailableNetwork;
 	selectedWallet: TWalletName;
 } => {
-	const wallet = getWalletStore();
+	const walletStore = getWalletStore();
 	const lightning = getLightningStore();
+	const currentLightningNode = lightning.nodes[selectedWallet];
 	if (!selectedNetwork) {
-		selectedNetwork = wallet.selectedNetwork;
+		selectedNetwork = walletStore.selectedNetwork;
 	}
 	if (!selectedWallet) {
-		selectedWallet = wallet.selectedWallet;
+		selectedWallet = walletStore.selectedWallet;
 	}
-	const currentWallet = wallet.wallets[selectedWallet];
-	const currentLightningNode = lightning.nodes[selectedWallet];
+	const currentWallet = walletStore.wallets[selectedWallet];
 	return {
 		currentWallet,
 		currentLightningNode,
@@ -1411,7 +984,6 @@ export const getInputData = async ({
 
 			const getTransactionsResponse = await getTransactionsFromInputs({
 				txHashes: chunk,
-				selectedNetwork,
 			});
 			if (getTransactionsResponse.isErr()) {
 				return err(getTransactionsResponse.error.message);
@@ -1623,6 +1195,14 @@ export const decodeOpReturnMessage = (opReturn = ''): string[] => {
 	}
 };
 
+export const getCustomElectrumPeers = ({
+	selectedNetwork = getSelectedNetwork(),
+}: {
+	selectedNetwork?: EAvailableNetwork;
+}): TServer[] => {
+	return getSettingsStore().customElectrumPeers[selectedNetwork];
+};
+
 export interface IVin {
 	scriptSig: {
 		asm: string;
@@ -1647,219 +1227,17 @@ export interface IVout {
 	value: number;
 }
 
-// TODO: Update ICreateTransaction to match this pattern.
-export interface IRbfData {
-	outputs: IOutput[];
-	selectedWallet: TWalletName;
-	balance: number;
-	selectedNetwork: EAvailableNetwork;
-	addressType: EAddressType;
-	fee: number; // Total fee in sats.
-	inputs: IUtxo[];
-	message: string;
-}
-
 /**
  * Using a tx_hash this method will return the necessary data to create a
  * replace-by-fee transaction for any 0-conf, RBF-enabled tx.
  * @param txHash
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
  */
-
 export const getRbfData = async ({
 	txHash,
-	selectedWallet,
-	selectedNetwork,
 }: {
 	txHash: ITxHash;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<IRbfData>> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	const txResponse = await getTransactions({
-		txHashes: [txHash],
-		selectedNetwork,
-	});
-	if (txResponse.isErr()) {
-		return err(txResponse.error.message);
-	}
-	const txData = txResponse.value.data;
-
-	const wallet = getWalletStore();
-	const addressTypeKeys = objectKeys(EAddressType);
-	const addresses = wallet.wallets[selectedWallet].addresses[selectedNetwork];
-	const changeAddresses =
-		wallet.wallets[selectedWallet].changeAddresses[selectedNetwork];
-
-	let allAddresses = {} as IAddresses;
-	let allChangeAddresses = {} as IAddresses;
-
-	await Promise.all(
-		addressTypeKeys.map((addressType) => {
-			allAddresses = {
-				...allAddresses,
-				...addresses[addressType],
-				...changeAddresses[addressType],
-			};
-			allChangeAddresses = {
-				...allChangeAddresses,
-				...changeAddresses[addressType],
-			};
-		}),
-	);
-
-	let changeAddressData: IOutput = {
-		address: '',
-		value: 0,
-		index: 0,
-	};
-	let inputs: IUtxo[] = [];
-	let address: string = '';
-	let scriptHash = '';
-	let path = '';
-	let value: number = 0;
-	let addressType = EAddressType.p2wpkh;
-	let outputs: IOutput[] = [];
-	let message: string = '';
-	let inputTotal = 0;
-	let outputTotal = 0;
-	let fee = 0;
-
-	const insAndOuts = await Promise.all(
-		txData.map(({ result }) => {
-			const vin = result.vin ?? [];
-			const vout = result.vout ?? [];
-			return { vins: vin, vouts: vout };
-		}),
-	);
-	const { vins, vouts } = insAndOuts[0];
-	for (let i = 0; i < vins.length; i++) {
-		try {
-			const input = vins[i];
-			const txId = input.txid;
-			const tx = await getTransactions({
-				txHashes: [{ tx_hash: txId }],
-				selectedNetwork,
-			});
-			if (tx.isErr()) {
-				return err(tx.error.message);
-			}
-			if (tx.value.data[0].data.height > 0) {
-				return err('Transaction is already confirmed. Unable to RBF.');
-			}
-			const txVout = tx.value.data[0].result.vout[input.vout];
-			if (txVout.scriptPubKey?.address) {
-				address = txVout.scriptPubKey.address;
-			} else if (
-				txVout.scriptPubKey?.addresses &&
-				txVout.scriptPubKey.addresses.length
-			) {
-				address = txVout.scriptPubKey.addresses[0];
-			}
-			if (!address) {
-				continue;
-			}
-			scriptHash = await getScriptHash(address, selectedNetwork);
-			// Check that we are in possession of this scriptHash.
-			if (!(scriptHash in allAddresses)) {
-				// This output did not come from us.
-				continue;
-			}
-			path = allAddresses[scriptHash].path;
-			value = btcToSats(txVout.value);
-			inputs.push({
-				tx_hash: input.txid,
-				index: input.vout,
-				tx_pos: input.vout,
-				height: 0,
-				address,
-				scriptHash,
-				path,
-				value,
-			});
-			if (value) {
-				inputTotal = inputTotal + value;
-			}
-		} catch (e) {
-			console.log(e);
-		}
-	}
-	for (let i = 0; i < vouts.length; i++) {
-		const vout = vouts[i];
-		const voutValue = btcToSats(vout.value);
-		if (vout.scriptPubKey?.addresses) {
-			address = vout.scriptPubKey.addresses[0];
-		} else if (vout.scriptPubKey?.address) {
-			address = vout.scriptPubKey.address;
-		} else {
-			try {
-				if (vout.scriptPubKey.asm.includes('OP_RETURN')) {
-					message = decodeOpReturnMessage(vout.scriptPubKey.asm)[0] || '';
-				}
-			} catch (e) {}
-		}
-		if (!address) {
-			continue;
-		}
-		const changeAddressScriptHash = await getScriptHash(
-			address,
-			selectedNetwork,
-		);
-
-		// If the address scripthash matches one of our address scripthashes, add it accordingly. Otherwise, add it as another output.
-		if (Object.keys(allAddresses).includes(changeAddressScriptHash)) {
-			changeAddressData = {
-				address,
-				value: voutValue,
-				index: i,
-			};
-		} else {
-			const index = outputs?.length ?? 0;
-			outputs.push({
-				address,
-				value: voutValue,
-				index,
-			});
-			outputTotal = outputTotal + voutValue;
-		}
-	}
-
-	if (!changeAddressData?.address && outputs.length >= 2) {
-		/*
-		 * Unable to determine change address.
-		 * Performing an RBF could divert funds from the incorrect output.
-		 *
-		 * It's very possible that this tx sent the max amount of sats to a foreign/unknown address.
-		 * Instead of pulling sats from that output to accommodate the higher fee (reducing how much the recipient receives)
-		 * suggest a CPFP transaction.
-		 */
-		return err('cpfp');
-	}
-
-	if (outputTotal > inputTotal) {
-		return err('Outputs should not be greater than the inputs.');
-	}
-	fee = Number(inputTotal - (changeAddressData?.value ?? 0) - outputTotal);
-	//outputs = outputs.filter((o) => o);
-
-	return ok({
-		selectedWallet,
-		changeAddress: changeAddressData.address,
-		inputs,
-		balance: inputTotal,
-		outputs,
-		fee,
-		selectedNetwork,
-		message,
-		addressType,
-		rbf: true,
-	});
+	return await wallet.getRbfData({ txHash });
 };
 
 /**
@@ -1927,8 +1305,6 @@ export const getRbfData = async ({
 /**
  * Generates a newly specified wallet.
  * @param {string} [wallet]
- * @param {number} [addressAmount]
- * @param {number} [changeAddressAmount]
  * @param {string} [mnemonic]
  * @param {string} [bip39Passphrase]
  * @param {EAddressType} [addressTypesToCreate]
@@ -1939,16 +1315,12 @@ export const createDefaultWallet = async ({
 	mnemonic,
 	bip39Passphrase,
 	restore,
-	addressAmount,
-	changeAddressAmount,
 	addressTypesToCreate,
 }: {
 	walletName: TWalletName;
 	mnemonic: string;
 	bip39Passphrase: string;
 	restore: boolean;
-	addressAmount: number;
-	changeAddressAmount: number;
 	addressTypesToCreate: Partial<IAddressTypes>;
 }): Promise<Result<IWallets>> => {
 	try {
@@ -1981,54 +1353,21 @@ export const createDefaultWallet = async ({
 		});
 
 		const seed = await bip39.mnemonicToSeed(mnemonic, bip39Passphrase);
-		const defaultWalletShape = getDefaultWalletShape();
-
-		//Generate a set of addresses & changeAddresses for each network.
-		const addressesObj = defaultWalletShape.addresses;
-		const changeAddressesObj = defaultWalletShape.changeAddresses;
-		const addressIndex = defaultWalletShape.addressIndex;
-		const changeAddressIndex = defaultWalletShape.changeAddressIndex;
-		const lastUsedAddressIndex = defaultWalletShape.lastUsedAddressIndex;
-		const lastUsedChangeAddressIndex =
-			defaultWalletShape.lastUsedChangeAddressIndex;
-
 		await setKeychainSlashtagsPrimaryKey(seed);
 
-		for (const { type, path } of Object.values(addressTypesToCreate)) {
-			const pathObject = getKeyDerivationPathObject({
-				path,
-				selectedNetwork,
-			});
-			if (pathObject.isErr()) {
-				return err(pathObject.error.message);
-			}
-			const generatedAddresses = await generateAddresses({
-				selectedWallet: walletName,
-				selectedNetwork,
-				addressAmount,
-				changeAddressAmount,
-				keyDerivationPath: pathObject.value,
-				addressType: type,
-			});
-			if (generatedAddresses.isErr()) {
-				return err(generatedAddresses.error);
-			}
-			const { addresses, changeAddresses } = generatedAddresses.value;
-			const addressZeroIndex = Object.values(addresses).find(
-				(a) => a.index === 0,
-			);
-			const changeAddressZeroIndex = Object.values(changeAddresses).find(
-				(a) => a.index === 0,
-			);
-			if (addressZeroIndex) {
-				addressIndex[selectedNetwork][type] = addressZeroIndex;
-			}
-			if (changeAddressZeroIndex) {
-				changeAddressIndex[selectedNetwork][type] = changeAddressZeroIndex;
-			}
-			addressesObj[selectedNetwork][type] = addresses;
-			changeAddressesObj[selectedNetwork][type] = changeAddresses;
+		await createDefaultWalletStructure({ walletName });
+
+		const defaultWalletShape = getDefaultWalletShape();
+		const setupWalletRes = await setupOnChainWallet({
+			name: walletName,
+			selectedNetwork,
+			bip39Passphrase: bip39Passphrase,
+			addressType: selectedAddressType,
+		});
+		if (setupWalletRes.isErr()) {
+			return err(setupWalletRes.error.message);
 		}
+		const walletData = setupWalletRes.value.data;
 
 		const payload: IWallets = {
 			[walletName]: {
@@ -2039,19 +1378,183 @@ export const createDefaultWallet = async ({
 					bitcoinTestnet: selectedAddressType,
 					bitcoinRegtest: selectedAddressType,
 				},
-				addressIndex,
-				changeAddressIndex,
-				addresses: addressesObj,
-				changeAddresses: changeAddressesObj,
-				lastUsedAddressIndex,
-				lastUsedChangeAddressIndex,
-				id: walletName,
+				addressIndex: {
+					...defaultWalletShape.addressIndex,
+					[selectedNetwork]: {
+						...defaultWalletShape.addressIndex[selectedNetwork],
+						...walletData.addressIndex,
+					},
+				},
+				changeAddressIndex: {
+					...defaultWalletShape.changeAddressIndex,
+					[selectedNetwork]: {
+						...defaultWalletShape.changeAddressIndex[selectedNetwork],
+						...walletData.changeAddressIndex,
+					},
+				},
+				addresses: {
+					...defaultWalletShape.addresses,
+					[selectedNetwork]: {
+						...defaultWalletShape.addresses[selectedNetwork],
+						...walletData.addresses,
+					},
+				},
+				changeAddresses: {
+					...defaultWalletShape.changeAddresses,
+					[selectedNetwork]: {
+						...defaultWalletShape.changeAddresses[selectedNetwork],
+						...walletData.changeAddresses,
+					},
+				},
+				lastUsedAddressIndex: {
+					...defaultWalletShape.lastUsedAddressIndex,
+					[selectedNetwork]: {
+						...defaultWalletShape.lastUsedAddressIndex[selectedNetwork],
+						...walletData.lastUsedAddressIndex,
+					},
+				},
+				lastUsedChangeAddressIndex: {
+					...defaultWalletShape.lastUsedChangeAddressIndex,
+					[selectedNetwork]: {
+						...defaultWalletShape.lastUsedChangeAddressIndex[selectedNetwork],
+						...walletData.lastUsedChangeAddressIndex,
+					},
+				},
+				id: walletData.id,
 			},
 		};
 		return ok(payload);
 	} catch (e) {
 		return err(e);
 	}
+};
+
+const onElectrumConnectionChange = (isConnected: boolean): void => {
+	// get state fresh from store everytime
+	const { isConnectedToElectrum } = getStore().ui;
+
+	if (!isConnectedToElectrum && isConnected) {
+		dispatch(updateUi({ isConnectedToElectrum: isConnected }));
+		showToast({
+			type: 'success',
+			title: i18n.t('other:connection_restored_title'),
+			description: i18n.t('other:connection_restored_message'),
+		});
+	}
+
+	if (isConnectedToElectrum && !isConnected) {
+		dispatch(updateUi({ isConnectedToElectrum: isConnected }));
+		showToast({
+			type: 'error',
+			title: i18n.t('other:connection_reconnect_title'),
+			description: i18n.t('other:connection_reconnect_msg'),
+		});
+	}
+};
+
+const onMessage: TOnMessage = (key, data) => {
+	switch (key) {
+		case 'transactionReceived':
+			const txMsg: TTransactionMessage = data as TTransactionMessage;
+			showNewOnchainTxPrompt({
+				id: txMsg.transaction.txid,
+				value: btcToSats(txMsg.transaction.value),
+			});
+			updateActivityList();
+			break;
+		case 'transactionSent':
+			updateActivityList();
+			break;
+		case 'connectedToElectrum':
+			onElectrumConnectionChange(data as boolean);
+			break;
+		case 'reorg':
+			const utxoArr = data as IUtxo[];
+			// Notify user that a reorg has occurred and that the transaction has been pushed back into the mempool.
+			showToast({
+				type: 'info',
+				title: i18n.t('wallet:reorg_detected'),
+				description: i18n.t('wallet:reorg_msg_begin', {
+					count: utxoArr.length,
+				}),
+				autoHide: false,
+			});
+			break;
+		case 'rbf':
+			const rbfData = data as string[];
+			showToast({
+				type: 'error',
+				title: i18n.t('wallet:activity_removed_title'),
+				description: i18n.t('wallet:activity_removed_msg', {
+					count: rbfData.length,
+				}),
+				autoHide: false,
+			});
+			break;
+		case 'newBlock':
+			refreshWallet({}).then();
+	}
+};
+
+export const setupOnChainWallet = async ({
+	name = getSelectedWallet(),
+	mnemonic,
+	bip39Passphrase,
+	selectedNetwork = getSelectedNetwork(),
+	addressType = getSelectedAddressType(),
+	setStorage = true,
+}: {
+	name: TWalletName;
+	mnemonic?: string;
+	bip39Passphrase?: string;
+	selectedNetwork?: EAvailableNetwork;
+	addressType?: EAddressType;
+	setStorage?: boolean;
+}): Promise<Result<Wallet>> => {
+	if (
+		wallet &&
+		wallet.name === name &&
+		getNetworkFromBeignet(wallet.network) === selectedNetwork
+	) {
+		return ok(wallet);
+	}
+	if (!mnemonic) {
+		const mnemonicRes = await getMnemonicPhrase(name);
+		if (mnemonicRes.isErr()) {
+			return err(mnemonicRes.error.message);
+		}
+		mnemonic = mnemonicRes.value;
+	}
+	// Fetch any stored custom peers.
+	const customPeers = getCustomElectrumPeers({ selectedNetwork });
+	let storage;
+	if (setStorage) {
+		storage = {
+			getData: getWalletData,
+			setData: setWalletData,
+		};
+	}
+	const createWalletResponse = await Wallet.create({
+		name,
+		mnemonic,
+		onMessage,
+		passphrase: bip39Passphrase,
+		network: EAvailableNetworks[selectedNetwork],
+		electrumOptions: {
+			servers: customPeers,
+			tls: global.tls,
+			net: global.net,
+		},
+		storage,
+		addressType,
+		customGetAddress: customGetAddress,
+		customGetScriptHash: getCustomScriptHash,
+	});
+	if (createWalletResponse.isErr()) {
+		return err(createWalletResponse.error.message);
+	}
+	wallet = createWalletResponse.value;
+	return ok(wallet);
 };
 
 /**
@@ -2253,9 +1756,10 @@ export const getKeyDerivationPathString = ({
 		}
 
 		if (selectedNetwork) {
-			path.coinType = selectedNetwork.toLocaleLowerCase().includes('testnet')
-				? '1'
-				: '0';
+			path.coinType =
+				selectedNetwork.toLocaleLowerCase() === EAvailableNetworks.bitcoin
+					? '0'
+					: '1';
 		}
 		if (accountType) {
 			path.account = getKeyDerivationAccount(accountType);
@@ -2305,9 +1809,10 @@ export const getKeyDerivationPathObject = ({
 
 		let coinType = parsedPath[2] as TKeyDerivationCoinType;
 		if (selectedNetwork) {
-			coinType = selectedNetwork.toLocaleLowerCase().includes('testnet')
-				? '1'
-				: '0';
+			coinType =
+				selectedNetwork.toLocaleLowerCase() === EAvailableNetworks.bitcoin
+					? '0'
+					: '1';
 		}
 
 		let account = parsedPath[3] as TKeyDerivationAccount;
@@ -2389,64 +1894,24 @@ export const getAddressTypePath = ({
  * Returns the next available receive address for the given network and wallet.
  * @param {EAddressType} [addressType]
  * @param {EAvailableNetwork} [selectedNetwork]
- * @param {TWalletName} [selectedWallet]
  * @return {Result<string>}
  */
 export const getReceiveAddress = async ({
 	addressType,
-	selectedNetwork,
-	selectedWallet,
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	addressType?: EAddressType;
 	selectedNetwork?: EAvailableNetwork;
-	selectedWallet?: TWalletName;
 }): Promise<Result<string>> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
 		if (!addressType) {
-			addressType = getSelectedAddressType({ selectedNetwork, selectedWallet });
+			addressType = getSelectedAddressType({ selectedNetwork });
 		}
-		const wallet = getWalletStore().wallets[selectedWallet];
-		const addressIndex = wallet.addressIndex[selectedNetwork];
-		const receiveAddress = addressIndex[addressType].address;
-		if (receiveAddress) {
-			return ok(receiveAddress);
-		}
-		const addresses = wallet?.addresses[selectedNetwork][addressType];
-
-		// Check if addresses were generated, but the index has not been set yet.
-		if (
-			Object.keys(addresses).length > 0 &&
-			addressIndex[addressType].index < 0
-		) {
-			// Grab and return the address at index 0.
-			const address = Object.values(addresses).find(({ index }) => index === 0);
-			if (address) {
-				return ok(address.address);
-			}
-		}
-		// Fallback to generating a new receive address on the fly.
-		const generatedAddress = await generateNewReceiveAddress({
-			selectedWallet,
-			selectedNetwork,
-			addressType,
-		});
-		if (generatedAddress.isOk()) {
-			return ok(generatedAddress.value.address);
-		} else {
-			console.log(generatedAddress.error.message);
-		}
-		return err('No receive address available.');
+		return wallet.getReceiveAddress({ addressType });
 	} catch (e) {
 		return err(e);
 	}
 };
-
 /**
  * Retrieves wallet balances for the currently selected wallet and network.
  * @param {TWalletName} [selectedWallet]
@@ -2638,77 +2103,21 @@ export const getAddressIndexInfo = ({
  * This method will clear the utxo array for each address type and reset the
  * address indexes back to the original/default app values. Once cleared & reset
  * the app will rescan the wallet's addresses from index zero.
- * @param selectedWallet
- * @param selectedNetwork
  * @param {boolean} [shouldClearAddresses] - Clears and re-generates all addresses when true.
+ * @param {boolean} [shouldClearTransactions]
  * @returns {Promise<Result<string>>}
  */
 export const rescanAddresses = async ({
-	selectedWallet,
-	selectedNetwork,
 	shouldClearAddresses = true,
+	shouldClearTransactions = false,
 }: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
 	shouldClearAddresses?: boolean;
-}): Promise<Result<string>> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (shouldClearAddresses) {
-		clearAddresses({ selectedWallet, selectedNetwork });
-	}
-	clearTransactions({ selectedWallet, selectedNetwork });
-	await clearUtxos({ selectedWallet, selectedNetwork }).then();
-	await resetAddressIndexes({ selectedWallet, selectedNetwork });
-	// Wait to generate our zero index addresses.
-	await createZeroIndexAddresses({ selectedWallet, selectedNetwork });
-	return await refreshWallet({
-		onchain: true,
-		lightning: false,
-		scanAllAddresses: true,
-		selectedWallet,
-		selectedNetwork,
-		updateAllAddressTypes: true,
-		showNotification: false,
+	shouldClearTransactions?: boolean;
+}): Promise<Result<IWalletData>> => {
+	return wallet.rescanAddresses({
+		shouldClearAddresses,
+		shouldClearTransactions,
 	});
-};
-
-/**
- * Creates and sets zero address indexes for each address type.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @returns {Promise<void>}
- */
-export const createZeroIndexAddresses = async ({
-	selectedWallet,
-	selectedNetwork,
-}: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): Promise<void> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	await Promise.all(
-		Object.values(addressTypes).map(async ({ type }) => {
-			await addAddresses({
-				selectedWallet,
-				selectedNetwork,
-				addressAmount: 1,
-				changeAddressAmount: 1,
-				addressIndex: 0,
-				changeAddressIndex: 0,
-				addressType: type,
-			});
-		}),
-	);
 };
 
 /**
@@ -2743,23 +2152,20 @@ export const getUnconfirmedTransactions = async ({
  * Returns the number of confirmations for a given block height.
  * @param {number} height
  * @param {number} [currentHeight]
- * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {number}
  */
 export const blockHeightToConfirmations = ({
 	blockHeight,
 	currentHeight,
-	selectedNetwork,
 }: {
 	blockHeight?: number;
 	currentHeight?: number;
-	selectedNetwork?: EAvailableNetwork;
 }): number => {
 	if (!blockHeight) {
 		return 0;
 	}
 	if (!currentHeight) {
-		const header = getBlockHeader({ selectedNetwork });
+		const header = getBlockHeader();
 		currentHeight = header.height;
 	}
 	if (currentHeight < blockHeight) {
@@ -2772,27 +2178,68 @@ export const blockHeightToConfirmations = ({
  * Returns the block height for a given number of confirmations.
  * @param {number} confirmations
  * @param {number} [currentHeight]
- * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {number}
  */
 export const confirmationsToBlockHeight = ({
 	confirmations,
 	currentHeight,
-	selectedNetwork,
 }: {
 	confirmations: number;
 	currentHeight?: number;
-	selectedNetwork?: EAvailableNetwork;
 }): number => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	if (!currentHeight) {
-		const header = getBlockHeader({ selectedNetwork });
+		const header = getBlockHeader();
 		currentHeight = header.height;
 	}
 	if (confirmations > currentHeight) {
 		return 0;
 	}
 	return currentHeight - confirmations;
+};
+
+export const getOnChainWallet = (): Wallet => {
+	return wallet;
+};
+
+export const getOnChainWalletTransaction = (): Transaction => {
+	return wallet.transaction;
+};
+
+export const getOnChainWalletElectrum = (): Electrum => {
+	return wallet?.electrum;
+};
+
+export const getOnChainWalletTransactionData = (): ISendTransaction => {
+	return wallet.transaction.data;
+};
+
+export const getOnChainWalletData = (): IWalletData => {
+	return wallet.data;
+};
+
+export const switchNetwork = async (
+	selectedNetwork: EAvailableNetwork,
+	servers?: TServer | TServer[],
+): Promise<Result<boolean>> => {
+	if (!servers) {
+		servers = getCustomElectrumPeers({
+			selectedNetwork,
+		});
+	}
+	const response = await wallet.switchNetwork(
+		EAvailableNetworks[selectedNetwork],
+		servers,
+	);
+	if (response.isErr()) {
+		return err(response.error.message);
+	}
+	// Start wallet services with the newly selected network.
+	await startWalletServices({
+		selectedNetwork,
+		onchain: false,
+	});
+	setTimeout(() => {
+		updateActivityList();
+	}, 500);
+	return ok(true);
 };

@@ -1,28 +1,16 @@
 import BitcoinJsonRpc from 'bitcoin-json-rpc';
-import * as electrum from 'rn-electrum-client/helpers';
 
 import '../src/utils/i18n';
 import store from '../src/store';
 import { restoreSeed, startWalletServices } from '../src/utils/startup';
-import {
-	updateAddressIndexes,
-	updateWallet,
-} from '../src/store/actions/wallet';
-import { connectToElectrum } from '../src/utils/wallet/electrum';
-import { addElectrumPeer } from '../src/store/slices/settings';
-import initWaitForElectrumToSync from './utils/wait-for-electrum';
-import { dispatch } from '../src/store/helpers';
-import { getSelectedNetwork } from '../src/utils/wallet';
-import { EAvailableNetwork } from '../src/utils/networks';
+import { EAvailableNetworks, EProtocol } from 'beignet';
+import { getOnChainWallet } from '../src/utils/wallet';
 
 jest.setTimeout(60_000);
 
 const bitcoinURL = 'http://polaruser:polarpass@127.0.0.1:43782';
-const electrumHost = '127.0.0.1';
-const electrumPort = 60001;
 
 describe('Wallet - wallet restore and receive', () => {
-	let waitForElectrum;
 	const rpc = new BitcoinJsonRpc(bitcoinURL);
 
 	beforeAll(async () => {
@@ -36,15 +24,6 @@ describe('Wallet - wallet restore and receive', () => {
 			await rpc.generateToAddress(10, address);
 			balance = await rpc.getBalance();
 		}
-
-		waitForElectrum = await initWaitForElectrumToSync(
-			{ host: electrumHost, port: electrumPort },
-			bitcoinURL,
-		);
-	});
-
-	afterAll(async () => {
-		await electrum.stop({ network: 'bitcoinRegtest' });
 	});
 
 	it("can restore wallet and it's balance", async () => {
@@ -54,7 +33,6 @@ describe('Wallet - wallet restore and receive', () => {
 			'1',
 		);
 		await rpc.generateToAddress(1, await rpc.getNewAddress());
-		await waitForElectrum();
 
 		// restore wallet
 		let res = await restoreSeed({
@@ -65,34 +43,25 @@ describe('Wallet - wallet restore and receive', () => {
 			throw res.error;
 		}
 
+		const wallet = getOnChainWallet();
+
 		expect(res.value).toEqual('Seed restored');
-		expect(store.getState().wallet.selectedNetwork).toEqual('bitcoin');
+		expect(wallet.network).toEqual(EAvailableNetworks.bitcoin);
 		expect(store.getState().wallet.selectedWallet).toEqual('wallet0');
 
 		// switch to regtest
-		updateWallet({ selectedNetwork: EAvailableNetwork.bitcoinRegtest });
+		await wallet.switchNetwork(EAvailableNetworks.bitcoinRegtest);
 		expect(store.getState().wallet.selectedNetwork).toEqual('bitcoinRegtest');
 
-		const selectedNetwork = getSelectedNetwork();
-
-		dispatch(
-			addElectrumPeer({
-				peer: {
-					host: '127.0.0.1',
-					ssl: 60002,
-					tcp: 60001,
-					protocol: 'tcp',
-				},
-				network: selectedNetwork,
-			}),
-		);
-
-		res = await connectToElectrum();
-		if (res.isErr()) {
-			throw res.error;
-		}
-
-		res = await updateAddressIndexes();
+		res = await wallet.electrum.connectToElectrum({
+			network: EAvailableNetworks.bitcoinRegtest,
+			servers: {
+				host: '127.0.0.1',
+				ssl: 60002,
+				tcp: 60001,
+				protocol: EProtocol.tcp,
+			},
+		});
 		if (res.isErr()) {
 			throw res.error;
 		}

@@ -8,12 +8,12 @@ import {
 	refreshWallet,
 	getSelectedNetwork,
 	getSelectedWallet,
+	setupOnChainWallet,
+	getSelectedAddressType,
 } from '../wallet';
-import { createWallet, updateExchangeRates } from '../../store/actions/wallet';
+import { createWallet } from '../../store/actions/wallet';
 import { getWalletStore } from '../../store/helpers';
 import { refreshBlocktankInfo } from '../../store/utils/blocktank';
-import { connectToElectrum, subscribeToHeader } from '../wallet/electrum';
-import { updateOnchainFeeEstimates } from '../../store/utils/fees';
 import { keepLdkSynced, setupLdk } from '../lightning';
 import { setupBlocktank, watchPendingOrders } from '../blocktank';
 import { updateSlashPayConfig2 } from '../slashtags2';
@@ -55,8 +55,6 @@ export const restoreSeed = async ({
 		mnemonic,
 		bip39Passphrase,
 		restore: true,
-		addressAmount: 25,
-		changeAddressAmount: 25,
 	});
 	if (res.isErr()) {
 		return res;
@@ -110,29 +108,6 @@ export const startWalletServices = async ({
 
 		await promiseTimeout(2500, setupBlocktank(selectedNetwork));
 		await promiseTimeout(2500, refreshBlocktankInfo());
-		updateExchangeRates().then();
-
-		// Before we do anything we should connect to an Electrum server
-		if (onchain || lightning) {
-			const electrumResponse = await connectToElectrum({
-				showNotification: !restore,
-				selectedNetwork,
-			});
-			if (electrumResponse.isOk()) {
-				isConnectedToElectrum = true;
-				// Ensure the on-chain wallet & LDK syncs when a new block is detected.
-				const onReceive = (): void => {
-					refreshWallet({
-						onchain,
-						lightning,
-						selectedWallet,
-						selectedNetwork,
-					});
-				};
-				// Ensure we are subscribed to and save new header information.
-				subscribeToHeader({ selectedNetwork, onReceive }).then();
-			}
-		}
 
 		const mnemonicResponse = await getMnemonicPhrase();
 		if (mnemonicResponse.isErr()) {
@@ -147,7 +122,21 @@ export const startWalletServices = async ({
 			if (createRes.isErr()) {
 				return err(createRes.error.message);
 			}
+		} else {
+			const onChainSetupRes = await setupOnChainWallet({
+				name: selectedWallet,
+				selectedNetwork,
+				bip39Passphrase: await getBip39Passphrase(),
+				addressType: getSelectedAddressType({
+					selectedWallet,
+					selectedNetwork,
+				}),
+			});
+			if (onChainSetupRes.isErr()) {
+				return err(onChainSetupRes.error.message);
+			}
 		}
+		isConnectedToElectrum = true;
 
 		// Setup LDK
 		if (lightning && isConnectedToElectrum) {
@@ -164,10 +153,9 @@ export const startWalletServices = async ({
 
 		if (onchain || lightning) {
 			await Promise.all([
-				updateOnchainFeeEstimates({ selectedNetwork, forceUpdate: true }),
 				// if we restore wallet, we need to generate addresses for all types
 				refreshWallet({
-					onchain: isConnectedToElectrum,
+					onchain: restore,
 					lightning: isConnectedToElectrum,
 					scanAllAddresses: restore,
 					updateAllAddressTypes: true, // Ensure we scan all address types when spinning up the app.

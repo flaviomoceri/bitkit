@@ -4,7 +4,7 @@ import { TChannel } from '@synonymdev/react-native-ldk';
 import { EPaymentType } from '../types/wallet';
 import { EActivityType, TLightningActivityItem } from '../types/activity';
 import { getBlocktankStore, dispatch } from '../helpers';
-import { getCurrentWallet } from '../../utils/wallet';
+import { getCurrentWallet, getOnChainWalletData } from '../../utils/wallet';
 import { getLightningChannels } from '../../utils/lightning';
 import { formatBoostedActivityItems } from '../../utils/boost';
 import { onChainTransactionToActivityItem } from '../../utils/activity';
@@ -81,20 +81,19 @@ export const updateActivityList = (): Result<string> => {
  * @returns {Result<string>}
  */
 export const updateOnChainActivityList = (): Result<string> => {
-	const { currentWallet, selectedNetwork, selectedWallet } = getCurrentWallet();
-	const blocktankTransactions = getBlocktankStore().paidOrders;
-	const blocktankOrders = getBlocktankStore().orders;
-	const boostedTransactions =
-		currentWallet.boostedTransactions[selectedNetwork];
-
+	let currentWallet = getOnChainWalletData();
 	if (!currentWallet) {
 		console.warn(
 			'No wallet found. Cannot update activity list with transactions.',
 		);
 		return ok('');
 	}
+	const { selectedNetwork, selectedWallet } = getCurrentWallet();
+	const blocktankTransactions = getBlocktankStore().paidOrders;
+	const blocktankOrders = getBlocktankStore().orders;
+	const boostedTransactions = currentWallet.boostedTransactions;
 
-	const transactions = currentWallet.transactions[selectedNetwork];
+	const transactions = currentWallet.transactions;
 	const activityItems = Object.values(transactions).map((tx) => {
 		return onChainTransactionToActivityItem({
 			transaction: tx,
@@ -109,7 +108,6 @@ export const updateOnChainActivityList = (): Result<string> => {
 		selectedWallet,
 		selectedNetwork,
 	});
-
 	dispatch(updateActivityItems(boostFormattedItems));
 
 	return ok('On chain transaction activity items updated');

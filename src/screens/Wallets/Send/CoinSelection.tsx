@@ -153,7 +153,7 @@ const CoinSelection = ({
 			const key = getUtxoKey(utxo);
 			const isEnabled = inputKeys.includes(key);
 			if (!isEnabled) {
-				addTxInput({ input: utxo, selectedWallet, selectedNetwork });
+				addTxInput({ input: utxo });
 			}
 		});
 		setAutoSelectionEnabled(true);
@@ -182,9 +182,9 @@ const CoinSelection = ({
 						const isEnabled = inputKeys.includes(key);
 						const onPress = (): void => {
 							if (isEnabled) {
-								removeTxInput({ input: item, selectedWallet, selectedNetwork });
+								removeTxInput({ input: item });
 							} else {
-								addTxInput({ input: item, selectedWallet, selectedNetwork });
+								addTxInput({ input: item });
 							}
 							if (autoSelectionEnabled) {
 								setAutoSelectionEnabled(false);

@@ -54,7 +54,6 @@ export const reportImpactedAddressBalance = async ({
 
 	const balanceRes = await getAddressBalance({
 		addresses: allAddresses,
-		selectedNetwork,
 	});
 
 	if (balanceRes.isErr()) {

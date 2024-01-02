@@ -6,12 +6,10 @@ import { EItemType, IListData, ItemData } from '../../../components/List';
 import Dialog from '../../../components/Dialog';
 import SettingsView from '../SettingsView';
 import { enableDevOptionsSelector } from '../../../store/reselect/settings';
-import { updateTransactions } from '../../../store/actions/wallet';
 import { resetHiddenTodos } from '../../../store/slices/todos';
 import { addressTypes } from '../../../store/shapes/wallet';
 import {
 	addressTypeSelector,
-	selectedWalletSelector,
 	selectedNetworkSelector,
 } from '../../../store/reselect/wallet';
 import { rescanAddresses } from '../../../utils/wallet';
@@ -23,7 +21,6 @@ const AdvancedSettings = ({
 }: SettingsScreenProps<'AdvancedSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
 	const dispatch = useAppDispatch();
-	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const selectedAddressType = useAppSelector(addressTypeSelector);
 	const enableDevOptions = useAppSelector(enableDevOptionsSelector);
@@ -105,13 +102,11 @@ const AdvancedSettings = ({
 				enabled: !rescanning,
 				onPress: async (): Promise<void> => {
 					setRescanning(true);
-					await rescanAddresses({ selectedWallet, selectedNetwork });
-					await updateTransactions({
-						scanAllAddresses: true,
-						replaceStoredTransactions: true,
-						selectedWallet,
-						selectedNetwork,
-					});
+					await rescanAddresses({});
+					// await wallet.updateTransactions({
+					// 	scanAllAddresses: true,
+					// 	replaceStoredTransactions: true,
+					// });
 					setRescanning(false);
 				},
 			},
@@ -142,7 +137,6 @@ const AdvancedSettings = ({
 		rescanning,
 		enableDevOptions,
 		navigation,
-		selectedWallet,
 		selectedNetwork,
 		t,
 	]);

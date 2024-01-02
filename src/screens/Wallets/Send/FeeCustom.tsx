@@ -14,19 +14,13 @@ import { handleNumberPadPress } from '../../../utils/numberpad';
 import { showToast } from '../../../utils/notifications';
 import { useAppSelector } from '../../../hooks/redux';
 import useDisplayValues from '../../../hooks/displayValues';
-import {
-	selectedNetworkSelector,
-	selectedWalletSelector,
-	transactionSelector,
-} from '../../../store/reselect/wallet';
+import { transactionSelector } from '../../../store/reselect/wallet';
 import type { SendScreenProps } from '../../../navigation/types';
 
 const FeeCustom = ({
 	navigation,
 }: SendScreenProps<'FeeCustom'>): ReactElement => {
 	const { t } = useTranslation('wallet');
-	const selectedWallet = useAppSelector(selectedWalletSelector);
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const transaction = useAppSelector(transactionSelector);
 	const [feeRate, setFeeRate] = useState(transaction.satsPerByte);
 
@@ -56,8 +50,6 @@ const FeeCustom = ({
 	const onContinue = (): void => {
 		const res = updateFee({
 			satsPerByte: Number(feeRate),
-			selectedWallet,
-			selectedNetwork,
 			transaction,
 		});
 		if (res.isErr()) {

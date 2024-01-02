@@ -12,8 +12,9 @@ const wallet = (
 	state: IWalletStore = defaultWalletStoreShape,
 	action,
 ): IWalletStore => {
-	let selectedWallet = state.selectedWallet;
-	let selectedNetwork = state.selectedNetwork;
+	let selectedWallet = state?.selectedWallet ?? 'wallet0';
+	let selectedNetwork = state?.selectedNetwork ?? 'bitcoin';
+
 	if (action.payload?.selectedWallet) {
 		selectedWallet = action.payload.selectedWallet;
 	}
@@ -30,6 +31,62 @@ const wallet = (
 			return {
 				...state,
 				...action.payload,
+			};
+
+		case actions.UPDATE_WALLET_DATA:
+			const { value, data } = action.payload;
+			const network = action.payload?.network ?? selectedNetwork;
+
+			// Values that are not nested and do not have a network
+			if (value === 'name' || value === 'id' || value === 'seedHash') {
+				return {
+					...state,
+					wallets: {
+						...state.wallets,
+						[selectedWallet]: {
+							...state.wallets[selectedWallet],
+							[value]: data,
+						},
+					},
+				};
+			}
+
+			if (
+				value === 'balance' ||
+				value === 'utxos' ||
+				value === 'blacklistedUtxos' ||
+				value === 'unconfirmedTransactions'
+			) {
+				return {
+					...state,
+					wallets: {
+						...state.wallets,
+						[selectedWallet]: {
+							...state.wallets[selectedWallet],
+							[value]: {
+								...state.wallets[selectedWallet][value],
+								[network]: data,
+							},
+						},
+					},
+				};
+			}
+
+			return {
+				...state,
+				wallets: {
+					...state.wallets,
+					[selectedWallet]: {
+						...state.wallets[selectedWallet],
+						[value]: {
+							...state.wallets[selectedWallet][value],
+							[network]: {
+								...state.wallets[selectedWallet][value][network],
+								...data,
+							},
+						},
+					},
+				},
 			};
 
 		case actions.CREATE_WALLET:
@@ -52,11 +109,7 @@ const wallet = (
 							...state.wallets[selectedWallet].addressIndex,
 							[selectedNetwork]: {
 								...state.wallets[selectedWallet].addressIndex[selectedNetwork],
-								[addressType]:
-									action.payload?.addressIndex ??
-									state.wallets[selectedWallet].addressIndex[selectedNetwork][
-										addressType
-									],
+								[addressType]: action.payload.addressIndex,
 							},
 						},
 						changeAddressIndex: {
@@ -65,11 +118,7 @@ const wallet = (
 								...state.wallets[selectedWallet].changeAddressIndex[
 									selectedNetwork
 								],
-								[addressType]:
-									action.payload?.changeAddressIndex ??
-									state.wallets[selectedWallet].changeAddressIndex[
-										selectedNetwork
-									][addressType],
+								[addressType]: action.payload.changeAddressIndex,
 							},
 						},
 						lastUsedAddressIndex: {
@@ -78,11 +127,7 @@ const wallet = (
 								...state.wallets[selectedWallet].lastUsedAddressIndex[
 									selectedNetwork
 								],
-								[addressType]:
-									action.payload?.lastUsedAddressIndex ??
-									state.wallets[selectedWallet].lastUsedAddressIndex[
-										selectedNetwork
-									][addressType],
+								[addressType]: action.payload.lastUsedAddressIndex,
 							},
 						},
 						lastUsedChangeAddressIndex: {
@@ -91,11 +136,7 @@ const wallet = (
 								...state.wallets[selectedWallet].lastUsedChangeAddressIndex[
 									selectedNetwork
 								],
-								[addressType]:
-									action.payload?.lastUsedChangeAddressIndex ??
-									state.wallets[selectedWallet].lastUsedChangeAddressIndex[
-										selectedNetwork
-									][addressType],
+								[addressType]: action.payload.lastUsedChangeAddressIndex,
 							},
 						},
 					},

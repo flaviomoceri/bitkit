@@ -1,15 +1,12 @@
-import * as bip21 from 'bip21';
 import ecc from '@bitcoinerlab/secp256k1';
 import { BIP32Factory, BIP32Interface } from 'bip32';
 import * as bip39 from 'bip39';
 import * as bitcoin from 'bitcoinjs-lib';
 import { Psbt } from 'bitcoinjs-lib';
 import { err, ok, Result } from '@synonymdev/result';
-import * as electrum from 'rn-electrum-client/helpers';
 import validate, { getAddressInfo } from 'bitcoin-address-validation';
 
 import { __E2E__, __JEST__ } from '../../constants/env';
-import { validateAddress } from '../scanner';
 import { networks, EAvailableNetwork } from '../networks';
 import { reduceValue, shuffleArray } from '../helpers';
 import { btcToSats, satsToBtc } from '../conversion';
@@ -17,14 +14,11 @@ import { getKeychainValue } from '../keychain';
 import {
 	EBoostType,
 	EPaymentType,
-	ISendTransaction,
 	IOutput,
 	IUtxo,
 	EAddressType,
 	TGetByteCountInputs,
 	TGetByteCountOutputs,
-	TGetByteCountInput,
-	TGetByteCountOutput,
 	TWalletName,
 } from '../../store/types/wallet';
 import {
@@ -32,14 +26,14 @@ import {
 	getCurrentWallet,
 	getMnemonicPhrase,
 	getOnChainBalance,
+	getOnChainWallet,
+	getOnChainWalletElectrum,
+	getOnChainWalletTransaction,
 	getRbfData,
-	getReceiveAddress,
 	getScriptHash,
 	getSelectedNetwork,
 	getSelectedWallet,
 	getTransactionById,
-	IVin,
-	IVout,
 	refreshWallet,
 } from './index';
 import {
@@ -47,7 +41,6 @@ import {
 	getSettingsStore,
 	getWalletStore,
 } from '../../store/helpers';
-import { objectKeys } from '../objectKeys';
 import {
 	addBoostedTransaction,
 	deleteOnChainTransactionById,
@@ -62,100 +55,13 @@ import {
 import { showToast } from '../notifications';
 import { getTransactions, subscribeToAddresses } from './electrum';
 import { TOnchainActivityItem } from '../../store/types/activity';
-import { EFeeId, IOnchainFees } from '../../store/types/fees';
 import { initialFeesState } from '../../store/slices/fees';
 import { TRANSACTION_DEFAULTS } from './constants';
 import i18n from '../i18n';
+import { EFeeId, getByteCount, IOnchainFees, ISendTransaction } from 'beignet';
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);
-
-/*
- * Attempts to parse any given string as an on-chain payment request.
- * Returns an error if invalid.
- */
-export const parseOnChainPaymentRequest = (
-	data: string,
-	selectedNetwork?: EAvailableNetwork,
-): Result<{
-	address: string;
-	network: EAvailableNetwork;
-	sats: number;
-	message: string;
-}> => {
-	try {
-		if (!data) {
-			return err('No data provided to parseOnChainPaymentRequest.');
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-
-		let validateAddressResult = validateAddress({
-			address: data,
-			selectedNetwork,
-		});
-
-		if (
-			validateAddressResult.isValid &&
-			!data.includes(':' || '?' || '&' || '//')
-		) {
-			return ok({
-				address: data,
-				network: validateAddressResult.network,
-				sats: 0,
-				message: '',
-			});
-		}
-
-		//Determine if we need to parse any invoice data.
-		if (data.includes(':' || '?' || '&' || '//')) {
-			try {
-				//Remove slashes
-				if (data.includes('//')) {
-					data = data.replace('//', '');
-				}
-				//bip21.decode will throw if anything other than "bitcoin" is passed to it.
-				//Replace any instance of "testnet" or "litecoin" with "bitcoin"
-				if (data.includes(':')) {
-					data = data.substring(data.indexOf(':') + 1);
-					data = `bitcoin:${data}`;
-				}
-
-				// types are wrong for package 'bip21'
-				const result = bip21.decode(data) as {
-					address: string;
-					options: { [key: string]: string };
-				};
-				const address = result.address;
-				validateAddressResult = validateAddress({ address });
-				//Ensure address is valid
-				if (!validateAddressResult.isValid) {
-					return err(`Invalid address: ${data}`);
-				}
-				let amount = 0;
-				let message = '';
-				try {
-					amount = Number(result.options.amount) || 0;
-				} catch (e) {}
-				try {
-					message = result.options.message || '';
-				} catch (e) {}
-				return ok({
-					address,
-					network: validateAddressResult.network,
-					sats: Number((amount * 100000000).toFixed(0)),
-					message,
-				});
-			} catch {
-				return err(data);
-			}
-		}
-		return err(data);
-	} catch {
-		return err(data);
-	}
-};
 
 const setReplaceByFee = ({
 	psbt,
@@ -183,119 +89,6 @@ const setReplaceByFee = ({
 			});
 		}
 	} catch (e) {}
-};
-
-/*
-	Adapted from: https://gist.github.com/junderw/b43af3253ea5865ed52cb51c200ac19c
-	Usage:
-	getByteCount({'MULTISIG-P2SH:2-4':45},{'P2PKH':1}) Means "45 inputs of P2SH Multisig and 1 output of P2PKH"
-	getByteCount({'P2PKH':1,'MULTISIG-P2SH:2-3':2},{'P2PKH':2}) means "1 P2PKH input and 2 Multisig P2SH (2 of 3) inputs along with 2 P2PKH outputs"
-*/
-export const getByteCount = (
-	inputs: TGetByteCountInputs,
-	outputs: TGetByteCountOutputs,
-	message?: string,
-): number => {
-	try {
-		// Base transaction weight
-		let totalWeight = 40;
-		let hasWitness = false;
-
-		const types: {
-			inputs: {
-				[key in TGetByteCountInput]: number;
-			};
-			multiSigInputs: {
-				'MULTISIG-P2SH': number;
-				'MULTISIG-P2WSH': number;
-				'MULTISIG-P2SH-P2WSH': number;
-			};
-			outputs: {
-				[key in TGetByteCountOutput]: number;
-			};
-		} = {
-			inputs: {
-				P2WPKH: 108 + 41 * 4,
-				p2wpkh: 108 + 41 * 4 + 1,
-				P2PKH: 148 * 4,
-				p2pkh: 148 * 4 + 1,
-				P2SH: 108 + 64 * 4,
-				p2sh: 108 + 64 * 4 + 1,
-				'P2SH-P2WPKH': 108 + 64 * 4,
-				P2TR: 57.5 * 4,
-				p2tr: 57.5 * 4 + 1,
-			},
-			multiSigInputs: {
-				'MULTISIG-P2SH': 49 * 4,
-				'MULTISIG-P2WSH': 6 + 41 * 4,
-				'MULTISIG-P2SH-P2WSH': 6 + 76 * 4,
-			},
-			outputs: {
-				P2SH: 32 * 4,
-				P2PKH: 34 * 4,
-				P2WPKH: 31 * 4,
-				P2WSH: 43 * 4,
-				p2wpkh: 31 * 4 + 1,
-				p2sh: 32 * 4 + 1,
-				p2pkh: 34 * 4 + 1,
-				P2TR: 43 * 4,
-				p2tr: 43 * 4 + 1,
-			},
-		};
-
-		const checkUInt53 = (n: number): void => {
-			if (n < 0 || n > Number.MAX_SAFE_INTEGER || n % 1 !== 0) {
-				throw new RangeError('value out of range');
-			}
-		};
-
-		const inputKeys = objectKeys(inputs);
-		inputKeys.forEach(function (key) {
-			const input = inputs[key]!;
-			checkUInt53(input);
-			const addressTypeCount = input || 1;
-			if (key.slice(0, 8) === 'MULTISIG') {
-				// ex. "MULTISIG-P2SH:2-3" would mean 2 of 3 P2SH MULTISIG
-				const keyParts = key.split(':');
-				if (keyParts.length !== 2) {
-					throw new Error('invalid input: ' + key);
-				}
-				const newKey = keyParts[0];
-				const mAndN = keyParts[1].split('-').map((item) => parseInt(item, 10));
-
-				totalWeight += types.multiSigInputs[newKey] * addressTypeCount;
-				const multiplyer = newKey === 'MULTISIG-P2SH' ? 4 : 1;
-				totalWeight +=
-					(73 * mAndN[0] + 34 * mAndN[1]) * multiplyer * addressTypeCount;
-			} else {
-				totalWeight += types.inputs[key] * addressTypeCount;
-			}
-			if (['p2sh', 'P2SH', 'P2SH-P2WPKH', 'p2wpkh', 'P2WPKH'].includes(key)) {
-				hasWitness = true;
-			}
-		});
-
-		const outputKeys = objectKeys(outputs);
-		outputKeys.forEach(function (key) {
-			const output = outputs[key]!;
-			checkUInt53(output);
-			totalWeight += types.outputs[key] * output;
-		});
-
-		if (hasWitness) {
-			totalWeight += 2;
-		}
-
-		if (message?.length) {
-			// Multiply by 2 to help ensure Electrum servers will broadcast the tx.
-			totalWeight += message.length * 2;
-		}
-
-		// Convert from Weight Units to virtual size
-		return Math.ceil(totalWeight / 4);
-	} catch (e) {
-		return TRANSACTION_DEFAULTS.recommendedBaseFee;
-	}
 };
 
 /**
@@ -349,10 +142,7 @@ export const getTotalFee = ({
 			if (!selectedWallet) {
 				selectedWallet = getSelectedWallet();
 			}
-			const txDataResponse = getOnchainTransactionData({
-				selectedNetwork,
-				selectedWallet,
-			});
+			const txDataResponse = getOnchainTransactionData();
 			if (txDataResponse.isErr()) {
 				// If error, return minimum fallback fee.
 				return baseTransactionSize * satsPerByte;
@@ -494,10 +284,7 @@ const createPsbtFromTransactionData = async ({
 		// If we have spare sats hanging around and the difference is greater than the dust limit, generate a changeAddress to send them to.
 		const diffValue = balance - (outputValue + fee);
 		if (diffValue > TRANSACTION_DEFAULTS.dustLimit) {
-			const changeAddressRes = await getChangeAddress({
-				selectedWallet,
-				selectedNetwork,
-			});
+			const changeAddressRes = await getChangeAddress({});
 			if (changeAddressRes.isErr()) {
 				return err(changeAddressRes.error.message);
 			}
@@ -603,10 +390,7 @@ export const createFundedPsbtTransaction = async ({
 	selectedWallet: TWalletName;
 	selectedNetwork: EAvailableNetwork;
 }): Promise<Result<Psbt>> => {
-	const transactionData = getOnchainTransactionData({
-		selectedWallet,
-		selectedNetwork,
-	});
+	const transactionData = getOnchainTransactionData();
 
 	if (transactionData.isErr()) {
 		return err(transactionData.error.message);
@@ -631,18 +415,11 @@ export const createFundedPsbtTransaction = async ({
 export const signPsbt = async ({
 	psbt,
 	bip32Interface,
-	selectedWallet,
-	selectedNetwork,
 }: {
 	psbt: Psbt;
 	bip32Interface: BIP32Interface;
-	selectedWallet: TWalletName;
-	selectedNetwork: EAvailableNetwork;
 }): Promise<Result<Psbt>> => {
-	const transactionDataRes = getOnchainTransactionData({
-		selectedWallet,
-		selectedNetwork,
-	});
+	const transactionDataRes = getOnchainTransactionData();
 	if (transactionDataRes.isErr()) {
 		return err(transactionDataRes.error.message);
 	}
@@ -682,10 +459,7 @@ export const createTransaction = async ({
 	}
 	// If no transaction data is provided, use the stored transaction object from storage.
 	if (!transactionData) {
-		const transactionDataRes = getOnchainTransactionData({
-			selectedWallet,
-			selectedNetwork,
-		});
+		const transactionDataRes = getOnchainTransactionData();
 		if (transactionDataRes.isErr()) {
 			return err(transactionDataRes.error.message);
 		}
@@ -753,8 +527,6 @@ export const createTransaction = async ({
 		const signedPsbtRes = await signPsbt({
 			psbt,
 			bip32Interface: bip32InterfaceRes.value,
-			selectedWallet,
-			selectedNetwork,
 		});
 
 		if (signedPsbtRes.isErr()) {
@@ -783,25 +555,11 @@ export const removeDustOutputs = (outputs: IOutput[]): IOutput[] => {
 
 /**
  * Returns onchain transaction data related to the specified network and wallet.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
+ * @returns {Result<ISendTransaction>}
  */
-export const getOnchainTransactionData = ({
-	selectedWallet,
-	selectedNetwork,
-}: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): Result<ISendTransaction> => {
+export const getOnchainTransactionData = (): Result<ISendTransaction> => {
 	try {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		const transaction =
-			getWalletStore().wallets[selectedWallet].transaction[selectedNetwork];
+		const transaction = getOnChainWalletTransaction().data;
 		if (transaction) {
 			return ok(transaction);
 		}
@@ -876,7 +634,6 @@ export const addInput = async ({
 
 		if (type === 'p2pkh') {
 			const transaction = await getTransactions({
-				selectedNetwork,
 				txHashes: [{ tx_hash: input.tx_hash }],
 			});
 			if (transaction.isErr()) {
@@ -899,12 +656,10 @@ export const addInput = async ({
 export const broadcastTransaction = async ({
 	rawTx,
 	selectedNetwork,
-	selectedWallet,
 	subscribeToOutputAddress = true,
 }: {
 	rawTx: string;
 	selectedNetwork?: EAvailableNetwork;
-	selectedWallet?: TWalletName;
 	subscribeToOutputAddress?: boolean;
 }): Promise<Result<string>> => {
 	if (!selectedNetwork) {
@@ -916,13 +671,7 @@ export const broadcastTransaction = async ({
 	 * This prevents updating the wallet prior to the Electrum server detecting the new tx in the mempool.
 	 */
 	if (subscribeToOutputAddress) {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		const transaction = getOnchainTransactionData({
-			selectedNetwork,
-			selectedWallet,
-		});
+		const transaction = getOnchainTransactionData();
 		if (transaction.isErr()) {
 			return err(transaction.error.message);
 		}
@@ -931,22 +680,15 @@ export const broadcastTransaction = async ({
 			const scriptHash = await getScriptHash(address, selectedNetwork);
 			if (scriptHash) {
 				await subscribeToAddresses({
-					selectedNetwork,
 					scriptHashes: [scriptHash],
 				});
 			}
 		}
 	}
-
-	const broadcastResponse = await electrum.broadcastTransaction({
+	const electrum = getOnChainWalletElectrum();
+	return await electrum.broadcastTransaction({
 		rawTx,
-		network: selectedNetwork,
 	});
-	// TODO: This needs to be resolved in rn-electrum-client
-	if (broadcastResponse.error || broadcastResponse.data.includes(' ')) {
-		return err(broadcastResponse.data);
-	}
-	return ok(broadcastResponse.data);
 };
 
 /**
@@ -973,10 +715,7 @@ export const getTransactionOutputValue = ({
 			if (!selectedNetwork) {
 				selectedNetwork = getSelectedNetwork();
 			}
-			const transaction = getOnchainTransactionData({
-				selectedWallet,
-				selectedNetwork,
-			});
+			const transaction = getOnchainTransactionData();
 			if (transaction.isErr()) {
 				return 0;
 			}
@@ -1016,10 +755,7 @@ export const getTransactionInputValue = ({
 			if (!selectedNetwork) {
 				selectedNetwork = getSelectedNetwork();
 			}
-			const transaction = getOnchainTransactionData({
-				selectedWallet,
-				selectedNetwork,
-			});
+			const transaction = getOnchainTransactionData();
 			if (transaction.isErr()) {
 				return 0;
 			}
@@ -1038,125 +774,30 @@ export const getTransactionInputValue = ({
 };
 
 /**
- * Returns all inputs for the current transaction.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
- */
-export const getTransactionInputs = ({
-	selectedWallet,
-	selectedNetwork,
-}: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): Result<IUtxo[]> => {
-	try {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		const txData = getOnchainTransactionData({
-			selectedNetwork,
-			selectedWallet,
-		});
-		if (txData.isErr()) {
-			return err(txData.error.message);
-		}
-		return ok(txData.value.inputs?.map((input) => input) ?? []);
-	} catch (e) {
-		console.log(e);
-		return err(e);
-	}
-};
-
-/**
  * Updates the fee for the current transaction by the specified amount.
  * @param {number} [satsPerByte]
  * @param {EFeeId} [selectedFeeId]
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
  * @param {number} [index]
  * @param {ISendTransaction} [transaction]
  */
 export const updateFee = ({
 	satsPerByte,
 	selectedFeeId = EFeeId.custom,
-	selectedWallet,
-	selectedNetwork,
 	index = 0,
 	transaction,
 }: {
 	satsPerByte: number;
 	selectedFeeId?: EFeeId;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
 	index?: number;
 	transaction?: ISendTransaction;
 }): Result<{ fee: number }> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!transaction) {
-		const transactionDataResponse = getOnchainTransactionData({
-			selectedWallet,
-			selectedNetwork,
-		});
-		if (transactionDataResponse.isErr()) {
-			return err(transactionDataResponse.error.message);
-		}
-		transaction = transactionDataResponse.value;
-	}
-	const inputTotal = getTransactionInputValue({
-		selectedNetwork,
-		selectedWallet,
-		inputs: transaction.inputs,
-	});
-
-	const { max, message, outputs } = transaction;
-	let address = '';
-	if (outputs.length > index) {
-		address = outputs[index]?.address ?? '';
-	}
-
-	const newFee = getTotalFee({ satsPerByte, message });
-
-	//Return if the new fee exceeds half of the user's balance
-	if (newFee >= inputTotal / 2) {
-		return err(i18n.t('wallet:send_fee_error_half'));
-	}
-
-	const totalTransactionValue = getTransactionOutputValue({
-		selectedWallet,
-		selectedNetwork,
-		outputs,
-	});
-	const newTotalAmount = totalTransactionValue + newFee;
-	const _transaction: Partial<ISendTransaction> = {
+	const tx = getOnChainWalletTransaction();
+	return tx.updateFee({
 		satsPerByte,
-		fee: newFee,
+		index,
+		transaction,
 		selectedFeeId,
-	};
-
-	if (max) {
-		// Update the tx value with the new fee to continue sending the max amount.
-		_transaction.outputs = [{ address, value: inputTotal - newFee, index }];
-	}
-
-	// Check that the user has enough funds
-	if (max || newTotalAmount <= inputTotal) {
-		updateSendTransaction({
-			selectedNetwork,
-			selectedWallet,
-			transaction: _transaction,
-		});
-		return ok({ fee: newFee });
-	}
-
-	return err(i18n.t('wallet:send_fee_error_max'));
+	});
 };
 
 /**
@@ -1341,67 +982,6 @@ export const autoCoinSelect = async ({
 	}
 };
 
-/**
- * Used to validate transaction form data.
- * @param {ISendTransaction} transaction
- * @return {Result<string>}
- */
-export const validateTransaction = (
-	transaction: ISendTransaction,
-): Result<string> => {
-	const baseFee = TRANSACTION_DEFAULTS.recommendedBaseFee;
-
-	try {
-		if (!transaction.fee) {
-			return err('Please provide a transaction fee.');
-		}
-		if (transaction.outputs.length < 1 || !transaction.outputs[0].address) {
-			return err('Please provide an address to send funds to.');
-		}
-		if (transaction.outputs.length > 0 && !transaction.outputs[0].value) {
-			return err('Please provide an amount to send.');
-		}
-		const inputs = transaction.inputs;
-		const outputs = transaction.outputs;
-		for (let i = 0; i < outputs.length; i++) {
-			const address = outputs[i]?.address ?? '';
-			const value = outputs[i]?.value ?? 0;
-			const { isValid } = validateAddress({ address });
-			if (!isValid) {
-				return err('The provided address is invalid.');
-			}
-			if (value < baseFee) {
-				return err(
-					`The output value must be greater than or equal to ${baseFee} sats.`,
-				);
-			}
-			if (!Number.isInteger(value)) {
-				return err('Please specify an integer value.');
-			}
-		}
-
-		const inputsReduce = reduceValue(inputs, 'value');
-		if (inputsReduce.isErr()) {
-			return err(inputsReduce.error.message);
-		}
-		//Remove the change address from the outputs array, if any.
-		let filteredOutputs = outputs;
-		if (transaction.changeAddress) {
-			filteredOutputs = outputs.filter((output) => {
-				return output.address !== transaction.changeAddress;
-			});
-		}
-		const outputsReduce = reduceValue(filteredOutputs, 'value');
-		if (outputsReduce.isErr()) {
-			return err(outputsReduce.error.message);
-		}
-
-		return ok('Transaction is valid.');
-	} catch (e) {
-		return err(e);
-	}
-};
-
 export interface ICanBoostResponse {
 	canBoost: boolean;
 	rbf: boolean;
@@ -1425,9 +1005,7 @@ export const canBoost = (txid: string): ICanBoostResponse => {
 		const balance = getOnChainBalance();
 		const { currentWallet, selectedNetwork } = getCurrentWallet();
 
-		const hasUtxo = currentWallet.utxos[selectedNetwork].some(
-			(utxo) => txid === utxo.tx_hash,
-		);
+		const hasUtxo = currentWallet.utxos[selectedNetwork].length > 0;
 
 		const { type, matchedOutputValue, totalOutputValue, fee, height } =
 			transactionResponse.value;
@@ -1479,10 +1057,7 @@ export const getMaxSendAmount = ({
 }): Result<{ amount: number; fee?: number }> => {
 	try {
 		if (!transaction) {
-			const transactionDataResponse = getOnchainTransactionData({
-				selectedWallet,
-				selectedNetwork,
-			});
+			const transactionDataResponse = getOnchainTransactionData();
 			if (transactionDataResponse.isErr()) {
 				return err(transactionDataResponse.error.message);
 			}
@@ -1502,29 +1077,7 @@ export const getMaxSendAmount = ({
 			};
 			return ok(maxAmount);
 		} else {
-			// onchain transaction
-			const { onchainBalance } = getBalance({
-				selectedWallet,
-				selectedNetwork,
-			});
-
-			const inputValue = getTransactionInputValue({
-				selectedNetwork,
-				selectedWallet,
-				inputs: transaction.inputs,
-			});
-			const amount = onchainBalance > inputValue ? onchainBalance : inputValue;
-
-			const currentWallet = getWalletStore().wallets[selectedWallet];
-			let utxos: IUtxo[] = [];
-			//Ensure we add the larger utxo set for a more accurate fee.
-			if (
-				transaction.inputs.length > currentWallet?.utxos[selectedNetwork].length
-			) {
-				utxos = transaction.inputs;
-			} else {
-				utxos = currentWallet?.utxos[selectedNetwork] ?? [];
-			}
+			const wallet = getOnChainWallet();
 			const fees = getFeesStore().onchain;
 			const { transactionSpeed, customFeeRate } = getSettingsStore();
 
@@ -1542,28 +1095,11 @@ export const getMaxSendAmount = ({
 					? EFeeId[transactionSpeed]
 					: transaction.selectedFeeId;
 
-			const fee = getTotalFee({
+			return wallet.transaction.getMaxSendAmount({
 				satsPerByte,
-				message: transaction.message,
-				transaction: {
-					...transaction,
-					max: true,
-					inputs: utxos,
-					selectedFeeId,
-					satsPerByte,
-				},
+				selectedFeeId,
+				transaction,
 			});
-
-			const maxAmount = {
-				amount: amount - fee,
-				fee,
-			};
-
-			if (amount <= fee) {
-				return err('Balance is too low to spend.');
-			}
-
-			return ok(maxAmount);
 		}
 	} catch (e) {
 		return err(e);
@@ -1575,75 +1111,39 @@ export const getMaxSendAmount = ({
  * @param {string} [address] If left undefined, the current receiving address will be provided.
  * @param {ISendTransaction} [transaction]
  * @param {number} [index]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @param {TWalletName} [selectedWallet]
  */
-export const sendMax = ({
+export const sendMax = async ({
 	address,
-	transaction,
 	index = 0,
-	selectedNetwork,
-	selectedWallet,
 }: {
 	address?: string;
-	transaction?: Partial<ISendTransaction>;
 	index?: number;
-	selectedNetwork?: EAvailableNetwork;
-	selectedWallet?: TWalletName;
-} = {}): Result<string> => {
+} = {}): Promise<Result<string>> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!transaction) {
-			const transactionDataResponse = getOnchainTransactionData({
-				selectedWallet,
-				selectedNetwork,
-			});
-			if (transactionDataResponse.isErr()) {
-				return err(transactionDataResponse.error.message);
-			}
-			transaction = transactionDataResponse.value;
-		}
-		const outputs = transaction.outputs ?? [];
-		// No address specified, attempt to assign the address currently specified in the current output index.
-		if (!address) {
-			address = outputs[index]?.address ?? '';
-		}
+		const tx = getOnChainWalletTransaction();
+		const transaction = tx.data;
+		const fees = getFeesStore().onchain;
+		const { transactionSpeed, customFeeRate } = getSettingsStore();
 
-		const maxAmountResponse = getMaxSendAmount({
-			selectedWallet,
-			selectedNetwork,
+		const preferredFeeRate =
+			transactionSpeed === ETransactionSpeed.custom
+				? customFeeRate
+				: fees[transactionSpeed];
+
+		const satsPerByte =
+			transaction.selectedFeeId === 'none'
+				? preferredFeeRate
+				: transaction.satsPerByte;
+		const _transaction = {
+			...tx.data,
+			...transaction,
+		};
+		return await tx.sendMax({
+			address,
+			transaction: _transaction,
+			index,
+			satsPerByte,
 		});
-		if (maxAmountResponse.isErr()) {
-			return err(maxAmountResponse.error);
-		}
-		const { amount, fee } = maxAmountResponse.value;
-
-		if (!transaction.max) {
-			updateSendTransaction({
-				selectedWallet,
-				selectedNetwork,
-				transaction: {
-					max: true,
-					outputs: [{ address, value: amount, index }],
-					fee,
-				},
-			});
-		} else {
-			updateSendTransaction({
-				selectedWallet,
-				selectedNetwork,
-				transaction: {
-					max: false,
-				},
-			});
-		}
-
-		return ok('Successfully setup max send transaction.');
 	} catch (e) {
 		return err(e);
 	}
@@ -1653,32 +1153,17 @@ export const sendMax = ({
  * Adjusts the fee by a given sat per byte.
  * @param {number} [adjustBy]
  * @param {ISendTransaction} [transaction]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @param {TWalletName} [selectedWallet]
  */
 export const adjustFee = ({
 	adjustBy,
 	transaction,
-	selectedNetwork,
-	selectedWallet,
 }: {
 	adjustBy: number;
 	transaction?: ISendTransaction;
-	selectedNetwork?: EAvailableNetwork;
-	selectedWallet?: TWalletName;
 }): Result<{ fee: number }> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
 		if (!transaction) {
-			const transactionDataResponse = getOnchainTransactionData({
-				selectedWallet,
-				selectedNetwork,
-			});
+			const transactionDataResponse = getOnchainTransactionData();
 			if (transactionDataResponse.isErr()) {
 				return err(transactionDataResponse.error.message);
 			}
@@ -1691,11 +1176,9 @@ export const adjustFee = ({
 		}
 		const response = updateFee({
 			transaction,
-			selectedWallet,
-			selectedNetwork,
 			satsPerByte: newSatsPerByte,
-			selectedFeeId: EFeeId.custom,
 		});
+		// TODO: Enable runCoinSelect.
 		// if (address && coinSelectPreference !== 'consolidate') {
 		// 	runCoinSelect({ selectedWallet, selectedNetwork });
 		// }
@@ -1730,10 +1213,7 @@ export const updateSendAmount = ({
 		selectedWallet = getSelectedWallet();
 	}
 	if (!transaction) {
-		const transactionDataResponse = getOnchainTransactionData({
-			selectedWallet,
-			selectedNetwork,
-		});
+		const transactionDataResponse = getOnchainTransactionData();
 		if (transactionDataResponse.isErr()) {
 			return err(transactionDataResponse.error.message);
 		}
@@ -1798,8 +1278,6 @@ export const updateSendAmount = ({
 	}
 
 	updateSendTransaction({
-		selectedWallet,
-		selectedNetwork,
 		transaction: {
 			outputs: [{ ...currentOutput, value: amount }],
 			max,
@@ -1838,10 +1316,7 @@ export const updateMessage = async ({
 		selectedWallet = getSelectedWallet();
 	}
 	if (!transaction) {
-		const transactionDataResponse = getOnchainTransactionData({
-			selectedWallet,
-			selectedNetwork,
-		});
+		const transactionDataResponse = getOnchainTransactionData();
 		if (transactionDataResponse.isErr()) {
 			return err(transactionDataResponse.error.message);
 		}
@@ -1876,16 +1351,12 @@ export const updateMessage = async ({
 		_transaction.outputs = [{ address, value: inputTotal - newFee, index }];
 		//Update the tx value with the new fee to continue sending the max amount.
 		updateSendTransaction({
-			selectedNetwork,
-			selectedWallet,
 			transaction: _transaction,
 		});
 		return ok('Successfully updated the message.');
 	}
 	if (totalNewAmount <= inputTotal) {
 		updateSendTransaction({
-			selectedNetwork,
-			selectedWallet,
 			transaction: _transaction,
 		});
 	}
@@ -1996,7 +1467,7 @@ export const setupBoost = async ({
 	if (canBoostResponse.rbf) {
 		return await setupRbf({ selectedWallet, selectedNetwork, txid });
 	} else {
-		return await setupCpfp({ selectedNetwork, selectedWallet, txid });
+		return await setupCpfp({ txid });
 	}
 };
 
@@ -2008,58 +1479,14 @@ export const setupBoost = async ({
  * @param {number} [satsPerByte]
  */
 export const setupCpfp = async ({
-	selectedWallet,
-	selectedNetwork,
 	txid,
 	satsPerByte,
 }: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
 	txid?: string; // txid of utxo to include in the CPFP tx. Undefined will gather all utxo's.
 	satsPerByte?: number;
-}): Promise<Result<Partial<ISendTransaction>>> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	const response = await setupOnChainTransaction({
-		selectedWallet,
-		selectedNetwork,
-		inputTxHashes: txid ? [txid] : undefined,
-		rbf: true,
-	});
-	if (response.isErr()) {
-		return err(response.error?.message);
-	}
-
-	const receiveAddress = await getReceiveAddress({
-		selectedWallet,
-		selectedNetwork,
-	});
-	if (receiveAddress.isErr()) {
-		return err(receiveAddress.error.message);
-	}
-
-	// Construct the tx to send funds back to ourselves using the assigned inputs, receive address and fee.
-	const sendMaxResponse = sendMax({
-		selectedWallet,
-		selectedNetwork,
-		transaction: {
-			...response.value,
-			satsPerByte: satsPerByte ?? response.value.satsPerByte,
-			boostType: EBoostType.cpfp,
-		},
-		address: receiveAddress.value,
-	});
-	if (sendMaxResponse.isErr()) {
-		return err(sendMaxResponse.error.message);
-	}
-
-	const transaction =
-		getWalletStore().wallets[selectedWallet].transaction[selectedNetwork];
-	return ok(transaction);
+}): Promise<Result<ISendTransaction>> => {
+	const transaction = getOnChainWalletTransaction();
+	return await transaction.setupCpfp({ txid, satsPerByte });
 };
 
 /**
@@ -2085,20 +1512,14 @@ export const setupRbf = async ({
 			selectedWallet = getSelectedWallet();
 		}
 		await setupOnChainTransaction({
-			selectedNetwork,
-			selectedWallet,
 			rbf: true,
 		});
 		const response = await getRbfData({
 			txHash: { tx_hash: txid },
-			selectedNetwork,
-			selectedWallet,
 		});
 		if (response.isErr()) {
 			if (response.error.message === 'cpfp') {
 				return await setupCpfp({
-					selectedNetwork,
-					selectedWallet,
 					txid,
 				});
 			}
@@ -2139,8 +1560,6 @@ export const setupRbf = async ({
 				'Not enough sats to support an RBF transaction. Attempting to CPFP instead.',
 			);
 			return await setupCpfp({
-				selectedNetwork,
-				selectedWallet,
 				txid,
 			});
 		}
@@ -2154,8 +1573,6 @@ export const setupRbf = async ({
 		};
 
 		updateSendTransaction({
-			selectedWallet,
-			selectedNetwork,
 			transaction: newTransaction,
 		});
 		return ok(newTransaction);
@@ -2188,10 +1605,7 @@ export const broadcastBoost = async ({
 		if (!selectedNetwork) {
 			selectedNetwork = getSelectedNetwork();
 		}
-		const transactionDataResponse = getOnchainTransactionData({
-			selectedWallet,
-			selectedNetwork,
-		});
+		const transactionDataResponse = getOnchainTransactionData();
 		if (transactionDataResponse.isErr()) {
 			return err(transactionDataResponse.error.message);
 		}
@@ -2221,8 +1635,6 @@ export const broadcastBoost = async ({
 			newTxId,
 			oldTxId,
 			type: transaction.boostType,
-			selectedWallet,
-			selectedNetwork,
 			fee: boostedFee,
 		});
 
@@ -2230,8 +1642,6 @@ export const broadcastBoost = async ({
 		if (transaction.boostType === EBoostType.rbf && oldTxId in transactions) {
 			await deleteOnChainTransactionById({
 				txid: oldTxId,
-				selectedNetwork,
-				selectedWallet,
 			});
 		}
 
@@ -2245,71 +1655,6 @@ export const broadcastBoost = async ({
 
 		await refreshWallet();
 		return ok(updatedActivityItemData);
-	} catch (e) {
-		return err(e);
-	}
-};
-
-/**
- * Attempts to decode a tx hex.
- * Source: https://github.com/bitcoinjs/bitcoinjs-lib/issues/1606#issuecomment-664740672
- * @param {string} hex
- * @param {EAvailableNetwork} [selectedNetwork]
- */
-export const decodeRawTransaction = (
-	hex: string,
-	selectedNetwork?: EAvailableNetwork,
-): Result<{
-	txid: string;
-	tx_hash: string;
-	size: number;
-	vsize: number;
-	weight: number;
-	version: number;
-	locktime: number;
-	vin: IVin[];
-	vout: IVout[];
-}> => {
-	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		const network = networks[selectedNetwork];
-		const tx = bitcoin.Transaction.fromHex(hex);
-		return ok({
-			txid: tx.getId(),
-			tx_hash: tx.getHash(true).toString('hex'),
-			size: tx.byteLength(),
-			vsize: tx.virtualSize(),
-			weight: tx.weight(),
-			version: tx.version,
-			locktime: tx.locktime,
-			vin: tx.ins.map((input) => ({
-				txid: Buffer.from(input.hash).reverse().toString('hex'),
-				vout: input.index,
-				scriptSig: {
-					asm: bitcoin.script.toASM(input.script),
-					hex: input.script.toString('hex'),
-				},
-				txinwitness: input.witness.map((b) => b.toString('hex')),
-				sequence: input.sequence,
-			})),
-			vout: tx.outs.map((output, i) => {
-				let address;
-				try {
-					address = bitcoin.address.fromOutputScript(output.script, network);
-				} catch (e) {}
-				return {
-					value: output.value,
-					n: i,
-					scriptPubKey: {
-						asm: bitcoin.script.toASM(output.script),
-						hex: output.script.toString('hex'),
-						address,
-					},
-				};
-			}),
-		});
 	} catch (e) {
 		return err(e);
 	}
@@ -2383,10 +1728,7 @@ export const getSelectedFeeId = ({
 	if (!selectedNetwork) {
 		selectedNetwork = getSelectedNetwork();
 	}
-	const transaction = getOnchainTransactionData({
-		selectedWallet,
-		selectedNetwork,
-	});
+	const transaction = getOnchainTransactionData();
 	if (transaction.isErr()) {
 		return EFeeId.none;
 	}
@@ -2395,23 +1737,15 @@ export const getSelectedFeeId = ({
 
 /**
  * Returns the amount of sats to send to a given output address in the transaction object by its index.
- * @param selectedWallet
- * @param selectedNetwork
  * @param outputIndex
+ * @returns {Result<number>}
  */
 export const getTransactionOutputAmount = ({
-	selectedWallet,
-	selectedNetwork,
 	outputIndex = 0,
 }: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
 	outputIndex?: number;
 }): Result<number> => {
-	const transaction = getOnchainTransactionData({
-		selectedWallet,
-		selectedNetwork,
-	});
+	const transaction = getOnchainTransactionData();
 	if (transaction.isErr()) {
 		return err(transaction.error.message);
 	}
