@@ -31,6 +31,10 @@ export const coinSelectAutoSelector = createSelector(
 	[settingsState],
 	(settings): boolean => settings.coinSelectAuto,
 );
+export const enableSwipeToHideBalanceSelector = createSelector(
+	[settingsState],
+	(settings): boolean => settings.enableSwipeToHideBalance,
+);
 export const hideOnboardingMessageSelector = createSelector(
 	[settingsState],
 	(settings): boolean => settings.hideOnboardingMessage,
@@ -38,6 +42,10 @@ export const hideOnboardingMessageSelector = createSelector(
 export const hideBalanceSelector = createSelector(
 	[settingsState],
 	(settings): boolean => settings.hideBalance,
+);
+export const hideBalanceOnOpenSelector = createSelector(
+	[settingsState],
+	(settings): boolean => settings.hideBalanceOnOpen,
 );
 export const enableOfflinePaymentsSelector = createSelector(
 	[settingsState],
@@ -93,10 +101,6 @@ export const transactionSpeedSelector = createSelector(
 export const customFeeRateSelector = createSelector(
 	[settingsState],
 	(settings): number => settings.customFeeRate,
-);
-export const showSuggestionsSelector = createSelector(
-	[settingsState],
-	(settings): boolean => settings.showSuggestions,
 );
 export const showWidgetsSelector = createSelector(
 	[settingsState],

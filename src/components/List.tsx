@@ -13,10 +13,11 @@ import isEqual from 'lodash/isEqual';
 import { Switch } from '../styles/components';
 import {
 	Text01S,
+	Text01M,
+	Text02S,
+	Text02M,
 	Caption13Up,
 	Caption13S,
-	Text02M,
-	Text01M,
 } from '../styles/text';
 import { ChevronRight, Checkmark } from '../styles/icons';
 import DraggableList from '../screens/Settings/PaymentPreference/DraggableList';
@@ -74,6 +75,7 @@ export type ButtonItem = {
 	type: EItemType.button;
 	value?: string | boolean;
 	title: string;
+	subtitle?: string;
 	description?: string;
 	Icon?: React.FC<SvgProps>;
 	iconColor?: string;
@@ -114,7 +116,7 @@ const _Item = memo((item: ItemData): ReactElement => {
 		return <></>;
 	}
 
-	if (type === 'switch') {
+	if (type === EItemType.switch) {
 		const {
 			title,
 			enabled = true,
@@ -128,7 +130,7 @@ const _Item = memo((item: ItemData): ReactElement => {
 
 		return (
 			<TouchableOpacity
-				style={styles.item}
+				style={styles.row}
 				activeOpacity={0.6}
 				onPress={_onPress}
 				testID={testID}>
@@ -151,7 +153,7 @@ const _Item = memo((item: ItemData): ReactElement => {
 		);
 	}
 
-	if (type === 'textButton') {
+	if (type === EItemType.textButton) {
 		const {
 			title,
 			description,
@@ -168,7 +170,7 @@ const _Item = memo((item: ItemData): ReactElement => {
 		return (
 			<TouchableOpacity
 				disabled={!enabled}
-				style={styles.item}
+				style={styles.row}
 				activeOpacity={0.6}
 				onPress={_onPress}
 				testID={testID}>
@@ -198,15 +200,16 @@ const _Item = memo((item: ItemData): ReactElement => {
 		);
 	}
 
-	if (type === 'draggable') {
+	if (type === EItemType.draggable) {
 		const { value, onDragEnd } = item as DraggableItem;
 		return <DraggableList listData={value} onDragEnd={onDragEnd} />;
 	}
 
-	if (type === 'button') {
+	if (type === EItemType.button) {
 		const {
 			value,
 			title,
+			subtitle,
 			description,
 			disabled = false,
 			enabled = true,
@@ -221,51 +224,57 @@ const _Item = memo((item: ItemData): ReactElement => {
 
 		return (
 			<TouchableOpacity
-				style={[
-					styles.item,
-					description ? styles.itemLarge : {},
+				style={
 					// eslint-disable-next-line react-native/no-inline-styles
-					{ opacity: enabled ? 1 : 0.5 },
-				]}
+					{ opacity: enabled ? 1 : 0.5 }
+				}
 				activeOpacity={0.6}
 				disabled={disabled}
-				onPress={enabled ? _onPress : undefined}
-				testID={testID}>
-				<View style={styles.leftColumn}>
-					{Icon && (
-						<View style={styles.icon}>
-							<Icon
-								viewBox="0 0 32 32"
-								height={32}
-								width={32}
-								color={iconColor !== '' ? iconColor : 'brand'}
-							/>
-						</View>
-					)}
+				testID={testID}
+				onPress={enabled ? _onPress : undefined}>
+				<View style={[styles.row, subtitle ? styles.rowLarge : {}]}>
+					<View style={styles.leftColumn}>
+						{Icon && (
+							<View style={styles.icon}>
+								<Icon
+									viewBox="0 0 32 32"
+									height={32}
+									width={32}
+									color={iconColor !== '' ? iconColor : 'brand'}
+								/>
+							</View>
+						)}
 
-					{description ? (
-						<View>
-							<Text01M color="white">{title}</Text01M>
-							{description && <Text02M color="gray1">{description}</Text02M>}
-						</View>
-					) : (
-						<View>
-							<Text01S color="white">{title}</Text01S>
-						</View>
-					)}
+						{subtitle ? (
+							<View>
+								<Text01M color="white">{title}</Text01M>
+								{subtitle && <Text02M color="gray1">{subtitle}</Text02M>}
+							</View>
+						) : (
+							<View>
+								<Text01S color="white">{title}</Text01S>
+							</View>
+						)}
+					</View>
+					<View style={styles.rightColumn}>
+						{useCheckmark ? (
+							value && <Checkmark color="brand" width={32} height={32} />
+						) : (
+							<>
+								<Text01S style={styles.valueText} testID="Value">
+									{value}
+								</Text01S>
+								<ChevronRight color="gray1" width={24} height={24} />
+							</>
+						)}
+					</View>
 				</View>
-				<View style={styles.rightColumn}>
-					{useCheckmark ? (
-						value && <Checkmark color="brand" width={32} height={32} />
-					) : (
-						<>
-							<Text01S testID="Value" style={styles.valueText}>
-								{value}
-							</Text01S>
-							<ChevronRight color="gray1" width={24} height={24} />
-						</>
-					)}
-				</View>
+
+				{description && (
+					<Text02S style={styles.description} color="gray1">
+						{description}
+					</Text02S>
+				)}
 			</TouchableOpacity>
 		);
 	}
@@ -337,7 +346,14 @@ const List = ({
 };
 
 const styles = StyleSheet.create({
-	item: {
+	itemHeader: {
+		marginBottom: 10,
+		justifyContent: 'center',
+	},
+	valueText: {
+		marginRight: 8,
+	},
+	row: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
@@ -345,15 +361,8 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		minHeight: 55,
 	},
-	itemLarge: {
+	rowLarge: {
 		minHeight: 90,
-	},
-	itemHeader: {
-		marginBottom: 10,
-		justifyContent: 'center',
-	},
-	valueText: {
-		marginRight: 8,
 	},
 	leftColumn: {
 		flexDirection: 'row',
@@ -369,6 +378,9 @@ const styles = StyleSheet.create({
 		marginRight: 16,
 		justifyContent: 'center',
 		alignItems: 'center',
+	},
+	description: {
+		marginTop: 4,
 	},
 	sectionSpacing: {
 		marginTop: 41,

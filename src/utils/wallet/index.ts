@@ -87,6 +87,7 @@ import { moveMetaIncTxTags } from '../../store/utils/metadata';
 import { refreshOrdersList } from '../../store/utils/blocktank';
 import { TNode } from '../../store/types/lightning';
 import { showNewTxPrompt } from '../../store/utils/ui';
+import { reduceValue } from '../helpers';
 import { objectKeys } from '../objectKeys';
 
 bitcoin.initEccLib(ecc);
@@ -2478,7 +2479,7 @@ export const getBalance = ({
 	});
 	const channels = node?.channels[selectedNetwork];
 	const openChannelIds = node?.openChannelIds[selectedNetwork];
-	const claimableBalance = node?.claimableBalance[selectedNetwork];
+	const claimableBalances = node?.claimableBalances[selectedNetwork];
 	const openChannels = Object.values(channels).filter((channel) => {
 		return openChannelIds.includes(channel.channel_id);
 	});
@@ -2494,6 +2495,10 @@ export const getBalance = ({
 			spendingBalance += spendable;
 		}
 	});
+
+	// TODO: filter out some types of claimable balances
+	const result = reduceValue(claimableBalances, 'amount_satoshis');
+	const claimableBalance = result.isOk() ? result.value : 0;
 
 	const onchainBalance = currentWallet.balance[selectedNetwork];
 	const lightningBalance = spendingBalance + reserveBalance + claimableBalance;

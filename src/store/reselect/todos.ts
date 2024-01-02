@@ -25,7 +25,7 @@ import {
 import { pinSelector } from './settings';
 import { onboardingProfileStepSelector } from './slashtags';
 import {
-	claimableBalanceSelector,
+	claimableBalancesSelector,
 	closedChannelsSelector,
 	openChannelsSelector,
 	pendingChannelsSelector,
@@ -58,7 +58,7 @@ export const todosFullSelector = createSelector(
 	pendingChannelsSelector,
 	closedChannelsSelector,
 	startCoopCloseTimestampSelector,
-	claimableBalanceSelector,
+	claimableBalancesSelector,
 	blocktankPaidOrdersFullSelector,
 	newChannelsNotificationsSelector,
 	(
@@ -70,7 +70,7 @@ export const todosFullSelector = createSelector(
 		pendingChannels,
 		closedChannels,
 		startCoopCloseTimestamp,
-		claimableBalance,
+		claimableBalances,
 		paidOrders,
 		newChannels,
 	): Array<ITodo> => {
@@ -98,6 +98,12 @@ export const todosFullSelector = createSelector(
 			return Number(new Date(order.orderExpiresAt)) > hide.btFailed;
 		});
 
+		// TODO: wait for improvements to `Balance` in LDK v0.0.120
+		const claimableOnChannelClose = claimableBalances.find(
+			(b) => b.type === 'ClaimableOnChannelClose',
+		);
+		const balanceInTransfer = claimableOnChannelClose;
+
 		// lightning
 		if (showFailedBTOrder) {
 			// failed blocktank order
@@ -108,7 +114,7 @@ export const todosFullSelector = createSelector(
 				res.push(lightningConnectingTodo);
 			} else if (Object.keys(paidOrders.created).length > 0) {
 				res.push(lightningSettingUpTodo);
-			} else if (claimableBalance > 0) {
+			} else if (balanceInTransfer?.amount_satoshis) {
 				res.push(transferToSavingsTodo); // TODO: find a way to distinguish between transfer to and from spendings
 			} else if (!hide.lightning) {
 				res.push(lightningTodo);
@@ -119,7 +125,7 @@ export const todosFullSelector = createSelector(
 				res.push(transferClosingChannel);
 			} else if (Object.keys(paidOrders.created).length > 0) {
 				res.push(transferToSpendingTodo);
-			} else if (claimableBalance > 0) {
+			} else if (balanceInTransfer?.amount_satoshis) {
 				res.push(transferToSavingsTodo); // TODO: find a way to distinguish between transfer to and from spendings
 			}
 		}

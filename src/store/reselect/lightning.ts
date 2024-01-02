@@ -9,6 +9,7 @@ import {
 } from '../types/lightning';
 import { RootState } from '..';
 import { TWalletName } from '../types/wallet';
+import { reduceValue } from '../../utils/helpers';
 import { EAvailableNetwork } from '../../utils/networks';
 import { selectedNetworkSelector, selectedWalletSelector } from './wallet';
 
@@ -163,15 +164,29 @@ export const closedChannelsSelector = createSelector(
 );
 
 /**
- * Returns claimable balance.
+ * Returns claimable balances.
  * @param {RootState} state
  * @returns {number}
  */
+export const claimableBalancesSelector = createSelector(
+	[lightningState, selectedWalletSelector, selectedNetworkSelector],
+	(lightning, selectedWallet, selectedNetwork) => {
+		const node = lightning.nodes[selectedWallet];
+		return node?.claimableBalances[selectedNetwork] ?? [];
+	},
+);
+
+/**
+ * Returns sum of all claimable balances.
+ */
 export const claimableBalanceSelector = createSelector(
 	[lightningState, selectedWalletSelector, selectedNetworkSelector],
-	(lightning, selectedWallet, selectedNetwork): number => {
+	(lightning, selectedWallet, selectedNetwork) => {
 		const node = lightning.nodes[selectedWallet];
-		return node?.claimableBalance[selectedNetwork] ?? 0;
+		const claimableBalances = node?.claimableBalances[selectedNetwork] ?? [];
+		const result = reduceValue(claimableBalances, 'amount_satoshis');
+		const claimableBalance = result.isOk() ? result.value : 0;
+		return claimableBalance;
 	},
 );
 
@@ -192,6 +207,7 @@ export const lightningBalanceSelector = createSelector(
 			}
 		});
 
+		// TODO: filter out some types of claimable balances
 		const lightningBalance =
 			spendingBalance + reserveBalance + claimableBalance;
 

@@ -8,7 +8,7 @@ import { updateActivityItems } from '../slices/activity';
 import {
 	removeLightningPeer,
 	saveLightningPeer,
-	updateClaimableBalance,
+	updateClaimableBalances,
 	updateLightningChannels,
 	updateLightningNodeId,
 	updateLightningNodeVersion,
@@ -20,7 +20,7 @@ import { getSelectedNetwork, getSelectedWallet } from '../../utils/wallet';
 import {
 	addPeers,
 	createPaymentRequest,
-	getClaimableBalance,
+	getClaimableBalances,
 	getClaimedLightningPayments,
 	getCustomLightningPeers,
 	getLightningChannels,
@@ -289,31 +289,20 @@ export const removePeer = ({
 	return ok('Successfully Removed Lightning Peer');
 };
 
-export const updateClaimableBalanceThunk = async ({
-	selectedWallet,
-	selectedNetwork,
-}: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): Promise<Result<string>> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
+export const updateClaimableBalancesThunk = async (): Promise<
+	Result<string>
+> => {
+	const selectedWallet = getSelectedWallet();
+	const selectedNetwork = getSelectedNetwork();
 
-	const claimableBalance = await getClaimableBalance({
-		selectedNetwork,
-		selectedWallet,
-	});
+	const claimableBalances = await getClaimableBalances();
 
 	const payload = {
+		claimableBalances,
 		selectedNetwork,
 		selectedWallet,
-		claimableBalance,
 	};
-	dispatch(updateClaimableBalance(payload));
+	dispatch(updateClaimableBalances(payload));
 	return ok('Successfully Updated Claimable Balance.');
 };
 

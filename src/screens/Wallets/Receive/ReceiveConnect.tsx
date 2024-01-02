@@ -12,7 +12,7 @@ import GlowImage from '../../../components/GlowImage';
 import Money from '../../../components/Money';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useScreenSize } from '../../../hooks/screen';
-import useDisplayValues from '../../../hooks/displayValues';
+import useDisplayValues, { useCurrency } from '../../../hooks/displayValues';
 import { useLightningBalance } from '../../../hooks/lightning';
 import { receiveSelector } from '../../../store/reselect/receive';
 import type { ReceiveScreenProps } from '../../../navigation/types';
@@ -30,6 +30,7 @@ const ReceiveConnect = ({
 }: ReceiveScreenProps<'ReceiveConnect'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const { isSmallScreen } = useScreenSize();
+	const { fiatSymbol } = useCurrency();
 	const lightningBalance = useLightningBalance(true);
 	const [feeEstimate, setFeeEstimate] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
@@ -96,12 +97,8 @@ const ReceiveConnect = ({
 								? 'receive_connect_initial'
 								: 'receive_connect_additional'
 						}
-						components={{
-							white: <Text01S color="white" />,
-						}}
-						values={{
-							fee: `${displayFee.fiatSymbol}${displayFee.fiatFormatted}`,
-						}}
+						components={{ white: <Text01S color="white" /> }}
+						values={{ lspFee: `${fiatSymbol}${displayFee.fiatFormatted}` }}
 					/>
 				</Text01S>
 

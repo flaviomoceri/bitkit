@@ -31,26 +31,26 @@ export const isOnline = async (): Promise<boolean> => {
 };
 
 /**
- * Sum a specific value in an array of objects.
+ * Takes an array of objects, and sums all values pertaining to a specific key.
  * @param arr
- * @param value
+ * @param key
  */
-export const reduceValue = <T>({
-	arr,
-	value,
-}: {
-	arr: T[];
-	value: keyof T;
-}): Result<number> => {
+export const reduceValue = <T extends object>(
+	arr: T[],
+	key: keyof T,
+): Result<number> => {
 	try {
-		if (!value) {
-			return err('Please specify a value.');
-		}
-		return ok(
-			arr.reduce((acc, cur) => {
-				return acc + Number(cur[value]);
-			}, 0) || 0,
-		);
+		const sum = arr.reduce((acc, obj) => {
+			if (key in obj) {
+				if (typeof obj[key] !== 'number') {
+					throw `value for '${String(key)}' is not a number`;
+				}
+				return acc + Number(obj[key]);
+			}
+			return acc + 0;
+		}, 0);
+
+		return ok(sum);
 	} catch (e) {
 		return err(e);
 	}

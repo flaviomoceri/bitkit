@@ -17,14 +17,15 @@ const d = checkComplete([
 	'settings-currency',
 	'settings-unit',
 	'settings-speed',
-	'settings-suggestions',
 	'settings-tags',
+	'settings-security-balance',
 	'settings-backup',
 	'settings-addr-type',
 	'settings-ln-settings',
 	'settings-electrum',
 	'settings-webrelay',
 	'settings-rgs',
+	'settings-suggestions',
 	'settings-dev',
 ])
 	? describe.skip
@@ -128,44 +129,6 @@ d('Settings', () => {
 			markComplete('settings-speed');
 		});
 
-		it('Can change hide and reset Suggestions', async () => {
-			if (checkComplete('settings-suggestions')) {
-				return;
-			}
-
-			await expect(element(by.id('Suggestions'))).toBeVisible();
-
-			// hide backupSeedPhrase suggestion card
-			await element(
-				by
-					.id('SuggestionDismiss')
-					.withAncestor(by.id('Suggestion-backupSeedPhrase')),
-			).tap();
-			await expect(
-				element(by.id('Suggestion-backupSeedPhrase')),
-			).not.toBeVisible();
-
-			// hide Suggestions
-			await element(by.id('Settings')).tap();
-			await element(by.id('GeneralSettings')).tap();
-			await element(by.id('SuggestionsSettings')).tap();
-			await element(by.id('DisplaySuggestions')).tap();
-			await element(by.id('NavigationClose')).tap();
-			await expect(element(by.id('Suggestions'))).not.toBeVisible();
-
-			// show Suggestions and reset them
-			await element(by.id('Settings')).tap();
-			await element(by.id('GeneralSettings')).tap();
-			await element(by.id('SuggestionsSettings')).tap();
-			await element(by.id('DisplaySuggestions')).tap();
-			await element(by.id('ResetSuggestions')).tap();
-			await element(by.id('DialogConfirm')).tap();
-
-			// backupSeedPhrase should be visible again
-			await expect(element(by.id('Suggestion-backupSeedPhrase'))).toBeVisible();
-			markComplete('settings-suggestions');
-		});
-
 		it('Can remove last used tags', async () => {
 			if (checkComplete('settings-tags')) {
 				return;
@@ -223,6 +186,52 @@ d('Settings', () => {
 
 				markComplete('settings-about');
 			});
+		});
+	});
+
+	d('Security and Privacy', () => {
+		it('Can swipe to hide balance', async () => {
+			// test plan:
+			// - swipe to hide balance
+			// - disable 'swipe to hide balance'
+			// - enable 'hide balance on open'
+
+			if (checkComplete('settings-security-balance')) {
+				return;
+			}
+
+			// Balance should be visible
+			await expect(element(by.id('ShowBalance'))).not.toBeVisible();
+			// Swipe to hide balance
+			await element(by.id('TotalBalance')).swipe('right');
+			// Balance should be hidden
+			await expect(element(by.id('ShowBalance'))).toBeVisible();
+
+			// Disable 'swipe to hide balance'
+			await element(by.id('Settings')).tap();
+			await element(by.id('SecuritySettings')).tap();
+			await element(by.id('SwipeBalanceToHide')).tap();
+			await element(by.id('NavigationClose')).tap();
+
+			// Balance should be visible
+			await expect(element(by.id('ShowBalance'))).not.toBeVisible();
+			// Should not be able to hide balance
+			await element(by.id('TotalBalance')).swipe('right');
+			// Balance should still be visible
+			await expect(element(by.id('ShowBalance'))).not.toBeVisible();
+
+			// Enable 'hide balance on open'
+			await element(by.id('Settings')).tap();
+			await element(by.id('SecuritySettings')).tap();
+			await element(by.id('SwipeBalanceToHide')).tap();
+			await element(by.id('HideBalanceOnOpen')).tap();
+
+			// Restart the app
+			await launchAndWait();
+			// Balance should be hidden
+			await expect(element(by.id('ShowBalance'))).toBeVisible();
+
+			markComplete('settings-security-balance');
 		});
 	});
 
@@ -556,6 +565,35 @@ d('Settings', () => {
 			jestExpect(resetValue).toBe(origValue);
 
 			markComplete('settings-rgs');
+		});
+
+		it('Can reset suggestions', async () => {
+			if (checkComplete('settings-suggestions')) {
+				return;
+			}
+
+			await expect(element(by.id('Suggestions'))).toBeVisible();
+
+			// hide backupSeedPhrase suggestion card
+			await element(
+				by
+					.id('SuggestionDismiss')
+					.withAncestor(by.id('Suggestion-backupSeedPhrase')),
+			).tap();
+			await expect(
+				element(by.id('Suggestion-backupSeedPhrase')),
+			).not.toBeVisible();
+
+			// reset suggestions
+			await element(by.id('Settings')).tap();
+			await element(by.id('AdvancedSettings')).tap();
+			await element(by.id('WebRelay')).swipe('up');
+			await element(by.id('ResetSuggestions')).tap();
+			await element(by.id('DialogConfirm')).tap();
+
+			// backupSeedPhrase should be visible again
+			await expect(element(by.id('Suggestion-backupSeedPhrase'))).toBeVisible();
+			markComplete('settings-suggestions');
 		});
 	});
 

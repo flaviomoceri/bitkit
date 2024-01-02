@@ -14,7 +14,7 @@ import SwipeToConfirm from '../../components/SwipeToConfirm';
 import PieChart from '../Lightning/PieChart';
 import { confirmChannelPurchase } from '../../store/utils/blocktank';
 import { useBalance } from '../../hooks/wallet';
-import useDisplayValues from '../../hooks/displayValues';
+import useDisplayValues, { useCurrency } from '../../hooks/displayValues';
 import type { TransferScreenProps } from '../../navigation/types';
 import { blocktankOrdersSelector } from '../../store/reselect/blocktank';
 import {
@@ -49,23 +49,17 @@ const Confirm = ({
 		return orders.find((o) => o.id === orderId);
 	}, [orderId, orders]);
 
-	const feeSat = order?.feeSat ?? 0;
-	const blocktankPurchaseFee = useDisplayValues(feeSat);
+	const { fiatSymbol } = useCurrency();
+	const purchaseFee = useMemo(() => order?.feeSat ?? 0, [order]);
+	const purchaseFeeValue = useDisplayValues(purchaseFee);
 	const transactionFee = useAppSelector(transactionFeeSelector);
 	const fiatTransactionFee = useDisplayValues(transactionFee);
 	const clientBalance = useDisplayValues(order?.clientBalanceSat ?? 0);
 
-	const channelOpenCost = useMemo(() => {
-		return (
-			blocktankPurchaseFee.fiatValue -
-			clientBalance.fiatValue +
-			fiatTransactionFee.fiatValue
-		).toFixed(2);
-	}, [
-		blocktankPurchaseFee.fiatValue,
-		clientBalance.fiatValue,
-		fiatTransactionFee.fiatValue,
-	]);
+	// avoid flashing different price after confirmation
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const txFee = useMemo(() => fiatTransactionFee.fiatValue, [orderId]);
+	const lspFee = purchaseFeeValue.fiatValue - clientBalance.fiatValue;
 
 	const handleConfirm = async (): Promise<void> => {
 		setLoading(true);
@@ -105,11 +99,10 @@ const Confirm = ({
 						<Trans
 							t={t}
 							i18nKey="transfer_open"
-							components={{
-								white: <Text01S color="white" />,
-							}}
+							components={{ white: <Text01S color="white" /> }}
 							values={{
-								amount: `${blocktankPurchaseFee.fiatSymbol}${channelOpenCost}`,
+								txFee: `${fiatSymbol}${txFee.toFixed(2)}`,
+								lspFee: `${fiatSymbol}${lspFee.toFixed(2)}`,
 							}}
 						/>
 					)}

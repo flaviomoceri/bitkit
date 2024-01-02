@@ -22,8 +22,10 @@ const SecuritySettings = ({
 	const {
 		enableAutoReadClipboard,
 		enableSendAmountWarning,
+		enableSwipeToHideBalance,
 		pin,
 		biometrics,
+		hideBalanceOnOpen,
 		pinOnLaunch,
 		pinOnIdle,
 		pinForPayments,
@@ -55,6 +57,32 @@ const SecuritySettings = ({
 		() => [
 			{
 				data: [
+					{
+						title: t('security.swipe_balance_to_hide'),
+						type: EItemType.switch,
+						enabled: enableSwipeToHideBalance,
+						testID: 'SwipeBalanceToHide',
+						onPress: (): void => {
+							dispatch(
+								updateSettings({
+									enableSwipeToHideBalance: !enableSwipeToHideBalance,
+									hideBalance: false,
+								}),
+							);
+						},
+					},
+					{
+						title: t('security.hide_balance_on_open'),
+						type: EItemType.switch,
+						enabled: hideBalanceOnOpen,
+						hide: !enableSwipeToHideBalance,
+						testID: 'HideBalanceOnOpen',
+						onPress: (): void => {
+							dispatch(
+								updateSettings({ hideBalanceOnOpen: !hideBalanceOnOpen }),
+							);
+						},
+					},
 					{
 						title: t('security.clipboard'),
 						type: EItemType.switch,
@@ -169,9 +197,11 @@ const SecuritySettings = ({
 		[
 			enableAutoReadClipboard,
 			enableSendAmountWarning,
+			enableSwipeToHideBalance,
 			isBiometrySupported,
 			biometryTypeName,
 			biometrics,
+			hideBalanceOnOpen,
 			pin,
 			pinOnLaunch,
 			pinOnIdle,

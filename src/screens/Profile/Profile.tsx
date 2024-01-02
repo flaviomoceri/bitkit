@@ -24,7 +24,6 @@ import {
 import { Text02S } from '../../styles/text';
 import {
 	CopyIcon,
-	InfoIcon,
 	PencileIcon,
 	ShareIcon,
 	UsersIcon,
@@ -123,14 +122,6 @@ const ProfileScreen = ({
 				<ProfileCard url={url} profile={profile} resolving={false} />
 				<Divider />
 				<View style={styles.actions}>
-					<IconButton
-						testID="DetailsButton"
-						style={styles.iconButton}
-						onPress={(): void => {
-							navigation.navigate('ProfileDetails');
-						}}>
-						<InfoIcon height={20} width={20} color="brand" />
-					</IconButton>
 					<IconButton
 						testID="CopyButton"
 						style={styles.iconButton}

@@ -15,6 +15,7 @@ import { EUnit } from '../types/wallet';
 export type TSettings = {
 	enableAutoReadClipboard: boolean;
 	enableSendAmountWarning: boolean;
+	enableSwipeToHideBalance: boolean;
 	pin: boolean;
 	pinOnLaunch: boolean;
 	pinOnIdle: boolean;
@@ -31,13 +32,13 @@ export type TSettings = {
 	coinSelectPreference: TCoinSelectPreference;
 	receivePreference: TReceiveOption[];
 	enableOfflinePayments: boolean;
-	showSuggestions: boolean;
 	showWidgets: boolean;
 	transactionSpeed: ETransactionSpeed;
 	customFeeRate: number;
 	hideBalance: boolean;
-	hideOnboardingMessage: boolean;
+	hideBalanceOnOpen: boolean;
 	hideBeta: boolean;
+	hideOnboardingMessage: boolean;
 	enableDevOptions: boolean;
 	treasureChests: TChest[];
 	webRelay: string;

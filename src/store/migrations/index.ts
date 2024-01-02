@@ -305,6 +305,34 @@ const migrations = {
 			},
 		};
 	},
+	30: (state): PersistedState => {
+		const newNodes = { ...state.lightning.nodes };
+		// Loop through all nodes
+		for (const walletName in newNodes) {
+			newNodes[walletName] = {
+				...newNodes[walletName],
+				claimableBalances: getNetworkContent([]),
+			};
+		}
+
+		return {
+			...state,
+			lightning: {
+				...state.lightning,
+				nodes: newNodes,
+			},
+		};
+	},
+	31: (state): PersistedState => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				enableSwipeToHideBalance: true,
+				hideBalanceOnOpen: false,
+			},
+		};
+	},
 };
 
 export default migrations;

@@ -5,20 +5,11 @@ import React, {
 	useEffect,
 	useRef,
 } from 'react';
-import {
-	AppState,
-	Image,
-	Platform,
-	StyleSheet,
-	TouchableOpacity,
-	View,
-} from 'react-native';
+import { AppState, Image, Platform, StyleSheet, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Lottie from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Text02M } from '../../styles/text';
-import { ClockIcon, LightningIcon } from '../../styles/icons';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import Glow from '../../components/Glow';
 import AmountToggle from '../../components/AmountToggle';
@@ -106,7 +97,11 @@ const NewTxPrompt = (): ReactElement => {
 					/>
 				</View>
 				<BottomSheetNavigationHeader
-					title={t('payment_received')}
+					title={
+						isOnchainItem
+							? t('payment_received')
+							: t('instant_payment_received')
+					}
 					displayBackButton={false}
 				/>
 				{activityItem && (
@@ -127,25 +122,6 @@ const NewTxPrompt = (): ReactElement => {
 					<Image source={imageSrc} style={styles.image4} />
 				</View>
 
-				<TouchableOpacity style={styles.confirming} onPress={handlePress}>
-					{isOnchainItem ? (
-						!activityItem?.confirmed && (
-							<>
-								<ClockIcon color="gray1" />
-								<Text02M color="gray1" style={styles.confirmingText}>
-									{t('payment_confirming')}
-								</Text02M>
-							</>
-						)
-					) : (
-						<>
-							<LightningIcon color="purple" />
-							<Text02M color="purple" style={styles.confirmingText}>
-								Instant Payment
-							</Text02M>
-						</>
-					)}
-				</TouchableOpacity>
 				<SafeAreaInset type="bottom" minPadding={16} />
 			</View>
 		</BottomSheetWrapper>
@@ -176,6 +152,7 @@ const styles = StyleSheet.create({
 		width: 200,
 		justifyContent: 'center',
 		alignItems: 'center',
+		marginBottom: 16,
 	},
 	image1: {
 		width: 220,
@@ -208,15 +185,6 @@ const styles = StyleSheet.create({
 	},
 	glow: {
 		position: 'absolute',
-	},
-	confirming: {
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
-		minHeight: 50,
-	},
-	confirmingText: {
-		marginLeft: 8,
 	},
 });
 

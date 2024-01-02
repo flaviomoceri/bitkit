@@ -21,10 +21,7 @@ import {
 	todosFullSelector,
 } from '../store/reselect/todos';
 import { lightningSettingUpStepSelector } from '../store/reselect/user';
-import {
-	pinSelector,
-	showSuggestionsSelector,
-} from '../store/reselect/settings';
+import { pinSelector } from '../store/reselect/settings';
 import type { RootNavigationProp } from '../navigation/types';
 import { useBalance } from '../hooks/wallet';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
@@ -39,7 +36,6 @@ const Suggestions = (): ReactElement => {
 	const dispatch = useAppDispatch();
 	const pinTodoDone = useAppSelector(pinSelector);
 	const suggestions = useAppSelector(todosFullSelector);
-	const showSuggestions = useAppSelector(showSuggestionsSelector);
 	const lightningSettingUpStep = useAppSelector(lightningSettingUpStepSelector);
 	const newChannels = useAppSelector(newChannelsNotificationsSelector);
 	const [index, setIndex] = useState(0);
@@ -145,7 +141,7 @@ const Suggestions = (): ReactElement => {
 		[t, handleOnPress, lightningSettingUpStep, dispatch],
 	);
 
-	if (!suggestions.length || !showSuggestions) {
+	if (!suggestions.length) {
 		return <></>;
 	}
 
