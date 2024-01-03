@@ -1,5 +1,6 @@
 import React, { memo, ReactElement, useState } from 'react';
 import axios from 'axios';
+import RNFS from 'react-native-fs';
 import { View, StyleSheet, Platform } from 'react-native';
 import {
 	getBuildNumber,
@@ -9,14 +10,16 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { getNodeId, getNodeVersion } from '../../../utils/lightning';
+import { zipLogs } from '../../../utils/lightning/logs';
 import { Text01S } from '../../../styles/text';
-import { View as ThemedView } from '../../../styles/components';
+import { ScrollView, View as ThemedView } from '../../../styles/components';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import LabeledInput from '../../../components/LabeledInput';
 import Button from '../../../components/Button';
 import { __CHATWOOT_API__ } from '../../../constants/env';
+import KeyboardAvoidingView from '../../../components/KeyboardAvoidingView';
 
 const ReportIssue = ({
 	navigation,
@@ -36,17 +39,26 @@ const ReportIssue = ({
 		return false;
 	};
 
-	const SendRequest = async (): Promise<void> => {
+	const sendRequest = async (): Promise<void> => {
 		try {
 			setIsLoading(true);
 			let ldkVersion = '';
 			let ldkNodeId = '';
+			let logs = '';
+			let logsFileName = '';
 			const ldkVersionUser = await getNodeVersion();
 			const ldknodeIdUser = await getNodeId();
+			const logsUser = await zipLogs();
 
-			if (ldkVersionUser.isOk() && ldknodeIdUser.isOk()) {
+			if (ldkVersionUser.isOk() && ldknodeIdUser.isOk() && logsUser.isOk()) {
 				ldkVersion += `ldk-${ldkVersionUser.value.ldk} c_bindings-${ldkVersionUser.value.c_bindings}`;
 				ldkNodeId += `${ldknodeIdUser.value}`;
+				const logsContent = await RNFS.readFile(logsUser.value, 'base64');
+				const logsName = logsUser.value.match(/\/([^/]+)\.zip$/);
+				logs += `${logsContent}`;
+				if (logsName && logsName.length > 1) {
+					logsFileName += `${logsName[1]}`;
+				}
 			}
 			await axios.post(`${__CHATWOOT_API__}`, {
 				email,
@@ -55,6 +67,8 @@ const ReportIssue = ({
 				version: `${getVersion()} (${getBuildNumber()})`,
 				ldkVersion: ldkVersion,
 				ldkNodeId: ldkNodeId,
+				logs: logs,
+				logsFileName: logsFileName,
 			});
 			navigation.navigate('FormSuccess');
 			setEmail('');
@@ -73,56 +87,64 @@ const ReportIssue = ({
 
 	return (
 		<ThemedView style={styles.fullHeight}>
-			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={t('support.report')}
-				onClosePress={(): void => {
-					navigation.navigate('Wallet');
-				}}
-			/>
-			<View style={styles.content}>
-				<Text01S style={styles.text} color="gray1">
-					{t('support.report_text')}
-				</Text01S>
-
-				<LabeledInput
-					style={styles.addressInput}
-					label={t('support.label_address')}
-					placeholder={t('support.placeholder_address')}
-					maxLength={25}
-					value={email}
-					testID="LinkLabelInput"
-					onChange={(value: string): void => {
-						setEmail(value);
-					}}
-				/>
-				<LabeledInput
-					placeholder={t('support.placeholder_message')}
-					multiline={true}
-					value={message}
-					returnKeyType="default"
-					label={t('support.label_message')}
-					maxLength={5048}
-					testID="LinkValueInput"
-					lines={5.5}
-					onChange={(value: string): void => {
-						setMessage(value);
-					}}
-				/>
-
-				<View style={styles.buttonContainer}>
-					<Button
-						style={styles.button}
-						text={t('support.text_button')}
-						size="large"
-						disabled={!isValid}
-						loading={isLoading}
-						testID="SendRequest"
-						onPress={SendRequest}
+			<KeyboardAvoidingView style={styles.content}>
+				<ScrollView
+					color="transparent"
+					contentContainerStyle={styles.scrollContent}
+					showsVerticalScrollIndicator={false}
+					bounces={false}>
+					<SafeAreaInset type="top" />
+					<NavigationHeader
+						title={t('support.report')}
+						onClosePress={(): void => {
+							navigation.navigate('Wallet');
+						}}
 					/>
-				</View>
-				<SafeAreaInset type="bottom" minPadding={16} />
-			</View>
+					<View style={styles.form}>
+						<Text01S style={styles.text} color="gray1">
+							{t('support.report_text')}
+						</Text01S>
+
+						<LabeledInput
+							style={styles.addressInput}
+							label={t('support.label_address')}
+							placeholder={t('support.placeholder_address')}
+							maxLength={25}
+							value={email}
+							testID="emailValueInput"
+							onChange={(value: string): void => {
+								setEmail(value);
+							}}
+						/>
+						<LabeledInput
+							placeholder={t('support.placeholder_message')}
+							multiline={true}
+							value={message}
+							returnKeyType="default"
+							label={t('support.label_message')}
+							maxLength={5048}
+							testID="messageValueInput"
+							lines={5.5}
+							onChange={(value: string): void => {
+								setMessage(value);
+							}}
+						/>
+
+						<View style={styles.buttonContainer}>
+							<Button
+								style={styles.button}
+								text={t('support.text_button')}
+								size="large"
+								disabled={!isValid}
+								loading={isLoading}
+								testID="SendRequest"
+								onPress={sendRequest}
+							/>
+						</View>
+					</View>
+					<SafeAreaInset type="bottom" minPadding={16} />
+				</ScrollView>
+			</KeyboardAvoidingView>
 		</ThemedView>
 	);
 };
@@ -131,9 +153,17 @@ const styles = StyleSheet.create({
 	fullHeight: {
 		flex: 1,
 	},
-	content: {
+	scrollContent: {
 		flexGrow: 1,
+	},
+	content: {
+		flex: 1,
+		justifyContent: 'space-between',
+		alignItems: 'stretch',
+	},
+	form: {
 		paddingHorizontal: 16,
+		flex: 1,
 	},
 	text: {
 		paddingBottom: 32,
@@ -148,6 +178,7 @@ const styles = StyleSheet.create({
 	},
 	button: {
 		flex: 1,
+		marginTop: 32,
 	},
 });
 
