@@ -2448,6 +2448,68 @@ export const getReceiveAddress = async ({
 };
 
 /**
+ * Returns the current addressIndex value and will create one if none existed.
+ * @param {EAddressType} [addressType]
+ * @param {EAvailableNetwork} [selectedNetwork]
+ * @param {TWalletName} [selectedWallet]
+ * @return {Result<string>}
+ */
+export const getCurrentAddressIndex = async ({
+	addressType,
+	selectedNetwork,
+	selectedWallet,
+}: {
+	addressType?: EAddressType;
+	selectedNetwork?: EAvailableNetwork;
+	selectedWallet?: TWalletName;
+}): Promise<Result<IAddress>> => {
+	try {
+		if (!selectedNetwork) {
+			selectedNetwork = getSelectedNetwork();
+		}
+		if (!selectedWallet) {
+			selectedWallet = getSelectedWallet();
+		}
+		if (!addressType) {
+			addressType = getSelectedAddressType({ selectedNetwork, selectedWallet });
+		}
+		const wallet = getWalletStore().wallets[selectedWallet];
+		const addressIndex = wallet.addressIndex[selectedNetwork];
+		const receiveAddress = addressIndex[addressType];
+		if (receiveAddress) {
+			return ok(receiveAddress);
+		}
+		const addresses = wallet?.addresses[selectedNetwork][addressType];
+
+		// Check if addresses were generated, but the index has not been set yet.
+		if (
+			Object.keys(addresses).length > 0 &&
+			addressIndex[addressType].index < 0
+		) {
+			// Grab and return the address at index 0.
+			const address = Object.values(addresses).find(({ index }) => index === 0);
+			if (address) {
+				return ok(address);
+			}
+		}
+		// Fallback to generating a new receive address on the fly.
+		const generatedAddress = await generateNewReceiveAddress({
+			selectedWallet,
+			selectedNetwork,
+			addressType,
+		});
+		if (generatedAddress.isOk()) {
+			return ok(generatedAddress.value);
+		} else {
+			console.log(generatedAddress.error.message);
+		}
+		return err('No address index available.');
+	} catch (e) {
+		return err(e);
+	}
+};
+
+/**
  * Retrieves wallet balances for the currently selected wallet and network.
  * @param {TWalletName} [selectedWallet]
  * @param {EAvailableNetwork} [selectedNetwork]

@@ -23,7 +23,6 @@ import lm, {
 	TPaymentReq,
 	TTransactionData,
 	TTransactionPosition,
-	IAddress,
 } from '@synonymdev/react-native-ldk';
 
 import {
@@ -35,7 +34,9 @@ import {
 	transactionExists,
 } from '../wallet/electrum';
 import {
+	getCurrentAddressIndex,
 	getMnemonicPhrase,
+	getSelectedAddressType,
 	getSelectedNetwork,
 	getSelectedWallet,
 } from '../wallet';
@@ -90,7 +91,6 @@ import {
 	__BACKUPS_SERVER_PUBKEY__,
 	__TRUSTED_ZERO_CONF_PEERS__,
 } from '../../constants/env';
-import { generateNewReceiveAddress } from '../../store/actions/wallet';
 
 let LDKIsStayingSynced = false;
 
@@ -222,24 +222,33 @@ export const setupLdk = async ({
 				network = ENetworks.regtest;
 				break;
 		}
-		const getAddress = async (): Promise<IAddress> => {
-			const res = await generateNewReceiveAddress({
-				selectedNetwork,
-				selectedWallet,
-			});
-			if (res.isOk()) {
+		const getAddress = async (): Promise<{
+			address: string;
+			publicKey: string;
+		}> => {
+			const error = { address: '', publicKey: '' };
+			try {
+				const addressType = getSelectedAddressType({
+					selectedNetwork,
+					selectedWallet,
+				});
+				const addressIndex = await getCurrentAddressIndex({
+					addressType,
+					selectedWallet,
+					selectedNetwork,
+				});
+				if (addressIndex.isErr()) {
+					return error;
+				}
 				return {
-					address: res.value.address,
-					publicKey: res.value.publicKey,
+					address: addressIndex.value.address,
+					publicKey: addressIndex.value.publicKey,
 				};
+			} catch {
+				console.error('Error getting address for LDK');
+				//TODO react-native-ldk should be updated to handle errors where an address cannot be generated
+				return error;
 			}
-
-			console.error('Error getting address for LDK', res.error);
-			//TODO react-native-ldk should be updated to handle errors where an address cannot be generated
-			return {
-				address: '',
-				publicKey: '',
-			};
 		};
 
 		const _broadcastTransaction = async (rawTx: string): Promise<string> => {
