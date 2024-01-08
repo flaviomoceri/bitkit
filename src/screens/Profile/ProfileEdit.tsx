@@ -128,7 +128,6 @@ const ProfileEdit = ({
 		<ThemedView style={styles.container}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
-				style={styles.header}
 				title={t(onboardedProfile ? 'profile' : 'profile_create')}
 				onClosePress={(): void => {
 					navigation.navigate(onboardedProfile ? 'Profile' : 'Wallet');
@@ -150,6 +149,7 @@ const ProfileEdit = ({
 					<Button
 						style={styles.addLinkButton}
 						text={t('profile_add_link')}
+						color="white10"
 						icon={
 							<PlusIcon color="brand" width={16} style={styles.addLinkButton} />
 						}
@@ -183,9 +183,6 @@ const ProfileEdit = ({
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-	},
-	header: {
-		paddingBottom: 32,
 	},
 	content: {
 		flex: 1,

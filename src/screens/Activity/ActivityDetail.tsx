@@ -13,7 +13,9 @@ import {
 	StyleSheet,
 	View,
 	TouchableOpacity,
+	LayoutChangeEvent,
 } from 'react-native';
+import { useSharedValue, withTiming } from 'react-native-reanimated';
 import {
 	Canvas,
 	Path,
@@ -97,10 +99,10 @@ import { contactsSelector } from '../../store/reselect/slashtags';
 
 const Section = memo(
 	({ title, value }: { title: string; value: ReactNode }) => {
-		const { white1 } = useColors();
+		const { white10 } = useColors();
 
 		return (
-			<View style={[styles.sRoot, { borderBottomColor: white1 }]}>
+			<View style={[styles.sRoot, { borderBottomColor: white10 }]}>
 				<View style={styles.sText}>
 					<Caption13Up color="gray1">{title}</Caption13Up>
 				</View>
@@ -116,11 +118,19 @@ const Glow = ({
 }: {
 	color: string;
 	size: { width: number; height: number };
-}): ReactElement => (
-	<Rect x={0} y={0} width={size.width} height={size.height} opacity={0.3}>
-		<RadialGradient c={vec(0, 100)} r={600} colors={[color, 'transparent']} />
-	</Rect>
-);
+}): ReactElement => {
+	const opacity = useSharedValue(0);
+
+	useEffect(() => {
+		opacity.value = withTiming(0.3, { duration: 100 });
+	}, [opacity]);
+
+	return (
+		<Rect x={0} y={0} width={size.width} height={size.height} opacity={opacity}>
+			<RadialGradient c={vec(0, 100)} r={600} colors={[color, 'transparent']} />
+		</Rect>
+	);
+};
 
 const ZigZag = ({ color }: { color: string }): ReactElement => {
 	const step = 12;
@@ -934,16 +944,12 @@ const ActivityDetail = ({
 		return activityItemSelector(state, route.params.id)!;
 	});
 
-	// if (!item) {
-	// 	return <></>;
-	// }
-
 	const { activityType, txType } = item;
 	const isSend = txType === EPaymentType.sent;
 
-	const handleLayout = (e): void => {
-		const { height, width } = e.nativeEvent.layout;
-		setSize((s) => (s.width === 0 ? { width, height } : s));
+	const handleLayout = (event: LayoutChangeEvent): void => {
+		const { height, width } = event.nativeEvent.layout;
+		setSize({ width, height });
 	};
 
 	let title = isSend
@@ -958,9 +964,6 @@ const ActivityDetail = ({
 	return (
 		<ThemedView style={styles.root} onLayout={handleLayout}>
 			<SafeAreaInset type="top" />
-			<Canvas style={styles.canvas}>
-				<Glow color={glowColor} size={size} />
-			</Canvas>
 			<NavigationHeader
 				title={title}
 				onClosePress={(): void => {
@@ -991,6 +994,9 @@ const ActivityDetail = ({
 				<SafeAreaInset type="bottom" minPadding={16} />
 			</ScrollView>
 			<ActivityTagsPrompt />
+			<Canvas style={styles.canvas}>
+				<Glow color={glowColor} size={size} />
+			</Canvas>
 		</ThemedView>
 	);
 };
@@ -1006,6 +1012,7 @@ const styles = StyleSheet.create({
 	},
 	canvas: {
 		...StyleSheet.absoluteFillObject,
+		zIndex: -1,
 	},
 	title: {
 		flexDirection: 'row',
