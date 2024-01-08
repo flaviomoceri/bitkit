@@ -66,7 +66,10 @@ const HeadlinesWidget = ({
 					`${url}?relay=${webRelayUrl}`,
 				);
 
-				const _article = await reader.getLatestArtible();
+				const allArticles = await reader.getAllArticles();
+				const _article = allArticles
+					.sort((a, b) => b.published - a.published)
+					.slice(0, 10)[Math.floor(Math.random() * 10)];
 
 				if (!unmounted && _article) {
 					setArticle(_article);
