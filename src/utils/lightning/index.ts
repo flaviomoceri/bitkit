@@ -34,8 +34,9 @@ import {
 	transactionExists,
 } from '../wallet/electrum';
 import {
+	getCurrentAddressIndex,
 	getMnemonicPhrase,
-	getReceiveAddress,
+	getSelectedAddressType,
 	getSelectedNetwork,
 	getSelectedWallet,
 } from '../wallet';
@@ -221,12 +222,33 @@ export const setupLdk = async ({
 				network = ENetworks.regtest;
 				break;
 		}
-		const getAddress = async (): Promise<string> => {
-			const res = await getReceiveAddress({ selectedNetwork, selectedWallet });
-			if (res.isOk()) {
-				return res.value;
+		const getAddress = async (): Promise<{
+			address: string;
+			publicKey: string;
+		}> => {
+			const error = { address: '', publicKey: '' };
+			try {
+				const addressType = getSelectedAddressType({
+					selectedNetwork,
+					selectedWallet,
+				});
+				const addressIndex = await getCurrentAddressIndex({
+					addressType,
+					selectedWallet,
+					selectedNetwork,
+				});
+				if (addressIndex.isErr()) {
+					return error;
+				}
+				return {
+					address: addressIndex.value.address,
+					publicKey: addressIndex.value.publicKey,
+				};
+			} catch {
+				console.error('Error getting address for LDK');
+				//TODO react-native-ldk should be updated to handle errors where an address cannot be generated
+				return error;
 			}
-			return '';
 		};
 
 		const _broadcastTransaction = async (rawTx: string): Promise<string> => {
