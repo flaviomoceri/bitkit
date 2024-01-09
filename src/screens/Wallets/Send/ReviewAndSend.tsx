@@ -163,8 +163,7 @@ const ReviewAndSend = ({
 	 */
 	const amount = useMemo((): number => {
 		return getTransactionOutputValue({
-			selectedWallet,
-			selectedNetwork,
+			outputs: transaction.outputs,
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [transaction.outputs, selectedNetwork, selectedWallet]);
@@ -341,15 +340,8 @@ const ReviewAndSend = ({
 		return getTotalFee({
 			satsPerByte: transaction.satsPerByte,
 			message: transaction.message,
-			selectedWallet,
-			selectedNetwork,
 		});
-	}, [
-		transaction.satsPerByte,
-		transaction.message,
-		selectedWallet,
-		selectedNetwork,
-	]);
+	}, [transaction.satsPerByte, transaction.message]);
 
 	const fiatTransactionFee = useDisplayValues(feeSats);
 

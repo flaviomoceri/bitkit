@@ -38,8 +38,7 @@ const FeeRate = ({ navigation }: SendScreenProps<'FeeRate'>): ReactElement => {
 
 	const transactionTotal = useCallback(() => {
 		return getTransactionOutputValue({
-			selectedWallet,
-			selectedNetwork,
+			outputs: transaction.outputs,
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [transaction.outputs, selectedNetwork, selectedWallet]);
@@ -49,11 +48,9 @@ const FeeRate = ({ navigation }: SendScreenProps<'FeeRate'>): ReactElement => {
 			return getTotalFee({
 				satsPerByte: _satsPerByte,
 				message: transaction.message,
-				selectedWallet,
-				selectedNetwork,
 			});
 		},
-		[transaction.message, selectedNetwork, selectedWallet],
+		[transaction.message],
 	);
 
 	const _updateFee = useCallback(

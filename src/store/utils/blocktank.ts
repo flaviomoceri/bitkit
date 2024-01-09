@@ -279,8 +279,6 @@ export const startChannelPurchase = async ({
 	const satPerVByteFee = Math.ceil(min0ConfTxFee.value.satPerVByte); // might be float
 	let txFeeInSats = getTotalFee({
 		satsPerByte: satPerVByteFee,
-		selectedWallet,
-		selectedNetwork,
 	});
 	const buyChannelDataFeeSat = Math.ceil(buyChannelData.feeSat);
 	const buyChannelDataClientBalanceFeeSat = Math.ceil(

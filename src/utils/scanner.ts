@@ -606,8 +606,6 @@ export const processBitcoinTransactionData = async ({
 			return err(transaction.error.message);
 		}
 		const inputValue = getTransactionInputValue({
-			selectedWallet,
-			selectedNetwork,
 			inputs: transaction.value.inputs,
 		});
 		// In the event we have preset inputs from address viewer.
