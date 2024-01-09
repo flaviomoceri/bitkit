@@ -1417,7 +1417,7 @@ export const setupBoost = async ({
 		return err('Unable to boost this transaction.');
 	}
 	if (canBoostResponse.rbf) {
-		return await setupRbf({ selectedWallet, selectedNetwork, txid });
+		return await setupRbf({ txid });
 	} else {
 		return await setupCpfp({ txid });
 	}
@@ -1425,8 +1425,6 @@ export const setupBoost = async ({
 
 /**
  * Sets up a CPFP transaction.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
  * @param {string} [txid]
  * @param {number} [satsPerByte]
  */
@@ -1444,25 +1442,13 @@ export const setupCpfp = async ({
 /**
  * Sets up a transaction for RBF.
  * @param {string} txid
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const setupRbf = async ({
 	txid,
-	selectedWallet,
-	selectedNetwork,
 }: {
 	txid: string;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<Partial<ISendTransaction>>> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
 		await setupOnChainTransaction({
 			rbf: true,
 		});

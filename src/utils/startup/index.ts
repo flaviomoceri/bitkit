@@ -3,13 +3,13 @@ import { err, ok, Result } from '@synonymdev/result';
 
 import {
 	generateMnemonic,
-	getMnemonicPhrase,
 	getBip39Passphrase,
-	refreshWallet,
+	getMnemonicPhrase,
+	getSelectedAddressType,
 	getSelectedNetwork,
 	getSelectedWallet,
+	refreshWallet,
 	setupOnChainWallet,
-	getSelectedAddressType,
 } from '../wallet';
 import { createWallet } from '../../store/actions/wallet';
 import { getWalletStore } from '../../store/helpers';
@@ -58,6 +58,15 @@ export const restoreSeed = async ({
 	});
 	if (res.isErr()) {
 		return res;
+	}
+	const setupRes = await setupOnChainWallet({
+		name: getSelectedWallet(),
+		selectedNetwork: EAvailableNetwork.bitcoin,
+		mnemonic,
+		bip39Passphrase,
+	});
+	if (setupRes.isErr()) {
+		return err(setupRes.error.message);
 	}
 	return ok('Seed restored');
 };

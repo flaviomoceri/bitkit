@@ -125,7 +125,7 @@ export const createDefaultWalletStructure = async ({
 export const updateExchangeRates = async (
 	exchangeRates: IExchangeRates,
 ): Promise<Result<string>> => {
-	if (!exchangeRates) {
+	if (!exchangeRates || Object.keys(exchangeRates).length === 0) {
 		const res = await getExchangeRates();
 		if (res.isErr()) {
 			return err(res.error);
