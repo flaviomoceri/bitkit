@@ -1674,7 +1674,7 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@bitcoinerlab/secp256k1@1.0.5", "@bitcoinerlab/secp256k1@^1.0.5":
+"@bitcoinerlab/secp256k1@1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@bitcoinerlab/secp256k1/-/secp256k1-1.0.5.tgz#4643ba73619c24c7c455cc63c6338c69c2cf187c"
   integrity sha512-8gT+ukTCFN2rTxn4hD9Jq3k+UJwcprgYjfK/SQUSLgznXoIgsBnlPuARMkyyuEjycQK9VvnPiejKdszVTflh+w==
@@ -4386,23 +4386,23 @@ bech32@^1.1.2, bech32@^1.1.4:
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.4.tgz#e38c9f37bf179b8eb16ae3a772b40c356d4832e9"
   integrity sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==
 
-beignet@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/beignet/-/beignet-0.0.5.tgz#3c3e57cfbbbe4d95a875492c515e80581e190557"
-  integrity sha512-ej4RPHCF/Trz92qRvxSKjQBShYO2N+yrP/jri93Wxhzt6ooIu0OFI6YrVGAGckLZbXZp6RGuO5KcpxUFjImUZA==
+beignet@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/beignet/-/beignet-0.0.6.tgz#a082c80fee6b7261b5f6f673489ffa9117be13ba"
+  integrity sha512-dpI8bwH4B2cBHUTjsMhO+kIJJSnSJI2Mo3h3bZ98k7dUH1tb0J/DLyx0GBpFORSg9Q4skp0HY3I39kQEZJCf2g==
   dependencies:
-    "@bitcoinerlab/secp256k1" "^1.0.5"
-    bech32 "^2.0.0"
-    bip21 "^2.0.3"
-    bip32 "^4.0.0"
-    bip39 "^3.1.0"
-    bitcoin-address-validation "^2.2.3"
-    bitcoin-units "^0.3.0"
+    "@bitcoinerlab/secp256k1" "1.0.5"
+    bech32 "2.0.0"
+    bip21 "2.0.3"
+    bip32 "4.0.0"
+    bip39 "3.1.0"
+    bitcoin-address-validation "2.2.3"
+    bitcoin-units "0.3.0"
     bitcoinjs-lib "6.1.4"
-    ecpair "^2.1.0"
-    lodash.clonedeep "^4.5.0"
-    net "^1.0.2"
-    rn-electrum-client "^0.0.10"
+    ecpair "2.1.0"
+    lodash.clonedeep "4.5.0"
+    net "1.0.2"
+    rn-electrum-client "0.0.10"
 
 big-integer@1.6.x:
   version "1.6.51"
@@ -4453,14 +4453,14 @@ bip174@^2.1.1:
   resolved "https://registry.yarnpkg.com/bip174/-/bip174-2.1.1.tgz#ef3e968cf76de234a546962bcf572cc150982f9f"
   integrity sha512-mdFV5+/v0XyNYXjBS6CQPLo9ekCx4gtKZFnJm5PMto7Fs9hTTDpkkzOB7/FtluRI6JbUUAu+snTYfJRgHLZbZQ==
 
-bip21@2.0.3, bip21@^2.0.3:
+bip21@2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/bip21/-/bip21-2.0.3.tgz#6e95b542718af497b442d92ae8af433d6ea80368"
   integrity sha512-L4ODmASLjsHYAU+TG7xffkYNMvHzAe4mkVX7mcvOUyKAr/MDBPrsRgqUhE8EmKdeEKHk5SYpX1Aexzvm/6WdbQ==
   dependencies:
     qs "^6.3.0"
 
-bip32@4.0.0, bip32@^4.0.0:
+bip32@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/bip32/-/bip32-4.0.0.tgz#7fac3c05072188d2d355a4d6596b37188f06aa2f"
   integrity sha512-aOGy88DDlVUhspIXJN+dVEtclhIsfAUppD43V0j40cPTld3pv/0X/MlrZSZ6jowIaQQzFwP8M6rFU2z2mVYjDQ==
@@ -4493,14 +4493,14 @@ bip39@3.0.4:
     pbkdf2 "^3.0.9"
     randombytes "^2.0.1"
 
-bip39@^3.0.4, bip39@^3.1.0:
+bip39@3.1.0, bip39@^3.0.4:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/bip39/-/bip39-3.1.0.tgz#c55a418deaf48826a6ceb34ac55b3ee1577e18a3"
   integrity sha512-c9kiwdk45Do5GL0vJMe7tS95VjCii65mYAH7DfWl3uW8AVzXKQVUm64i3hzVybBDMp9r7j9iNxR85+ul8MdN/A==
   dependencies:
     "@noble/hashes" "^1.2.0"
 
-bitcoin-address-validation@2.2.3, bitcoin-address-validation@^2.2.3:
+bitcoin-address-validation@2.2.3:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/bitcoin-address-validation/-/bitcoin-address-validation-2.2.3.tgz#ffae6d48facd5ce7ef60574891aab979d21f9828"
   integrity sha512-1uGCGl26Ye8JG5qcExtFLQfuib6qEZWNDo1ZlLlwp/z7ygUFby3IxolgEfgMGaC+LG9csbVASLcH8fRLv7DIOg==
@@ -4521,7 +4521,7 @@ bitcoin-json-rpc@^1.3.3:
     io-ts ">=2.2.0"
     lodash ">=4.17.21"
 
-bitcoin-units@0.3.0, bitcoin-units@^0.3.0:
+bitcoin-units@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/bitcoin-units/-/bitcoin-units-0.3.0.tgz#014b22db005c31c02865166b5e5a46932865a9c0"
   integrity sha512-CxmCxfoYDKQhKXMvT1HnShVL1E6rT5IUkVenhrFDphrRGKQHJUTGtK68UY7JnAQKqJA4510cC5MO6aEd/8v1EQ==
@@ -6015,7 +6015,7 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
-ecpair@^2.1.0:
+ecpair@2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/ecpair/-/ecpair-2.1.0.tgz#673f826b1d80d5eb091b8e2010c6b588e8d2cb45"
   integrity sha512-cL/mh3MtJutFOvFc27GPZE2pWL3a3k4YvzUWEOvilnfZVlH3Jwgx/7d6tlD7/75tNk8TG2m+7Kgtz0SI1tWcqw==
@@ -8723,7 +8723,7 @@ lodash.camelcase@^4.3.0:
   resolved "https://registry.yarnpkg.com/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
   integrity sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==
 
-lodash.clonedeep@^4.5.0:
+lodash.clonedeep@4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
   integrity sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==
@@ -9493,7 +9493,7 @@ neo-async@^2.5.0, neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-net@^1.0.2:
+net@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/net/-/net-1.0.2.tgz#d1757ec9a7fb2371d83cf4755ce3e27e10829388"
   integrity sha512-kbhcj2SVVR4caaVnGLJKmlk2+f+oLkjqdKeQlmUtz6nGzOpbcobwVIeSURNgraV/v3tlmGIX82OcPCl0K6RbHQ==
@@ -11217,7 +11217,7 @@ rn-android-keyboard-adjust@2.1.2:
   resolved "https://registry.yarnpkg.com/rn-android-keyboard-adjust/-/rn-android-keyboard-adjust-2.1.2.tgz#f2b792628700dcb026215420192317ce43fd954f"
   integrity sha512-pUYiMT7aucw5YnV4geGdalyl6o6rEwRYhDnw2oPQwDym1BZHtmKsxFLupky1Kj2ZNkNKadpEyoyHOElLo+f3sA==
 
-rn-electrum-client@^0.0.10:
+rn-electrum-client@0.0.10:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/rn-electrum-client/-/rn-electrum-client-0.0.10.tgz#a889e30967484b1312c2afd260501e9b19cd845d"
   integrity sha512-sYP9mdPGEnDjQZtMrv1JWc4pWEFTUBcGqe/K64whnmmz67aYppUAyblPCzyndsNr3Eu4KdjUK3tgmMh+Ha4v9g==
