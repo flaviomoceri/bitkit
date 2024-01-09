@@ -32,9 +32,9 @@ import {
 	transactionExists,
 } from '../wallet/electrum';
 import {
+	getCurrentAddressIndex,
 	getMnemonicPhrase,
 	getOnChainWalletElectrum,
-	getReceiveAddress,
 	getSelectedNetwork,
 	getSelectedWallet,
 } from '../wallet';
@@ -219,12 +219,25 @@ export const setupLdk = async ({
 				network = ENetworks.regtest;
 				break;
 		}
-		const getAddress = async (): Promise<string> => {
-			const res = await getReceiveAddress({ selectedNetwork });
-			if (res.isOk()) {
-				return res.value;
+		const getAddress = async (): Promise<{
+			address: string;
+			publicKey: string;
+		}> => {
+			const error = { address: '', publicKey: '' };
+			try {
+				const addressIndex = await getCurrentAddressIndex({});
+				if (addressIndex.isErr()) {
+					return error;
+				}
+				return {
+					address: addressIndex.value.address,
+					publicKey: addressIndex.value.publicKey,
+				};
+			} catch {
+				console.error('Error getting address for LDK');
+				//TODO react-native-ldk should be updated to handle errors where an address cannot be generated
+				return error;
 			}
-			return '';
 		};
 
 		const storageRes = await setLdkStoragePath();
@@ -256,7 +269,7 @@ export const setupLdk = async ({
 					rawTx,
 					subscribeToOutputAddress: false,
 				}),
-			getTransactionData: (txId) => getTransactionData(txId, selectedNetwork),
+			getTransactionData: (txId) => getTransactionData(txId),
 			getScriptPubKeyHistory: electrum.getScriptPubKeyHistory,
 			getTransactionPosition: (params) => {
 				return getTransactionPosition(params);
@@ -988,19 +1001,14 @@ export const getBestBlock = async (
 /**
  * Returns the transaction header, height and hex (transaction) for a given txid.
  * @param {string} txId
- * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<TTransactionData>}
  */
 export const getTransactionData = async (
 	txId: string = '',
-	selectedNetwork?: EAvailableNetwork,
 ): Promise<TTransactionData | undefined> => {
 	let transactionData = DefaultTransactionDataShape;
 	try {
 		const data = [{ tx_hash: txId }];
-		if (selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 		const electrum = getOnChainWalletElectrum();
 		const response = await electrum.getTransactions({
 			txHashes: data,

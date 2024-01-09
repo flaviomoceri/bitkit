@@ -45,12 +45,14 @@ import {
 	IBoostedTransaction,
 	IExchangeRates,
 	IOnchainFees,
+	IOutput,
 	ISendTransaction,
 	IWalletData,
 	TSetupTransactionResponse,
 } from 'beignet';
 import { ETransactionSpeed } from '../types/settings';
 import { updateOnchainFeeEstimates } from '../utils/fees';
+import { getMaxSendAmount } from '../../utils/wallet/transactions';
 
 export const updateWallet = (
 	payload: Partial<IWalletStore>,
@@ -381,12 +383,14 @@ export const setupOnChainTransaction = async ({
 	utxos,
 	rbf = false,
 	satsPerByte,
+	outputs,
 }: {
 	//addressType?: EAddressType; // Preferred address type for change address.
 	inputTxHashes?: string[]; // Used to pre-specify inputs to use by tx_hash
 	utxos?: IUtxo[]; // Used to pre-specify utxos to use
 	rbf?: boolean; // Enable or disable rbf.
 	satsPerByte?: number; // Set the sats per byte for the transaction.
+	outputs?: IOutput[]; // Used to pre-specify outputs to use.
 } = {}): Promise<TSetupTransactionResponse> => {
 	const transaction = getOnChainWalletTransaction();
 	return await transaction.setupTransaction({
@@ -394,6 +398,7 @@ export const setupOnChainTransaction = async ({
 		utxos,
 		rbf,
 		satsPerByte,
+		outputs,
 	});
 };
 
@@ -452,9 +457,35 @@ export const updateSelectedAddressType = async ({
  */
 export const removeTxInput = ({ input }: { input: IUtxo }): Result<IUtxo[]> => {
 	const wallet = getOnChainWallet();
-	return wallet.removeTxInput({
+	const removeRes = wallet.removeTxInput({
 		input,
 	});
+	if (removeRes.isErr()) {
+		return err(removeRes.error.message);
+	}
+	const newInputs = removeRes.value;
+	const transaction = wallet.transaction;
+	if (transaction.data.max) {
+		const maxRes = getMaxSendAmount({
+			transaction: {
+				...transaction.data,
+				inputs: newInputs,
+			},
+		});
+		if (maxRes.isErr()) {
+			return err(maxRes.error.message);
+		}
+		const currentOutput = transaction.data.outputs[0];
+		transaction.updateSendTransaction({
+			transaction: {
+				...transaction.data,
+				inputs: newInputs,
+				outputs: [{ ...currentOutput, value: maxRes.value.amount }],
+				fee: maxRes.value.fee,
+			},
+		});
+	}
+	return removeRes;
 };
 
 /**
@@ -464,9 +495,35 @@ export const removeTxInput = ({ input }: { input: IUtxo }): Result<IUtxo[]> => {
  */
 export const addTxInput = ({ input }: { input: IUtxo }): Result<IUtxo[]> => {
 	const wallet = getOnChainWallet();
-	return wallet.addTxInput({
+	const addRes = wallet.addTxInput({
 		input,
 	});
+	if (addRes.isErr()) {
+		return err(addRes.error.message);
+	}
+	const newInputs = addRes.value;
+	const transaction = wallet.transaction;
+	if (transaction.data.max) {
+		const maxRes = getMaxSendAmount({
+			transaction: {
+				...transaction.data,
+				inputs: newInputs,
+			},
+		});
+		if (maxRes.isErr()) {
+			return err(maxRes.error.message);
+		}
+		const currentOutput = transaction.data.outputs[0];
+		transaction.updateSendTransaction({
+			transaction: {
+				...transaction.data,
+				inputs: newInputs,
+				outputs: [{ ...currentOutput, value: maxRes.value.amount }],
+				fee: maxRes.value.fee,
+			},
+		});
+	}
+	return addRes;
 };
 
 /**

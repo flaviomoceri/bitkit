@@ -123,25 +123,15 @@ export const getTotalFee = ({
 	message = '',
 	transaction, // If left undefined, the method will retrieve the tx data from state.
 	fundingLightning = false,
-	selectedWallet,
-	selectedNetwork,
 }: {
 	satsPerByte: number;
 	message?: string;
 	transaction?: Partial<ISendTransaction>;
 	fundingLightning?: boolean;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
 }): number => {
 	const baseTransactionSize = TRANSACTION_DEFAULTS.recommendedBaseFee;
 	try {
 		if (!transaction) {
-			if (!selectedNetwork) {
-				selectedNetwork = getSelectedNetwork();
-			}
-			if (!selectedWallet) {
-				selectedWallet = getSelectedWallet();
-			}
 			const txDataResponse = getOnchainTransactionData();
 			if (txDataResponse.isErr()) {
 				// If error, return minimum fallback fee.
@@ -249,15 +239,11 @@ const createPsbtFromTransactionData = async ({
 
 	//Get balance of current inputs.
 	const balance = getTransactionInputValue({
-		selectedWallet,
-		selectedNetwork,
 		inputs,
 	});
 
 	//Get value of current outputs.
 	const outputValue = getTransactionOutputValue({
-		selectedNetwork,
-		selectedWallet,
 		outputs,
 	});
 
@@ -470,13 +456,9 @@ export const createTransaction = async ({
 	removeDustOutputs(transactionData.outputs);
 
 	const inputValue = getTransactionInputValue({
-		selectedNetwork,
-		selectedWallet,
 		inputs: transactionData.inputs,
 	});
 	const outputValue = getTransactionOutputValue({
-		selectedWallet,
-		selectedNetwork,
 		outputs: transactionData.outputs,
 	});
 	if (inputValue === 0) {
@@ -693,28 +675,16 @@ export const broadcastTransaction = async ({
 
 /**
  * Returns total value of all outputs. Excludes any value that would be sent to the change address.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
  * @param {IOutput[]} [outputs]
  * @returns {number}
  */
 export const getTransactionOutputValue = ({
-	selectedWallet,
-	selectedNetwork,
 	outputs,
 }: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
 	outputs?: IOutput[];
 } = {}): number => {
 	try {
 		if (!outputs) {
-			if (!selectedWallet) {
-				selectedWallet = getSelectedWallet();
-			}
-			if (!selectedNetwork) {
-				selectedNetwork = getSelectedNetwork();
-			}
 			const transaction = getOnchainTransactionData();
 			if (transaction.isErr()) {
 				return 0;
@@ -734,27 +704,15 @@ export const getTransactionOutputValue = ({
 
 /**
  * Returns total value of all utxos.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
  * @param {IUtxo[]} [inputs]
  */
 export const getTransactionInputValue = ({
-	selectedWallet,
-	selectedNetwork,
 	inputs,
 }: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
 	inputs?: IUtxo[];
 }): number => {
 	try {
 		if (!inputs) {
-			if (!selectedWallet) {
-				selectedWallet = getSelectedWallet();
-			}
-			if (!selectedNetwork) {
-				selectedNetwork = getSelectedNetwork();
-			}
 			const transaction = getOnchainTransactionData();
 			if (transaction.isErr()) {
 				return 0;
@@ -1052,9 +1010,9 @@ export const getMaxSendAmount = ({
 	selectedWallet,
 }: {
 	transaction?: ISendTransaction;
-	selectedNetwork: EAvailableNetwork;
-	selectedWallet: TWalletName;
-}): Result<{ amount: number; fee?: number }> => {
+	selectedNetwork?: EAvailableNetwork;
+	selectedWallet?: TWalletName;
+}): Result<{ amount: number; fee: number }> => {
 	try {
 		if (!transaction) {
 			const transactionDataResponse = getOnchainTransactionData();
@@ -1065,6 +1023,12 @@ export const getMaxSendAmount = ({
 		}
 
 		if (transaction.lightningInvoice) {
+			if (!selectedWallet) {
+				selectedWallet = getSelectedWallet();
+			}
+			if (!selectedNetwork) {
+				selectedNetwork = getSelectedNetwork();
+			}
 			// lightning transaction
 			const { spendingBalance } = getBalance({
 				selectedWallet,
@@ -1074,6 +1038,7 @@ export const getMaxSendAmount = ({
 			const fee = 1;
 			const maxAmount = {
 				amount: spendingBalance - fee,
+				fee,
 			};
 			return ok(maxAmount);
 		} else {
@@ -1241,19 +1206,10 @@ export const updateSendAmount = ({
 	} else {
 		// onchain transaction
 		const inputTotal = getTransactionInputValue({
-			selectedNetwork,
-			selectedWallet,
 			inputs: transaction.inputs,
 		});
 
-		const fee = getTotalFee({
-			satsPerByte: transaction.satsPerByte,
-			message: transaction.message,
-			selectedWallet,
-			selectedNetwork,
-		});
-
-		const totalAmount = amount + fee;
+		const totalAmount = amount + transaction.fee;
 
 		if (totalAmount === inputTotal) {
 			max = true;
@@ -1329,13 +1285,9 @@ export const updateMessage = async ({
 
 	const newFee = getTotalFee({ satsPerByte, message });
 	const inputTotal = getTransactionInputValue({
-		selectedWallet,
-		selectedNetwork,
 		inputs,
 	});
 	const outputTotal = getTransactionOutputValue({
-		selectedWallet,
-		selectedNetwork,
 		outputs,
 	});
 	const totalNewAmount = outputTotal + newFee;

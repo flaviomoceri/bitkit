@@ -15,7 +15,6 @@ import useColors from '../../../hooks/colors';
 import { useAppSelector } from '../../../hooks/redux';
 import useDisplayValues from '../../../hooks/displayValues';
 import {
-	getTotalFee,
 	getTransactionInputValue,
 	getTransactionOutputValue,
 } from '../../../utils/wallet/transactions';
@@ -23,12 +22,11 @@ import { addTxInput, removeTxInput } from '../../../store/actions/wallet';
 import { IUtxo } from '../../../store/types/wallet';
 import type { SendScreenProps } from '../../../navigation/types';
 import {
-	selectedNetworkSelector,
-	selectedWalletSelector,
 	transactionSelector,
 	utxosSelector,
 } from '../../../store/reselect/wallet';
 import { coinSelectPreferenceSelector } from '../../../store/reselect/settings';
+import { TRANSACTION_DEFAULTS } from '../../../utils/wallet/constants';
 
 /**
  * Some UTXO's may contain the same tx_hash.
@@ -82,8 +80,6 @@ const CoinSelection = ({
 	const { t } = useTranslation('wallet');
 	const { gray4 } = useColors();
 
-	const selectedWallet = useAppSelector(selectedWalletSelector);
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const transaction = useAppSelector(transactionSelector);
 	const utxos = useAppSelector(utxosSelector);
 	const coinSelectPreference = useAppSelector(coinSelectPreferenceSelector);
@@ -97,7 +93,8 @@ const CoinSelection = ({
 	//Combine known utxo's with current transaction inputs in the event we're using utxo's from the address viewer.
 	const combinedUtxos = useMemo(() => {
 		const combined: IUtxo[] = [...inputs, ...utxos];
-		return combined.reduce((acc: IUtxo[], current) => {
+
+		const combinedAndUnique = combined.reduce((acc: IUtxo[], current) => {
 			const x = acc.find(
 				(item) =>
 					item.index === current.index &&
@@ -110,6 +107,8 @@ const CoinSelection = ({
 				return acc;
 			}
 		}, []);
+		combinedAndUnique.sort((a, b) => b.value - a.value);
+		return combinedAndUnique;
 	}, [inputs, utxos]);
 
 	const preference = useMemo(
@@ -118,9 +117,8 @@ const CoinSelection = ({
 	);
 
 	const txInputValue = useMemo(
-		() => getTransactionInputValue({ selectedNetwork, selectedWallet }),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[selectedWallet, selectedNetwork, transaction.inputs],
+		() => getTransactionInputValue({ inputs: transaction.inputs }),
+		[transaction],
 	);
 	const txInputDV = useDisplayValues(txInputValue);
 	const inputKeys = useMemo(
@@ -129,18 +127,10 @@ const CoinSelection = ({
 	);
 
 	const txOutputValue = useMemo(() => {
-		const amount = getTransactionOutputValue({
-			selectedWallet,
-			selectedNetwork,
-		});
-		const fee = getTotalFee({
-			satsPerByte: transaction.satsPerByte,
-			message: transaction.message,
-			selectedWallet,
-			selectedNetwork,
-		});
+		const amount = getTransactionOutputValue();
+		const fee = transaction.fee;
 		return fee + amount;
-	}, [selectedNetwork, selectedWallet, transaction]);
+	}, [transaction]);
 	const txOutputDV = useDisplayValues(txOutputValue);
 
 	const onAutoSelectionPress = (): void => {
@@ -159,7 +149,10 @@ const CoinSelection = ({
 		setAutoSelectionEnabled(true);
 	};
 
-	const isValid = txInputValue >= txOutputValue;
+	const isValid =
+		txInputValue > TRANSACTION_DEFAULTS.dustLimit &&
+		txOutputValue > TRANSACTION_DEFAULTS.dustLimit &&
+		txInputValue >= txOutputValue;
 
 	return (
 		<GradientView style={styles.container}>

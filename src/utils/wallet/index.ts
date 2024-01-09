@@ -52,6 +52,7 @@ import {
 } from '../../store/helpers';
 import {
 	createDefaultWalletStructure,
+	generateNewReceiveAddress,
 	getNetworkFromBeignet,
 	getWalletData,
 	setWalletData,
@@ -1915,36 +1916,22 @@ export const getReceiveAddress = async ({
 /**
  * Returns the current addressIndex value and will create one if none existed.
  * @param {EAddressType} [addressType]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @param {TWalletName} [selectedWallet]
  * @return {Result<string>}
  */
 export const getCurrentAddressIndex = async ({
 	addressType,
-	selectedNetwork,
-	selectedWallet,
 }: {
 	addressType?: EAddressType;
-	selectedNetwork?: EAvailableNetwork;
-	selectedWallet?: TWalletName;
 }): Promise<Result<IAddress>> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!addressType) {
-			addressType = getSelectedAddressType({ selectedNetwork, selectedWallet });
-		}
-		const wallet = getWalletStore().wallets[selectedWallet];
-		const addressIndex = wallet.addressIndex[selectedNetwork];
-		const receiveAddress = addressIndex[addressType];
+		addressType = addressType ?? wallet.data.addressType;
+		const currentWallet = wallet.data;
+		const addressIndex = currentWallet.addressIndex[addressType];
+		const receiveAddress = currentWallet.addressIndex[addressType];
 		if (receiveAddress) {
 			return ok(receiveAddress);
 		}
-		const addresses = wallet?.addresses[selectedNetwork][addressType];
+		const addresses = currentWallet?.addresses[addressType];
 
 		// Check if addresses were generated, but the index has not been set yet.
 		if (
@@ -1959,8 +1946,6 @@ export const getCurrentAddressIndex = async ({
 		}
 		// Fallback to generating a new receive address on the fly.
 		const generatedAddress = await generateNewReceiveAddress({
-			selectedWallet,
-			selectedNetwork,
 			addressType,
 		});
 		if (generatedAddress.isOk()) {

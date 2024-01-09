@@ -28,6 +28,9 @@ import { showToast } from '../../../utils/notifications';
 import { getConnectedPeer, IPeerData } from '../../../utils/wallet/electrum';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import { EProtocol } from 'beignet';
+import { refreshWallet, rescanAddresses } from '../../../utils/wallet';
+import { EAvailableNetwork } from '../../../utils/networks';
+import { updateActivityList } from '../../../store/utils/activity';
 
 type RadioButtonItem = { label: string; value: EProtocol };
 
@@ -158,6 +161,14 @@ const ElectrumConfig = ({
 					title: t('es.server_updated_title'),
 					description: t('es.server_updated_message', { host, port }),
 				});
+				if (selectedNetwork === EAvailableNetwork.bitcoinRegtest) {
+					await rescanAddresses({
+						shouldClearAddresses: false,
+						shouldClearTransactions: true,
+					});
+					await refreshWallet({});
+					updateActivityList();
+				}
 			} else {
 				console.log(connectResponse.error.message);
 				dispatch(updateUi({ isConnectedToElectrum: false }));
