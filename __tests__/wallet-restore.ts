@@ -5,6 +5,7 @@ import store from '../src/store';
 import { restoreSeed, startWalletServices } from '../src/utils/startup';
 import { EAvailableNetworks, EProtocol } from 'beignet';
 import { getOnChainWallet } from '../src/utils/wallet';
+import { EAvailableNetwork } from '../src/utils/networks';
 
 jest.setTimeout(60_000);
 
@@ -51,6 +52,14 @@ describe('Wallet - wallet restore and receive', () => {
 
 		// switch to regtest
 		await wallet.switchNetwork(EAvailableNetworks.bitcoinRegtest);
+		// Start wallet services with the newly selected network.
+		res = await startWalletServices({
+			selectedNetwork: EAvailableNetwork.bitcoinRegtest,
+			onchain: true,
+		});
+		if (res.isErr()) {
+			throw res.error;
+		}
 		expect(store.getState().wallet.selectedNetwork).toEqual('bitcoinRegtest');
 
 		res = await wallet.electrum.connectToElectrum({
@@ -64,12 +73,6 @@ describe('Wallet - wallet restore and receive', () => {
 				},
 			],
 		});
-		if (res.isErr()) {
-			throw res.error;
-		}
-
-		// rescan
-		res = await startWalletServices({ lightning: false, restore: true });
 		if (res.isErr()) {
 			throw res.error;
 		}
