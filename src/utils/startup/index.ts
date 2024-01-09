@@ -61,7 +61,7 @@ export const restoreSeed = async ({
 	}
 	const setupRes = await setupOnChainWallet({
 		name: getSelectedWallet(),
-		selectedNetwork: EAvailableNetwork.bitcoin,
+		selectedNetwork: getSelectedNetwork(),
 		mnemonic,
 		bip39Passphrase,
 	});
