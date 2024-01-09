@@ -51,27 +51,21 @@ describe('Wallet - wallet restore and receive', () => {
 		expect(store.getState().wallet.selectedWallet).toEqual('wallet0');
 
 		// switch to regtest
-		await wallet.switchNetwork(EAvailableNetworks.bitcoinRegtest);
+		res = await wallet.switchNetwork(EAvailableNetworks.bitcoinRegtest, [
+			{
+				host: '127.0.0.1',
+				ssl: 60002,
+				tcp: 60001,
+				protocol: EProtocol.tcp,
+			},
+		]);
+		if (res.isErr()) {
+			throw res.error;
+		}
 		// Start wallet services with the newly selected network.
 		res = await startWalletServices({
 			selectedNetwork: EAvailableNetwork.bitcoinRegtest,
 			onchain: true,
-		});
-		if (res.isErr()) {
-			throw res.error;
-		}
-		expect(store.getState().wallet.selectedNetwork).toEqual('bitcoinRegtest');
-
-		res = await wallet.electrum.connectToElectrum({
-			network: EAvailableNetworks.bitcoinRegtest,
-			servers: [
-				{
-					host: '127.0.0.1',
-					ssl: 60002,
-					tcp: 60001,
-					protocol: EProtocol.tcp,
-				},
-			],
 		});
 		if (res.isErr()) {
 			throw res.error;
