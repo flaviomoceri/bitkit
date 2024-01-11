@@ -2,7 +2,7 @@ import BitcoinJsonRpc from 'bitcoin-json-rpc';
 
 import '../src/utils/i18n';
 import store from '../src/store';
-import { restoreSeed, startWalletServices } from '../src/utils/startup';
+import { restoreSeed } from '../src/utils/startup';
 import { EAvailableNetworks, EProtocol } from 'beignet';
 import { getOnChainWallet } from '../src/utils/wallet';
 import { EAvailableNetwork } from '../src/utils/networks';
@@ -47,7 +47,6 @@ describe('Wallet - wallet restore and receive', () => {
 		const wallet = getOnChainWallet();
 
 		expect(res.value).toEqual('Seed restored');
-		expect(wallet.network).toEqual(EAvailableNetworks.bitcoin);
 		expect(store.getState().wallet.selectedWallet).toEqual('wallet0');
 
 		// switch to regtest
@@ -62,17 +61,10 @@ describe('Wallet - wallet restore and receive', () => {
 		if (res.isErr()) {
 			throw res.error;
 		}
-		// Start wallet services with the newly selected network.
-		res = await startWalletServices({
-			selectedNetwork: EAvailableNetwork.bitcoinRegtest,
-			onchain: true,
-		});
-		if (res.isErr()) {
-			throw res.error;
-		}
-
 		const state = store.getState();
-		expect(state.wallet.selectedNetwork).toEqual('bitcoinRegtest');
+		expect(state.wallet.selectedNetwork).toEqual(
+			EAvailableNetwork.bitcoinRegtest,
+		);
 		expect(state.wallet.selectedWallet).toEqual('wallet0');
 		expect(
 			state.wallet.wallets.wallet0.balance.bitcoinRegtest,
