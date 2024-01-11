@@ -2265,7 +2265,7 @@ export const getOnChainWalletTransactionData = (): ISendTransaction => {
 };
 
 export const getOnChainWalletData = (): IWalletData => {
-	return wallet.data;
+	return wallet?.data;
 };
 
 export const switchNetwork = async (
