@@ -44,8 +44,6 @@ describe('Wallet - wallet restore and receive', () => {
 			throw res.error;
 		}
 
-		const wallet = getOnChainWallet();
-
 		expect(res.value).toEqual('Seed restored');
 		expect(store.getState().wallet.selectedWallet).toEqual('wallet0');
 
@@ -61,8 +59,9 @@ describe('Wallet - wallet restore and receive', () => {
 		if (switchRes.isErr()) {
 			throw switchRes.error;
 		}
-		await wallet.refreshWallet({});
 		const state = store.getState();
+		const wallet = getOnChainWallet();
+
 		expect(wallet.network).toEqual(EAvailableNetworks.bitcoinRegtest);
 		expect(wallet.name).toEqual('wallet0');
 		expect(wallet.data.addressIndex.p2wpkh.address).toEqual(
