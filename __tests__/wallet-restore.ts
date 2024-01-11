@@ -4,7 +4,7 @@ import '../src/utils/i18n';
 import store from '../src/store';
 import { restoreSeed } from '../src/utils/startup';
 import { EAvailableNetworks, EProtocol } from 'beignet';
-import { getOnChainWallet } from '../src/utils/wallet';
+import { getOnChainWallet, switchNetwork } from '../src/utils/wallet';
 import { EAvailableNetwork } from '../src/utils/networks';
 
 jest.setTimeout(60_000);
@@ -50,7 +50,7 @@ describe('Wallet - wallet restore and receive', () => {
 		expect(store.getState().wallet.selectedWallet).toEqual('wallet0');
 
 		// switch to regtest
-		res = await wallet.switchNetwork(EAvailableNetworks.bitcoinRegtest, [
+		const switchRes = await switchNetwork(EAvailableNetwork.bitcoinRegtest, [
 			{
 				host: '127.0.0.1',
 				ssl: 60002,
@@ -58,17 +58,13 @@ describe('Wallet - wallet restore and receive', () => {
 				protocol: EProtocol.tcp,
 			},
 		]);
-		if (res.isErr()) {
-			throw res.error;
+		if (switchRes.isErr()) {
+			throw switchRes.error;
 		}
 		const state = store.getState();
-		expect(state.wallet.selectedNetwork).toEqual(
-			EAvailableNetwork.bitcoinRegtest,
-		);
+		expect(wallet.network).toEqual(EAvailableNetworks.bitcoinRegtest);
 		expect(state.wallet.selectedWallet).toEqual('wallet0');
-		expect(
-			state.wallet.wallets.wallet0.balance.bitcoinRegtest,
-		).toBeGreaterThanOrEqual(1);
+		expect(wallet.data.balance).toBeGreaterThanOrEqual(1);
 
 		// check addresses
 		const addresses = state.wallet.wallets.wallet0.addresses.bitcoinRegtest;
