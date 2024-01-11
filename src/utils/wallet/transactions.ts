@@ -1632,18 +1632,12 @@ export const getFeeEstimates = async (
 			});
 		}
 
-		const urlModifier = selectedNetwork === 'bitcoin' ? '' : 'testnet/';
-		const response = await fetch(
-			`https://mempool.space/${urlModifier}api/v1/fees/recommended`,
-		);
-		const res: IGetFeeEstimatesResponse = await response.json();
-		return ok({
-			fast: res.fastestFee,
-			normal: res.halfHourFee,
-			slow: res.hourFee,
-			minimum: res.minimumFee,
-			timestamp: Date.now(),
-		});
+		const wallet = getOnChainWallet();
+		const feeRes = await wallet.getFeeEstimates();
+		if (!feeRes) {
+			return err('Unable to get fee estimates.');
+		}
+		return ok(feeRes);
 	} catch (e) {
 		return err(e);
 	}
