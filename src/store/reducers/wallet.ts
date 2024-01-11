@@ -54,7 +54,8 @@ const wallet = (
 				value === 'balance' ||
 				value === 'utxos' ||
 				value === 'blacklistedUtxos' ||
-				value === 'unconfirmedTransactions'
+				value === 'unconfirmedTransactions' ||
+				value === 'addressType'
 			) {
 				return {
 					...state,
