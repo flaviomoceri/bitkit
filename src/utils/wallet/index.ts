@@ -1461,10 +1461,14 @@ const onMessage: TOnMessage = (key, data) => {
 				id: txMsg.transaction.txid,
 				value: btcToSats(txMsg.transaction.value),
 			});
-			updateActivityList();
+			setTimeout(() => {
+				updateActivityList();
+			}, 500);
 			break;
 		case 'transactionSent':
-			updateActivityList();
+			setTimeout(() => {
+				updateActivityList();
+			}, 500);
 			break;
 		case 'connectedToElectrum':
 			onElectrumConnectionChange(data as boolean);
@@ -2283,7 +2287,6 @@ export const switchNetwork = async (
 	// Start wallet services with the newly selected network.
 	await startWalletServices({
 		selectedNetwork,
-		onchain: false,
 	});
 	setTimeout(() => {
 		updateActivityList();

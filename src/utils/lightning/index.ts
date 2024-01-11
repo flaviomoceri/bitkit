@@ -34,6 +34,7 @@ import {
 import {
 	getCurrentAddressIndex,
 	getMnemonicPhrase,
+	getOnChainWalletData,
 	getOnChainWalletElectrum,
 	getSelectedNetwork,
 	getSelectedWallet,
@@ -990,8 +991,13 @@ export const getBestBlock = async (
 		selectedNetwork = getSelectedNetwork();
 	}
 	try {
-		const header = getWalletStore()?.header[selectedNetwork];
-		return header?.hash ? header : defaultHeader;
+		const beignetHeader = getOnChainWalletData().header;
+		const storageHeader = getWalletStore().header[selectedNetwork];
+		const header =
+			beignetHeader.height > storageHeader.height
+				? beignetHeader
+				: storageHeader;
+		return header?.height ? header : defaultHeader;
 	} catch (e) {
 		console.log(e);
 		return defaultHeader;
@@ -1167,7 +1173,7 @@ export const parseUri = (
  */
 export const addPeer = async ({
 	peer,
-	timeout = 5000,
+	timeout = 2000,
 }: {
 	peer: string;
 	timeout?: number;

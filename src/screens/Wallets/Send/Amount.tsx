@@ -98,14 +98,13 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 			if (
 				!transaction.lightningInvoice &&
 				onchainBalance > TRANSACTION_DEFAULTS.dustLimit &&
-				(availableAmount === 0 ||
-					outputAmount === 0 ||
-					!transaction.inputs.length)
+				(availableAmount === 0 || !transaction.inputs.length)
 			) {
+				const output = { ...transaction.outputs[0], amount: 0 };
 				setupOnChainTransaction({
 					utxos,
 					satsPerByte: transaction.satsPerByte,
-					outputs: [],
+					outputs: [output],
 				});
 				const result = getNumberPadText(0, unit);
 				setText(result);
@@ -113,9 +112,9 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 		}, [
 			availableAmount,
 			onchainBalance,
-			outputAmount,
 			transaction.inputs.length,
 			transaction.lightningInvoice,
+			transaction.outputs,
 			transaction.satsPerByte,
 			unit,
 			utxos,

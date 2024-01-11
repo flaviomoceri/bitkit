@@ -78,8 +78,7 @@ export const restoreRemoteBackups = async (
 	if (res.isErr()) {
 		return err(res.error);
 	}
-	// Only set restore to true if we found that a backup exists to restore with.
-	return await startWalletServices({ restore: res.value.backupExists });
+	return ok('Remote Backups Restored');
 };
 
 /**
@@ -113,7 +112,6 @@ export const startWalletServices = async ({
 		if (!selectedNetwork) {
 			selectedNetwork = getSelectedNetwork();
 		}
-		let isConnectedToElectrum = false;
 
 		await promiseTimeout(2500, setupBlocktank(selectedNetwork));
 		await promiseTimeout(2500, refreshBlocktankInfo());
@@ -145,10 +143,9 @@ export const startWalletServices = async ({
 				return err(onChainSetupRes.error.message);
 			}
 		}
-		isConnectedToElectrum = true;
 
 		// Setup LDK
-		if (lightning && isConnectedToElectrum) {
+		if (lightning) {
 			const setupResponse = await setupLdk({
 				selectedNetwork,
 				shouldRefreshLdk: false,
@@ -165,7 +162,7 @@ export const startWalletServices = async ({
 				// if we restore wallet, we need to generate addresses for all types
 				refreshWallet({
 					onchain: restore,
-					lightning: isConnectedToElectrum,
+					lightning,
 					scanAllAddresses: restore,
 					updateAllAddressTypes: true, // Ensure we scan all address types when spinning up the app.
 					showNotification: !restore,
