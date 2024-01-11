@@ -61,8 +61,10 @@ describe('Wallet - wallet restore and receive', () => {
 		if (switchRes.isErr()) {
 			throw switchRes.error;
 		}
+		await wallet.refreshWallet({});
 		const state = store.getState();
 		expect(wallet.network).toEqual(EAvailableNetworks.bitcoinRegtest);
+		expect(wallet.name).toEqual('wallet0');
 		expect(state.wallet.selectedWallet).toEqual('wallet0');
 		expect(wallet.data.balance).toBeGreaterThanOrEqual(1);
 
