@@ -39,4 +39,5 @@ declare module '@env' {
 
 	export const E2E: string;
 	export const WEB_RELAY: string;
+	export const CHATWOOT_API: string;
 }

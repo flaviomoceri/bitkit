@@ -97,6 +97,8 @@ import {
 	arrowClockwise,
 	rectanglesTwo,
 	lightningHollow,
+	telegramIcon,
+	discordIcon,
 } from '../assets/icons/settings';
 
 type IconProps = {
@@ -716,6 +718,26 @@ export const MediumIcon = styled(SvgXml).attrs((props) => ({
 
 export const TwitterIcon = styled(SvgXml).attrs((props) => ({
 	xml: twitterIcon(
+		props.color ? props.theme.colors[props.color] : props.theme.colors.brand,
+	),
+	height: props.height ?? '24px',
+	width: props.width ?? '24px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const TelegramIcon = styled(SvgXml).attrs((props) => ({
+	xml: telegramIcon(
+		props.color ? props.theme.colors[props.color] : props.theme.colors.brand,
+	),
+	height: props.height ?? '24px',
+	width: props.width ?? '24px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const DiscordIcon = styled(SvgXml).attrs((props) => ({
+	xml: discordIcon(
 		props.color ? props.theme.colors[props.color] : props.theme.colors.brand,
 	),
 	height: props.height ?? '24px',

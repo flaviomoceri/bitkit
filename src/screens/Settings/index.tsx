@@ -66,6 +66,12 @@ const MainSettings = ({
 				testID: 'AdvancedSettings',
 			},
 			{
+				title: t('support_title'),
+				type: EItemType.button,
+				testID: 'Support',
+				onPress: (): void => navigation.navigate('SupportSettings'),
+			},
+			{
 				title: t('about_title'),
 				type: EItemType.button,
 				testID: 'About',

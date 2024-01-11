@@ -5,7 +5,6 @@ import {
 	StyleProp,
 	StyleSheet,
 	ViewStyle,
-	Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +16,7 @@ import { editLink, deleteLink } from '../store/slices/slashtags';
 import LabeledInput from './LabeledInput';
 import Divider from './Divider';
 import { suggestions } from '../screens/Profile/ProfileLinkSuggestions';
+import { openAppURL } from '../utils/helpers';
 
 const trimLink = (link: LocalLink): string => {
 	let trimmedUrl = link.url;
@@ -32,14 +32,6 @@ const trimLink = (link: LocalLink): string => {
 	}
 
 	return trimmedUrl.replace('https://', '').replace('www.', '');
-};
-
-const openURL = async (url: string): Promise<void> => {
-	try {
-		await Linking.openURL(url);
-	} catch (err) {
-		console.log('Cannot open url: ', url);
-	}
 };
 
 const ProfileLinks = ({
@@ -92,7 +84,7 @@ const ProfileLinks = ({
 						<TouchableOpacity
 							key={link.id}
 							onPress={(): void => {
-								openURL(link.url);
+								openAppURL(link.url);
 							}}>
 							<Caption13Up style={styles.label} color="gray1">
 								{link.title}
