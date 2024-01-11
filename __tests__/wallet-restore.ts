@@ -64,6 +64,12 @@ describe('Wallet - wallet restore and receive', () => {
 
 		expect(wallet.network).toEqual(EAvailableNetworks.bitcoinRegtest);
 		expect(wallet.name).toEqual('wallet0');
+		const selectedWallet = state.wallet.selectedWallet;
+		expect(
+			state.wallet.wallets[selectedWallet].addressIndex[
+				EAvailableNetwork.bitcoinRegtest
+			].p2wpkh.address,
+		).toEqual('bcrt1qd7spv5q28348xl4myc8zmh983w5jx32cs707jh');
 		expect(wallet.data.addressIndex.p2wpkh.address).toEqual(
 			'bcrt1qd7spv5q28348xl4myc8zmh983w5jx32cs707jh',
 		);
