@@ -12,8 +12,7 @@ const wallet = (
 	state: IWalletStore = defaultWalletStoreShape,
 	action,
 ): IWalletStore => {
-	let selectedWallet = state?.selectedWallet ?? 'wallet0';
-	let selectedNetwork = state?.selectedNetwork ?? 'bitcoin';
+	let { selectedWallet, selectedNetwork } = state;
 
 	if (action.payload?.selectedWallet) {
 		selectedWallet = action.payload.selectedWallet;
