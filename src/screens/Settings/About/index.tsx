@@ -24,19 +24,20 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Text01S } from '../../../styles/text';
 import {
 	BitkitIcon,
-	EmailIcon,
+	DiscordIcon,
 	GithubIcon,
 	GlobeIcon,
 	MediumIcon,
+	TelegramIcon,
 	TwitterIcon,
 } from '../../../styles/icons';
-import { openURL } from '../../../utils/helpers';
-import { createSupportLink } from '../../../utils/support';
+//import { createSupportLink } from '../../../utils/support';
 import NavigationHeader from '../../../components/NavigationHeader';
 import List, { EItemType, IListData } from '../../../components/List';
 import GlowingBackground from '../../../components/GlowingBackground';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import type { SettingsScreenProps } from '../../../navigation/types';
+import { openAppURL, openURL } from '../../../utils/helpers';
 
 const imageSrc = require('../../../assets/powered-by.png');
 
@@ -101,25 +102,6 @@ const About = ({
 					// 		openURL('https://www.synonym.to/').then();
 					// 	},
 					// },
-					{
-						title: t('about.support'),
-						type: EItemType.button,
-						onPress: async (): Promise<void> => {
-							const link = await createSupportLink();
-							const openUrlSuccess = await openURL(link);
-							if (!openUrlSuccess) {
-								//If unable to open mail app for any reason, open contact page in browser.
-								await openURL('https://synonym.to/contact');
-							}
-						},
-					},
-					{
-						title: t('about.report_bug'),
-						type: EItemType.button,
-						onPress: (): void => {
-							openURL('https://www.github.com/synonymdev/bitkit').then();
-						},
-					},
 					// {
 					// 	title: 'Share Bitkit with a friend',
 					// 	type: EItemType.button,
@@ -192,38 +174,53 @@ const About = ({
 						<Image style={styles.poweredBy} source={imageSrc} />
 					</View>
 					<View style={styles.socialLinks}>
-						<Pressable
+						{/**<Pressable
 							style={styles.socialLink}
 							onPress={async (): Promise<void> => {
 								await openURL(await createSupportLink());
 							}}>
 							<EmailIcon height={24} width={24} />
 						</Pressable>
+						*/}
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
-								openURL('https://www.bitkit.to');
+								openAppURL('https://www.bitkit.to');
 							}}>
 							<GlobeIcon height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
-								openURL('https://www.twitter.com/bitkitwallet');
-							}}>
-							<TwitterIcon height={24} width={24} />
-						</Pressable>
-						<Pressable
-							style={styles.socialLink}
-							onPress={(): void => {
-								openURL('https://www.medium.com/synonym-to');
+								openAppURL('https://www.medium.com/synonym-to');
 							}}>
 							<MediumIcon height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
-								openURL('https://www.github.com/synonymdev');
+								openAppURL('https://www.twitter.com/bitkitwallet');
+							}}>
+							<TwitterIcon height={24} width={24} />
+						</Pressable>
+						<Pressable
+							style={styles.socialLink}
+							onPress={(): void => {
+								openAppURL('https://discord.gg/DxTBJXvJxn');
+							}}>
+							<DiscordIcon height={24} width={24} />
+						</Pressable>
+						<Pressable
+							style={styles.socialLink}
+							onPress={(): void => {
+								openAppURL('https://t.me/bitkitchat');
+							}}>
+							<TelegramIcon height={24} width={24} />
+						</Pressable>
+						<Pressable
+							style={styles.socialLink}
+							onPress={(): void => {
+								openAppURL('https://www.github.com/synonymdev');
 							}}>
 							<GithubIcon height={24} width={24} />
 						</Pressable>

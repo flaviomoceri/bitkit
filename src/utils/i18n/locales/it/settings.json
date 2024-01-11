@@ -6,6 +6,7 @@
   "security_title": "Sicurezza e Privacy",
   "backup_title": "Backup o Ripristino",
   "advanced_title": "Avanzate",
+  "support_title": "Supporto",
   "about": {
     "title": "Informazioni su Bitkit",
     "text": "Bitkit ti consegna le chiavi del tuo denaro, del tuo profilo, dei tuoi contatti e dei tuoi account web.\n\nQuesta <easterEgg>Orange-Pillazione</easterEgg> è stata accuratamente realizzata da Synonym Software Ltd.",
@@ -33,15 +34,9 @@
     "speed_fee_custom": "Imposta commissione personalizzata",
     "speed_fee_total": "{feeSats} sats per la transazione media",
     "speed_fee_total_fiat": "{feeSats} sats per la transazione media ({fiatSymbol}{fiatFormatted} )",
-    "suggestions": "Consigli",
-    "suggestions_visible": "Visibile",
-    "suggestions_hidden": "Nascosto",
-    "suggestions_display": "Mostra suggerimenti",
     "tags": "Tag",
     "tags_previously": "Tag usati in precedenza",
-    "reset_title": "Resettare i Suggerimenti?",
-    "reset_desc": "Sei sicuro di voler resettare i suggerimenti? Riappariranno nel caso in cui li abbia rimossi dalla panoramica del portafoglio Bitkit.",
-    "reset_confirm": "Sì, resetta"
+    "widgets": "Widget"
   },
   "security": {
     "clipboard": "Leggi gli appunti per facilitare l'uso",
@@ -73,6 +68,24 @@
     "category_profile": "Profilo",
     "category_contacts": "Contatti"
   },
+  "support": {
+    "text": "Hai bisogno di aiuto? Segnala il tuo problema da Bitkit, visita il centro assistenza o contattaci sui nostri canali social.",
+    "report": "Segnala un problema",
+    "help": "Centro assistenza",
+    "help_url": "https://help.bitkit.to",
+    "report_text": "Descrivi il problema che stai riscontrando o fai una domanda generale.",
+    "label_address": "Indirizzo email",
+    "label_message": "Problema o domanda",
+    "placeholder_address": "satoshi@satoshi.com",
+    "placeholder_message": "Descrivi il problema o fai una domanda",
+    "text_button": "Invia",
+    "title_success": "Messaggio inviato",
+    "text_success": "Grazie per averci contattato! Cercheremo di risponderti il prima possibile.",
+    "text_success_button": "OK",
+    "title_unsuccess": "Messaggio non inviato",
+    "text_unsuccess": "Qualcosa è andato storto durante il tentativo di inviare il problema o la domanda. Per favore riprova.",
+    "text_unsuccess_button": "Riprova"
+  },
   "adv": {
     "section_payments": "Pagamenti",
     "section_networks": "Reti",
@@ -84,8 +97,6 @@
     "cs_auto": "Autopilot",
     "cs_auto_mode": "Modalità Autopilot",
     "cs_consolidate": "Consolidare",
-    "cs_max": "Massima Privacy",
-    "cs_min": "UTXO minimi",
     "payment_preference": "Preferenze Pagamento",
     "pp_header": "Scegli come preferisce ricevere il denaro quando gli utenti inviano fondi alla chiave del tuo profilo.",
     "pp_footer": "* Questo richiede la condivisione dei dati di pagamento.",
@@ -94,6 +105,9 @@
     "pp_contacts_switch": "Abilita i pagamenti con i contatti*",
     "address_viewer": "Visualizzatore di Indirizzi",
     "rescan": "Riscansiona Indirizzi",
+    "reset_title": "Resettare i Suggerimenti?",
+    "reset_desc": "Sei sicuro di voler resettare i suggerimenti? Riappariranno nel caso in cui li abbia rimossi dalla panoramica del portafoglio Bitkit.",
+    "reset_confirm": "Sì, resetta",
     "lightning_connections": "Connessioni Lightning",
     "lightning_node": "Nodo Lightning",
     "electrum_server": "Server Electrum",
