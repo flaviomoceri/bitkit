@@ -44,7 +44,10 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import Money from '../../../components/Money';
 import BlurView from '../../../components/BlurView';
 import { updateSettings } from '../../../store/slices/settings';
-import { hideBalanceSelector } from '../../../store/reselect/settings';
+import {
+	hideBalanceSelector,
+	enableSwipeToHideBalanceSelector,
+} from '../../../store/reselect/settings';
 import { capitalize } from '../../../utils/helpers';
 import DetectSwipe from '../../../components/DetectSwipe';
 import type { WalletScreenProps } from '../../../navigation/types';
@@ -87,6 +90,9 @@ const WalletsDetail = ({
 	const { assetType } = route.params;
 	const { totalBalance } = useBalance();
 	const dispatch = useAppDispatch();
+	const enableSwipeToHideBalance = useAppSelector(
+		enableSwipeToHideBalanceSelector,
+	);
 	const hideBalance = useAppSelector(hideBalanceSelector);
 	const [_, switchUnit] = useSwitchUnit();
 	const colors = useColors();
@@ -213,6 +219,7 @@ const WalletsDetail = ({
 									exiting={FadeOut}>
 									<View color="transparent" style={styles.balanceContainer}>
 										<DetectSwipe
+											enabled={enableSwipeToHideBalance}
 											onSwipeLeft={toggleHideBalance}
 											onSwipeRight={toggleHideBalance}>
 											<TouchableOpacity
