@@ -6,7 +6,10 @@ import bip21 from 'bip21';
 import { err, ok, Result } from '@synonymdev/result';
 import SDK from '@synonymdev/slashtags-sdk';
 import { TInvoice } from '@synonymdev/react-native-ldk';
-import { getLNURLParams } from '@synonymdev/react-native-lnurl';
+import {
+	getLNURLParams,
+	lnurlAddress as processLnurlAddress,
+} from '@synonymdev/react-native-lnurl';
 import { bech32m } from 'bech32';
 import URLParse from 'url-parse';
 import {
@@ -38,7 +41,7 @@ import { savePeer } from '../store/utils/lightning';
 import { TWalletName } from '../store/types/wallet';
 import { sendNavigation } from '../navigation/bottom-sheet/SendNavigation';
 import { rootNavigation } from '../navigation/root/RootNavigator';
-import { findlnurl, handleLnurlAuth } from './lnurl';
+import { findlnurl, handleLnurlAuth, isLnurlAddress } from './lnurl';
 import i18n from './i18n';
 import { parseOnChainPaymentRequest, validateAddress } from 'beignet';
 
@@ -49,6 +52,7 @@ export enum EQRDataType {
 	lnurlChannel = 'lnurlChannel',
 	lnurlAuth = 'lnurlAuth',
 	lnurlWithdraw = 'lnurlWithdraw',
+	lnurlAddress = 'lnurlAddress',
 	slashAuthURL = 'slashAuthURL',
 	slashtagURL = 'slashURL',
 	slashFeedURL = 'slashFeedURL',
@@ -61,7 +65,8 @@ export type TLnUrlData =
 	| TLnUrlAuth
 	| TLnUrlChannel
 	| TLnUrlPay
-	| TLnUrlWithdraw;
+	| TLnUrlWithdraw
+	| TLnUrlAddress;
 
 export type QRData =
 	| TBitcoinUrl
@@ -106,6 +111,12 @@ export type TLnUrlPay = {
 export type TLnUrlWithdraw = {
 	qrDataType: EQRDataType.lnurlWithdraw;
 	lnUrlParams: LNURLWithdrawParams;
+	network?: EAvailableNetwork;
+};
+export type TLnUrlAddress = {
+	qrDataType: EQRDataType.lnurlAddress;
+	address: string;
+	lnUrlParams: LNURLPayParams;
 	network?: EAvailableNetwork;
 };
 export type TNodeId = {
@@ -439,6 +450,22 @@ export const decodeQRData = async (
 			invoice = invoice.split('?')[0];
 		}
 		lightningInvoice = invoice;
+	}
+
+	if (isLnurlAddress(data)) {
+		const address = data.trim();
+		const res = await processLnurlAddress(address);
+		if (res.isOk()) {
+			const params = res.value;
+			foundNetworksInQR.push({
+				qrDataType: EQRDataType.lnurlAddress,
+				address,
+				lnUrlParams: params as LNURLPayParams,
+				network: selectedNetwork,
+			});
+		} else {
+			error += `${res.error.message} `;
+		}
 	}
 
 	//Plain bitcoin address or Bitcoin address URI
@@ -827,7 +854,6 @@ export const handleData = async ({
 				amount: sats,
 			});
 		}
-
 		case EQRDataType.lightningPaymentRequest: {
 			const { lightningPaymentRequest, slashTagsUrl } = data;
 
@@ -873,7 +899,7 @@ export const handleData = async ({
 				amount: invoiceAmount,
 			});
 		}
-
+		case EQRDataType.lnurlAddress:
 		case EQRDataType.lnurlPay: {
 			const params = data.lnUrlParams! as LNURLPayParams;
 
@@ -900,7 +926,7 @@ export const handleData = async ({
 			}
 
 			showBottomSheet('lnurlPay', { pParams: params });
-			return ok({ type: EQRDataType.lnurlPay });
+			return ok({ type: qrDataType });
 		}
 		case EQRDataType.lnurlChannel: {
 			const accountVersion = getLightningStore().accountVersion;
@@ -965,7 +991,6 @@ export const handleData = async ({
 			showBottomSheet('lnurlWithdraw', { wParams: params });
 			return ok({ type: EQRDataType.lnurlWithdraw });
 		}
-
 		case EQRDataType.nodeId: {
 			const peer = data?.url;
 			if (!peer) {
@@ -1008,7 +1033,6 @@ export const handleData = async ({
 			});
 			return ok({ type: EQRDataType.nodeId });
 		}
-
 		case EQRDataType.treasureHunt: {
 			showBottomSheet('treasureHunt', { chestId: data.chestId });
 			return ok({ type: EQRDataType.lnurlWithdraw });
