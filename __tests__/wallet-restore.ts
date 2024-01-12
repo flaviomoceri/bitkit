@@ -4,7 +4,7 @@ import '../src/utils/i18n';
 import store from '../src/store';
 import { restoreSeed } from '../src/utils/startup';
 import { EAvailableNetworks } from 'beignet';
-import { getOnChainWallet } from '../src/utils/wallet';
+import { getOnChainWallet, refreshWallet } from '../src/utils/wallet';
 import { EAvailableNetwork } from '../src/utils/networks';
 
 jest.setTimeout(60_000);
@@ -53,6 +53,12 @@ describe('Wallet - wallet restore and receive', () => {
 		expect(wallet.network).toEqual(EAvailableNetworks.bitcoinRegtest);
 		expect(wallet.name).toEqual('wallet0');
 		const selectedWallet = state.wallet.selectedWallet;
+
+		await refreshWallet({
+			selectedWallet,
+			selectedNetwork: EAvailableNetwork.bitcoinRegtest,
+		});
+
 		expect(
 			state.wallet.wallets[selectedWallet].addressIndex[
 				EAvailableNetwork.bitcoinRegtest
