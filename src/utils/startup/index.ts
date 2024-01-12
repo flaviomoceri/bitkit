@@ -47,14 +47,17 @@ export const createNewWallet = async ({
 export const restoreSeed = async ({
 	mnemonic,
 	bip39Passphrase,
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	mnemonic: string;
 	bip39Passphrase?: string;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	const res = await createWallet({
 		mnemonic,
 		bip39Passphrase,
 		restore: true,
+		selectedNetwork,
 	});
 	if (res.isErr()) {
 		return res;

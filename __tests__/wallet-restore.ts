@@ -3,8 +3,8 @@ import BitcoinJsonRpc from 'bitcoin-json-rpc';
 import '../src/utils/i18n';
 import store from '../src/store';
 import { restoreSeed } from '../src/utils/startup';
-import { EAvailableNetworks, EProtocol } from 'beignet';
-import { getOnChainWallet, switchNetwork } from '../src/utils/wallet';
+import { EAvailableNetworks } from 'beignet';
+import { getOnChainWallet } from '../src/utils/wallet';
 import { EAvailableNetwork } from '../src/utils/networks';
 
 jest.setTimeout(60_000);
@@ -39,6 +39,7 @@ describe('Wallet - wallet restore and receive', () => {
 		let res = await restoreSeed({
 			mnemonic:
 				'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+			selectedNetwork: EAvailableNetwork.bitcoinRegtest,
 		});
 		if (res.isErr()) {
 			throw res.error;
@@ -46,19 +47,6 @@ describe('Wallet - wallet restore and receive', () => {
 
 		expect(res.value).toEqual('Seed restored');
 		expect(store.getState().wallet.selectedWallet).toEqual('wallet0');
-
-		// switch to regtest
-		const switchRes = await switchNetwork(EAvailableNetwork.bitcoinRegtest, [
-			{
-				host: '127.0.0.1',
-				ssl: 60002,
-				tcp: 60001,
-				protocol: EProtocol.tcp,
-			},
-		]);
-		if (switchRes.isErr()) {
-			throw switchRes.error;
-		}
 		const state = store.getState();
 		const wallet = getOnChainWallet();
 

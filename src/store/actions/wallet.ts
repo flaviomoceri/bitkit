@@ -78,6 +78,7 @@ export const createWallet = async ({
 	bip39Passphrase = '',
 	restore = false,
 	addressTypesToCreate,
+	selectedNetwork = getSelectedNetwork(),
 }: ICreateWallet): Promise<Result<string>> => {
 	if (!addressTypesToCreate) {
 		addressTypesToCreate = addressTypes;
@@ -89,6 +90,7 @@ export const createWallet = async ({
 			bip39Passphrase,
 			restore,
 			addressTypesToCreate,
+			selectedNetwork,
 		});
 		if (response.isErr()) {
 			return err(response.error.message);

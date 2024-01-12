@@ -1319,15 +1319,16 @@ export const createDefaultWallet = async ({
 	bip39Passphrase,
 	restore,
 	addressTypesToCreate,
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	walletName: TWalletName;
 	mnemonic: string;
 	bip39Passphrase: string;
 	restore: boolean;
 	addressTypesToCreate: Partial<IAddressTypes>;
+	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<IWallets>> => {
 	try {
-		const selectedNetwork = getSelectedNetwork();
 		if (!addressTypesToCreate) {
 			// if nothing else specified use only Native Segwit by default
 			addressTypesToCreate = { p2wpkh: addressTypes.p2wpkh };
