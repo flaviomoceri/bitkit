@@ -2,8 +2,7 @@ import { EAvailableNetwork } from '../../utils/networks';
 import { IExchangeRates } from '../../utils/exchange-rate';
 import { IAddressTypeContent } from '../shapes/wallet';
 import { IHeader } from '../../utils/types/electrum';
-import { IVin } from '../../utils/wallet';
-import { ISendTransaction } from 'beignet';
+import { IFormattedTransaction, ISendTransaction } from 'beignet';
 
 export enum EPaymentType {
 	sent = 'sent',
@@ -159,25 +158,6 @@ export interface IOutput {
 	address: string; // Address to send to.
 	value: number; // Amount denominated in sats.
 	index: number; // Used to specify which output to update or edit when using updateSendTransaction.
-}
-
-export interface IFormattedTransaction {
-	address: string;
-	height: number;
-	scriptHash: string;
-	totalInputValue: number;
-	matchedInputValue: number;
-	totalOutputValue: number;
-	matchedOutputValue: number;
-	fee: number;
-	satsPerByte: number;
-	type: EPaymentType;
-	value: number;
-	txid: string;
-	messages: string[];
-	vin: IVin[];
-	timestamp: number;
-	confirmTimestamp?: number;
 }
 
 export interface IFormattedTransactions {

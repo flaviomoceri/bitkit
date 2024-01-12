@@ -94,10 +94,10 @@ export const updateOnChainActivityList = (): Result<string> => {
 	const boostedTransactions =
 		currentWallet.boostedTransactions[selectedNetwork];
 
-	const transactions = currentWallet.transactions;
-	const activityItems = Object.values(transactions).map((tx) => {
+	const transactions = currentWallet.transactions[selectedNetwork];
+	const activityItems = Object.values(transactions).map((transaction) => {
 		return onChainTransactionToActivityItem({
-			transaction: tx,
+			transaction,
 			blocktankTransactions,
 			blocktankOrders,
 		});

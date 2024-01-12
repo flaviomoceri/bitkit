@@ -77,7 +77,11 @@ const ActivityListShort = (): ReactElement => {
 				<EmptyItem onPress={navigateToReceive} />
 			) : (
 				<>
-					{groupedItems.map((item, index) => renderItem({ item, index }))}
+					{groupedItems.map((item, index) => (
+						<React.Fragment key={index}>
+							{renderItem({ item, index })}
+						</React.Fragment>
+					))}
 					<Button
 						style={styles.button}
 						text={<Text02M color="white80">{t('activity_show_all')}</Text02M>}
