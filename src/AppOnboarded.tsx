@@ -27,7 +27,7 @@ import {
 	getCustomElectrumPeers,
 	getOnChainWalletElectrum,
 } from './utils/wallet';
-import { EAvailableNetworks } from 'beignet';
+import { connectToElectrum } from './utils/wallet/electrum';
 
 const electrum = getOnChainWalletElectrum();
 
@@ -74,14 +74,13 @@ const AppOnboarded = (): ReactElement => {
 				) {
 					const customPeers = getCustomElectrumPeers({ selectedNetwork });
 					// resubscribe to electrum connection changes
-					electrum
-						?.connectToElectrum({
-							network: EAvailableNetworks[selectedNetwork],
-							servers: customPeers,
-						})
-						.then(() => {
-							electrum?.startConnectionPolling();
-						});
+					connectToElectrum({
+						selectedNetwork,
+						customPeers,
+						showNotification: false,
+					}).then(() => {
+						electrum?.startConnectionPolling();
+					});
 				}
 
 				// on App to background

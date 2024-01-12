@@ -19,7 +19,6 @@ import {
 	IAddress,
 	IAddresses,
 	IAddressTypes,
-	IFormattedTransaction,
 	IFormattedTransactions,
 	IKeyDerivationPath,
 	IKeyDerivationPathData,
@@ -80,6 +79,7 @@ import {
 	Electrum,
 	getByteCount,
 	ICustomGetAddress,
+	IFormattedTransaction,
 	IGenerateAddressesResponse,
 	IRbfData,
 	ISendTransaction,
@@ -1131,7 +1131,8 @@ export const formatTransactions = async ({
 		const value = Number(totalMatchedValue.toFixed(8));
 		const totalValue = totalInputValue - totalOutputValue;
 		const fee = Number(Math.abs(totalValue).toFixed(8));
-		const satsPerByte = btcToSats(fee) / result.vsize;
+		const vsize = result.vsize;
+		const satsPerByte = btcToSats(fee) / vsize;
 		const { address, height, scriptHash } = data;
 		let timestamp = Date.now();
 		let confirmTimestamp: number | undefined;
@@ -1160,6 +1161,7 @@ export const formatTransactions = async ({
 			messages,
 			timestamp,
 			confirmTimestamp,
+			vsize,
 			vin: result.vin,
 		};
 	});

@@ -7,7 +7,6 @@ import {
 	TWalletName,
 	IBoostedTransactions,
 	IFormattedTransactions,
-	IFormattedTransaction,
 	IUtxo,
 	EAddressType,
 } from '../types/wallet';
@@ -15,7 +14,7 @@ import { defaultSendTransaction } from '../shapes/wallet';
 import { EAvailableNetwork } from '../../utils/networks';
 import { IExchangeRates } from '../../utils/exchange-rate';
 import { EFeeId } from '../types/fees';
-import { ISendTransaction } from 'beignet';
+import { IFormattedTransaction, ISendTransaction } from 'beignet';
 
 export const walletState = (state: RootState): IWalletStore => state.wallet;
 export const walletsState = (state: RootState): IWallets =>

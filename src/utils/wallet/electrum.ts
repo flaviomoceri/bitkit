@@ -19,6 +19,7 @@ import {
 	IUtxo,
 	TServer,
 } from 'beignet';
+import { __E2E__ } from '../../constants/env';
 
 export interface IGetUtxosResponse {
 	utxos: IUtxo[];
@@ -248,6 +249,7 @@ export const connectToElectrum = async ({
 	const connectRes = await electrum.connectToElectrum({
 		network: EAvailableNetworks[selectedNetwork],
 		servers: customPeers,
+		disableRegtestCheck: !__E2E__,
 	});
 
 	if (connectRes.isErr()) {
