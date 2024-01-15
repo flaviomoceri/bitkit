@@ -32,7 +32,7 @@ import {
 } from '@shopify/react-native-skia';
 
 import { AnimatedView, View } from '../../../styles/components';
-import { BitcoinCircleIcon } from '../../../styles/icons';
+import { BitcoinCircleIcon, EyeIcon } from '../../../styles/icons';
 import { Title } from '../../../styles/text';
 import NavigationHeader from '../../../components/NavigationHeader';
 import useColors from '../../../hooks/colors';
@@ -230,6 +230,14 @@ const WalletsDetail = ({
 													enableHide={true}
 													highlight={true}
 												/>
+												{hideBalance && (
+													<TouchableOpacity
+														style={styles.toggle}
+														testID="ShowBalance"
+														onPress={toggleHideBalance}>
+														<EyeIcon />
+													</TouchableOpacity>
+												)}
 											</TouchableOpacity>
 										</DetectSwipe>
 									</View>
@@ -273,6 +281,8 @@ const styles = StyleSheet.create({
 	},
 	largeValueContainer: {
 		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
 	},
 	txListContainer: {
 		flex: 1,
@@ -294,6 +304,9 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		marginLeft: 16,
+	},
+	toggle: {
+		marginTop: 6,
 	},
 });
 
