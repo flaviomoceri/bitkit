@@ -39,8 +39,7 @@ const SupportSettings = ({
 						title: t('support.help'),
 						type: EItemType.button,
 						onPress: (): void => {
-							// TODO: update with correct url
-							openURL('https://support.synonym.to/hc/help-center').then();
+							openURL('https://help.bitkit.to').then();
 						},
 					},
 				],
