@@ -53,3 +53,8 @@ export const betaRiskAcceptedSelector = createSelector(
 	[userState],
 	(user): boolean => user.betaRiskAccepted,
 );
+
+export const ignoresHideBalanceToastSelector = createSelector(
+	[userState],
+	(user): boolean => user.ignoresHideBalanceToast,
+);
