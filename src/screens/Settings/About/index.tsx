@@ -174,55 +174,47 @@ const About = ({
 						<Image style={styles.poweredBy} source={imageSrc} />
 					</View>
 					<View style={styles.socialLinks}>
-						{/**<Pressable
-							style={styles.socialLink}
-							onPress={async (): Promise<void> => {
-								await openURL(await createSupportLink());
-							}}>
-							<EmailIcon height={24} width={24} />
-						</Pressable>
-						*/}
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
 								openAppURL('https://www.bitkit.to');
 							}}>
-							<GlobeIcon height={24} width={24} />
+							<GlobeIcon color="white" height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
 								openAppURL('https://www.medium.com/synonym-to');
 							}}>
-							<MediumIcon height={24} width={24} />
+							<MediumIcon color="white" height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
 								openAppURL('https://www.twitter.com/bitkitwallet');
 							}}>
-							<TwitterIcon height={24} width={24} />
+							<TwitterIcon color="white" height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
 								openAppURL('https://discord.gg/DxTBJXvJxn');
 							}}>
-							<DiscordIcon height={24} width={24} />
+							<DiscordIcon color="white" height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
 								openAppURL('https://t.me/bitkitchat');
 							}}>
-							<TelegramIcon height={24} width={24} />
+							<TelegramIcon color="white" height={24} width={24} />
 						</Pressable>
 						<Pressable
 							style={styles.socialLink}
 							onPress={(): void => {
 								openAppURL('https://www.github.com/synonymdev');
 							}}>
-							<GithubIcon height={24} width={24} />
+							<GithubIcon color="white" height={24} width={24} />
 						</Pressable>
 					</View>
 				</View>
@@ -248,7 +240,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'flex-end',
 		marginTop: 'auto',
-		marginBottom: 32,
+		marginBottom: 16,
 	},
 	logoContainer: {
 		position: 'relative',
@@ -272,13 +264,15 @@ const styles = StyleSheet.create({
 		width: 165,
 	},
 	socialLinks: {
-		width: 300,
+		width: 375,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-evenly',
 	},
 	socialLink: {
-		padding: 4,
+		padding: 14,
+		backgroundColor: '#FFFFFF1A',
+		borderRadius: 32,
 	},
 });
 
