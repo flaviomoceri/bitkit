@@ -158,6 +158,7 @@
 	},
 	"details_savings_title": "Savings Balance",
 	"details_savings_subtitle": "BTC",
+	"transfer_text": "Transfer",
 	"details_spending_title": "Spending Balance",
 	"details_spending_subtitle": "Instant BTC",
 	"tx_invalid": "Transaction Invalid",

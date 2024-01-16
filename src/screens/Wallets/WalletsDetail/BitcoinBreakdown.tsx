@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../../styles/components';
 import { TransferIcon, SavingsIcon, CoinsIcon } from '../../../styles/icons';
+import { Caption13M } from '../../../styles/text';
 import { useBalance } from '../../../hooks/wallet';
 import { useAppSelector } from '../../../hooks/redux';
 import { RootNavigationProp } from '../../../navigation/types';
@@ -64,7 +65,12 @@ const BitcoinBreakdown = (): ReactElement => {
 				<ThemedView color="gray4" style={styles.line} />
 				<TouchableOpacity testID="TransferButton" onPress={onRebalancePress}>
 					<ThemedView style={styles.transferButton} color="white16">
-						<TransferIcon height={12} color="white" />
+						<TransferIcon
+							style={styles.transferIcon}
+							height={12}
+							color="white"
+						/>
+						<Caption13M>{t('transfer_text')}</Caption13M>
 					</ThemedView>
 				</TouchableOpacity>
 				<ThemedView color="gray4" style={styles.line} />
@@ -104,12 +110,14 @@ const styles = StyleSheet.create({
 	transferButton: {
 		paddingHorizontal: 15,
 		height: 40,
-		width: 48,
 		borderRadius: 54,
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginHorizontal: 16,
+	},
+	transferIcon: {
+		marginRight: 6,
 	},
 	line: {
 		flex: 1,
