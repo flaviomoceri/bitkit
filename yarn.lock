@@ -4391,10 +4391,10 @@ bech32@^1.1.2, bech32@^1.1.4:
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.4.tgz#e38c9f37bf179b8eb16ae3a772b40c356d4832e9"
   integrity sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==
 
-beignet@0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/beignet/-/beignet-0.0.10.tgz#ef9fbb233989c369544dfe68b3df751e26dd2127"
-  integrity sha512-yXZNrNsh/vn3cb/Y/rYcU8v+8XwLUgJ7BZ2kHWHndTsIdM1H5FG/d+XjYFxODkdkyr97TzIDlbr0MTqxmdZJYA==
+beignet@0.0.12:
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/beignet/-/beignet-0.0.12.tgz#70c8d1930502d687fd98a498af188c880ada48c4"
+  integrity sha512-/r82zaQ+Rzy5nPgF6XMbmfHpyKQQwRdLSTA6QqArUVr/LoUoUWQUsh01alNbQG5iA/MnD2Pax3sJ0E35BcLecA==
   dependencies:
     "@bitcoinerlab/secp256k1" "1.0.5"
     bech32 "2.0.0"
