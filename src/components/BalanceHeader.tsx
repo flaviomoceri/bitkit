@@ -6,7 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Caption13Up } from '../styles/text';
 import { EyeIcon } from '../styles/icons';
 import Money from './Money';
-import { useBalance, useSwitchUnit } from '../hooks/wallet';
+import { useBalance, useSwitchUnitAnnounced } from '../hooks/wallet';
 import { updateSettings } from '../store/slices/settings';
 import {
 	primaryUnitSelector,
@@ -18,7 +18,7 @@ import {
  */
 const BalanceHeader = (): ReactElement => {
 	const { t } = useTranslation('wallet');
-	const [_, switchUnit] = useSwitchUnit();
+	const onSwitchUnit = useSwitchUnitAnnounced();
 	const { totalBalance, claimableBalance } = useBalance();
 	const dispatch = useAppDispatch();
 	const unit = useAppSelector(primaryUnitSelector);
@@ -57,7 +57,7 @@ const BalanceHeader = (): ReactElement => {
 			<TouchableOpacity
 				style={styles.row}
 				testID="TotalBalance"
-				onPress={switchUnit}>
+				onPress={onSwitchUnit}>
 				<Money
 					sats={totalBalance}
 					unit={unit}

@@ -193,5 +193,7 @@
 	"lnurl_p_title": "Send Bitcoin",
 	"lnurl_p_max": "Maximum amount",
 	"balance_hidden_title" : "Wallet Balance Hidden",
-	"balance_hidden_message" : "Swipe your wallet balance to reveal it again."
+	"balance_hidden_message" : "Swipe your wallet balance to reveal it again.",
+	"balance_unit_switched_title" : "Switched to {unit}",
+	"balance_unit_switched_message" : "Tap your wallet balance to switch it back to {unit}."
 }

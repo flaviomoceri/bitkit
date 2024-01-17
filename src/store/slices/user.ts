@@ -14,6 +14,7 @@ export type TUser = {
 	requiresRemoteRestore: boolean;
 	startCoopCloseTimestamp: number;
 	ignoresHideBalanceToast: boolean;
+	ignoresSwitchUnitToast: boolean;
 };
 
 export const initialUserState: TUser = {
@@ -28,6 +29,7 @@ export const initialUserState: TUser = {
 	requiresRemoteRestore: false,
 	startCoopCloseTimestamp: 0,
 	ignoresHideBalanceToast: false,
+	ignoresSwitchUnitToast: false,
 };
 
 export const userSlice = createSlice({
@@ -66,6 +68,9 @@ export const userSlice = createSlice({
 		ignoreHideBalanceToast: (state) => {
 			state.ignoresHideBalanceToast = true;
 		},
+		ignoreSwitchUnitToast: (state) => {
+			state.ignoresSwitchUnitToast = true;
+		},
 		resetUserState: () => initialUserState,
 	},
 });
@@ -83,6 +88,7 @@ export const {
 	verifyBackup,
 	acceptBetaRisk,
 	ignoreHideBalanceToast,
+	ignoreSwitchUnitToast,
 	resetUserState,
 } = actions;
 

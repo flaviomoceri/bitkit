@@ -58,3 +58,8 @@ export const ignoresHideBalanceToastSelector = createSelector(
 	[userState],
 	(user): boolean => user.ignoresHideBalanceToast,
 );
+
+export const ignoresSwitchUnitToastSelector = createSelector(
+	[userState],
+	(user): boolean => user.ignoresSwitchUnitToast,
+);
