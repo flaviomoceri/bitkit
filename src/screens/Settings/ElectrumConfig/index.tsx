@@ -162,6 +162,7 @@ const ElectrumConfig = ({
 					description: t('es.server_updated_message', { host, port }),
 				});
 				if (selectedNetwork === EAvailableNetwork.bitcoinRegtest) {
+					// Since this is regtest where each network may be different, we need to rescan the addresses and transactions.
 					await rescanAddresses({
 						shouldClearAddresses: false,
 						shouldClearTransactions: true,
