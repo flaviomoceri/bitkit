@@ -13,6 +13,8 @@ export type TUser = {
 	lightningSettingUpStep: number;
 	requiresRemoteRestore: boolean;
 	startCoopCloseTimestamp: number;
+	ignoresHideBalanceToast: boolean;
+	ignoresSwitchUnitToast: boolean;
 };
 
 export const initialUserState: TUser = {
@@ -26,6 +28,8 @@ export const initialUserState: TUser = {
 	lightningSettingUpStep: 0,
 	requiresRemoteRestore: false,
 	startCoopCloseTimestamp: 0,
+	ignoresHideBalanceToast: false,
+	ignoresSwitchUnitToast: false,
 };
 
 export const userSlice = createSlice({
@@ -61,6 +65,12 @@ export const userSlice = createSlice({
 		acceptBetaRisk: (state) => {
 			state.betaRiskAccepted = true;
 		},
+		ignoreHideBalanceToast: (state) => {
+			state.ignoresHideBalanceToast = true;
+		},
+		ignoreSwitchUnitToast: (state) => {
+			state.ignoresSwitchUnitToast = true;
+		},
 		resetUserState: () => initialUserState,
 	},
 });
@@ -77,6 +87,8 @@ export const {
 	clearCoopCloseTimer,
 	verifyBackup,
 	acceptBetaRisk,
+	ignoreHideBalanceToast,
+	ignoreSwitchUnitToast,
 	resetUserState,
 } = actions;
 

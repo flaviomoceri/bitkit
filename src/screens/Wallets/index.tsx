@@ -34,6 +34,10 @@ import {
 	hideOnboardingMessageSelector,
 	showWidgetsSelector,
 } from '../../store/reselect/settings';
+import { showToast } from '../../utils/notifications';
+import { useTranslation } from 'react-i18next';
+import { ignoresHideBalanceToastSelector } from '../../store/reselect/user';
+import { ignoreHideBalanceToast } from '../../store/slices/user';
 
 // Workaround for crash on Android
 // https://github.com/software-mansion/react-native-reanimated/issues/4306#issuecomment-1538184321
@@ -51,6 +55,9 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 		enableSwipeToHideBalanceSelector,
 	);
 	const hideBalance = useAppSelector(hideBalanceSelector);
+	const ignoresHideBalanceToast = useAppSelector(
+		ignoresHideBalanceToastSelector,
+	);
 	const hideOnboardingSetting = useAppSelector(hideOnboardingMessageSelector);
 	const showWidgets = useAppSelector(showWidgetsSelector);
 	const widgets = useAppSelector(widgetsSelector);
@@ -59,6 +66,7 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	const empty = useMemo(() => {
 		return noTransactions && Object.values(widgets).length === 0;
 	}, [noTransactions, widgets]);
+	const { t } = useTranslation('wallet');
 
 	// tell WalletNavigator that this screen is focused
 	useFocusEffect(
@@ -69,7 +77,16 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	);
 
 	const toggleHideBalance = (): void => {
-		dispatch(updateSettings({ hideBalance: !hideBalance }));
+		const enabled = !hideBalance;
+		dispatch(updateSettings({ hideBalance: enabled }));
+		if (!ignoresHideBalanceToast && enabled) {
+			showToast({
+				type: 'info',
+				title: t('balance_hidden_title'),
+				description: t('balance_hidden_message'),
+			});
+			dispatch(ignoreHideBalanceToast());
+		}
 	};
 
 	const navigateToScanner = (): void => {
