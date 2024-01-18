@@ -1595,6 +1595,8 @@ export const payLightningInvoice = async (
 			timeout: 60000,
 		});
 		if (payResponse.isErr()) {
+			//On occasion a payment can time out but still be pending, so we need to sync with react-native-ldk's stored pending payments
+			await syncLightningTxsWithActivityList();
 			return err(payResponse.error.message);
 		}
 
