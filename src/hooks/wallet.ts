@@ -13,6 +13,12 @@ import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from '../store/reselect/wallet';
+import { useCurrency } from './displayValues';
+import { useTranslation } from 'react-i18next';
+import i18n from '../utils/i18n';
+import { showToast } from '../utils/notifications';
+import { ignoresSwitchUnitToastSelector } from '../store/reselect/user';
+import { ignoreSwitchUnitToast } from '../store/slices/user';
 
 /**
  * Retrieves wallet balances for the currently selected wallet and network.
@@ -102,3 +108,36 @@ export const useSwitchUnit = (): [EUnit, () => void] => {
 
 	return [nextUnit, switchUnit];
 };
+
+export function useSwitchUnitAnnounced(): () => void {
+	const dispatch = useAppDispatch();
+	const [nextUnit, switchUnit] = useSwitchUnit();
+	const unit = useAppSelector(primaryUnitSelector);
+	const ignoresSwitchUnitToast = useAppSelector(ignoresSwitchUnitToastSelector);
+	const { fiatTicker } = useCurrency();
+	const { t } = useTranslation('wallet');
+
+	const toUnitText: (unit: EUnit) => string = (u) => {
+		if (u === EUnit.BTC) {
+			return i18n.t('settings:general.unit_bitcoin');
+		}
+		if (u === EUnit.satoshi) {
+			return i18n.t('settings:general.unit_satoshis');
+		}
+		return fiatTicker;
+	};
+
+	return (): void => {
+		switchUnit();
+		if (!ignoresSwitchUnitToast) {
+			showToast({
+				type: 'info',
+				title: t('balance_unit_switched_title', { unit: toUnitText(nextUnit) }),
+				description: t('balance_unit_switched_message', {
+					unit: toUnitText(unit),
+				}),
+			});
+			dispatch(ignoreSwitchUnitToast());
+		}
+	};
+}

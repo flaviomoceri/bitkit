@@ -37,7 +37,7 @@ import { Title } from '../../../styles/text';
 import NavigationHeader from '../../../components/NavigationHeader';
 import useColors from '../../../hooks/colors';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { useBalance, useSwitchUnit } from '../../../hooks/wallet';
+import { useBalance, useSwitchUnitAnnounced } from '../../../hooks/wallet';
 import ActivityList from '../../Activity/ActivityList';
 import BitcoinBreakdown from './BitcoinBreakdown';
 import SafeAreaInset from '../../../components/SafeAreaInset';
@@ -51,6 +51,10 @@ import {
 import { capitalize } from '../../../utils/helpers';
 import DetectSwipe from '../../../components/DetectSwipe';
 import type { WalletScreenProps } from '../../../navigation/types';
+import { showToast } from '../../../utils/notifications';
+import { useTranslation } from 'react-i18next';
+import { ignoresHideBalanceToastSelector } from '../../../store/reselect/user';
+import { ignoreHideBalanceToast } from '../../../store/slices/user';
 
 const updateHeight = ({ height, toValue = 0, duration = 250 }): void => {
 	try {
@@ -94,7 +98,10 @@ const WalletsDetail = ({
 		enableSwipeToHideBalanceSelector,
 	);
 	const hideBalance = useAppSelector(hideBalanceSelector);
-	const [_, switchUnit] = useSwitchUnit();
+	const ignoresHideBalanceToast = useAppSelector(
+		ignoresHideBalanceToastSelector,
+	);
+	const onSwitchUnit = useSwitchUnitAnnounced();
 	const colors = useColors();
 	const size = useSharedValue({ width: 0, height: 0 });
 	const title = capitalize(assetType);
@@ -102,6 +109,7 @@ const WalletsDetail = ({
 	const [radiusContainerHeight, setRadiusContainerHeight] = useState(400);
 	const [headerHeight, setHeaderHeight] = useState(0);
 	const height = useSharedValue(0);
+	const { t } = useTranslation('wallet');
 
 	const activityPadding = useMemo(
 		() => ({ paddingTop: radiusContainerHeight, paddingBottom: 230 }),
@@ -113,7 +121,16 @@ const WalletsDetail = ({
 	}, [height, headerHeight]);
 
 	const toggleHideBalance = (): void => {
-		dispatch(updateSettings({ hideBalance: !hideBalance }));
+		const enabled = !hideBalance;
+		dispatch(updateSettings({ hideBalance: enabled }));
+		if (!ignoresHideBalanceToast && enabled) {
+			showToast({
+				type: 'info',
+				title: t('balance_hidden_title'),
+				description: t('balance_hidden_message'),
+			});
+			dispatch(ignoreHideBalanceToast());
+		}
 	};
 
 	const onScroll = useCallback(
@@ -200,7 +217,7 @@ const WalletsDetail = ({
 										style={styles.cell}
 										entering={FadeIn}
 										exiting={FadeOut}>
-										<TouchableOpacity onPress={switchUnit}>
+										<TouchableOpacity onPress={onSwitchUnit}>
 											<Money
 												sats={totalBalance}
 												enableHide={true}
@@ -223,7 +240,7 @@ const WalletsDetail = ({
 											onSwipeLeft={toggleHideBalance}
 											onSwipeRight={toggleHideBalance}>
 											<TouchableOpacity
-												onPress={switchUnit}
+												onPress={onSwitchUnit}
 												style={styles.largeValueContainer}>
 												<Money
 													sats={totalBalance}

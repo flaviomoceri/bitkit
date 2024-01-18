@@ -333,6 +333,16 @@ const migrations = {
 			},
 		};
 	},
+	32: (state): PersistedState => {
+		return {
+			...state,
+			user: {
+				...state.user,
+				ignoresHideBalanceToast: false,
+				ignoresSwitchUnitToast: false,
+			},
+		};
+	},
 };
 
 export default migrations;
