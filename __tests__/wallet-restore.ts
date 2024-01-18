@@ -10,6 +10,7 @@ import { EAvailableNetwork } from '../src/utils/networks';
 jest.setTimeout(60_000);
 
 const bitcoinURL = 'http://polaruser:polarpass@127.0.0.1:43782';
+const selectedNetwork = EAvailableNetwork.bitcoinRegtest;
 
 describe('Wallet - wallet restore and receive', () => {
 	const rpc = new BitcoinJsonRpc(bitcoinURL);
@@ -39,7 +40,7 @@ describe('Wallet - wallet restore and receive', () => {
 		let res = await restoreSeed({
 			mnemonic:
 				'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-			selectedNetwork: EAvailableNetwork.bitcoinRegtest,
+			selectedNetwork,
 		});
 		if (res.isErr()) {
 			throw res.error;
@@ -56,13 +57,12 @@ describe('Wallet - wallet restore and receive', () => {
 
 		await refreshWallet({
 			selectedWallet,
-			selectedNetwork: EAvailableNetwork.bitcoinRegtest,
+			selectedNetwork,
 		});
 
 		expect(
-			state.wallet.wallets[selectedWallet].addressIndex[
-				EAvailableNetwork.bitcoinRegtest
-			].p2wpkh.address,
+			state.wallet.wallets[selectedWallet].addressIndex[selectedNetwork].p2wpkh
+				.address,
 		).toEqual('bcrt1qd7spv5q28348xl4myc8zmh983w5jx32cs707jh');
 		expect(wallet.data.addressIndex.p2wpkh.address).toEqual(
 			'bcrt1qd7spv5q28348xl4myc8zmh983w5jx32cs707jh',
