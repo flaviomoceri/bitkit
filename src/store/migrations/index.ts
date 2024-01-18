@@ -339,6 +339,7 @@ const migrations = {
 			user: {
 				...state.user,
 				ignoresHideBalanceToast: false,
+				ignoresSwitchUnitToast: false,
 			},
 		};
 	},

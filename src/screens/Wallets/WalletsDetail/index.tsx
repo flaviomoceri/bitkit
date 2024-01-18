@@ -37,7 +37,7 @@ import { Title } from '../../../styles/text';
 import NavigationHeader from '../../../components/NavigationHeader';
 import useColors from '../../../hooks/colors';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { useBalance, useSwitchUnit } from '../../../hooks/wallet';
+import { useBalance, useSwitchUnitAnnounced } from '../../../hooks/wallet';
 import ActivityList from '../../Activity/ActivityList';
 import BitcoinBreakdown from './BitcoinBreakdown';
 import SafeAreaInset from '../../../components/SafeAreaInset';
@@ -101,7 +101,7 @@ const WalletsDetail = ({
 	const ignoresHideBalanceToast = useAppSelector(
 		ignoresHideBalanceToastSelector,
 	);
-	const [_, switchUnit] = useSwitchUnit();
+	const onSwitchUnit = useSwitchUnitAnnounced();
 	const colors = useColors();
 	const size = useSharedValue({ width: 0, height: 0 });
 	const title = capitalize(assetType);
@@ -217,7 +217,7 @@ const WalletsDetail = ({
 										style={styles.cell}
 										entering={FadeIn}
 										exiting={FadeOut}>
-										<TouchableOpacity onPress={switchUnit}>
+										<TouchableOpacity onPress={onSwitchUnit}>
 											<Money
 												sats={totalBalance}
 												enableHide={true}
@@ -240,7 +240,7 @@ const WalletsDetail = ({
 											onSwipeLeft={toggleHideBalance}
 											onSwipeRight={toggleHideBalance}>
 											<TouchableOpacity
-												onPress={switchUnit}
+												onPress={onSwitchUnit}
 												style={styles.largeValueContainer}>
 												<Money
 													sats={totalBalance}
