@@ -331,7 +331,7 @@ export const syncLightningTxsWithActivityList = async (): Promise<
 	const sentTxs = await getSentLightningPayments();
 	for (const tx of sentTxs) {
 		const sats = tx.amount_sat;
-		if (!sats || tx.state !== 'successful') {
+		if (!sats || tx.state === 'failed') {
 			continue;
 		}
 
