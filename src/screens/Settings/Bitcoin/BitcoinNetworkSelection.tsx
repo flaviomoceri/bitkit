@@ -19,6 +19,7 @@ const BitcoinNetworkSelection = ({
 }: SettingsScreenProps<'BitcoinNetworkSelection'>): ReactElement => {
 	const { t } = useTranslation('settings');
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const [loading, setLoading] = React.useState(false);
 
 	const settingsListData: IListData[] = useMemo(
 		() => [
@@ -28,20 +29,23 @@ const BitcoinNetworkSelection = ({
 						title: network.label,
 						value: network.id === selectedNetwork,
 						type: EItemType.button,
+						loading,
 						onPress: async (): Promise<void> => {
-							navigation.goBack();
+							setLoading(true);
 							await promiseTimeout(2000, ldk.stop());
 							// Wipe existing activity
 							dispatch(resetActivityState());
 							// Switch to new network.
 							updateWallet({ selectedNetwork: network.id });
 							await switchNetwork(network.id);
+							setLoading(false);
+							navigation.goBack();
 						},
 					};
 				}),
 			},
 		],
-		[navigation, selectedNetwork],
+		[loading, navigation, selectedNetwork],
 	);
 
 	return (
