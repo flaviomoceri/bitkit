@@ -314,7 +314,7 @@ d('Settings', () => {
 
 			// check path
 			const { text: path1 } = await element(by.id('Path')).getAttributes();
-			if (!path1.includes("m/84'/0'/0'")) {
+			if (!path1.includes("m/84'/1'/0'")) {
 				throw new Error(`Wrong path: ${path1}`);
 			}
 
@@ -341,7 +341,7 @@ d('Settings', () => {
 
 			// check path
 			const { text: path2 } = await element(by.id('Path')).getAttributes();
-			if (!path2.includes("m/44'/0'/0'")) {
+			if (!path2.includes("m/44'/1'/0'")) {
 				throw new Error(`Wrong path: ${path2}`);
 			}
 			await element(by.id('NavigationClose')).tap();
