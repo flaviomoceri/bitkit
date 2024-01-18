@@ -1320,6 +1320,7 @@ export const createDefaultWallet = async ({
 	restore,
 	addressTypesToCreate,
 	selectedNetwork = getSelectedNetwork(),
+	servers,
 }: {
 	walletName: TWalletName;
 	mnemonic: string;
@@ -1327,6 +1328,7 @@ export const createDefaultWallet = async ({
 	restore: boolean;
 	addressTypesToCreate: Partial<IAddressTypes>;
 	selectedNetwork?: EAvailableNetwork;
+	servers?: TServer | TServer[];
 }): Promise<Result<IWallets>> => {
 	try {
 		if (!addressTypesToCreate) {
@@ -1367,6 +1369,7 @@ export const createDefaultWallet = async ({
 			selectedNetwork,
 			bip39Passphrase: bip39Passphrase,
 			addressType: selectedAddressType,
+			servers,
 		});
 		if (setupWalletRes.isErr()) {
 			return err(setupWalletRes.error.message);
@@ -1516,6 +1519,7 @@ export const setupOnChainWallet = async ({
 	selectedNetwork = getSelectedNetwork(),
 	addressType = getSelectedAddressType(),
 	setStorage = true,
+	servers,
 }: {
 	name: TWalletName;
 	mnemonic?: string;
@@ -1523,6 +1527,7 @@ export const setupOnChainWallet = async ({
 	selectedNetwork?: EAvailableNetwork;
 	addressType?: EAddressType;
 	setStorage?: boolean;
+	servers?: TServer | TServer[];
 }): Promise<Result<Wallet>> => {
 	if (
 		wallet &&
@@ -1539,7 +1544,7 @@ export const setupOnChainWallet = async ({
 		mnemonic = mnemonicRes.value;
 	}
 	// Fetch any stored custom peers.
-	const customPeers = getCustomElectrumPeers({ selectedNetwork });
+	const customPeers = servers ?? getCustomElectrumPeers({ selectedNetwork });
 	let storage;
 	if (setStorage) {
 		storage = {

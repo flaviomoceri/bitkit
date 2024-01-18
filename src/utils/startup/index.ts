@@ -23,6 +23,7 @@ import { promiseTimeout } from '../helpers';
 import { EAvailableNetwork } from '../networks';
 import { TWalletName } from '../../store/types/wallet';
 import { runChecks } from '../wallet/checks';
+import { TServer } from 'beignet';
 
 /**
  * Creates a new wallet from scratch
@@ -48,16 +49,19 @@ export const restoreSeed = async ({
 	mnemonic,
 	bip39Passphrase,
 	selectedNetwork = getSelectedNetwork(),
+	servers,
 }: {
 	mnemonic: string;
 	bip39Passphrase?: string;
 	selectedNetwork?: EAvailableNetwork;
+	servers?: TServer | TServer[];
 }): Promise<Result<string>> => {
 	const res = await createWallet({
 		mnemonic,
 		bip39Passphrase,
 		restore: true,
 		selectedNetwork,
+		servers,
 	});
 	if (res.isErr()) {
 		return res;
@@ -67,6 +71,7 @@ export const restoreSeed = async ({
 		selectedNetwork,
 		mnemonic,
 		bip39Passphrase,
+		servers,
 	});
 	if (setupRes.isErr()) {
 		return err(setupRes.error.message);

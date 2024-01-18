@@ -2,7 +2,7 @@ import { EAvailableNetwork } from '../../utils/networks';
 import { IExchangeRates } from '../../utils/exchange-rate';
 import { IAddressTypeContent } from '../shapes/wallet';
 import { IHeader } from '../../utils/types/electrum';
-import { IFormattedTransaction, ISendTransaction } from 'beignet';
+import { IFormattedTransaction, ISendTransaction, TServer } from 'beignet';
 
 export enum EPaymentType {
 	sent = 'sent',
@@ -141,6 +141,7 @@ export interface ICreateWallet {
 	changeAddressAmount?: number;
 	addressTypesToCreate?: Partial<IAddressTypes>;
 	selectedNetwork?: EAvailableNetwork;
+	servers?: TServer | TServer[];
 }
 
 export interface IUtxo {

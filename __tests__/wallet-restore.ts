@@ -3,12 +3,14 @@ import BitcoinJsonRpc from 'bitcoin-json-rpc';
 import '../src/utils/i18n';
 import store from '../src/store';
 import { restoreSeed } from '../src/utils/startup';
-import { EAvailableNetworks } from 'beignet';
-import { getOnChainWallet, refreshWallet } from '../src/utils/wallet';
+import { EAvailableNetworks, EProtocol } from 'beignet';
+import { getOnChainWallet } from '../src/utils/wallet';
 import { EAvailableNetwork } from '../src/utils/networks';
 
 jest.setTimeout(60_000);
 
+const electrumHost = '127.0.0.1';
+const electrumPort = 60001;
 const bitcoinURL = 'http://polaruser:polarpass@127.0.0.1:43782';
 const selectedNetwork = EAvailableNetwork.bitcoinRegtest;
 
@@ -36,11 +38,20 @@ describe('Wallet - wallet restore and receive', () => {
 		);
 		await rpc.generateToAddress(1, await rpc.getNewAddress());
 
+		const servers = [
+			{
+				host: electrumHost,
+				ssl: electrumPort,
+				tcp: electrumPort,
+				protocol: EProtocol.tcp,
+			},
+		];
 		// restore wallet
 		let res = await restoreSeed({
 			mnemonic:
 				'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
 			selectedNetwork,
+			servers,
 		});
 		if (res.isErr()) {
 			throw res.error;
@@ -54,11 +65,6 @@ describe('Wallet - wallet restore and receive', () => {
 		expect(wallet.network).toEqual(EAvailableNetworks.bitcoinRegtest);
 		expect(wallet.name).toEqual('wallet0');
 		const selectedWallet = state.wallet.selectedWallet;
-
-		await refreshWallet({
-			selectedWallet,
-			selectedNetwork,
-		});
 
 		expect(
 			state.wallet.wallets[selectedWallet].addressIndex[selectedNetwork].p2wpkh
@@ -237,7 +243,7 @@ describe('Wallet - wallet restore and receive', () => {
 		});
 
 		// check utxos
-		const utxos = state.wallet.wallets.wallet0.utxos.bitcoinRegtest;
+		const utxos = wallet.data.utxos;
 		// wallet UTXO should have input with new txid
 		const newOutput = utxos.find((o) => {
 			return (
@@ -248,8 +254,7 @@ describe('Wallet - wallet restore and receive', () => {
 		expect(newOutput).toBeDefined();
 
 		// check transactions
-		const transactions =
-			state.wallet.wallets.wallet0.transactions.bitcoinRegtest;
+		const transactions = wallet.data.transactions;
 
 		expect(transactions).toHaveProperty(
 			incomigTxid,

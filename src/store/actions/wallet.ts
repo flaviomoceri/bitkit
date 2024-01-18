@@ -79,6 +79,7 @@ export const createWallet = async ({
 	restore = false,
 	addressTypesToCreate,
 	selectedNetwork = getSelectedNetwork(),
+	servers,
 }: ICreateWallet): Promise<Result<string>> => {
 	if (!addressTypesToCreate) {
 		addressTypesToCreate = addressTypes;
@@ -91,6 +92,7 @@ export const createWallet = async ({
 			restore,
 			addressTypesToCreate,
 			selectedNetwork,
+			servers,
 		});
 		if (response.isErr()) {
 			return err(response.error.message);
