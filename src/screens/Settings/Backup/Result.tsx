@@ -1,8 +1,8 @@
 import React, { memo, ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { Text01S } from '../../../styles/text';
+import { Text01B, Text01S } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
@@ -28,7 +28,11 @@ const Result = ({ navigation }: BackupScreenProps<'Result'>): ReactElement => {
 			<BottomSheetNavigationHeader title={t('mnemonic_result_header')} />
 
 			<Text01S color="gray1" style={styles.text}>
-				{t('mnemonic_result_text')}
+				<Trans
+					t={t}
+					i18nKey="mnemonic_result_text"
+					components={{ highlight: <Text01B color="white" /> }}
+				/>
 			</Text01S>
 
 			<GlowImage image={imageSrc} imageSize={200} glowColor="green" />
