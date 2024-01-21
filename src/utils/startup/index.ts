@@ -99,8 +99,8 @@ export const startWalletServices = async ({
 	lightning = ENABLE_SERVICES,
 	restore = false,
 	staleBackupRecoveryMode = false,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	onchain?: boolean;
 	lightning?: boolean;
@@ -114,15 +114,9 @@ export const startWalletServices = async ({
 		await new Promise((resolve) => {
 			InteractionManager.runAfterInteractions(() => resolve(null));
 		});
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-
-		await promiseTimeout(2500, setupBlocktank(selectedNetwork));
-		await promiseTimeout(2500, refreshBlocktankInfo());
+		promiseTimeout(2500, setupBlocktank(selectedNetwork)).then(() => {
+			refreshBlocktankInfo().then();
+		});
 
 		const mnemonicResponse = await getMnemonicPhrase();
 		if (mnemonicResponse.isErr()) {
@@ -166,16 +160,13 @@ export const startWalletServices = async ({
 		}
 
 		if (onchain || lightning) {
-			await Promise.all([
-				// if we restore wallet, we need to generate addresses for all types
-				refreshWallet({
-					onchain: restore,
-					lightning,
-					scanAllAddresses: restore,
-					updateAllAddressTypes: true, // Ensure we scan all address types when spinning up the app.
-					showNotification: !restore,
-				}),
-			]);
+			await refreshWallet({
+				onchain: restore,
+				lightning,
+				scanAllAddresses: restore,
+				updateAllAddressTypes: true, // Ensure we scan all address types when spinning up the app.
+				showNotification: !restore,
+			});
 			await runChecks({ selectedWallet, selectedNetwork });
 		}
 

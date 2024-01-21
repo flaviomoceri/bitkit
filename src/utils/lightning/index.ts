@@ -100,7 +100,7 @@ export const DEFAULT_LIGHTNING_PEERS: IWalletItem<string[]> = {
 
 export const FALLBACK_BLOCKTANK_PEERS: IWalletItem<string[]> = {
 	bitcoin: [
-		'0296b2db342fcf87ea94d981757fdf4d3e545bd5cef4919f58b5d38dfdd73bf5c9@146.148.127.140:9735',
+		'0296b2db342fcf87ea94d981757fdf4d3e545bd5cef4919f58b5d38dfdd73bf5c9@130.211.95.29:9735',
 	],
 	bitcoinRegtest: [
 		'03b9a456fb45d5ac98c02040d39aec77fa3eeb41fd22cf40b862b393bcfc43473a@35.233.47.252:9400',
@@ -183,6 +183,8 @@ export const setupLdk = async ({
 	shouldPreemptivelyStopLdk?: boolean;
 } = {}): Promise<Result<string>> => {
 	try {
+		pendingRefreshPromises = [];
+		isRefreshing = false;
 		if (!selectedWallet) {
 			selectedWallet = getSelectedWallet();
 		}
@@ -486,15 +488,22 @@ const handleRefreshError = (errorMessage: string): Result<string> => {
  * This method syncs LDK, re-adds peers & updates lightning channels.
  * @param {TWalletName} [selectedWallet]
  * @param {EAvailableNetwork} [selectedNetwork]
+ * @param {boolean} [clearPendingRefreshPromises]
  * @returns {Promise<Result<string>>}
  */
 export const refreshLdk = async ({
 	selectedWallet,
 	selectedNetwork,
+	clearPendingRefreshPromises = false,
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
+	clearPendingRefreshPromises?: boolean;
 } = {}): Promise<Result<string>> => {
+	if (clearPendingRefreshPromises) {
+		pendingRefreshPromises = [];
+		isRefreshing = false;
+	}
 	if (isRefreshing) {
 		return new Promise((resolve) => {
 			pendingRefreshPromises.push(resolve);
@@ -521,6 +530,7 @@ export const refreshLdk = async ({
 				selectedNetwork,
 				selectedWallet,
 				shouldRefreshLdk: false,
+				shouldPreemptivelyStopLdk: false,
 			});
 			if (setupResponse.isErr()) {
 				return handleRefreshError(setupResponse.error.message);
@@ -1261,7 +1271,7 @@ export const addPeers = async ({
 			peers.map(async (peer) => {
 				const addPeerResponse = await addPeer({
 					peer,
-					timeout: 5000,
+					timeout: 1000,
 				});
 				if (addPeerResponse.isErr()) {
 					console.log(addPeerResponse.error.message);

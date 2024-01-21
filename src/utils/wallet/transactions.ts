@@ -1080,13 +1080,52 @@ export const getMaxSendAmount = ({
 export const sendMax = async ({
 	address,
 	index = 0,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	address?: string;
 	index?: number;
+	selectedWallet?: TWalletName;
+	selectedNetwork?: EAvailableNetwork;
 } = {}): Promise<Result<string>> => {
 	try {
 		const tx = getOnChainWalletTransaction();
 		const transaction = tx.data;
+
+		// TODO: Re-work lightning transaction invoices once beignet migration is complete.
+		// Handle max toggle for lightning invoice
+		if (transaction.lightningInvoice) {
+			const { spendingBalance } = getBalance({
+				selectedWallet,
+				selectedNetwork,
+			});
+			// TODO: get actual routing fee (Currently generous with the fee for wiggle room to prevent routing failures)
+			let fee = 50;
+			let amount = 0;
+			if (spendingBalance > fee) {
+				amount = spendingBalance - fee;
+			} else if (spendingBalance > 25) {
+				fee = 25;
+				amount = spendingBalance - fee;
+			} else {
+				fee = 0;
+				amount = spendingBalance; // Make an attempt to spend it all, but will likely fail without a proper routing fee allotment.
+			}
+			const outputs = transaction.outputs ?? [];
+			// No address specified, attempt to assign the address currently specified in the current output index.
+			if (!address) {
+				address = outputs[index]?.address ?? '';
+			}
+			tx.updateSendTransaction({
+				transaction: {
+					max: true,
+					outputs: [{ address, value: amount, index }],
+					fee,
+				},
+			});
+			return ok('Updated lightning transaction.');
+		}
+
 		const fees = getFeesStore().onchain;
 		const { transactionSpeed, customFeeRate } = getSettingsStore();
 

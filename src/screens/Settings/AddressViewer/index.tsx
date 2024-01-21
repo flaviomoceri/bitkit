@@ -700,10 +700,13 @@ const AddressViewer = ({
 				},
 			});
 			dispatch(updateUi({ fromAddressViewer: true }));
-			sendMax({});
+			sendMax({
+				selectedWallet,
+				selectedNetwork,
+			});
 			showBottomSheet('sendNavigation', { screen: 'ReviewAndSend' });
 		},
-		[selectedNetwork, selectedUtxos, utxos, dispatch],
+		[selectedUtxos, utxos, selectedNetwork, dispatch, selectedWallet],
 	);
 
 	/**

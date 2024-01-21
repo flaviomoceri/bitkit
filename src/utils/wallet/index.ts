@@ -55,6 +55,7 @@ import {
 	getNetworkFromBeignet,
 	getWalletData,
 	setWalletData,
+	updateWallet,
 } from '../../store/actions/wallet';
 import { TCoinSelectPreference } from '../../store/types/settings';
 import { updateActivityList } from '../../store/utils/activity';
@@ -71,7 +72,7 @@ import { moveMetaIncTxTags } from '../../store/utils/metadata';
 import { refreshOrdersList } from '../../store/utils/blocktank';
 import { TNode } from '../../store/types/lightning';
 import { showNewOnchainTxPrompt, showNewTxPrompt } from '../../store/utils/ui';
-import { reduceValue } from '../helpers';
+import { promiseTimeout, reduceValue } from '../helpers';
 import { objectKeys } from '../objectKeys';
 import {
 	EAvailableNetworks,
@@ -94,6 +95,8 @@ import { showToast } from '../notifications';
 import { updateUi } from '../../store/slices/ui';
 import { startWalletServices } from '../startup';
 import { ICustomGetScriptHash } from 'beignet/src/types/wallet';
+import { ldk } from '@synonymdev/react-native-ldk';
+import { resetActivityState } from '../../store/slices/activity';
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);
@@ -2285,16 +2288,23 @@ export const switchNetwork = async (
 	selectedNetwork: EAvailableNetwork,
 	servers?: TServer | TServer[],
 ): Promise<Result<boolean>> => {
+	const originalNetwork = getSelectedNetwork();
 	if (!servers) {
 		servers = getCustomElectrumPeers({
 			selectedNetwork,
 		});
 	}
+	await promiseTimeout(2000, ldk.stop());
+	// Wipe existing activity
+	dispatch(resetActivityState());
+	// Switch to new network.
+	updateWallet({ selectedNetwork });
 	const response = await wallet.switchNetwork(
 		EAvailableNetworks[selectedNetwork],
 		servers,
 	);
 	if (response.isErr()) {
+		updateWallet({ selectedNetwork: originalNetwork });
 		return err(response.error.message);
 	}
 	// Start wallet services with the newly selected network.

@@ -138,6 +138,9 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 
 	// Unset isMaxSendAmount after edit
 	useEffect(() => {
+		if (transaction?.lightningInvoice) {
+			return;
+		}
 		if (isMaxSendAmount && amount !== availableAmount) {
 			updateSendTransaction({ transaction: { max: false } });
 		}
@@ -145,7 +148,7 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 		if (!isMaxSendAmount && amount === availableAmount) {
 			updateSendTransaction({ transaction: { max: true } });
 		}
-	}, [isMaxSendAmount, amount, availableAmount]);
+	}, [isMaxSendAmount, amount, availableAmount, transaction?.lightningInvoice]);
 
 	const onChangeUnit = (): void => {
 		const result = getNumberPadText(amount, nextUnit);
@@ -154,10 +157,21 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 	};
 
 	const onMaxAmount = useCallback((): void => {
-		const result = getNumberPadText(availableAmount, unit);
-		setText(result);
-		sendMax({});
-	}, [availableAmount, unit]);
+		if (!transaction.lightningInvoice) {
+			const result = getNumberPadText(availableAmount, unit);
+			setText(result);
+		}
+		sendMax({
+			selectedWallet,
+			selectedNetwork,
+		});
+	}, [
+		availableAmount,
+		selectedNetwork,
+		selectedWallet,
+		transaction.lightningInvoice,
+		unit,
+	]);
 
 	const onError = (): void => {
 		setError(true);
@@ -264,7 +278,11 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 									onPress={onMaxAmount}>
 									<Text02B
 										size="12px"
-										color={isMaxSendAmount ? 'orange' : 'white'}>
+										color={
+											isMaxSendAmount || transaction?.lightningInvoice
+												? 'orange'
+												: 'white'
+										}>
 										{t('send_max')}
 									</Text02B>
 								</TouchableOpacity>

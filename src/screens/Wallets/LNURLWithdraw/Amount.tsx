@@ -73,8 +73,11 @@ const Amount = ({
 	const onMaxAmount = useCallback((): void => {
 		const result = getNumberPadText(maxWithdrawable, unit);
 		setText(result);
-		sendMax({});
-	}, [maxWithdrawable, unit]);
+		sendMax({
+			selectedWallet,
+			selectedNetwork,
+		});
+	}, [maxWithdrawable, selectedNetwork, selectedWallet, unit]);
 
 	const onError = (): void => {
 		setError(true);
