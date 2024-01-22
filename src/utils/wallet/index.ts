@@ -52,7 +52,6 @@ import {
 import {
 	createDefaultWalletStructure,
 	generateNewReceiveAddress,
-	getNetworkFromBeignet,
 	getWalletData,
 	setWalletData,
 	updateWallet,
@@ -1532,13 +1531,6 @@ export const setupOnChainWallet = async ({
 	setStorage?: boolean;
 	servers?: TServer | TServer[];
 }): Promise<Result<Wallet>> => {
-	if (
-		wallet &&
-		wallet.name === name &&
-		getNetworkFromBeignet(wallet.network) === selectedNetwork
-	) {
-		return ok(wallet);
-	}
 	if (!mnemonic) {
 		const mnemonicRes = await getMnemonicPhrase(name);
 		if (mnemonicRes.isErr()) {

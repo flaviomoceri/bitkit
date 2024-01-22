@@ -66,16 +66,6 @@ export const restoreSeed = async ({
 	if (res.isErr()) {
 		return res;
 	}
-	const setupRes = await setupOnChainWallet({
-		name: getSelectedWallet(),
-		selectedNetwork,
-		mnemonic,
-		bip39Passphrase,
-		servers,
-	});
-	if (setupRes.isErr()) {
-		return err(setupRes.error.message);
-	}
 	return ok('Seed restored');
 };
 
