@@ -1372,6 +1372,7 @@ export const createDefaultWallet = async ({
 			bip39Passphrase: bip39Passphrase,
 			addressType: selectedAddressType,
 			servers,
+			disableMessagesOnCreate: true,
 		});
 		if (setupWalletRes.isErr()) {
 			return err(setupWalletRes.error.message);
@@ -1428,6 +1429,22 @@ export const createDefaultWallet = async ({
 						...defaultWalletShape.lastUsedChangeAddressIndex[selectedNetwork],
 						...walletData.lastUsedChangeAddressIndex,
 					},
+				},
+				transaction: {
+					...defaultWalletShape.transaction,
+					[selectedNetwork]: walletData.transaction,
+				},
+				transactions: {
+					...defaultWalletShape.transactions,
+					[selectedNetwork]: walletData.transactions,
+				},
+				unconfirmedTransactions: {
+					...defaultWalletShape.unconfirmedTransactions,
+					[selectedNetwork]: walletData.unconfirmedTransactions,
+				},
+				utxos: {
+					...defaultWalletShape.utxos,
+					[selectedNetwork]: walletData.utxos,
 				},
 				id: walletData.id,
 			},
@@ -1522,6 +1539,7 @@ export const setupOnChainWallet = async ({
 	addressType = getSelectedAddressType(),
 	setStorage = true,
 	servers,
+	disableMessagesOnCreate = false,
 }: {
 	name: TWalletName;
 	mnemonic?: string;
@@ -1530,6 +1548,7 @@ export const setupOnChainWallet = async ({
 	addressType?: EAddressType;
 	setStorage?: boolean;
 	servers?: TServer | TServer[];
+	disableMessagesOnCreate?: boolean;
 }): Promise<Result<Wallet>> => {
 	if (!mnemonic) {
 		const mnemonicRes = await getMnemonicPhrase(name);
@@ -1562,6 +1581,7 @@ export const setupOnChainWallet = async ({
 		addressType,
 		customGetAddress: customGetAddress,
 		customGetScriptHash: getCustomScriptHash,
+		disableMessagesOnCreate,
 	});
 	if (createWalletResponse.isErr()) {
 		return err(createWalletResponse.error.message);
