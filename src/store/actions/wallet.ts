@@ -754,6 +754,13 @@ export const getWalletData = async <K extends keyof IWalletData>(
 		}
 		const wallet = getWalletStore().wallets[selectedWallet];
 		if (keyValue in wallet) {
+			// Migrate to new id for Beignet migration.
+			// TODO: Remove this condition before release since it's only needed for the beta migration.
+			if (keyValue === 'id' && wallet[keyValue] === 'wallet0') {
+				// @ts-ignore
+				return ok('');
+			}
+
 			const keyValueType = typeof wallet[keyValue];
 			const tArr = ['string', 'number', 'boolean', 'undefined'];
 			if (tArr.includes(keyValueType)) {
