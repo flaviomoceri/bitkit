@@ -88,6 +88,7 @@
 	"receive_lightning_invoice": "Lightning invoice",
 	"receive_note_placeholder": "Optional note to payer",
 	"receive_show_qr": "Show QR Code",
+	"receive_text_lnfunds": "Want to receive <purpleText>Lightning</purpleText> funds?",
 	"receive_instantly": "Receive Instantly",
 	"receive_connect_initial": "To receive instant Bitcoin, Bitkit first has to connect you to Lightning. A <highlight>{lspFee}</highlight> service provider fee will be deducted from the amount you specified.",
 	"receive_connect_additional": "To receive more instant Bitcoin, Bitkit has to increase your liquidity. A <highlight>{lspFee}</highlight> service provider fee will be  deducted from the amount you specified.",

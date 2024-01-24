@@ -73,6 +73,7 @@ import {
 	lightningCircleIcon,
 	mapTrifoldIcon,
 	mapPinLineIcon,
+	arrowLNfunds,
 } from '../assets/icons/wallet';
 import {
 	chevronRightIcon,
@@ -518,6 +519,19 @@ export const UpArrow = styled(SvgXml).attrs((props) => ({
 	),
 	height: props.height ?? '24px',
 	width: props.width ?? '24px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const ArrowLNFunds = styled(SvgXml).attrs((props) => ({
+	xml: arrowLNfunds(
+		props.color ? props.theme.colors[props.color] : props.theme.colors.white,
+	),
+	height: props.height ?? '52px',
+	width: props.width ?? '97px',
+	position: 'absolute',
+	right: 15,
+	bottom: 0,
 }))<IconProps>((props) => ({
 	color: props.color ? props.theme.colors[props.color] : 'white',
 }));

@@ -25,7 +25,7 @@ import type { ReceiveScreenProps } from '../../../navigation/types';
 
 // hardcoded to be above fee (1092)
 // TODO: fee is dynamic so this should be fetched from the API
-const MINIMUM_AMOUNT = 20500;
+const MINIMUM_AMOUNT = 20000;
 
 const ReceiveAmount = ({
 	navigation,
