@@ -125,8 +125,13 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 	useEffect(() => {
 		const result = getNumberPadText(outputAmount, unit);
 		setText(result);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [transaction.outputs, outputAmount, selectedWallet, selectedNetwork]);
+	}, [
+		transaction.outputs,
+		outputAmount,
+		selectedWallet,
+		selectedNetwork,
+		unit,
+	]);
 
 	const amount = useMemo((): number => {
 		return convertToSats(text, unit);
