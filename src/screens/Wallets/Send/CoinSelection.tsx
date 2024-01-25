@@ -92,7 +92,7 @@ const CoinSelection = ({
 
 	//Combine known utxo's with current transaction inputs in the event we're using utxo's from the address viewer.
 	const combinedUtxos = useMemo(() => {
-		const combined: IUtxo[] = [...inputs, ...utxos];
+		const combined: IUtxo[] = [...utxos, ...inputs];
 
 		const combinedAndUnique = combined.reduce((acc: IUtxo[], current) => {
 			const x = acc.find(
