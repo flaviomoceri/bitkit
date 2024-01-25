@@ -100,6 +100,13 @@ import {
 	lightningHollow,
 	telegramIcon,
 	discordIcon,
+	generalSettingsIcon,
+	securityIcon,
+	backupIcon,
+	advancedIcon,
+	supportIcon,
+	aboutIcon,
+	devSettingsIcon,
 } from '../assets/icons/settings';
 
 type IconProps = {
@@ -949,6 +956,64 @@ export const MapPinLineIcon = styled(SvgXml).attrs((props) => ({
 	),
 	height: props.height ?? '16px',
 	width: props.width ?? '16px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const GeneralSettingsIcon = styled(SvgXml).attrs((props) => ({
+	xml: generalSettingsIcon(
+		props.color ? props.theme.colors[props.color] : 'white',
+	),
+	height: '40px',
+	width: '40px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const SecurityIcon = styled(SvgXml).attrs((props) => ({
+	xml: securityIcon(props.color ? props.theme.colors[props.color] : 'white'),
+	height: '40px',
+	width: '40px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const BackupIcon = styled(SvgXml).attrs((props) => ({
+	xml: backupIcon(props.color ? props.theme.colors[props.color] : 'white'),
+	height: '40px',
+	width: '40px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const AdvancedIcon = styled(SvgXml).attrs((props) => ({
+	xml: advancedIcon(props.color ? props.theme.colors[props.color] : 'white'),
+	height: '40px',
+	width: '40px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const SupportIcon = styled(SvgXml).attrs((props) => ({
+	xml: supportIcon(props.color ? props.theme.colors[props.color] : 'white'),
+	height: '40px',
+	width: '40px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const AboutIcon = styled(SvgXml).attrs((props) => ({
+	xml: aboutIcon(props.color ? props.theme.colors[props.color] : 'white'),
+	height: '40px',
+	width: '40px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const DevSettingsIcon = styled(SvgXml).attrs((props) => ({
+	xml: devSettingsIcon(props.color ? props.theme.colors[props.color] : 'white'),
+	height: '40px',
+	width: '40px',
 }))<IconProps>((props) => ({
 	color: props.color ? props.theme.colors[props.color] : 'white',
 }));
