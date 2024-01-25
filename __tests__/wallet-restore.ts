@@ -5,6 +5,7 @@ import store from '../src/store';
 import { restoreSeed } from '../src/utils/startup';
 import { EAvailableNetworks, EProtocol } from 'beignet';
 import { getOnChainWallet } from '../src/utils/wallet';
+import initWaitForElectrumToSync from './utils/wait-for-electrum';
 import { EAvailableNetwork } from '../src/utils/networks';
 
 jest.setTimeout(60_000);
@@ -15,6 +16,7 @@ const bitcoinURL = 'http://polaruser:polarpass@127.0.0.1:43782';
 const selectedNetwork = EAvailableNetwork.bitcoinRegtest;
 
 describe('Wallet - wallet restore and receive', () => {
+	let waitForElectrum;
 	const rpc = new BitcoinJsonRpc(bitcoinURL);
 
 	beforeAll(async () => {
@@ -28,6 +30,10 @@ describe('Wallet - wallet restore and receive', () => {
 			await rpc.generateToAddress(10, address);
 			balance = await rpc.getBalance();
 		}
+		waitForElectrum = await initWaitForElectrumToSync(
+			{ host: electrumHost, port: electrumPort },
+			bitcoinURL,
+		);
 	});
 
 	it("can restore wallet and it's balance", async () => {
@@ -37,6 +43,7 @@ describe('Wallet - wallet restore and receive', () => {
 			'1',
 		);
 		await rpc.generateToAddress(1, await rpc.getNewAddress());
+		await waitForElectrum();
 
 		const servers = [
 			{
