@@ -7,10 +7,10 @@ import {
 	launchAndWait,
 	completeOnboarding,
 	bitcoinURL,
-	electrumHost,
-	electrumPort,
+	//electrumHost,
+	//electrumPort,
 } from './helpers';
-import initWaitForElectrumToSync from '../__tests__/utils/wait-for-electrum';
+//import initWaitForElectrumToSync from '../__tests__/utils/wait-for-electrum';
 
 d = checkComplete(['onchain-1', 'onchain-2']) ? describe.skip : describe;
 
