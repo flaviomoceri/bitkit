@@ -11,6 +11,15 @@ import { updateSettings } from '../../store/slices/settings';
 import { showToast } from '../../utils/notifications';
 import { SettingsScreenProps } from '../../navigation/types';
 import { enableDevOptionsSelector } from '../../store/reselect/settings';
+import {
+	AboutIcon,
+	AdvancedIcon,
+	BackupIcon,
+	DevSettingsIcon,
+	GeneralSettingsIcon,
+	SecurityIcon,
+	SupportIcon,
+} from '../../styles/icons';
 
 const imageSrc = require('./../../assets/illustrations/cog.png');
 
@@ -44,36 +53,42 @@ const MainSettings = ({
 			{
 				title: t('general_title'),
 				type: EItemType.button,
+				Icon: GeneralSettingsIcon,
 				onPress: (): void => navigation.navigate('GeneralSettings'),
 				testID: 'GeneralSettings',
 			},
 			{
 				title: t('security_title'),
 				type: EItemType.button,
+				Icon: SecurityIcon,
 				onPress: (): void => navigation.navigate('SecuritySettings'),
 				testID: 'SecuritySettings',
 			},
 			{
 				title: t('backup_title'),
 				type: EItemType.button,
+				Icon: BackupIcon,
 				onPress: (): void => navigation.navigate('BackupSettings'),
 				testID: 'BackupSettings',
 			},
 			{
 				title: t('advanced_title'),
 				type: EItemType.button,
+				Icon: AdvancedIcon,
 				onPress: (): void => navigation.navigate('AdvancedSettings'),
 				testID: 'AdvancedSettings',
 			},
 			{
 				title: t('support_title'),
 				type: EItemType.button,
+				Icon: SupportIcon,
 				testID: 'Support',
 				onPress: (): void => navigation.navigate('SupportSettings'),
 			},
 			{
 				title: t('about_title'),
 				type: EItemType.button,
+				Icon: AboutIcon,
 				testID: 'About',
 				onPress: (): void => navigation.navigate('AboutSettings'),
 			},
@@ -81,6 +96,7 @@ const MainSettings = ({
 				title: t('dev_title'),
 				type: EItemType.button,
 				hide: !enableDevOptions,
+				Icon: DevSettingsIcon,
 				testID: 'DevSettings',
 				onPress: (): void => navigation.navigate('DevSettings'),
 			},
