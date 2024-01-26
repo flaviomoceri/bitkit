@@ -1,5 +1,11 @@
 import React, { ReactElement, useMemo } from 'react';
-import { TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import {
+	TouchableOpacity,
+	StyleSheet,
+	Platform,
+	StyleProp,
+	ViewStyle,
+} from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +20,7 @@ import useColors from '../hooks/colors';
 import { useAppSelector } from '../hooks/redux';
 import { Text02M } from '../styles/text';
 import { ScanIcon } from '../styles/icons';
-import { AnimatedView } from '../styles/components';
+import { AnimatedView, Pressable } from '../styles/components';
 import BlurView from '../components/BlurView';
 import type { RootNavigationProp } from '../navigation/types';
 
@@ -86,13 +92,16 @@ const TabBar = ({
 					<Text02M style={styles.tabText}>{t('send')}</Text02M>
 				</BlurView>
 			</TouchableOpacity>
-			<TouchableOpacity
-				style={[styles.tabScan, borderStyles]}
-				activeOpacity={0.8}
+			<Pressable
+				style={({ pressed }): StyleProp<ViewStyle> => [
+					styles.tabScan,
+					borderStyles,
+					pressed && styles.pressed,
+				]}
 				testID="Scan"
-				onPress={onScanPress}>
+				onPressIn={onScanPress}>
 				<ScanIcon width={32} height={32} color="gray2" />
-			</TouchableOpacity>
+			</Pressable>
 			<TouchableOpacity
 				style={styles.blurContainer}
 				activeOpacity={0.8}
@@ -161,6 +170,9 @@ const styles = StyleSheet.create({
 	},
 	tabText: {
 		marginLeft: 6,
+	},
+	pressed: {
+		opacity: 0.8,
 	},
 });
 
