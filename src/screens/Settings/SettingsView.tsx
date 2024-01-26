@@ -81,7 +81,9 @@ const SettingsView = ({
 				</View>
 			)}
 
-			{children && childrenPosition === 'top' && <View>{children}</View>}
+			{children && childrenPosition === 'top' && (
+				<View style={styles.childrenContent}>{children}</View>
+			)}
 
 			{listData && (
 				<View

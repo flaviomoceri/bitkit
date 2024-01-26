@@ -85,6 +85,7 @@
 		"text": "Need help? Report your issue from within Bitkit, visit the help center or reach out to us on our social channels.",
 		"report": "Report Issue",
 		"help": "Help Center",
+		"status": "App Status",
 		"help_url": "https://help.bitkit.to",
 		"report_text": "Please describe the issue you are experiencing or ask a general question.",
 		"label_address": "Email address",
@@ -98,6 +99,39 @@
 		"title_unsuccess": "Failed To Send",
 		"text_unsuccess": "Something went wrong while trying to send your issue or question. Please try again.",
 		"text_unsuccess_button": "Try Again"
+	},
+	"status": {
+		"title": "App Status",
+		"internet": {
+			"title": "Internet",
+			"ready": "Connected",
+			"pending": "Reconnecting...",
+			"error": "Disconnected"
+		},
+		"bitcoin_node" : {
+			"title": "Bitcoin Node",
+			"ready": "Connected",
+			"pending": "Connecting...",
+			"error": "Could not connect to Electrum"
+		},
+		"lightning_node" : {
+			"title": "Lightning Node",
+			"ready": "Synced",
+			"pending": "Syncing...",
+			"error": "Could not initiate"
+		},
+		"lightning_connection" : {
+			"title": "Lightning Connection",
+			"ready": "Open",
+			"pending": "Opening...",
+			"error": "No open connections"
+		},
+		"full_backup" : {
+			"title": "Latest Full Data Backup",
+			"ready": "Backed up",
+			"pending": "Backing up...",
+			"error": "Failed to complete a full backup"
+		}
 	},
 	"adv": {
 		"section_payments": "Payments",
