@@ -23,7 +23,7 @@
 	"mnemonic_confirm": "Confirm Recovery Phrase",
 	"mnemonic_confirm_tap": "Tap the 12 words in the correct order.",
 	"mnemonic_result_header": "Successful",
-	"mnemonic_result_text": "Make sure you store your recovery phrase in a secure place, as this is the only way to recover your money (!)",
+	"mnemonic_result_text": "Make sure you store your recovery phrase in a <highlight>secure place</highlight>, as this is the <highlight>only way to recover</highlight> your money (!)",
 	"mnemonic_keep_header": "Keep It Secret",
 	"mnemonic_keep_text": "Remember, never share your recovery phrase with anyone! If someone has access to your recovery phrase they can steal your money, profile and other data.",
 	"mnemonic_data_header": "Wallet Data",

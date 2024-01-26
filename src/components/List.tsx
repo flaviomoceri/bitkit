@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		borderBottomColor: 'rgba(255, 255, 255, 0.1)',
 		borderBottomWidth: 1,
-		minHeight: 55,
+		minHeight: 58,
 	},
 	rowLarge: {
 		minHeight: 90,
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
 	},
 	icon: {
 		borderRadius: 200,
-		marginRight: 16,
+		marginRight: 10,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},

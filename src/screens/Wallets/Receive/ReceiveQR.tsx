@@ -18,7 +18,7 @@ import { FadeIn, useSharedValue } from 'react-native-reanimated';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Share from 'react-native-share';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import {
 	View as ThemedView,
@@ -26,6 +26,7 @@ import {
 	AnimatedView,
 } from '../../../styles/components';
 import {
+	ArrowLNFunds,
 	BitcoinCircleIcon,
 	BitcoinSlantedIcon,
 	CopyIcon,
@@ -35,7 +36,7 @@ import {
 	ShareIcon,
 	UnifiedIcon,
 } from '../../../styles/icons';
-import { Caption13Up, Text01S, Text02S } from '../../../styles/text';
+import { Caption13Up, Text01S, Text02S, Title } from '../../../styles/text';
 import { createLightningInvoice } from '../../../store/utils/lightning';
 import { updatePendingInvoice } from '../../../store/slices/metadata';
 import { generateNewReceiveAddress } from '../../../store/actions/wallet';
@@ -618,11 +619,23 @@ const ReceiveQR = ({
 
 			{displayReceiveInstantlySwitch && (
 				<View style={styles.buttonContainer}>
+					{!enableInstant && (
+						<Title style={styles.textLNfunds}>
+							<Trans
+								t={t}
+								i18nKey="receive_text_lnfunds"
+								components={{
+									purpleText: <Title color="purple" />,
+								}}
+							/>
+						</Title>
+					)}
 					<SwitchRow
 						color="purple"
 						isEnabled={enableInstant}
 						showDivider={false}
 						onPress={onToggleInstant}>
+						{!enableInstant && <ArrowLNFunds color="gray1" />}
 						<Text01S>{t('receive_instantly')}</Text01S>
 					</SwitchRow>
 				</View>
@@ -720,6 +733,10 @@ const styles = StyleSheet.create({
 	buttonContainer: {
 		paddingHorizontal: 16,
 		marginTop: 'auto',
+	},
+	textLNfunds: {
+		marginBottom: 10,
+		width: '60%',
 	},
 });
 
