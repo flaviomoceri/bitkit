@@ -125,13 +125,9 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 	useEffect(() => {
 		const result = getNumberPadText(outputAmount, unit);
 		setText(result);
-	}, [
-		transaction.outputs,
-		outputAmount,
-		selectedWallet,
-		selectedNetwork,
-		unit,
-	]);
+		// Only update this if the outputs/wallet/network changes, so we can ignore unit in the dependency array.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [transaction.outputs, outputAmount, selectedWallet, selectedNetwork]);
 
 	const amount = useMemo((): number => {
 		return convertToSats(text, unit);
