@@ -88,6 +88,9 @@ import {
 	emailIcon,
 	githubIcon,
 	globeIcon,
+	globeSimpleIcon,
+	broadcastIcon,
+	cloudCheckIcon,
 	mediumIcon,
 	twitterIcon,
 	listIcon,
@@ -719,6 +722,36 @@ export const GithubIcon = styled(SvgXml).attrs((props) => ({
 
 export const GlobeIcon = styled(SvgXml).attrs((props) => ({
 	xml: globeIcon(
+		props.color ? props.theme.colors[props.color] : props.theme.colors.brand,
+	),
+	height: props.height ?? '16px',
+	width: props.width ?? '16px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const GlobeSimpleIcon = styled(SvgXml).attrs((props) => ({
+	xml: globeSimpleIcon(
+		props.color ? props.theme.colors[props.color] : props.theme.colors.brand,
+	),
+	height: props.height ?? '16px',
+	width: props.width ?? '16px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const BroadcastIcon = styled(SvgXml).attrs((props) => ({
+	xml: broadcastIcon(
+		props.color ? props.theme.colors[props.color] : props.theme.colors.brand,
+	),
+	height: props.height ?? '16px',
+	width: props.width ?? '16px',
+}))<IconProps>((props) => ({
+	color: props.color ? props.theme.colors[props.color] : 'white',
+}));
+
+export const CloudCheckIcon = styled(SvgXml).attrs((props) => ({
+	xml: cloudCheckIcon(
 		props.color ? props.theme.colors[props.color] : props.theme.colors.brand,
 	),
 	height: props.height ?? '16px',
