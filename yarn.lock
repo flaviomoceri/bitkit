@@ -9629,6 +9629,11 @@ node-fetch@^2.6.12:
   dependencies:
     whatwg-url "^5.0.0"
 
+node-gyp-build-mobile@4.6.0-2:
+  version "4.6.0-2"
+  resolved "https://registry.yarnpkg.com/node-gyp-build-mobile/-/node-gyp-build-mobile-4.6.0-2.tgz#8ff18aad9b7fba9ca78599631d710ac158a134e8"
+  integrity sha512-5Fkii5Jrvjgcsx+rhrby7IDYKmbM4+c6klvhryyCFr9p/sHLvUAE2Vyrb0vWjZpkwz5rc6mGT7PdyFGZiJ6eaw==
+
 node-gyp-build-optional-packages@5.0.7:
   version "5.0.7"
   resolved "https://registry.yarnpkg.com/node-gyp-build-optional-packages/-/node-gyp-build-optional-packages-5.0.7.tgz#5d2632bbde0ab2f6e22f1bbac2199b07244ae0b3"
@@ -9697,12 +9702,14 @@ nodejs-mobile-gyp@^0.3.1:
     tar "^4.4.8"
     which "1"
 
-"nodejs-mobile-react-native@github:Shopify/nodejs-mobile-react-native#a74b13a8f92b39805611c3458e453e57e5abe98f":
-  version "0.8.1"
-  resolved "https://codeload.github.com/Shopify/nodejs-mobile-react-native/tar.gz/a74b13a8f92b39805611c3458e453e57e5abe98f"
+nodejs-mobile-react-native@18.17.6:
+  version "18.17.6"
+  resolved "https://registry.yarnpkg.com/nodejs-mobile-react-native/-/nodejs-mobile-react-native-18.17.6.tgz#817a54474ec26cf4f280babeffde4a694e8a08ce"
+  integrity sha512-r1Z6J4ftPaH60uMwqnVhQ90X+MrJN3DYsZKvhQXuL+VUvBrJBSoTthi4EaRNbI01ca5UvV5FKUJ3/4yJZnVzgg==
   dependencies:
     mkdirp "^0.5.1"
     ncp "^2.0.0"
+    node-gyp-build-mobile "4.6.0-2"
     nodejs-mobile-gyp "^0.3.1"
     xcode "^2.0.0"
 

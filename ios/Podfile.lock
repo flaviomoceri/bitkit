@@ -79,7 +79,7 @@ PODS:
   - MMKV (1.3.2):
     - MMKVCore (~> 1.3.2)
   - MMKVCore (1.3.2)
-  - nodejs-mobile-react-native (0.8.1):
+  - nodejs-mobile-react-native (18.17.6):
     - React-Core
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
@@ -883,7 +883,7 @@ SPEC CHECKSUMS:
   lottie-react-native: 8f9d4be452e23f6e5ca0fdc11669dc99ab52be81
   MMKV: f21593c0af4b3f2a0ceb8f820f28bb639ea22bb7
   MMKVCore: 31b4cb83f8266467eef20a35b6d78e409a11060d
-  nodejs-mobile-react-native: e35e7ed7ecfca168f168983e9557f1c5278d864b
+  nodejs-mobile-react-native: 9968fc921fcaf4b1f1d158cdbecd6bf5c3ac6a78
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 83bca1c184feb4d2e51c72c8369b83d641443f95
