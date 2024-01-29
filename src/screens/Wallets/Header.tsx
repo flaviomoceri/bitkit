@@ -1,5 +1,5 @@
 import React, { memo, ReactElement, useCallback } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
@@ -11,6 +11,7 @@ import { truncate } from '../../utils/helpers';
 import { useProfile2, useSelectedSlashtag2 } from '../../hooks/slashtags2';
 import { RootNavigationProp } from '../../navigation/types';
 import VerticalShadow from '../../components/VerticalShadow';
+import { Pressable } from '../../styles/components';
 
 const EnabledSlashtagsProfileButton = (): ReactElement => {
 	const { t } = useTranslation('slashtags');
@@ -23,10 +24,10 @@ const EnabledSlashtagsProfileButton = (): ReactElement => {
 	}, [navigation]);
 
 	return (
-		<TouchableOpacity
-			style={styles.leftColumn}
-			activeOpacity={1}
-			onPress={openProfile}
+		<Pressable
+			style={[styles.leftColumn, styles.pressed]}
+			onPressIn={openProfile}
+			hitSlop={{ top: 15, bottom: 15, left: 5, right: 5 }}
 			testID="Header">
 			<ProfileImage
 				size={32}
@@ -39,20 +40,20 @@ const EnabledSlashtagsProfileButton = (): ReactElement => {
 			) : (
 				<Title>{t('your_name_capital')}</Title>
 			)}
-		</TouchableOpacity>
+		</Pressable>
 	);
 };
 
 const ProfileButton = (): ReactElement => {
 	const { t } = useTranslation('slashtags');
 	return __DISABLE_SLASHTAGS__ ? (
-		<TouchableOpacity
-			style={styles.leftColumn}
-			activeOpacity={1}
-			onPress={(): void => {}}>
+		<Pressable
+			style={[styles.leftColumn, styles.pressed]}
+			hitSlop={{ top: 15, bottom: 15, left: 5, right: 5 }}
+			onPressIn={(): void => {}}>
 			<ProfileImage size={32} url="" image="" style={styles.profileImage} />
 			<Title color="gray">{t('disabled')}</Title>
-		</TouchableOpacity>
+		</Pressable>
 	) : (
 		<EnabledSlashtagsProfileButton />
 	);
@@ -77,20 +78,20 @@ const Header = (): ReactElement => {
 			<ProfileButton />
 			<View style={styles.middleColumn} />
 			<View style={styles.rightColumn}>
-				<TouchableOpacity
-					style={styles.profileIcon}
-					activeOpacity={1}
-					onPress={openContacts}
+				<Pressable
+					style={[styles.profileIcon, styles.pressed]}
+					hitSlop={{ top: 15, bottom: 15, left: 5, right: 5 }}
+					onPressIn={openContacts}
 					testID="HeaderContactsButton">
 					<ProfileIcon width={24} height={24} />
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={styles.cogIcon}
-					activeOpacity={1}
-					onPress={openSettings}
+				</Pressable>
+				<Pressable
+					style={[styles.cogIcon, styles.pressed]}
+					hitSlop={{ top: 15, bottom: 15, left: 5, right: 5 }}
+					onPressIn={openSettings}
 					testID="Settings">
 					<SettingsIcon width={24} height={24} />
-				</TouchableOpacity>
+				</Pressable>
 			</View>
 		</View>
 	);
@@ -140,6 +141,9 @@ const styles = StyleSheet.create({
 	},
 	profileImage: {
 		marginRight: 16,
+	},
+	pressed: {
+		opacity: 1,
 	},
 });
 
