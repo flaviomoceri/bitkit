@@ -7,7 +7,6 @@ import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigati
 import GradientView from '../../../components/GradientView';
 import Button from '../../../components/Button';
 
-import { EFeeId } from '../../../store/types/fees';
 import { useBalance } from '../../../hooks/wallet';
 import { useAppSelector } from '../../../hooks/redux';
 import { showToast } from '../../../utils/notifications';
@@ -24,6 +23,7 @@ import {
 	transactionSelector,
 } from '../../../store/reselect/wallet';
 import SafeAreaInset from '../../../components/SafeAreaInset';
+import { EFeeId } from 'beignet';
 
 const FeeRate = ({ navigation }: SendScreenProps<'FeeRate'>): ReactElement => {
 	const { t } = useTranslation('wallet');
@@ -38,8 +38,7 @@ const FeeRate = ({ navigation }: SendScreenProps<'FeeRate'>): ReactElement => {
 
 	const transactionTotal = useCallback(() => {
 		return getTransactionOutputValue({
-			selectedWallet,
-			selectedNetwork,
+			outputs: transaction.outputs,
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [transaction.outputs, selectedNetwork, selectedWallet]);
@@ -49,18 +48,14 @@ const FeeRate = ({ navigation }: SendScreenProps<'FeeRate'>): ReactElement => {
 			return getTotalFee({
 				satsPerByte: _satsPerByte,
 				message: transaction.message,
-				selectedWallet,
-				selectedNetwork,
 			});
 		},
-		[transaction.message, selectedNetwork, selectedWallet],
+		[transaction.message],
 	);
 
 	const _updateFee = useCallback(
 		(feeId: EFeeId, _satsPerByte: number) => {
 			const res = updateFee({
-				selectedWallet,
-				selectedNetwork,
 				transaction,
 				satsPerByte: _satsPerByte,
 				selectedFeeId: feeId,
@@ -73,7 +68,7 @@ const FeeRate = ({ navigation }: SendScreenProps<'FeeRate'>): ReactElement => {
 				});
 			}
 		},
-		[selectedNetwork, selectedWallet, transaction, t],
+		[transaction, t],
 	);
 
 	const displayFast = useMemo(() => {

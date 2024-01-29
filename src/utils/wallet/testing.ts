@@ -25,6 +25,7 @@ export const getFakeTransaction = (
 			txid: id,
 			messages: [],
 			timestamp: new Date().getTime(),
+			vsize: 246,
 			vin: [
 				{
 					scriptSig: {

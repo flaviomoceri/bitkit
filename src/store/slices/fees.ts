@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { IOnchainFees } from '../types/fees';
+import { IOnchainFees } from 'beignet';
 
 export type TFeesState = {
 	onchain: IOnchainFees;

@@ -59,20 +59,21 @@ const QuickSetup = ({
 	const [showNumberPad, setShowNumberPad] = useState(false);
 	const [textFieldValue, setTextFieldValue] = useState('');
 
+	useFocusEffect(
+		useCallback(() => {
+			resetSendTransaction().then(() => {
+				setupOnChainTransaction().then();
+			});
+			refreshBlocktankInfo().then();
+		}, []),
+	);
+
 	const spendingAmount = useMemo((): number => {
 		return convertToSats(textFieldValue, unit);
 	}, [textFieldValue, unit]);
 
 	const lnSetup = useAppSelector((state) =>
 		lnSetupSelector(state, spendingAmount),
-	);
-
-	useFocusEffect(
-		useCallback(() => {
-			resetSendTransaction({ selectedNetwork, selectedWallet });
-			setupOnChainTransaction({ selectedNetwork, selectedWallet }).then();
-			refreshBlocktankInfo().then();
-		}, [selectedNetwork, selectedWallet]),
 	);
 
 	const btSpendingLimitBalancedUsd = useMemo((): string => {

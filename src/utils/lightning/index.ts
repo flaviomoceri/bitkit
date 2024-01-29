@@ -28,15 +28,14 @@ import lm, {
 import {
 	getBlockHeader,
 	getBlockHex,
-	getScriptPubKeyHistory,
 	getTransactionMerkle,
-	getTransactions,
 	transactionExists,
 } from '../wallet/electrum';
 import {
 	getCurrentAddressIndex,
 	getMnemonicPhrase,
-	getSelectedAddressType,
+	getOnChainWalletData,
+	getOnChainWalletElectrum,
 	getSelectedNetwork,
 	getSelectedWallet,
 } from '../wallet';
@@ -64,7 +63,6 @@ import {
 	updateLightningNodeVersionThunk,
 } from '../../store/utils/lightning';
 import { promiseTimeout, reduceValue, sleep, tryNTimes } from '../helpers';
-import { broadcastTransaction } from '../wallet/transactions';
 import {
 	EActivityType,
 	TLightningActivityItem,
@@ -102,7 +100,7 @@ export const DEFAULT_LIGHTNING_PEERS: IWalletItem<string[]> = {
 
 export const FALLBACK_BLOCKTANK_PEERS: IWalletItem<string[]> = {
 	bitcoin: [
-		'0296b2db342fcf87ea94d981757fdf4d3e545bd5cef4919f58b5d38dfdd73bf5c9@146.148.127.140:9735',
+		'0296b2db342fcf87ea94d981757fdf4d3e545bd5cef4919f58b5d38dfdd73bf5c9@130.211.95.29:9735',
 	],
 	bitcoinRegtest: [
 		'03b9a456fb45d5ac98c02040d39aec77fa3eeb41fd22cf40b862b393bcfc43473a@35.233.47.252:9400',
@@ -185,6 +183,8 @@ export const setupLdk = async ({
 	shouldPreemptivelyStopLdk?: boolean;
 } = {}): Promise<Result<string>> => {
 	try {
+		pendingRefreshPromises = [];
+		isRefreshing = false;
 		if (!selectedWallet) {
 			selectedWallet = getSelectedWallet();
 		}
@@ -229,15 +229,7 @@ export const setupLdk = async ({
 		}> => {
 			const error = { address: '', publicKey: '' };
 			try {
-				const addressType = getSelectedAddressType({
-					selectedNetwork,
-					selectedWallet,
-				});
-				const addressIndex = await getCurrentAddressIndex({
-					addressType,
-					selectedWallet,
-					selectedNetwork,
-				});
+				const addressIndex = await getCurrentAddressIndex({});
 				if (addressIndex.isErr()) {
 					return error;
 				}
@@ -252,23 +244,12 @@ export const setupLdk = async ({
 			}
 		};
 
-		const _broadcastTransaction = async (rawTx: string): Promise<string> => {
-			const res = await broadcastTransaction({
-				rawTx,
-				selectedNetwork,
-				selectedWallet,
-				subscribeToOutputAddress: false,
-			});
-			if (res.isErr()) {
-				return '';
-			}
-			return res.value;
-		};
 		const storageRes = await setLdkStoragePath();
 		if (storageRes.isErr()) {
 			return err(storageRes.error);
 		}
 		const rapidGossipSyncUrl = getStore().settings.rapidGossipSyncUrl;
+		const electrum = getOnChainWalletElectrum();
 		const lmStart = await lm.start({
 			account: account.value,
 			getFees: async () => {
@@ -287,13 +268,15 @@ export const setupLdk = async ({
 			network,
 			getBestBlock,
 			getAddress,
-			broadcastTransaction: _broadcastTransaction,
-			getTransactionData: (txId) => getTransactionData(txId, selectedNetwork),
-			getScriptPubKeyHistory: (scriptPubkey) => {
-				return getScriptPubKeyHistory(scriptPubkey, selectedNetwork);
-			},
+			broadcastTransaction: (rawTx) =>
+				electrum.broadcastTransaction({
+					rawTx,
+					subscribeToOutputAddress: false,
+				}),
+			getTransactionData: (txId) => getTransactionData(txId),
+			getScriptPubKeyHistory: electrum.getScriptPubKeyHistory,
 			getTransactionPosition: (params) => {
-				return getTransactionPosition({ ...params, selectedNetwork });
+				return getTransactionPosition(params);
 			},
 			forceCloseOnStartup: {
 				forceClose: staleBackupRecoveryMode,
@@ -506,15 +489,22 @@ const handleRefreshError = (errorMessage: string): Result<string> => {
  * This method syncs LDK, re-adds peers & updates lightning channels.
  * @param {TWalletName} [selectedWallet]
  * @param {EAvailableNetwork} [selectedNetwork]
+ * @param {boolean} [clearPendingRefreshPromises]
  * @returns {Promise<Result<string>>}
  */
 export const refreshLdk = async ({
 	selectedWallet,
 	selectedNetwork,
+	clearPendingRefreshPromises = false,
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
+	clearPendingRefreshPromises?: boolean;
 } = {}): Promise<Result<string>> => {
+	if (clearPendingRefreshPromises) {
+		pendingRefreshPromises = [];
+		isRefreshing = false;
+	}
 	if (isRefreshing) {
 		return new Promise((resolve) => {
 			pendingRefreshPromises.push(resolve);
@@ -542,6 +532,7 @@ export const refreshLdk = async ({
 				selectedNetwork,
 				selectedWallet,
 				shouldRefreshLdk: false,
+				shouldPreemptivelyStopLdk: false,
 			});
 			if (setupResponse.isErr()) {
 				return handleRefreshError(setupResponse.error.message);
@@ -1012,8 +1003,13 @@ export const getBestBlock = async (
 		selectedNetwork = getSelectedNetwork();
 	}
 	try {
-		const header = getWalletStore()?.header[selectedNetwork];
-		return header?.hash ? header : defaultHeader;
+		const beignetHeader = getOnChainWalletData().header;
+		const storageHeader = getWalletStore().header[selectedNetwork];
+		const header =
+			beignetHeader.height > storageHeader.height
+				? beignetHeader
+				: storageHeader;
+		return header?.height ? header : defaultHeader;
 	} catch (e) {
 		console.log(e);
 		return defaultHeader;
@@ -1023,22 +1019,17 @@ export const getBestBlock = async (
 /**
  * Returns the transaction header, height and hex (transaction) for a given txid.
  * @param {string} txId
- * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<TTransactionData>}
  */
 export const getTransactionData = async (
 	txId: string = '',
-	selectedNetwork?: EAvailableNetwork,
 ): Promise<TTransactionData | undefined> => {
 	let transactionData = DefaultTransactionDataShape;
 	try {
 		const data = [{ tx_hash: txId }];
-		if (selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		const response = await getTransactions({
+		const electrum = getOnChainWalletElectrum();
+		const response = await electrum.getTransactions({
 			txHashes: data,
-			selectedNetwork,
 		});
 
 		//Unable to reach Electrum server.
@@ -1058,7 +1049,7 @@ export const getTransactionData = async (
 			hex: hex_encoded_tx,
 			vout,
 		} = response.value.data[0].result;
-		const header = getBlockHeader({ selectedNetwork });
+		const header = getBlockHeader();
 		const currentHeight = header.height;
 		let confirmedHeight = 0;
 		if (confirmations) {
@@ -1066,7 +1057,6 @@ export const getTransactionData = async (
 		}
 		const hexEncodedHeader = await getBlockHex({
 			height: confirmedHeight,
-			selectedNetwork,
 		});
 		if (hexEncodedHeader.isErr()) {
 			return transactionData;
@@ -1095,16 +1085,13 @@ export const getTransactionData = async (
 export const getTransactionPosition = async ({
 	tx_hash,
 	height,
-	selectedNetwork,
 }: {
 	tx_hash: string;
 	height: number;
-	selectedNetwork?: EAvailableNetwork;
 }): Promise<TTransactionPosition> => {
 	const response = await getTransactionMerkle({
 		tx_hash,
 		height,
-		selectedNetwork,
 	});
 	if (response.error || isNaN(response.data?.pos) || response.data?.pos < 0) {
 		return -1;
@@ -1198,7 +1185,7 @@ export const parseUri = (
  */
 export const addPeer = async ({
 	peer,
-	timeout = 5000,
+	timeout = 2000,
 }: {
 	peer: string;
 	timeout?: number;
@@ -1286,7 +1273,7 @@ export const addPeers = async ({
 			peers.map(async (peer) => {
 				const addPeerResponse = await addPeer({
 					peer,
-					timeout: 5000,
+					timeout: 1000,
 				});
 				if (addPeerResponse.isErr()) {
 					console.log(addPeerResponse.error.message);

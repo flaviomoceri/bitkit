@@ -13,13 +13,11 @@ import {
 } from '../../constants/env';
 import { TSettings } from '../slices/settings';
 import { EAvailableNetwork } from '../../utils/networks';
-import { ETransactionSpeed, ICustomElectrumPeer } from '../types/settings';
+import { ETransactionSpeed } from '../types/settings';
 import { EUnit } from '../types/wallet';
+import { EProtocol, TServer } from 'beignet';
 
-export const defaultElectrumPeer: Record<
-	EAvailableNetwork,
-	ICustomElectrumPeer[]
-> = {
+export const defaultElectrumPeer: Record<EAvailableNetwork, TServer[]> = {
 	bitcoin: [
 		{
 			host: __ELECTRUM_BITCOIN_HOST__,
@@ -33,25 +31,25 @@ export const defaultElectrumPeer: Record<
 			host: 'testnet.hsmiths.com',
 			ssl: 53012,
 			tcp: 53012,
-			protocol: 'ssl',
+			protocol: EProtocol.ssl,
 		},
 		{
 			host: 'tn.not.fyi',
 			ssl: 55002,
 			tcp: 55002,
-			protocol: 'ssl',
+			protocol: EProtocol.ssl,
 		},
 		{
 			host: 'testnet.aranguren.org',
 			ssl: 51002,
 			tcp: 51001,
-			protocol: 'ssl',
+			protocol: EProtocol.ssl,
 		},
 		{
 			host: 'blackie.c3-soft.com',
 			ssl: 57006,
 			tcp: 57006,
-			protocol: 'ssl',
+			protocol: EProtocol.ssl,
 		},
 	],
 	bitcoinRegtest: [

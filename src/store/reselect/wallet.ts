@@ -1,6 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from '..';
-import { EFeeId } from '../types/fees';
 import {
 	IWalletStore,
 	IWallets,
@@ -8,14 +7,14 @@ import {
 	TWalletName,
 	IBoostedTransactions,
 	IFormattedTransactions,
-	IFormattedTransaction,
-	ISendTransaction,
 	IUtxo,
 	EAddressType,
 } from '../types/wallet';
 import { defaultSendTransaction } from '../shapes/wallet';
 import { EAvailableNetwork } from '../../utils/networks';
 import { IExchangeRates } from '../../utils/exchange-rate';
+import { EFeeId } from '../types/fees';
+import { IFormattedTransaction, ISendTransaction } from 'beignet';
 
 export const walletState = (state: RootState): IWalletStore => state.wallet;
 export const walletsState = (state: RootState): IWallets =>

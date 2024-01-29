@@ -17,6 +17,6 @@ export const initialLightningState: TLightningState = {
 		c_bindings: '',
 	},
 	nodes: {
-		[defaultWalletShape.id]: defaultLightningShape,
+		[defaultWalletShape.name]: defaultLightningShape,
 	},
 };

@@ -4,6 +4,7 @@ import { getBuildNumber } from 'react-native-device-info';
 import { getActivityStore, dispatch } from '../helpers';
 import { closeSheet, setAppUpdateInfo, showSheet } from '../slices/ui';
 import { TAvailableUpdate, ViewControllerParamList } from '../types/ui';
+import { EActivityType } from '../types/activity';
 
 const releaseUrl =
 	'https://github.com/synonymdev/bitkit/releases/download/updater/release.json';
@@ -15,6 +16,24 @@ export const showBottomSheet = <View extends keyof ViewControllerParamList>(
 ): void => {
 	const [view, params] = args;
 	dispatch(showSheet({ view, params }));
+};
+
+export const showNewOnchainTxPrompt = ({
+	id,
+	value,
+}: {
+	id: string;
+	value: number;
+}): void => {
+	showBottomSheet('newTxPrompt', {
+		activityItem: {
+			id,
+			activityType: EActivityType.onchain,
+			value,
+		},
+	});
+
+	dispatch(closeSheet('receiveNavigation'));
 };
 
 export const showNewTxPrompt = (txId: string): void => {

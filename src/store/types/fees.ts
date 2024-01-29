@@ -1,3 +1,5 @@
+import { IOnchainFees } from 'beignet';
+
 export enum EFeeId {
 	instant = 'instant',
 	fast = 'fast',
@@ -8,11 +10,7 @@ export enum EFeeId {
 	none = 'none',
 }
 
-//On-chain fee estimates in sats/vbyte
-export interface IOnchainFees {
-	fast: number; // 10-20 mins
-	normal: number; // 20-60 mins
-	slow: number; // 1-2 hrs
-	minimum: number;
-	timestamp: number;
+export interface IFees {
+	onchain: IOnchainFees;
+	override: boolean;
 }

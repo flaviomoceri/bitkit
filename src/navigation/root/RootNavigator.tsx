@@ -150,7 +150,7 @@ const RootNavigator = (): ReactElement => {
 	const onConfirmClipboardRedirect = async (): Promise<void> => {
 		setShowDialog(false);
 		const clipboardData = await Clipboard.getString();
-		resetSendTransaction();
+		await resetSendTransaction();
 		rootNavigation.navigate('Wallet');
 		await processInputData({ data: clipboardData, showErrors: false });
 	};

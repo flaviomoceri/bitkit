@@ -59,10 +59,10 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 
 	useFocusEffect(
 		useCallback(() => {
-			resetSendTransaction({ selectedNetwork, selectedWallet });
-			setupOnChainTransaction({ selectedNetwork, selectedWallet }).then();
+			resetSendTransaction();
+			setupOnChainTransaction({}).then();
 			refreshBlocktankInfo().then();
-		}, [selectedNetwork, selectedWallet]),
+		}, []),
 	);
 
 	const spendingAmount = useMemo((): number => {

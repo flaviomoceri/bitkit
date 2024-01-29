@@ -63,6 +63,7 @@ import { receiveSelector } from '../../../store/reselect/receive';
 import { ReceiveScreenProps } from '../../../navigation/types';
 import { isGeoBlockedSelector } from '../../../store/reselect/user';
 import { accountVersionSelector } from '../../../store/reselect/lightning';
+import { getWalletStore } from '../../../store/helpers';
 
 type Slide = () => ReactElement;
 
@@ -84,6 +85,7 @@ const ReceiveQR = ({
 	const dispatch = useAppDispatch();
 	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const selectedAddressType = useAppSelector(addressTypeSelector);
 	const addressType = useAppSelector(addressTypeSelector);
 	const isGeoBlocked = useAppSelector(isGeoBlockedSelector);
 	const accountVersion = useAppSelector(accountVersionSelector);
@@ -147,8 +149,6 @@ const ReceiveQR = ({
 		if (amount > 0) {
 			console.info('getting fresh address');
 			const response = await generateNewReceiveAddress({
-				selectedNetwork,
-				selectedWallet,
 				addressType,
 			});
 			if (response.isOk()) {
@@ -157,21 +157,31 @@ const ReceiveQR = ({
 			}
 		} else {
 			const response = await getReceiveAddress({
-				selectedNetwork,
-				selectedWallet,
 				addressType,
 			});
 			if (response.isOk()) {
 				console.info(`reusing address ${response.value}`);
 				setReceiveAddress(response.value);
+			} else {
+				try {
+					const address =
+						getWalletStore().wallets[selectedWallet]?.addressIndex[
+							selectedNetwork
+						][selectedAddressType]?.address;
+					if (address) {
+						console.info(`reusing address ${address}`);
+						setReceiveAddress(address);
+					}
+				} catch {}
 			}
 		}
 	}, [
-		amount,
 		receiveNavigationIsOpen,
+		amount,
 		selectedNetwork,
 		selectedWallet,
 		addressType,
+		selectedAddressType,
 	]);
 
 	const setInvoiceDetails = useCallback(async (): Promise<void> => {
@@ -182,7 +192,8 @@ const ReceiveQR = ({
 			setLoading(true);
 		}
 		// Gives the modal animation time to start.
-		await Promise.all([getLightningInvoice(), getAddress()]);
+		getLightningInvoice().then();
+		await Promise.all([getAddress()]);
 		await sleep(200);
 		setLoading(false);
 	}, [getAddress, getLightningInvoice, loading, receiveNavigationIsOpen]);

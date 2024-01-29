@@ -4,6 +4,7 @@ module.exports = {
 		args: {
 			config: 'e2e/jest.config.js',
 			_: ['e2e'],
+			forceExit: true,
 		},
 	},
 	apps: {

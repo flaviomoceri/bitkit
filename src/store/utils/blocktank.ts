@@ -280,12 +280,14 @@ export const startChannelPurchase = async ({
 	const satPerVByteFee = Math.ceil(min0ConfTxFee.value.satPerVByte); // might be float
 	let txFeeInSats = getTotalFee({
 		satsPerByte: satPerVByteFee,
-		selectedWallet,
-		selectedNetwork,
 	});
-	const channelOpenCost = buyChannelData.feeSat;
+	const buyChannelDataFeeSat = Math.ceil(buyChannelData.feeSat);
+	const buyChannelDataClientBalanceFeeSat = Math.ceil(
+		buyChannelData.clientBalanceSat,
+	);
+	const channelOpenCost = buyChannelDataFeeSat;
 	const channelOpenFee = Math.abs(
-		buyChannelData.clientBalanceSat - buyChannelData.feeSat,
+		buyChannelDataClientBalanceFeeSat - buyChannelDataFeeSat,
 	);
 	// Ensure we have enough funds to pay for both the channel and the fee to broadcast the transaction.
 	if (channelOpenCost > onchainBalance) {
@@ -304,7 +306,7 @@ export const startChannelPurchase = async ({
 			outputs: [
 				{
 					address: buyChannelData.payment.onchain.address,
-					value: buyChannelData.feeSat,
+					value: buyChannelDataFeeSat,
 					index: 0,
 				},
 			],
@@ -313,12 +315,11 @@ export const startChannelPurchase = async ({
 
 	const feeRes = updateFee({
 		satsPerByte: satPerVByteFee,
-		selectedWallet,
-		selectedNetwork,
 	});
-	if (feeRes.isOk()) {
-		txFeeInSats = feeRes.value.fee;
+	if (feeRes.isErr()) {
+		return err(feeRes.error.message);
 	}
+	txFeeInSats = feeRes.value.fee;
 
 	return ok({
 		order: buyChannelData,
@@ -368,7 +369,6 @@ export const confirmChannelPurchase = async ({
 	const broadcastResponse = await broadcastTransaction({
 		rawTx: rawTx.value.hex,
 		subscribeToOutputAddress: false,
-		selectedWallet,
 		selectedNetwork,
 	});
 	if (broadcastResponse.isErr()) {
@@ -382,7 +382,7 @@ export const confirmChannelPurchase = async ({
 	dispatch(addPaidBlocktankOrder({ orderId, txid: broadcastResponse.value }));
 
 	// Reset tx data.
-	resetSendTransaction({ selectedWallet, selectedNetwork });
+	await resetSendTransaction();
 
 	watchOrder(orderId).then();
 	dispatch(setLightningSetupStep(0));

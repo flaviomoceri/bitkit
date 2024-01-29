@@ -153,7 +153,7 @@ export const runStorageCheck = async ({
 		}),
 	);
 
-	await clearUtxos({ selectedWallet, selectedNetwork });
+	await clearUtxos();
 
 	await refreshWallet({
 		onchain: true,
@@ -234,8 +234,6 @@ export const addressStorageCheck = async ({
 		}
 
 		const address = await _createMinMaxData({
-			selectedWallet,
-			selectedNetwork,
 			addressType: addressType.type,
 			keyDerivationPath,
 			minMaxAddresses,
@@ -245,8 +243,6 @@ export const addressStorageCheck = async ({
 			return err(address.error.message);
 		}
 		const changeAddress = await _createMinMaxData({
-			selectedWallet,
-			selectedNetwork,
 			addressType: addressType.type,
 			keyDerivationPath,
 			minMaxAddresses: minMaxChangeAddresses,
@@ -289,15 +285,11 @@ export const addressStorageCheck = async ({
  * @returns {Promise<Result<TMinMaxAddressData>>}
  */
 const _createMinMaxData = async ({
-	selectedWallet,
-	selectedNetwork,
 	addressType,
 	keyDerivationPath,
 	minMaxAddresses,
 	isChangeAddress,
 }: {
-	selectedWallet: TWalletName;
-	selectedNetwork: EAvailableNetwork;
 	addressType: EAddressType;
 	keyDerivationPath: IKeyDerivationPath;
 	minMaxAddresses: TGetMinMaxObject<IAddress>;
@@ -317,8 +309,6 @@ const _createMinMaxData = async ({
 	const minStoredAddress = minMaxAddresses.min;
 	const minStoredAddressIndex = minStoredAddress.index;
 	const minGeneratedAddress = await generateAddresses({
-		selectedNetwork,
-		selectedWallet,
 		addressAmount: isChangeAddress ? 0 : 1,
 		changeAddressAmount: isChangeAddress ? 1 : 0,
 		addressIndex: minStoredAddressIndex,
@@ -342,8 +332,6 @@ const _createMinMaxData = async ({
 	const maxStoredAddress = minMaxAddresses.max;
 	const maxStoredAddressIndex = maxStoredAddress.index;
 	const maxGeneratedAddress = await generateAddresses({
-		selectedNetwork,
-		selectedWallet,
 		addressAmount: isChangeAddress ? 0 : 1,
 		changeAddressAmount: isChangeAddress ? 1 : 0,
 		addressIndex: maxStoredAddressIndex,
@@ -424,8 +412,6 @@ export const getImpactedAddresses = async ({
 		);
 
 		const allGeneratedAddresses = await generateAddresses({
-			selectedWallet,
-			selectedNetwork,
 			addressAmount: (address.maxGeneratedAddress?.index ?? 0) + 1,
 			changeAddressAmount: (changeAddress.maxGeneratedAddress?.index ?? 0) + 1,
 			addressIndex: address.minGeneratedAddress?.index ?? 0,

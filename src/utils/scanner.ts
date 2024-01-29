@@ -3,7 +3,6 @@
  */
 
 import bip21 from 'bip21';
-import { address as bitcoinJSAddress } from 'bitcoinjs-lib';
 import { err, ok, Result } from '@synonymdev/result';
 import SDK from '@synonymdev/slashtags-sdk';
 import { TInvoice } from '@synonymdev/react-native-ldk';
@@ -23,7 +22,6 @@ import {
 import {
 	getOnchainTransactionData,
 	getTransactionInputValue,
-	parseOnChainPaymentRequest,
 } from './wallet/transactions';
 import { dispatch, getLightningStore } from '../store/helpers';
 import { showToast, ToastOptions } from './notifications';
@@ -38,15 +36,14 @@ import {
 	decodeLightningInvoice,
 	getLightningBalance,
 } from './lightning';
-import { availableNetworks, networks, EAvailableNetwork } from './networks';
+import { EAvailableNetwork } from './networks';
 import { savePeer } from '../store/utils/lightning';
 import { TWalletName } from '../store/types/wallet';
 import { sendNavigation } from '../navigation/bottom-sheet/SendNavigation';
 import { rootNavigation } from '../navigation/root/RootNavigator';
 import { findlnurl, handleLnurlAuth, isLnurlAddress } from './lnurl';
 import i18n from './i18n';
-
-const availableNetworksList = availableNetworks();
+import { parseOnChainPaymentRequest, validateAddress } from 'beignet';
 
 export enum EQRDataType {
 	bitcoinAddress = 'bitcoinAddress',
@@ -85,7 +82,7 @@ export type TBitcoinUrl = {
 	qrDataType: EQRDataType.bitcoinAddress;
 	address: string;
 	sats: number;
-	network?: EAvailableNetwork | EAvailableNetwork;
+	network?: EAvailableNetwork;
 	message?: string;
 	slashTagsUrl?: string;
 };
@@ -144,53 +141,6 @@ export type TTreasureChestUrl = {
 	chestId: string;
 };
 
-export const validateAddress = ({
-	address,
-	selectedNetwork,
-}: {
-	address: string;
-	selectedNetwork?: EAvailableNetwork;
-}): {
-	isValid: boolean;
-	network: EAvailableNetwork;
-} => {
-	try {
-		//Validate address for all available networks
-		let isValid = false;
-		let network: EAvailableNetwork = EAvailableNetwork.bitcoin;
-
-		//Validate address for a specific network
-		if (selectedNetwork !== undefined) {
-			try {
-				bitcoinJSAddress.toOutputScript(address, networks[selectedNetwork]);
-				return { isValid: true, network: selectedNetwork };
-			} catch {
-				// In the event the normal check fails, determine if this is a taproot address.
-				const taprootRes = isValidBech32mEncodedString(address);
-				if (taprootRes.isValid && taprootRes.network === selectedNetwork) {
-					return { isValid: taprootRes.isValid, network: taprootRes.network };
-				}
-			}
-			return { isValid: false, network: selectedNetwork };
-		}
-
-		for (let i = 0; i < availableNetworksList.length; i++) {
-			const validateRes = validateAddress({
-				address,
-				selectedNetwork: availableNetworksList[i],
-			});
-			if (validateRes.isValid) {
-				isValid = validateRes.isValid;
-				network = validateRes.network;
-				break;
-			}
-		}
-		return { isValid, network };
-	} catch (e) {
-		return { isValid: false, network: EAvailableNetwork.bitcoin };
-	}
-};
-
 /**
  * Returns if the provided string is a valid Bech32m encoded string (taproot/p2tr address).
  * @param {string} address
@@ -228,6 +178,7 @@ export type TProcessedData = {
  * @param {EAvailableNetwork} [selectedNetwork]
  * @param {TWalletName} [selectedWallet]
  * @param {Array} [skip]
+ * @param {boolean} [showErrors]
  */
 export const processInputData = async ({
 	data,
@@ -520,16 +471,13 @@ export const decodeQRData = async (
 	//Plain bitcoin address or Bitcoin address URI
 	try {
 		//Validate address for selected network
-		const onChainParseResponse = parseOnChainPaymentRequest(
-			data,
-			selectedNetwork,
-		);
+		const onChainParseResponse = parseOnChainPaymentRequest(data);
 		if (onChainParseResponse.isOk()) {
 			const { address, sats, message, network } = onChainParseResponse.value;
 			foundNetworksInQR.push({
 				qrDataType: EQRDataType.bitcoinAddress,
 				address,
-				network,
+				network: EAvailableNetwork[network],
 				sats,
 				message,
 			});
@@ -680,16 +628,11 @@ export const processBitcoinTransactionData = async ({
 			selectedWallet,
 			selectedNetwork,
 		});
-		const transaction = getOnchainTransactionData({
-			selectedWallet,
-			selectedNetwork,
-		});
+		const transaction = getOnchainTransactionData();
 		if (transaction.isErr()) {
 			return err(transaction.error.message);
 		}
 		const inputValue = getTransactionInputValue({
-			selectedWallet,
-			selectedNetwork,
 			inputs: transaction.value.inputs,
 		});
 		// In the event we have preset inputs from address viewer.
@@ -851,23 +794,25 @@ export const handleData = async ({
 	}
 
 	const qrDataType = data.qrDataType;
-
-	if (
-		qrDataType === EQRDataType.bitcoinAddress &&
-		data.network &&
-		data.network !== selectedNetwork
-	) {
-		showToast({
-			type: 'error',
-			title: i18n.t('other:qr_error_network_header'),
-			description: i18n.t('other:qr_error_network_text', {
-				selectedNetwork,
-				dataNetwork: data.network,
-			}),
-		});
-		return err(
-			`Bitkit is currently set to ${selectedNetwork} but data is for ${data.network}.`,
-		);
+	if (qrDataType === EQRDataType.bitcoinAddress && data.network) {
+		if (
+			EAvailableNetwork[selectedNetwork] === EAvailableNetwork.bitcoin &&
+			EAvailableNetwork[data.network] !== EAvailableNetwork[selectedNetwork]
+		) {
+			showToast({
+				type: 'error',
+				title: i18n.t('other:qr_error_network_header'),
+				description: i18n.t('other:qr_error_network_text', {
+					selectedNetwork,
+					dataNetwork: data.network,
+				}),
+			});
+			return err(
+				`Bitkit is currently set to ${selectedNetwork} but data is for ${
+					EAvailableNetwork[data.network]
+				}.`,
+			);
+		}
 	}
 
 	//TODO(slashtags): Register Bitkit to handle all slash?x:// protocols
@@ -895,8 +840,6 @@ export const handleData = async ({
 			sendNavigation.navigate('Amount');
 
 			updateSendTransaction({
-				selectedWallet,
-				selectedNetwork,
 				transaction: {
 					label: message,
 					outputs: [{ address: address, value: sats, index: 0 }],
@@ -938,8 +881,6 @@ export const handleData = async ({
 			}
 
 			updateSendTransaction({
-				selectedWallet,
-				selectedNetwork,
 				transaction: {
 					outputs: [
 						{

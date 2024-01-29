@@ -35,6 +35,7 @@ import { useLightningBalance } from '../../hooks/lightning';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
+	transactionSelector,
 } from '../../store/reselect/wallet';
 import { refreshLdk } from '../../utils/lightning';
 
@@ -106,13 +107,18 @@ const SendNavigation = (): ReactElement => {
 	const { isOpen, screen } = useAppSelector((state) => {
 		return viewControllerSelector(state, 'sendNavigation');
 	});
+	const transaction = useAppSelector(transactionSelector);
 
 	const initialRouteName = screen ?? 'Recipient';
 
 	const onOpen = async (): Promise<void> => {
-		await updateOnchainFeeEstimates({ selectedNetwork, forceUpdate: true });
-		await setupOnChainTransaction();
-		setupFeeForOnChainTransaction();
+		if (!transaction?.lightningInvoice) {
+			await updateOnchainFeeEstimates({ selectedNetwork, forceUpdate: true });
+			if (!transaction?.inputs.length) {
+				await setupOnChainTransaction();
+			}
+			setupFeeForOnChainTransaction();
+		}
 
 		if (lightningBalance.localBalance > 0) {
 			refreshLdk({ selectedWallet, selectedNetwork }).then();

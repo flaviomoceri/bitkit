@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from '..';
 import { TFeesState } from '../slices/fees';
-import { IOnchainFees } from '../types/fees';
+import { IOnchainFees } from 'beignet';
 
 const feesState = (state: RootState): TFeesState => state.fees;
 

@@ -66,7 +66,7 @@ describe('Pulls latest fiat exchange rates and checks the wallet store for valid
 	});
 
 	it('Blocktank FX rates with default selected currency', async () => {
-		const res = await updateExchangeRates();
+		const res = await updateExchangeRates({});
 
 		expect(res.isOk()).toEqual(true);
 		if (res.isErr()) {

@@ -5,12 +5,12 @@ import {
 	ICustomElectrumPeer,
 	TChest,
 	TCoinSelectPreference,
-	TCustomElectrumPeers,
 	TReceiveOption,
 	TTheme,
 } from '../types/settings';
 import { EAvailableNetwork } from '../../utils/networks';
 import { EUnit } from '../types/wallet';
+import { TServer } from 'beignet';
 
 export type TSettings = {
 	enableAutoReadClipboard: boolean;
@@ -24,7 +24,7 @@ export type TSettings = {
 	rbf: boolean;
 	theme: TTheme;
 	unit: EUnit;
-	customElectrumPeers: TCustomElectrumPeers;
+	customElectrumPeers: Record<EAvailableNetwork, TServer[]>;
 	rapidGossipSyncUrl: string;
 	selectedCurrency: string;
 	selectedLanguage: string;

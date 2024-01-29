@@ -635,6 +635,7 @@ export const walletState: IWallet = {
 				txid: '206962f8dcefbaf5a05c1dcc6cd0c214420c6be4e0e634bf71dbca518884bd51',
 				messages: [],
 				timestamp: 1620919862000,
+				vsize: 246,
 				vin: [],
 			},
 			'6927ef1dbc7afd90dde0969e8455411e8bf30303e5da470de2a2b37b8337e7d5': {
@@ -653,6 +654,7 @@ export const walletState: IWallet = {
 				txid: '6927ef1dbc7afd90dde0969e8455411e8bf30303e5da470de2a2b37b8337e7d5',
 				messages: [],
 				timestamp: 1620127029000,
+				vsize: 246,
 				vin: [],
 			},
 			'83c9769fcf970ae8806b18549b18d7ad05e1f7c7e546bb4e355c638262977da2': {
@@ -671,6 +673,7 @@ export const walletState: IWallet = {
 				txid: '83c9769fcf970ae8806b18549b18d7ad05e1f7c7e546bb4e355c638262977da2',
 				messages: [],
 				timestamp: 1620302817000,
+				vsize: 246,
 				vin: [],
 			},
 			ac3f19029332cbd2f2d01544dea8e0d98dd41f3082b05ee24aa84f4f6168e929: {
@@ -689,6 +692,7 @@ export const walletState: IWallet = {
 				txid: 'ac3f19029332cbd2f2d01544dea8e0d98dd41f3082b05ee24aa84f4f6168e929',
 				messages: [],
 				timestamp: 1620405043000,
+				vsize: 246,
 				vin: [],
 			},
 			bd08abb0fc42ea09fb53f12ba8286e753cf615a8665f9e23d995d4788489c610: {
@@ -707,6 +711,7 @@ export const walletState: IWallet = {
 				txid: 'bd08abb0fc42ea09fb53f12ba8286e753cf615a8665f9e23d995d4788489c610',
 				messages: [],
 				timestamp: 1620730909000,
+				vsize: 246,
 				vin: [],
 			},
 			'71c61ef6dd1af0a06cb6040459c3b7b2cbe2ab8ec9f4d8abd73eba4931ab0e0c': {
@@ -725,6 +730,7 @@ export const walletState: IWallet = {
 				txid: '71c61ef6dd1af0a06cb6040459c3b7b2cbe2ab8ec9f4d8abd73eba4931ab0e0c',
 				messages: [],
 				timestamp: 1628558272000,
+				vsize: 246,
 				vin: [],
 			},
 		},

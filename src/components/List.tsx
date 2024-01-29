@@ -6,6 +6,7 @@ import {
 	StyleSheet,
 	ViewStyle,
 	TouchableOpacity,
+	ActivityIndicator,
 } from 'react-native';
 import { SvgProps } from 'react-native-svg';
 import isEqual from 'lodash/isEqual';
@@ -84,6 +85,7 @@ export type ButtonItem = {
 	hide?: boolean;
 	onPress?: () => void;
 	testID?: string;
+	loading?: boolean;
 };
 
 export type TextButtonItem = {
@@ -217,6 +219,7 @@ const _Item = memo((item: ItemData): ReactElement => {
 			iconColor,
 			onPress,
 			testID,
+			loading,
 		} = item as ButtonItem;
 
 		const useCheckmark = typeof value === 'boolean';
@@ -258,7 +261,11 @@ const _Item = memo((item: ItemData): ReactElement => {
 					</View>
 					<View style={styles.rightColumn}>
 						{useCheckmark ? (
-							value && <Checkmark color="brand" width={32} height={32} />
+							loading && value ? (
+								<ActivityIndicator color={'white'} />
+							) : (
+								value && <Checkmark color="brand" width={32} height={32} />
+							)
 						) : (
 							<>
 								<Text01S style={styles.valueText} testID="Value">

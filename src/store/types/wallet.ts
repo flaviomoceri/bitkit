@@ -1,9 +1,8 @@
 import { EAvailableNetwork } from '../../utils/networks';
 import { IExchangeRates } from '../../utils/exchange-rate';
 import { IAddressTypeContent } from '../shapes/wallet';
-import { EFeeId } from './fees';
 import { IHeader } from '../../utils/types/electrum';
-import { IVin } from '../../utils/wallet';
+import { IFormattedTransaction, ISendTransaction, TServer } from 'beignet';
 
 export enum EPaymentType {
 	sent = 'sent',
@@ -142,6 +141,7 @@ export interface ICreateWallet {
 	changeAddressAmount?: number;
 	addressTypesToCreate?: Partial<IAddressTypes>;
 	selectedNetwork?: EAvailableNetwork;
+	servers?: TServer | TServer[];
 }
 
 export interface IUtxo {
@@ -161,46 +161,8 @@ export interface IOutput {
 	index: number; // Used to specify which output to update or edit when using updateSendTransaction.
 }
 
-export interface IFormattedTransaction {
-	address: string;
-	height: number;
-	scriptHash: string;
-	totalInputValue: number;
-	matchedInputValue: number;
-	totalOutputValue: number;
-	matchedOutputValue: number;
-	fee: number;
-	satsPerByte: number;
-	type: EPaymentType;
-	value: number;
-	txid: string;
-	messages: string[];
-	vin: IVin[];
-	timestamp: number;
-	confirmTimestamp?: number;
-}
-
 export interface IFormattedTransactions {
 	[txId: string]: IFormattedTransaction;
-}
-
-export interface ISendTransaction {
-	outputs: IOutput[];
-	inputs: IUtxo[];
-	changeAddress: string;
-	fiatAmount: number;
-	fee: number; //Total fee in sats
-	satsPerByte: number;
-	selectedFeeId: EFeeId;
-	message: string; // OP_RETURN data for a given transaction.
-	label: string; // User set label for a given transaction.
-	rbf: boolean;
-	boostType: EBoostType;
-	minFee: number; // (sats) Used for RBF/CPFP transactions where the fee needs to be greater than the original.
-	max: boolean; // If the user intends to send the max amount.
-	tags: string[];
-	slashTagsUrl?: string;
-	lightningInvoice?: string;
 }
 
 export interface IBoostedTransaction {
@@ -215,7 +177,7 @@ export interface IBoostedTransactions {
 }
 
 export interface IWallet {
-	id: TWalletName;
+	id: string;
 	name: string;
 	seedHash?: string; // Help components/hooks recognize when a seed is set/updated for the same wallet id/name.
 	addresses: IWalletItem<IAddressTypeContent<IAddresses>>;
@@ -231,11 +193,7 @@ export interface IWallet {
 	transactions: IWalletItem<IFormattedTransactions>;
 	transaction: IWalletItem<ISendTransaction>;
 	balance: IWalletItem<number>;
-	addressType: {
-		bitcoin: EAddressType;
-		bitcoinTestnet: EAddressType;
-		bitcoinRegtest: EAddressType;
-	};
+	addressType: IWalletItem<EAddressType>;
 }
 
 export interface IWallets {
