@@ -1,6 +1,6 @@
 import React, { memo, ReactElement } from 'react';
 import { View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
-import { TouchableOpacity } from '../styles/components';
+import { Pressable } from '../styles/components';
 import { Text } from '../styles/text';
 import { BackspaceIcon } from '../styles/icons';
 import { vibrate } from '../utils/helpers';
@@ -24,16 +24,18 @@ const Button = memo(
 		hasError?: boolean;
 		testID?: string;
 	}): ReactElement => (
-		<TouchableOpacity
-			style={styles.buttonContainer}
+		<Pressable
+			style={({ pressed }): StyleProp<ViewStyle> => [
+				styles.buttonContainer,
+				pressed && styles.pressed,
+			]}
 			color="transparent"
-			activeOpacity={ACTIVE_OPACITY}
 			testID={testID}
-			onPress={onPress}>
+			onPressIn={onPress}>
 			<Text style={[styles.button, hasError && styles.buttonError]}>
 				{text}
 			</Text>
-		</TouchableOpacity>
+		</Pressable>
 	),
 );
 
@@ -99,14 +101,16 @@ const NumberPad = ({
 					testID="N0"
 					onPress={(): void => handlePress('0')}
 				/>
-				<TouchableOpacity
-					style={styles.buttonContainer}
+				<Pressable
+					style={({ pressed }): StyleProp<ViewStyle> => [
+						styles.buttonContainer,
+						pressed && styles.pressed,
+					]}
 					color="transparent"
-					activeOpacity={ACTIVE_OPACITY}
 					testID="NRemove"
-					onPress={(): void => handlePress('delete')}>
+					onPressIn={(): void => handlePress('delete')}>
 					<BackspaceIcon />
-				</TouchableOpacity>
+				</Pressable>
 			</View>
 		</View>
 	);
@@ -134,6 +138,9 @@ const styles = StyleSheet.create({
 	},
 	buttonError: {
 		color: '#ff6600',
+	},
+	pressed: {
+		opacity: ACTIVE_OPACITY,
 	},
 });
 

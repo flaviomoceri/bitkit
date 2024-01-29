@@ -28,6 +28,7 @@ const d = checkComplete([
 	'settings-rgs',
 	'settings-suggestions',
 	'settings-dev',
+	'settings-support-status',
 ])
 	? describe.skip
 	: describe;
@@ -622,6 +623,28 @@ d('Settings', () => {
 			await expect(element(by.id('ErrorReport'))).toBeVisible();
 
 			markComplete('settings-dev');
+		});
+	});
+
+	d('Support', () => {
+		it('Can see app status', async () => {
+			if (checkComplete('settings-support-status')) {
+				return;
+			}
+
+			await element(by.id('Settings')).tap();
+			await element(by.id('Support')).tap();
+			await element(by.id('AppStatus')).tap();
+
+			await expect(element(by.id('Status-internet'))).toBeVisible();
+			await expect(element(by.id('Status-bitcoin_node'))).toBeVisible();
+			await expect(element(by.id('Status-lightning_node'))).toBeVisible();
+			await expect(element(by.id('Status-lightning_connection'))).toBeVisible();
+			await expect(element(by.id('Status-full_backup'))).toBeVisible();
+
+			await element(by.id('NavigationClose')).tap();
+
+			markComplete('settings-support-status');
 		});
 	});
 });

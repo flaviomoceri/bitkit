@@ -195,6 +195,7 @@ export const setupLdk = async ({
 		if (shouldPreemptivelyStopLdk) {
 			// start from a clean slate
 			await ldk.stop();
+			dispatch(updateUi({ isLDKReady: false }));
 		}
 
 		const accountVersion = await checkAccountVersion(
@@ -525,6 +526,7 @@ export const refreshLdk = async ({
 
 		const isRunning = await isLdkRunning();
 		if (!isRunning) {
+			dispatch(updateUi({ isLDKReady: false }));
 			// Attempt to setup and start LDK.
 			const setupResponse = await setupLdk({
 				selectedNetwork,

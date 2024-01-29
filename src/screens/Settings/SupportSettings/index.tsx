@@ -42,6 +42,12 @@ const SupportSettings = ({
 							openURL('https://help.bitkit.to').then();
 						},
 					},
+					{
+						title: t('support.status'),
+						type: EItemType.button,
+						onPress: (): void => navigation.navigate('AppStatus'),
+						testID: 'AppStatus',
+					},
 				],
 			},
 		],

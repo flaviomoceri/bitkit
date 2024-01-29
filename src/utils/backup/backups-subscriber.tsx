@@ -217,8 +217,8 @@ const EnabledSlashtag = (): ReactElement => {
 			(backup.remoteMetadataBackupSyncRequired &&
 				now - backup.remoteMetadataBackupSyncRequired >
 					FAILED_BACKUP_CHECK_TIME) ||
-			(backup.remoteLdkActivityBackupSyncRequired &&
-				now - backup.remoteLdkActivityBackupSyncRequired >
+			(backup.remoteLdkBackupLastSyncRequired &&
+				now - backup.remoteLdkBackupLastSyncRequired >
 					FAILED_BACKUP_CHECK_TIME) ||
 			(backup.remoteBlocktankBackupSyncRequired &&
 				now - backup.remoteBlocktankBackupSyncRequired >

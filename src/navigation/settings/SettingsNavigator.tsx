@@ -53,6 +53,7 @@ import LightningNavigator, {
 } from '../lightning/LightningNavigator';
 import WebRelay from '../../screens/Settings/WebRelay';
 import { __E2E__ } from '../../constants/env';
+import AppStatus from '../../screens/Settings/AppStatus';
 
 export type SettingsNavigationProp =
 	StackNavigationProp<SettingsStackParamList>;
@@ -73,6 +74,7 @@ export type SettingsStackParamList = {
 	AdvancedSettings: undefined;
 	AboutSettings: undefined;
 	SupportSettings: undefined;
+	AppStatus: undefined;
 	ReportIssue: undefined;
 	FormSuccess: undefined;
 	FormError: undefined;
@@ -131,6 +133,7 @@ const SettingsNavigator = (): ReactElement => {
 			<Stack.Screen name="AdvancedSettings" component={AdvancedSettings} />
 			<Stack.Screen name="AboutSettings" component={AboutSettings} />
 			<Stack.Screen name="SupportSettings" component={SupportSettings} />
+			<Stack.Screen name="AppStatus" component={AppStatus} />
 			<Stack.Screen name="ReportIssue" component={ReportIssue} />
 			<Stack.Screen name="FormSuccess" component={FormSuccess} />
 			<Stack.Screen name="FormError" component={FormError} />

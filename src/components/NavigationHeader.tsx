@@ -1,7 +1,6 @@
 import React, { memo, ReactElement, useCallback, useMemo } from 'react';
 import {
 	View,
-	TouchableOpacity,
 	StyleProp,
 	StyleSheet,
 	ViewStyle,
@@ -13,6 +12,7 @@ import { Subtitle, Title } from '../styles/text';
 import { BackIcon, XIcon } from '../styles/icons';
 import { Keyboard } from '../hooks/keyboard';
 import { HEADER_HEIGHT } from '../screens/Wallets/Header';
+import { Pressable } from '../styles/components';
 
 const ActionButton = memo(
 	({
@@ -27,13 +27,18 @@ const ActionButton = memo(
 		testID?: string;
 	}): ReactElement => {
 		return (
-			<TouchableOpacity
-				style={[styles.action, style]}
-				activeOpacity={onPress ? 0.6 : 1}
+			<Pressable
+				style={({ pressed }): StyleProp<ViewStyle> => [
+					styles.action,
+					style,
+					pressed ? styles.pressed : styles.notPressed,
+				]}
+				color="transparent"
 				onPress={onPress}
+				hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
 				testID={testID}>
 				{children}
-			</TouchableOpacity>
+			</Pressable>
 		);
 	},
 );
@@ -181,6 +186,12 @@ const styles = StyleSheet.create({
 	},
 	actionRight: {
 		paddingRight: 11,
+	},
+	pressed: {
+		opacity: 0.6,
+	},
+	notPressed: {
+		opacity: 1,
 	},
 });
 
