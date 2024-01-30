@@ -202,25 +202,20 @@ const AppStatus = ({}: SettingsScreenProps<'AppStatus'>): ReactElement => {
 	];
 
 	return (
-		<ThemedView style={styles.container}>
-			<SettingsView
-				title={t('status.title')}
-				fullHeight={true}
-				showBackNavigation={true}>
-				<ScrollView style={styles.statusRoot}>
-					{items.map((it) => (
-						<Status key={it.item} {...it} />
-					))}
-				</ScrollView>
-			</SettingsView>
-		</ThemedView>
+		<SettingsView
+			title={t('status.title')}
+			fullHeight={true}
+			showBackNavigation={true}>
+			<ScrollView style={styles.statusRoot}>
+				{items.map((it) => (
+					<Status key={it.item} {...it} />
+				))}
+			</ScrollView>
+		</SettingsView>
 	);
 };
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	},
 	statusRoot: {
 		flex: 1,
 	},
@@ -228,7 +223,7 @@ const styles = StyleSheet.create({
 		marginHorizontal: 16,
 		borderBottomWidth: 1,
 		borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-		height: 56,
+		height: 76,
 		flexDirection: 'row',
 		alignItems: 'center',
 	},
