@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		textAlign: 'center',
+		width: '100%',
 	},
 	action: {
 		flex: 1,
