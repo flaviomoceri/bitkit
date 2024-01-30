@@ -10,7 +10,7 @@ git clone git@github.com:synonymdev/bitkit.git && cd bitkit
 
 2. Switch Node version
 
-Switch to the Node.js version defined in `.nvmrc`. If `nvm` (or similiar) is installed on your system you can run `nvm use`.
+Switch to the Node.js version defined in `.nvmrc`. If `nvm` (or similar) is installed on your system you can run `nvm use`.
 
 3. Install dependencies
 
@@ -18,20 +18,25 @@ Switch to the Node.js version defined in `.nvmrc`. If `nvm` (or similiar) is ins
 yarn install
 ```
 
-4. Setup iOS or Android dependencies
-
-```shell
-yarn setup-ios
-```
-
-or
-
-```shell
-yarn setup-android
-```
-
 ## Build
+
+### iOS
 
 For iOS: Open the `ios` folder in Xcode to build the project.
 
-For Android: `yarn bundle`
+### Android
+
+For Android: `yarn bundle`.
+
+Moreover, to build the Android APK, it is necessary to configure a signing store to sign
+the apk, as explained by [React Docs](https://reactnative.dev/docs/signed-apk-android).
+
+It is recommend to use the already presented `debug.store` in `android/app`.
+Add the following lines to `~/.gradle/gradle.properties`:
+
+```shell
+BITKIT_UPLOAD_STORE_FILE=debug.keystore
+BITKIT_UPLOAD_STORE_PASSWORD=android
+BITKIT_UPLOAD_KEY_ALIAS=androiddebugkey
+BITKIT_UPLOAD_KEY_PASSWORD=android
+```
