@@ -3,6 +3,7 @@ import { err, ok, Result } from '@synonymdev/result';
 
 import {
 	generateMnemonic,
+	getAddressTypesToMonitor,
 	getBip39Passphrase,
 	getMnemonicPhrase,
 	getSelectedAddressType,
@@ -122,14 +123,17 @@ export const startWalletServices = async ({
 				return err(createRes.error.message);
 			}
 		} else {
+			const addressType = getSelectedAddressType({
+				selectedWallet,
+				selectedNetwork,
+			});
+			const addressTypesToMonitor = getAddressTypesToMonitor();
 			const onChainSetupRes = await setupOnChainWallet({
 				name: selectedWallet,
 				selectedNetwork,
 				bip39Passphrase: await getBip39Passphrase(),
-				addressType: getSelectedAddressType({
-					selectedWallet,
-					selectedNetwork,
-				}),
+				addressType,
+				addressTypesToMonitor,
 			});
 			if (onChainSetupRes.isErr()) {
 				return err(onChainSetupRes.error.message);

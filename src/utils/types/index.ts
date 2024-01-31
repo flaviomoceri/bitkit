@@ -1,11 +1,11 @@
 import { EAvailableNetwork } from '../networks';
 import {
-	EAddressType,
 	IAddresses,
 	IKeyDerivationPath,
 	TKeyDerivationAccountType,
 	TWalletName,
 } from '../../store/types/wallet';
+import { EAddressType } from 'beignet';
 
 export interface IResponse<T> {
 	error: boolean;

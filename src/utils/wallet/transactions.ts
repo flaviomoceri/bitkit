@@ -16,7 +16,6 @@ import {
 	EPaymentType,
 	IOutput,
 	IUtxo,
-	EAddressType,
 	TGetByteCountInputs,
 	TGetByteCountOutputs,
 	TWalletName,
@@ -58,7 +57,13 @@ import { TOnchainActivityItem } from '../../store/types/activity';
 import { initialFeesState } from '../../store/slices/fees';
 import { TRANSACTION_DEFAULTS } from './constants';
 import i18n from '../i18n';
-import { EFeeId, getByteCount, IOnchainFees, ISendTransaction } from 'beignet';
+import {
+	EAddressType,
+	EFeeId,
+	getByteCount,
+	IOnchainFees,
+	ISendTransaction,
+} from 'beignet';
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);

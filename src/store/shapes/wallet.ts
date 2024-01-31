@@ -12,12 +12,19 @@ import {
 	IAddressTypes,
 	IAddresses,
 	IAddress,
-	EAddressType,
 	EBoostType,
 } from '../types/wallet';
-import { EFeeId, ISendTransaction } from 'beignet';
+import { EAddressType, EFeeId, ISendTransaction } from 'beignet';
 
 export const addressTypes: Readonly<IAddressTypes> = {
+	[EAddressType.p2tr]: {
+		type: EAddressType.p2tr,
+		path: "m/86'/0'/0'/0/0",
+		name: 'Taproot',
+		shortName: 'Taproot',
+		description: 'Taproot Address',
+		example: '(bc1px...)',
+	},
 	[EAddressType.p2wpkh]: {
 		type: EAddressType.p2wpkh,
 		path: "m/84'/0'/0'/0/0",
@@ -176,6 +183,7 @@ export const defaultWalletStoreShape: Readonly<IWalletStore> = {
 	selectedNetwork: __WALLET_DEFAULT_SELECTED_NETWORK__,
 	selectedWallet: 'wallet0',
 	exchangeRates: {},
+	addressTypesToMonitor: [EAddressType.p2wpkh],
 	header: {
 		bitcoin: defaultHeader,
 		bitcoinTestnet: defaultHeader,
@@ -186,4 +194,8 @@ export const defaultWalletStoreShape: Readonly<IWalletStore> = {
 
 export const getDefaultWalletShape = (): IWallet => {
 	return cloneDeep(defaultWalletShape);
+};
+
+export const getDefaultWalletStoreShape = (): IWalletStore => {
+	return cloneDeep(defaultWalletStoreShape);
 };

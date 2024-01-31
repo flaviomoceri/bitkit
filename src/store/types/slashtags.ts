@@ -1,6 +1,6 @@
-import { EAddressType } from './wallet';
-
 // TODO(slashtags): move this interface to the Slashtags SDK once its stable?
+import { EAddressType } from 'beignet';
+
 export type BasicProfile = Partial<{
 	name: string;
 	bio: string;

@@ -7,7 +7,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View, ScrollView } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-native-qrcode-svg';
@@ -36,12 +36,7 @@ import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from '../../../store/reselect/wallet';
-import {
-	EAddressType,
-	IAddress,
-	IUtxo,
-	TWalletName,
-} from '../../../store/types/wallet';
+import { IAddress, IUtxo, TWalletName } from '../../../store/types/wallet';
 import Button from '../../../components/Button';
 import {
 	defaultAddressContent,
@@ -74,8 +69,13 @@ import { setupLdk } from '../../../utils/lightning';
 import { startWalletServices } from '../../../utils/startup';
 import { updateOnchainFeeEstimates } from '../../../store/utils/fees';
 import { viewControllerIsOpenSelector } from '../../../store/reselect/ui';
+import { EAddressType } from 'beignet';
 
 export type TAddressViewerData = {
+	[EAddressType.p2tr]: {
+		addresses: IAddress[];
+		changeAddresses: IAddress[];
+	};
 	[EAddressType.p2wpkh]: {
 		addresses: IAddress[];
 		changeAddresses: IAddress[];
@@ -104,6 +104,10 @@ const defaultConfig: TAddressViewerConfig = {
 	selectedNetwork: EAvailableNetwork.bitcoin,
 };
 const defaultAllAddressesData: TAddressViewerData = {
+	[EAddressType.p2tr]: {
+		addresses: [],
+		changeAddresses: [],
+	},
 	[EAddressType.p2wpkh]: {
 		addresses: [],
 		changeAddresses: [],
@@ -239,7 +243,7 @@ const AddressViewer = ({
 	);
 
 	const flatListRef = useRef<FlatList>(null);
-
+	const scrollViewRef = useRef<ScrollView>(null);
 	const [config, setConfig] = useState({
 		...defaultConfig,
 		selectedNetwork,
@@ -1000,27 +1004,42 @@ const AddressViewer = ({
 				)}
 				{!searchTxt && (
 					<View style={styles.row}>
-						<Button
-							color={getAddressTypeButtonColor(EAddressType.p2pkh)}
-							text={EAddressType.p2pkh}
-							onPress={(): void => {
-								updateAddressType(EAddressType.p2pkh).then();
-							}}
-						/>
-						<Button
-							color={getAddressTypeButtonColor(EAddressType.p2sh)}
-							text={EAddressType.p2sh}
-							onPress={(): void => {
-								updateAddressType(EAddressType.p2sh).then();
-							}}
-						/>
-						<Button
-							color={getAddressTypeButtonColor(EAddressType.p2wpkh)}
-							text={EAddressType.p2wpkh}
-							onPress={(): void => {
-								updateAddressType(EAddressType.p2wpkh).then();
-							}}
-						/>
+						<ScrollView
+							horizontal={true}
+							showsHorizontalScrollIndicator={false}
+							ref={scrollViewRef}
+							onContentSizeChange={(): void =>
+								scrollViewRef?.current?.scrollToEnd({ animated: false })
+							}>
+							<Button
+								color={getAddressTypeButtonColor(EAddressType.p2pkh)}
+								text={EAddressType.p2pkh}
+								onPress={(): void => {
+									updateAddressType(EAddressType.p2pkh).then();
+								}}
+							/>
+							<Button
+								color={getAddressTypeButtonColor(EAddressType.p2sh)}
+								text={EAddressType.p2sh}
+								onPress={(): void => {
+									updateAddressType(EAddressType.p2sh).then();
+								}}
+							/>
+							<Button
+								color={getAddressTypeButtonColor(EAddressType.p2wpkh)}
+								text={EAddressType.p2wpkh}
+								onPress={(): void => {
+									updateAddressType(EAddressType.p2wpkh).then();
+								}}
+							/>
+							<Button
+								color={getAddressTypeButtonColor(EAddressType.p2tr)}
+								text={EAddressType.p2tr}
+								onPress={(): void => {
+									updateAddressType(EAddressType.p2tr).then();
+								}}
+							/>
+						</ScrollView>
 					</View>
 				)}
 				{!searchTxt && (
