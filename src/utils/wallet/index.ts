@@ -1483,15 +1483,10 @@ const onMessage: TOnMessage = (key, data) => {
 	switch (key) {
 		case 'transactionReceived':
 			const txMsg: TTransactionMessage = data as TTransactionMessage;
-			if (
-				wallet?.isSwitchingNetworks !== undefined &&
-				!wallet?.isSwitchingNetworks
-			) {
-				showNewOnchainTxPrompt({
-					id: txMsg.transaction.txid,
-					value: btcToSats(txMsg.transaction.value),
-				});
-			}
+			showNewOnchainTxPrompt({
+				id: txMsg.transaction.txid,
+				value: btcToSats(txMsg.transaction.value),
+			});
 			setTimeout(() => {
 				updateActivityList();
 			}, 500);
