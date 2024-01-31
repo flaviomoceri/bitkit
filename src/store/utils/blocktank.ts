@@ -355,7 +355,7 @@ export const confirmChannelPurchase = async ({
 		selectedWallet = getSelectedWallet();
 	}
 
-	const rawTx = await createTransaction({ selectedWallet, selectedNetwork });
+	const rawTx = await createTransaction({});
 	if (rawTx.isErr()) {
 		showToast({
 			type: 'error',

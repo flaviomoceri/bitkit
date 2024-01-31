@@ -432,98 +432,26 @@ export const signPsbt = async ({
 
 /**
  * Creates complete signed transaction using the transaction data store
- * @param selectedWallet
- * @param selectedNetwork
  * @param {ISendTransaction} [transactionData]
  * @returns {Promise<Result<{id: string, hex: string}>>}
  */
 export const createTransaction = async ({
-	selectedWallet,
-	selectedNetwork,
 	transactionData,
 }: ICreateTransaction = {}): Promise<Result<{ id: string; hex: string }>> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	// If no transaction data is provided, use the stored transaction object from storage.
-	if (!transactionData) {
-		const transactionDataRes = getOnchainTransactionData();
-		if (transactionDataRes.isErr()) {
-			return err(transactionDataRes.error.message);
-		}
-		transactionData = transactionDataRes.value;
-	}
-
-	//Remove any outputs that are below the dust limit and apply them to the fee.
-	removeDustOutputs(transactionData.outputs);
-
-	const inputValue = getTransactionInputValue({
-		inputs: transactionData.inputs,
-	});
-	const outputValue = getTransactionOutputValue({
-		outputs: transactionData.outputs,
-	});
-	if (inputValue === 0) {
-		const message = i18n.t('wallet:send_error_no_inputs');
-		showToast({
-			type: 'error',
-			title: i18n.t('wallet:error_create_tx'),
-			description: message,
-		});
-		return err(message);
-	}
-	const fee = inputValue - outputValue;
-
-	//Refuse tx if the fee is greater than the amount we're attempting to send.
-	if (fee > inputValue) {
-		const message = i18n.t('wallet:send_error_fee_exceeds');
-		showToast({
-			type: 'error',
-			title: i18n.t('wallet:error_create_tx'),
-			description: message,
-		});
-		return err(message);
-	}
-
 	try {
-		const bip32InterfaceRes = await getBip32Interface(
-			selectedWallet,
-			selectedNetwork,
-		);
-		if (bip32InterfaceRes.isErr()) {
-			return err(bip32InterfaceRes.error.message);
-		}
-
-		//Create PSBT before signing inputs
-		const psbtRes = await createPsbtFromTransactionData({
-			selectedWallet,
-			selectedNetwork,
+		const transaction = getOnChainWalletTransaction();
+		const createTxRes = await transaction.createTransaction({
 			transactionData,
-			bip32Interface: bip32InterfaceRes.value,
 		});
-
-		if (psbtRes.isErr()) {
-			return err(psbtRes.error);
+		if (createTxRes.isErr()) {
+			showToast({
+				type: 'error',
+				title: i18n.t('wallet:error_create_tx'),
+				description: createTxRes.error.message,
+			});
+			return err(createTxRes.error.message);
 		}
-
-		const psbt = psbtRes.value;
-
-		const signedPsbtRes = await signPsbt({
-			psbt,
-			bip32Interface: bip32InterfaceRes.value,
-		});
-
-		if (signedPsbtRes.isErr()) {
-			return err(signedPsbtRes.error);
-		}
-
-		const tx = signedPsbtRes.value.extractTransaction();
-		const id = tx.getId();
-		const hex = tx.toHex();
-		return ok({ id, hex });
+		return ok(createTxRes.value);
 	} catch (e) {
 		return err(e);
 	}
@@ -1593,10 +1521,7 @@ export const broadcastBoost = async ({
 		}
 		const transaction = transactionDataResponse.value;
 
-		const rawTx = await createTransaction({
-			selectedNetwork,
-			selectedWallet,
-		});
+		const rawTx = await createTransaction({});
 		if (rawTx.isErr()) {
 			return err(rawTx.error.message);
 		}
