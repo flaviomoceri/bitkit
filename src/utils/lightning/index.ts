@@ -23,6 +23,7 @@ import lm, {
 	TPaymentReq,
 	TTransactionData,
 	TTransactionPosition,
+	TGetFees,
 } from '@synonymdev/react-native-ldk';
 
 import {
@@ -89,6 +90,8 @@ import {
 	__BACKUPS_SERVER_PUBKEY__,
 	__TRUSTED_ZERO_CONF_PEERS__,
 } from '../../constants/env';
+import { TBroadcastTransaction } from '@synonymdev/react-native-ldk/dist/utils/types';
+import { TGetAddressHistory } from 'beignet';
 
 let LDKIsStayingSynced = false;
 
@@ -161,6 +164,37 @@ const LDK_ACCOUNT_SUFFIX_V2 = 'ldkaccountv2';
 export const setLdkStoragePath = (): Promise<Result<string>> =>
 	lm.setBaseStoragePath(`${RNFS.DocumentDirectoryPath}/ldk/`);
 
+const broadcastTransaction: TBroadcastTransaction = async (
+	rawTx: string,
+): Promise<Result<string>> => {
+	const electrum = getOnChainWalletElectrum();
+	return await electrum.broadcastTransaction({
+		rawTx,
+		subscribeToOutputAddress: false,
+	});
+};
+
+const getScriptPubKeyHistory = async (
+	scriptPubKey: string,
+): Promise<TGetAddressHistory[]> => {
+	const electrum = getOnChainWalletElectrum();
+	return await electrum.getScriptPubKeyHistory(scriptPubKey);
+};
+
+const getFees: TGetFees = async () => {
+	const fees = getFeesStore().onchain;
+	return {
+		//https://github.com/lightningdevkit/rust-lightning/blob/main/CHANGELOG.md#api-updates
+		onChainSweep: fees.fast,
+		maxAllowedNonAnchorChannelRemoteFee: Math.max(25, fees.fast * 10),
+		minAllowedAnchorChannelRemoteFee: fees.minimum,
+		minAllowedNonAnchorChannelRemoteFee: Math.max(fees.minimum - 1, 0),
+		anchorChannelFee: fees.slow,
+		nonAnchorChannelFee: fees.normal,
+		channelCloseMinimum: fees.minimum,
+	};
+};
+
 /**
  * Used to spin-up LDK services.
  * In order, this method:
@@ -170,8 +204,8 @@ export const setLdkStoragePath = (): Promise<Result<string>> =>
  * 5. Syncs LDK.
  */
 export const setupLdk = async ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	shouldRefreshLdk = true,
 	staleBackupRecoveryMode = false,
 	shouldPreemptivelyStopLdk = true,
@@ -185,12 +219,6 @@ export const setupLdk = async ({
 	try {
 		pendingRefreshPromises = [];
 		isRefreshing = false;
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 
 		if (shouldPreemptivelyStopLdk) {
 			// start from a clean slate
@@ -249,35 +277,16 @@ export const setupLdk = async ({
 			return err(storageRes.error);
 		}
 		const rapidGossipSyncUrl = getStore().settings.rapidGossipSyncUrl;
-		const electrum = getOnChainWalletElectrum();
 		const lmStart = await lm.start({
 			account: account.value,
-			getFees: async () => {
-				const fees = getFeesStore().onchain;
-				return {
-					//https://github.com/lightningdevkit/rust-lightning/blob/main/CHANGELOG.md#api-updates
-					onChainSweep: fees.fast,
-					maxAllowedNonAnchorChannelRemoteFee: Math.max(25, fees.fast * 10),
-					minAllowedAnchorChannelRemoteFee: fees.minimum,
-					minAllowedNonAnchorChannelRemoteFee: Math.max(fees.minimum - 1, 0),
-					anchorChannelFee: fees.slow,
-					nonAnchorChannelFee: fees.normal,
-					channelCloseMinimum: fees.minimum,
-				};
-			},
+			getFees,
 			network,
 			getBestBlock,
 			getAddress,
-			broadcastTransaction: (rawTx) =>
-				electrum.broadcastTransaction({
-					rawTx,
-					subscribeToOutputAddress: false,
-				}),
-			getTransactionData: (txId) => getTransactionData(txId),
-			getScriptPubKeyHistory: electrum.getScriptPubKeyHistory,
-			getTransactionPosition: (params) => {
-				return getTransactionPosition(params);
-			},
+			broadcastTransaction,
+			getTransactionData,
+			getScriptPubKeyHistory,
+			getTransactionPosition,
 			forceCloseOnStartup: {
 				forceClose: staleBackupRecoveryMode,
 				broadcastLatestTx: false,

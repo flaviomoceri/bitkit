@@ -53,6 +53,7 @@ import {
 	generateNewReceiveAddress,
 	getWalletData,
 	setWalletData,
+	updateExchangeRates,
 	updateWallet,
 } from '../../store/actions/wallet';
 import { TCoinSelectPreference } from '../../store/types/settings';
@@ -1569,6 +1570,7 @@ export const setupOnChainWallet = async ({
 			setData: setWalletData,
 		};
 	}
+	updateExchangeRates();
 	const createWalletResponse = await Wallet.create({
 		name,
 		mnemonic,
