@@ -11,14 +11,13 @@ import { EAvailableNetwork, networks } from '../networks';
 import {
 	addressTypes,
 	getDefaultWalletShape,
+	getDefaultWalletStoreShape,
 	TAddressIndexInfo,
 } from '../../store/shapes/wallet';
 import {
-	EAddressType,
 	EPaymentType,
 	IAddress,
 	IAddresses,
-	IAddressTypes,
 	IFormattedTransactions,
 	IKeyDerivationPath,
 	IKeyDerivationPathData,
@@ -74,6 +73,7 @@ import { showNewOnchainTxPrompt, showNewTxPrompt } from '../../store/utils/ui';
 import { promiseTimeout, reduceValue } from '../helpers';
 import { objectKeys } from '../objectKeys';
 import {
+	EAddressType,
 	EAvailableNetworks,
 	EElectrumNetworks,
 	Electrum,
@@ -106,7 +106,6 @@ export const refreshWallet = async ({
 	onchain = true,
 	lightning = true,
 	scanAllAddresses = false, // If set to false, on-chain scanning will adhere to the gap limit (20).
-	updateAllAddressTypes = false, // If set to true, Bitkit will generate, check and update all available address types.
 	showNotification = true, // Whether to show newTxPrompt on new incoming transactions.
 	selectedWallet,
 	selectedNetwork,
@@ -136,7 +135,6 @@ export const refreshWallet = async ({
 		if (onchain) {
 			await wallet.refreshWallet({
 				scanAllAddresses,
-				updateAllAddressTypes,
 			});
 		}
 
@@ -168,9 +166,7 @@ export const refreshWallet = async ({
  * @param {number} [changeAddressAmount] - Number of changeAddresses to generate.
  * @param {number} [addressIndex] - What index to start generating addresses at.
  * @param {number} [changeAddressIndex] - What index to start generating changeAddresses at.
- * @param {string} [selectedNetwork] - What network to generate addresses for (bitcoin or bitcoinTestnet).
  * @param {string} [keyDerivationPath] - The path to generate addresses from.
- * @param [TKeyDerivationAccountType] - Specifies which account to generate an address from (onchain).
  * @param {string} [addressType] - Determines what type of address to generate (p2pkh, p2sh, p2wpkh).
  */
 export const generateAddresses = async ({
@@ -841,6 +837,14 @@ export const getSelectedAddressType = ({
 };
 
 /**
+ * Returns the currently monitored address types (p2pkh | p2sh | p2wpkh | p2tr).
+ * @returns {EAddressType[]}
+ */
+export const getAddressTypesToMonitor = (): EAddressType[] => {
+	return getWalletStore().addressTypesToMonitor;
+};
+
+/**
  * Returns the currently selected wallet (Ex: 'wallet0').
  * @return {TWalletName}
  */
@@ -1320,7 +1324,7 @@ export const createDefaultWallet = async ({
 	mnemonic,
 	bip39Passphrase,
 	restore,
-	addressTypesToCreate,
+	addressTypesToCreate = getDefaultWalletStoreShape().addressTypesToMonitor,
 	selectedNetwork = getSelectedNetwork(),
 	servers,
 }: {
@@ -1328,15 +1332,11 @@ export const createDefaultWallet = async ({
 	mnemonic: string;
 	bip39Passphrase: string;
 	restore: boolean;
-	addressTypesToCreate: Partial<IAddressTypes>;
+	addressTypesToCreate?: EAddressType[];
 	selectedNetwork?: EAvailableNetwork;
 	servers?: TServer | TServer[];
 }): Promise<Result<IWallets>> => {
 	try {
-		if (!addressTypesToCreate) {
-			// if nothing else specified use only Native Segwit by default
-			addressTypesToCreate = { p2wpkh: addressTypes.p2wpkh };
-		}
 		const selectedAddressType = getSelectedAddressType();
 
 		if (!bip39Passphrase) {
@@ -1373,6 +1373,7 @@ export const createDefaultWallet = async ({
 			addressType: selectedAddressType,
 			servers,
 			disableMessagesOnCreate: true,
+			addressTypesToMonitor: addressTypesToCreate,
 		});
 		if (setupWalletRes.isErr()) {
 			return err(setupWalletRes.error.message);
@@ -1481,11 +1482,11 @@ const onElectrumConnectionChange = (isConnected: boolean): void => {
 const onMessage: TOnMessage = (key, data) => {
 	switch (key) {
 		case 'transactionReceived':
-			const txMsg: TTransactionMessage = data as TTransactionMessage;
 			if (
 				wallet?.isSwitchingNetworks !== undefined &&
 				!wallet?.isSwitchingNetworks
 			) {
+				const txMsg: TTransactionMessage = data as TTransactionMessage;
 				showNewOnchainTxPrompt({
 					id: txMsg.transaction.txid,
 					value: btcToSats(txMsg.transaction.value),
@@ -1540,6 +1541,7 @@ export const setupOnChainWallet = async ({
 	setStorage = true,
 	servers,
 	disableMessagesOnCreate = false,
+	addressTypesToMonitor = [addressType],
 }: {
 	name: TWalletName;
 	mnemonic?: string;
@@ -1549,6 +1551,7 @@ export const setupOnChainWallet = async ({
 	setStorage?: boolean;
 	servers?: TServer | TServer[];
 	disableMessagesOnCreate?: boolean;
+	addressTypesToMonitor?: EAddressType[];
 }): Promise<Result<Wallet>> => {
 	if (!mnemonic) {
 		const mnemonicRes = await getMnemonicPhrase(name);
@@ -1582,6 +1585,7 @@ export const setupOnChainWallet = async ({
 		customGetAddress: customGetAddress,
 		customGetScriptHash: getCustomScriptHash,
 		disableMessagesOnCreate,
+		addressTypesToMonitor,
 	});
 	if (createWalletResponse.isErr()) {
 		return err(createWalletResponse.error.message);
@@ -1956,7 +1960,7 @@ export const getCurrentAddressIndex = async ({
 	addressType?: EAddressType;
 }): Promise<Result<IAddress>> => {
 	try {
-		addressType = addressType ?? wallet.data.addressType;
+		addressType = addressType ?? wallet.addressType;
 		const currentWallet = wallet.data;
 		const addressIndex = currentWallet.addressIndex[addressType];
 		const receiveAddress = currentWallet.addressIndex[addressType];

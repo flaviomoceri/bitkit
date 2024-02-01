@@ -2,7 +2,6 @@ import { err, ok, Result } from '@synonymdev/result';
 
 import actions from './actions';
 import {
-	EAddressType,
 	EBoostType,
 	IAddress,
 	ICreateWallet,
@@ -32,11 +31,12 @@ import {
 import { EAvailableNetwork } from '../../utils/networks';
 import { removeKeyFromObject } from '../../utils/helpers';
 import { IHeader } from '../../utils/types/electrum';
-import { addressTypes, getDefaultWalletShape } from '../shapes/wallet';
+import { getDefaultWalletShape } from '../shapes/wallet';
 import { TGetImpactedAddressesRes } from '../types/checks';
 import { getFakeTransaction } from '../../utils/wallet/testing';
 import { updateActivityList } from '../utils/activity';
 import {
+	EAddressType,
 	EAvailableNetworks,
 	EFeeId,
 	getDefaultWalletData,
@@ -69,7 +69,7 @@ export const updateWallet = (
  * @param {string} mnemonic
  * @param {string} [wallet]
  * @param {string} [bip39Passphrase]
- * @param {Partial<IAddressTypes>} [addressTypesToCreate]
+ * @param {EAddressType[]} [addressTypesToCreate]
  * @return {Promise<Result<string>>}
  */
 export const createWallet = async ({
@@ -81,10 +81,17 @@ export const createWallet = async ({
 	selectedNetwork = getSelectedNetwork(),
 	servers,
 }: ICreateWallet): Promise<Result<string>> => {
-	if (!addressTypesToCreate) {
-		addressTypesToCreate = addressTypes;
-	}
 	try {
+		if (!addressTypesToCreate && restore) {
+			// If restoring a wallet, create and monitor all address types
+			addressTypesToCreate = Object.values(EAddressType);
+			dispatch({
+				type: actions.UPDATE_WALLET,
+				payload: {
+					addressTypesToMonitor: Object.values(EAddressType),
+				},
+			});
+		}
 		const response = await createDefaultWallet({
 			walletName,
 			mnemonic,
@@ -451,6 +458,14 @@ export const updateSelectedAddressType = async ({
 	addressType: EAddressType;
 }): Promise<void> => {
 	const wallet = getOnChainWallet();
+	const addressTypesToMonitor = wallet.addressTypesToMonitor;
+	if (!addressTypesToMonitor.includes(addressType)) {
+		// Append the new address type so we monitor it in subsequent sessions.
+		addressTypesToMonitor.push(addressType);
+	}
+	updateWallet({
+		addressTypesToMonitor,
+	});
 	return await wallet.updateAddressType(addressType);
 };
 

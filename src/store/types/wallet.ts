@@ -2,23 +2,20 @@ import { EAvailableNetwork } from '../../utils/networks';
 import { IExchangeRates } from '../../utils/exchange-rate';
 import { IAddressTypeContent } from '../shapes/wallet';
 import { IHeader } from '../../utils/types/electrum';
-import { IFormattedTransaction, ISendTransaction, TServer } from 'beignet';
+import {
+	EAddressType,
+	IFormattedTransaction,
+	ISendTransaction,
+	TServer,
+} from 'beignet';
 
 export enum EPaymentType {
 	sent = 'sent',
 	received = 'received',
 }
 
-export enum EAddressType {
-	p2wpkh = 'p2wpkh',
-	p2sh = 'p2sh',
-	p2pkh = 'p2pkh',
-	// p2wsh = 'p2wsh',
-	// p2tr = 'p2tr',
-}
-
 export type TKeyDerivationAccountType = 'onchain';
-export type TKeyDerivationPurpose = '84' | '49' | '44'; //"p2wpkh" | "p2sh" | "p2pkh";
+export type TKeyDerivationPurpose = '86' | '84' | '49' | '44'; //"p2tr" | "p2wpkh" | "p2sh" | "p2pkh";
 export type TKeyDerivationCoinType = '0' | '1'; //"mainnet" | "testnet";
 export type TKeyDerivationAccount = '0'; //"On-Chain Wallet";
 export type TKeyDerivationChange = '0' | '1'; //"Receiving Address" | "Change Address";
@@ -110,6 +107,7 @@ export interface IWalletStore {
 	selectedWallet: TWalletName;
 	exchangeRates: IExchangeRates;
 	header: IWalletItem<IHeader>;
+	addressTypesToMonitor: EAddressType[];
 	wallets: { [key: TWalletName]: IWallet };
 }
 
@@ -139,7 +137,7 @@ export interface ICreateWallet {
 	restore?: boolean;
 	addressAmount?: number;
 	changeAddressAmount?: number;
-	addressTypesToCreate?: Partial<IAddressTypes>;
+	addressTypesToCreate?: EAddressType[];
 	selectedNetwork?: EAvailableNetwork;
 	servers?: TServer | TServer[];
 }

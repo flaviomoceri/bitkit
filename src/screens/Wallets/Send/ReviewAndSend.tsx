@@ -262,10 +262,7 @@ const ReviewAndSend = ({
 				_onError(t('send_error_create_tx'), transactionIsValid.error.message);
 				return;
 			}
-			const response = await createTransaction({
-				selectedNetwork,
-				selectedWallet,
-			});
+			const response = await createTransaction({});
 			if (response.isErr()) {
 				setIsLoading(false);
 				_onError(t('send_error_create_tx'), response.error.message);
@@ -279,7 +276,7 @@ const ReviewAndSend = ({
 			_onError(t('send_error_create_tx'), (error as Error).message);
 			setIsLoading(false);
 		}
-	}, [selectedNetwork, selectedWallet, transaction, _onError, t]);
+	}, [transaction, _onError, t]);
 
 	const _broadcast = useCallback(async () => {
 		if (!rawTx?.id || !rawTx?.hex) {

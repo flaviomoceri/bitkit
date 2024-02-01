@@ -4,7 +4,8 @@ const ecc = require('@bitcoinerlab/secp256k1');
 const BIP32Factory = require('bip32').BIP32Factory;
 const bip32 = BIP32Factory(ecc);
 const bitcoin = require('bitcoinjs-lib');
-const { sha256 } = require('./utils');
+const { getTapRootAddressFromPublicKey} = require('./utils');
+bitcoin.initEccLib(ecc);
 
 class BitcoinActions {
     constructor() {
@@ -133,6 +134,16 @@ class BitcoinActions {
                     //Get Legacy Address (1)
                     address = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network }).address;
                     break;
+                case 'p2tr':
+                    //Get Taproot (bc1p) addresses
+                    const res = getTapRootAddressFromPublicKey({
+                        publicKey: keyPair.publicKey,
+                        network
+                    });
+                    if (res.error === false) {
+                        address = res.address;
+                    }
+                    break;
             }
             const value = {
                 address,
@@ -154,16 +165,16 @@ class BitcoinActions {
         return new Promise((resolve) => {
             try {
                 if (!address || !selectedNetwork) {
-                    return resolve({ error: true, value: 'No address or network provided.' });
+                    return resolve({ id, method, error: true, value: 'No address or network provided.' });
                 }
                 const network = networks[selectedNetwork];
                 const script = bitcoin.address.toOutputScript(address, network);
-                const hash = sha256(script);
+                const hash = bitcoin.crypto.sha256(script);
                 const reversedHash = Buffer.from(hash.reverse());
                 const value = reversedHash.toString('hex');
                 return resolve({ id, method, error: false, value });
             } catch (e) {
-                return resolve({ error: true, value: e });
+                return resolve({ id, method, error: true, value: e });
             }
         });
     }

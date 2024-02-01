@@ -8,9 +8,15 @@ import { defaultViewControllers } from '../shapes/ui';
 import { initialChecksState } from '../slices/checks';
 import { initialBackupState } from '../shapes/backup';
 import { initialWidgetsState } from '../slices/widgets';
-import { getNetworkContent } from '../shapes/wallet';
+import {
+	getDefaultWalletStoreShape,
+	getNetworkContent,
+} from '../shapes/wallet';
 import { getDefaultSettings } from '../../screens/Widgets/WidgetEdit';
 import { __WEB_RELAY__ } from '../../constants/env';
+import { EAvailableNetwork } from '../../utils/networks';
+import { defaultAddressContent } from 'beignet/src/shapes/wallet';
+import { EAddressType } from 'beignet';
 
 const migrations = {
 	0: (state): PersistedState => {
@@ -360,6 +366,69 @@ const migrations = {
 			widgets: {
 				...state.widgets,
 				widgets: widgets,
+			},
+		};
+	},
+	34: (state): PersistedState => {
+		const walletsState = { ...state.wallet.wallets };
+		// Loop through all wallets
+		for (const walletName in walletsState) {
+			// Add p2tr to the wallet structure, with the initial value set.
+			Object.values(EAvailableNetwork).forEach((network) => {
+				walletsState[walletName] = {
+					...walletsState[walletName],
+					addresses: {
+						...walletsState[walletName].addresses,
+						[network]: {
+							...walletsState[walletName].addresses[network],
+							[EAddressType.p2tr]: {},
+						},
+					},
+					changeAddresses: {
+						...walletsState[walletName].changeAddresses,
+						[network]: {
+							...walletsState[walletName].changeAddresses[network],
+							[EAddressType.p2tr]: {},
+						},
+					},
+					addressIndex: {
+						...walletsState[walletName].addressIndex,
+						[network]: {
+							...walletsState[walletName].addressIndex[network],
+							[EAddressType.p2tr]: { ...defaultAddressContent },
+						},
+					},
+					changeAddressIndex: {
+						...walletsState[walletName].changeAddressIndex,
+						[network]: {
+							...walletsState[walletName].changeAddressIndex[network],
+							[EAddressType.p2tr]: { ...defaultAddressContent },
+						},
+					},
+					lastUsedAddressIndex: {
+						...walletsState[walletName].lastUsedAddressIndex,
+						[network]: {
+							...walletsState[walletName].lastUsedAddressIndex[network],
+							[EAddressType.p2tr]: { ...defaultAddressContent },
+						},
+					},
+					lastUsedChangeAddressIndex: {
+						...walletsState[walletName].lastUsedChangeAddressIndex,
+						[network]: {
+							...walletsState[walletName].lastUsedChangeAddressIndex[network],
+							[EAddressType.p2tr]: { ...defaultAddressContent },
+						},
+					},
+				};
+			});
+		}
+		return {
+			...state,
+			wallet: {
+				...state.wallet,
+				addressTypesToMonitor:
+					getDefaultWalletStoreShape().addressTypesToMonitor,
+				wallets: walletsState,
 			},
 		};
 	},

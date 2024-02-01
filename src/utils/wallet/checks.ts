@@ -1,5 +1,4 @@
 import {
-	EAddressType,
 	IAddress,
 	IAddressTypeData,
 	IKeyDerivationPath,
@@ -13,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import {
 	generateAddresses,
+	getAddressTypesToMonitor,
 	getCurrentWallet,
 	getKeyDerivationPathObject,
 	getSelectedAddressType,
@@ -40,6 +40,7 @@ import {
 } from '../checks';
 import { addressTypes } from '../../store/shapes/wallet';
 import { dispatch } from '../../store/helpers';
+import { EAddressType } from 'beignet';
 
 export const runChecks = async ({
 	selectedWallet,
@@ -96,7 +97,9 @@ export const runStorageCheck = async ({
 	});
 	let addressTypesToCheck = [addressTypes[selectedAddressType]];
 	if (allAddressTypes) {
-		addressTypesToCheck = Object.values(addressTypes);
+		addressTypesToCheck = getAddressTypesToMonitor().map(
+			(type) => addressTypes[type],
+		);
 	}
 	const addressStorageCheckRes = await addressStorageCheck({
 		selectedWallet,
