@@ -40,10 +40,8 @@ import {
 	EAvailableNetworks,
 	EFeeId,
 	getDefaultWalletData,
-	getExchangeRates,
 	getStorageKeyValues,
 	IBoostedTransaction,
-	IExchangeRates,
 	IOnchainFees,
 	IOutput,
 	ISendTransaction,
@@ -53,6 +51,7 @@ import {
 import { ETransactionSpeed } from '../types/settings';
 import { updateOnchainFeeEstimates } from '../utils/fees';
 import { getMaxSendAmount } from '../../utils/wallet/transactions';
+import { getExchangeRates, IExchangeRates } from '../../utils/exchange-rate';
 
 export const updateWallet = (
 	payload: Partial<IWalletStore>,
@@ -814,9 +813,6 @@ export const setWalletData = async <K extends keyof IWalletData>(
 					header: data as IHeader,
 					selectedNetwork: getNetworkFromBeignet(network),
 				});
-				break;
-			case 'exchangeRates':
-				updateExchangeRates(data as IExchangeRates);
 				break;
 			case 'feeEstimates':
 				updateOnchainFeeEstimates({
