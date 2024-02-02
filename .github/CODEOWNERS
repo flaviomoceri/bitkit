@@ -12,4 +12,4 @@
 #
 # Github E2E need approval from the following user
 #
-/.github/workflows/ @limpbrains @rbndg
+/e2e/ @limpbrains @rbndg
