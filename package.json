@@ -69,7 +69,7 @@
     "beignet": "0.0.22",
     "bip21": "2.0.3",
     "bip32": "4.0.0",
-    "bip39": "3.0.4",
+    "bip39": "3.1.0",
     "bitcoin-address-validation": "2.2.3",
     "bitcoin-units": "0.3.0",
     "bitcoinjs-lib": "6.1.5",
