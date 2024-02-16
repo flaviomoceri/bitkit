@@ -15,18 +15,12 @@ import {
  * @returns {IBoostedTransactions}
  */
 export const getBoostedTransactions = ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): IBoostedTransactions => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	return getWalletStore().wallets[selectedWallet]?.boostedTransactions[
 		selectedNetwork
 	];
@@ -43,8 +37,8 @@ export const getBoostedTransactions = ({
 export const getBoostedTransactionParents = ({
 	txid,
 	boostedTransactions,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	txid: string;
 	boostedTransactions?: IBoostedTransactions;
@@ -52,12 +46,6 @@ export const getBoostedTransactionParents = ({
 	selectedNetwork?: EAvailableNetwork;
 }): string[] => {
 	if (!boostedTransactions) {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 		boostedTransactions = getBoostedTransactions({
 			selectedWallet,
 			selectedNetwork,
@@ -82,8 +70,8 @@ export const getBoostedTransactionParents = ({
 export const isTransactionBoosted = ({
 	txid,
 	boostedTransactions,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	txid: string;
 	boostedTransactions?: IBoostedTransactions;
@@ -91,12 +79,6 @@ export const isTransactionBoosted = ({
 	selectedNetwork?: EAvailableNetwork;
 }): boolean => {
 	if (!boostedTransactions) {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 		boostedTransactions = getBoostedTransactions({
 			selectedWallet,
 			selectedNetwork,
@@ -116,8 +98,8 @@ export const isTransactionBoosted = ({
 export const hasBoostedParents = ({
 	txid,
 	boostedTransactions,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	txid: string;
 	boostedTransactions?: IBoostedTransactions;
@@ -125,12 +107,6 @@ export const hasBoostedParents = ({
 	selectedNetwork?: EAvailableNetwork;
 }): boolean => {
 	if (!boostedTransactions) {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 		boostedTransactions = getBoostedTransactions({
 			selectedWallet,
 			selectedNetwork,
@@ -156,8 +132,8 @@ export const getRootParentActivity = ({
 	txid,
 	items,
 	boostedTransactions,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	txid: string;
 	items: TOnchainActivityItem[];
@@ -166,12 +142,6 @@ export const getRootParentActivity = ({
 	selectedNetwork?: EAvailableNetwork;
 }): TOnchainActivityItem | undefined => {
 	if (!boostedTransactions) {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 		boostedTransactions = getBoostedTransactions({
 			selectedWallet,
 			selectedNetwork,

@@ -493,12 +493,9 @@ export const addInput = async ({
 	psbt,
 	keyPair,
 	input,
-	selectedNetwork,
+	selectedNetwork = getSelectedNetwork(),
 }: IAddInput): Promise<Result<string>> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 		const network = networks[selectedNetwork];
 		const { type } = getAddressInfo(input.address);
 
@@ -570,17 +567,13 @@ export const addInput = async ({
 
 export const broadcastTransaction = async ({
 	rawTx,
-	selectedNetwork,
+	selectedNetwork = getSelectedNetwork(),
 	subscribeToOutputAddress = true,
 }: {
 	rawTx: string;
 	selectedNetwork?: EAvailableNetwork;
 	subscribeToOutputAddress?: boolean;
 }): Promise<Result<string>> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
 	/**
 	 * Subscribe to the output address and refresh the wallet when the Electrum server detects it.
 	 * This prevents updating the wallet prior to the Electrum server detecting the new tx in the mempool.
@@ -701,12 +694,9 @@ export const updateFee = ({
 export const getBlockExplorerLink = (
 	id: string,
 	type: 'tx' | 'address' = 'tx',
-	selectedNetwork?: EAvailableNetwork,
+	selectedNetwork: EAvailableNetwork = getSelectedNetwork(),
 	service: 'blockstream' | 'mempool' = 'mempool',
 ): string => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	switch (service) {
 		case 'blockstream':
 			if (selectedNetwork === 'bitcoinTestnet') {
@@ -939,8 +929,8 @@ export const canBoost = (txid: string): ICanBoostResponse => {
  */
 export const getMaxSendAmount = ({
 	transaction,
-	selectedNetwork,
-	selectedWallet,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	transaction?: ISendTransaction;
 	selectedNetwork?: EAvailableNetwork;
@@ -956,12 +946,6 @@ export const getMaxSendAmount = ({
 		}
 
 		if (transaction.lightningInvoice) {
-			if (!selectedWallet) {
-				selectedWallet = getSelectedWallet();
-			}
-			if (!selectedNetwork) {
-				selectedNetwork = getSelectedNetwork();
-			}
 			// lightning transaction
 			const { spendingBalance } = getBalance({
 				selectedWallet,
@@ -1135,20 +1119,14 @@ export const adjustFee = ({
 export const updateSendAmount = ({
 	amount,
 	transaction,
-	selectedNetwork,
-	selectedWallet,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	amount: number;
 	transaction?: ISendTransaction;
 	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 }): Result<string> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
 	if (!transaction) {
 		const transactionDataResponse = getOnchainTransactionData();
 		if (transactionDataResponse.isErr()) {
@@ -1228,21 +1206,11 @@ export const updateMessage = async ({
 	message,
 	transaction,
 	index = 0,
-	selectedWallet,
-	selectedNetwork,
 }: {
 	message: string;
 	transaction?: ISendTransaction;
 	index?: number;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
 	if (!transaction) {
 		const transactionDataResponse = getOnchainTransactionData();
 		if (transactionDataResponse.isErr()) {
@@ -1297,20 +1265,14 @@ export const updateMessage = async ({
 /*
 const runCoinSelect = async ({
 	transaction,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	transaction?: ISendTransaction;
 	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 }): Promise<Result<string>> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
 		if (!transaction) {
 			const transactionDataResponse = getOnchainTransactionData({
 				selectedWallet,
@@ -1502,8 +1464,8 @@ export const setupRbf = async ({
  * @param {string} oldTxId
  */
 export const broadcastBoost = async ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	oldTxId,
 	oldFee,
 }: {
@@ -1513,12 +1475,6 @@ export const broadcastBoost = async ({
 	oldFee: number;
 }): Promise<Result<Partial<TOnchainActivityItem>>> => {
 	try {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 		const transactionDataResponse = getOnchainTransactionData();
 		if (transactionDataResponse.isErr()) {
 			return err(transactionDataResponse.error.message);
@@ -1584,13 +1540,9 @@ export interface IGetFeeEstimatesResponse {
  * @returns {Promise<IOnchainFees>}
  */
 export const getFeeEstimates = async (
-	selectedNetwork?: EAvailableNetwork,
+	selectedNetwork: EAvailableNetwork = getSelectedNetwork(),
 ): Promise<Result<IOnchainFees>> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-
 		if (__E2E__) {
 			return ok({
 				...initialFeesState.onchain,
@@ -1620,19 +1572,7 @@ export const getFeeEstimates = async (
  * Returns the currently selected on-chain fee id (Ex: 'normal').
  * @returns {EFeeId}
  */
-export const getSelectedFeeId = ({
-	selectedWallet,
-	selectedNetwork,
-}: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): EFeeId => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
+export const getSelectedFeeId = (): EFeeId => {
 	const transaction = getOnchainTransactionData();
 	if (transaction.isErr()) {
 		return EFeeId.none;

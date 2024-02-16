@@ -21,7 +21,7 @@ import { TWalletName } from '../types/wallet';
  * @return {Promise<Result<string>>}
  */
 export const wipeApp = async ({
-	selectedWallet,
+	selectedWallet = getSelectedWallet(),
 	showNotification = true,
 	restartApp = true,
 }: {
@@ -30,10 +30,6 @@ export const wipeApp = async ({
 	restartApp?: boolean;
 } = {}): Promise<Result<string>> => {
 	try {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-
 		// Reset Redux stores & persisted storage
 		dispatch({ type: actions.WIPE_APP });
 

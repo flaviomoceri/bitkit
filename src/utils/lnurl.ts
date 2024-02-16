@@ -124,20 +124,13 @@ export const handleLnurlPay = async ({
  */
 export const handleLnurlChannel = async ({
 	params,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	params: LNURLChannelParams;
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TProcessedData>> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
 	const peer = params.uri;
 	if (peer.includes('onion')) {
 		const message = i18n.t('lightning:error_add_tor');
@@ -243,20 +236,13 @@ export const handleLnurlChannel = async ({
  */
 export const handleLnurlAuth = async ({
 	params,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	params: LNURLAuthParams;
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TProcessedData>> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
 	const getMnemonicPhraseResponse = await getMnemonicPhrase(selectedWallet);
 	if (getMnemonicPhraseResponse.isErr()) {
 		return err(getMnemonicPhraseResponse.error.message);
@@ -299,21 +285,14 @@ export const handleLnurlAuth = async ({
 export const handleLnurlWithdraw = async ({
 	amount,
 	params,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	amount: number;
 	params: LNURLWithdrawParams;
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<TProcessedData>> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
 	const invoice = await createLightningInvoice({
 		expiryDeltaSeconds: 3600,
 		amountSats: amount,

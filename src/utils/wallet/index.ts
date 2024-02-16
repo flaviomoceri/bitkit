@@ -107,8 +107,8 @@ export const refreshWallet = async ({
 	lightning = true,
 	scanAllAddresses = false, // If set to false, on-chain scanning will adhere to the gap limit (20).
 	showNotification = true, // Whether to show newTxPrompt on new incoming transactions.
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	onchain?: boolean;
 	lightning?: boolean;
@@ -123,12 +123,6 @@ export const refreshWallet = async ({
 		await new Promise((resolve) => {
 			InteractionManager.runAfterInteractions(() => resolve(null));
 		});
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 
 		let notificationTxid: string | undefined;
 
@@ -197,7 +191,7 @@ export const generateAddresses = async ({
  */
 export const getPrivateKey = async ({
 	addressData,
-	selectedNetwork,
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	addressData: IAddress;
 	selectedNetwork?: EAvailableNetwork;
@@ -205,9 +199,6 @@ export const getPrivateKey = async ({
 	try {
 		if (!addressData) {
 			return err('No addressContent specified.');
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
 		}
 
 		const getPrivateKeyShapeShape = DefaultNodeJsMethodsShape.getPrivateKey();
@@ -287,7 +278,7 @@ export const getKeyDerivationAccount = (
 export const formatKeyDerivationPath = ({
 	path,
 	purpose,
-	selectedNetwork,
+	selectedNetwork = getSelectedNetwork(),
 	accountType = 'onchain',
 	changeAddress = false,
 	addressIndex = '0',
@@ -300,10 +291,6 @@ export const formatKeyDerivationPath = ({
 	addressIndex?: string;
 }): Result<IKeyDerivationPathData> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-
 		if (typeof path === 'string') {
 			const derivationPathResponse = getKeyDerivationPathObject({
 				path,
@@ -346,15 +333,12 @@ export const formatKeyDerivationPath = ({
  */
 export const getKeyDerivationPath = ({
 	addressType,
-	selectedNetwork,
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	addressType: EAddressType;
 	selectedNetwork?: EAvailableNetwork;
 }): Result<IKeyDerivationPath> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 		const keyDerivationPathResponse = getKeyDerivationPathObject({
 			selectedNetwork,
 			path: addressTypes[addressType].path,
@@ -375,12 +359,9 @@ export const getKeyDerivationPath = ({
  * @return {Promise<Result<string>>}
  */
 export const getMnemonicPhrase = async (
-	selectedWallet?: TWalletName,
+	selectedWallet: TWalletName = getSelectedWallet(),
 ): Promise<Result<string>> => {
 	try {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
 		const response = await getKeychainValue({ key: selectedWallet });
 		if (response.error) {
 			return err(response.data);
@@ -398,12 +379,9 @@ export const getMnemonicPhrase = async (
  * @return {Promise<string>}
  */
 export const getBip39Passphrase = async (
-	selectedWallet?: TWalletName,
+	selectedWallet: TWalletName = getSelectedWallet(),
 ): Promise<string> => {
 	try {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
 		const key = `${selectedWallet}passphrase`;
 		const bip39PassphraseResult = await getKeychainValue({ key });
 		if (!bip39PassphraseResult.error && bip39PassphraseResult.data) {
@@ -438,14 +416,11 @@ export const getSeed = async (
  */
 export const getScriptHash = async (
 	address: string,
-	selectedNetwork?: EAvailableNetwork,
+	selectedNetwork: EAvailableNetwork = getSelectedNetwork(),
 ): Promise<string> => {
 	try {
 		if (!address) {
 			return '';
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
 		}
 		const data = DefaultNodeJsMethodsShape.getScriptHash();
 		data.data.address = address;
@@ -509,14 +484,11 @@ export const electrumNetworkToBitkitNetwork = (
  */
 export const getAddress = async ({
 	path,
-	selectedNetwork,
+	selectedNetwork = getSelectedNetwork(),
 	type,
 }: IGetAddress): Promise<Result<IGetAddressResponse>> => {
 	if (!path) {
 		return err('No path specified');
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
 	}
 	try {
 		const data = DefaultNodeJsMethodsShape.getAddress();
@@ -603,18 +575,12 @@ export const validateMnemonic = (mnemonic: string): boolean => {
  * @return number - Will always return balance in sats.
  */
 export const getOnChainBalance = ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 } = {}): number => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	return getWalletStore().wallets[selectedWallet]?.balance[selectedNetwork];
 };
 
@@ -648,8 +614,8 @@ export const getAssetTicker = (asset = 'bitcoin'): string => {
 export const removeDuplicateAddresses = async ({
 	addresses = {},
 	changeAddresses = {},
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	addresses?: IAddresses;
 	changeAddresses?: IAddresses;
@@ -657,12 +623,6 @@ export const removeDuplicateAddresses = async ({
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<IGenerateAddressesResponse>> => {
 	try {
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 		const { currentWallet } = getCurrentWallet({
 			selectedWallet,
 			selectedNetwork,
@@ -861,18 +821,12 @@ export const getCurrentWallet = ({
 };
 
 export const getOnChainTransactions = ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	selectedWallet: TWalletName;
 	selectedNetwork: EAvailableNetwork;
 }): IFormattedTransactions => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	return (
 		getWalletStore().wallets[selectedWallet]?.transactions[selectedNetwork] ??
 		{}
@@ -887,19 +841,13 @@ export const getOnChainTransactions = ({
  */
 export const getTransactionById = ({
 	txid,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	txid: string;
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): Result<IFormattedTransaction> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	const transactions = getOnChainTransactions({
 		selectedNetwork,
 		selectedWallet,
@@ -947,15 +895,11 @@ type InputData = {
 
 export const getInputData = async ({
 	inputs,
-	selectedNetwork,
 }: {
 	inputs: { tx_hash: string; vout: number }[];
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<InputData>> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 		const inputData: InputData = {};
 
 		for (let i = 0; i < inputs.length; i += CHUNK_LIMIT) {
@@ -987,8 +931,8 @@ export const getInputData = async ({
 
 export const formatTransactions = async ({
 	transactions,
-	selectedNetwork,
-	selectedWallet,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	transactions: ITransaction<IUtxo>[];
 	selectedNetwork?: EAvailableNetwork;
@@ -996,12 +940,6 @@ export const formatTransactions = async ({
 }): Promise<Result<IFormattedTransactions>> => {
 	if (transactions.length < 1) {
 		return ok({});
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
 	}
 	const { currentWallet } = getCurrentWallet({
 		selectedNetwork,
@@ -1871,8 +1809,8 @@ export const getKeyDerivationPathObject = ({
  */
 export const getAddressTypePath = ({
 	addressType,
-	selectedNetwork,
-	selectedWallet,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	changeAddress,
 }: {
 	addressType?: EAddressType;
@@ -1881,12 +1819,6 @@ export const getAddressTypePath = ({
 	changeAddress?: boolean;
 }): Result<IKeyDerivationPathData> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
 		if (!addressType) {
 			addressType = getSelectedAddressType({ selectedNetwork, selectedWallet });
 		}
@@ -1984,8 +1916,8 @@ export const getCurrentAddressIndex = async ({
  * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const getBalance = ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
@@ -1998,12 +1930,6 @@ export const getBalance = ({
 	spendableBalance: number; // Total spendable funds (onchain + spendable lightning)
 	totalBalance: number; // Total funds (all of the above)
 } => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	const { currentWallet, currentLightningNode: node } = getCurrentWallet({
 		selectedWallet,
 		selectedNetwork,
@@ -2056,8 +1982,8 @@ export const getBalance = ({
  * @returns {Result<{ addressDelta: number; changeAddressDelta: number }>}
  */
 export const getGapLimit = ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	addressType,
 }: {
 	selectedWallet?: TWalletName;
@@ -2065,12 +1991,6 @@ export const getGapLimit = ({
 	addressType?: EAddressType;
 }): Result<{ addressDelta: number; changeAddressDelta: number }> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
 		if (!addressType) {
 			addressType = getSelectedAddressType({ selectedNetwork, selectedWallet });
 		}
@@ -2110,11 +2030,8 @@ export const getGapLimit = ({
  */
 export const getAddressFromScriptPubKey = (
 	scriptPubKey: string,
-	selectedNetwork?: EAvailableNetwork,
+	selectedNetwork: EAvailableNetwork = getSelectedNetwork(),
 ): string => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	const network = networks[selectedNetwork];
 	return bitcoin.address.fromOutputScript(
 		Buffer.from(scriptPubKey, 'hex'),
@@ -2129,20 +2046,14 @@ export const getAddressFromScriptPubKey = (
  * @param {EAddressType} [addressType]
  */
 export const getAddressIndexInfo = ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	addressType,
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 	addressType?: EAddressType;
 }): TAddressIndexInfo => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
 	if (!addressType) {
 		addressType = getSelectedAddressType({ selectedNetwork, selectedWallet });
 	}
@@ -2193,19 +2104,12 @@ export const rescanAddresses = async ({
  * @returns {Promise<Result<IFormattedTransactions>>}
  */
 export const getUnconfirmedTransactions = async ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<IFormattedTransactions>> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
 	const { currentWallet } = getCurrentWallet({
 		selectedWallet,
 		selectedNetwork,

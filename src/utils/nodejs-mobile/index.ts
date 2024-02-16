@@ -97,20 +97,14 @@ export const invokeNodeJsMethod = async <T = string>(
  * @returns {Promise<{Result<{string}>}>}
  */
 export const setupNodejsMobile = async ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	mnemonic,
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 	mnemonic?: string;
 } = {}): Promise<Result<string>> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	if (!mnemonic) {
 		const mnemonicResponse = await getMnemonicPhrase(selectedWallet);
 		if (mnemonicResponse.isErr()) {

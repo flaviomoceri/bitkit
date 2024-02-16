@@ -202,8 +202,8 @@ export const updateWalletBalance = ({
  * @returns {Result<string>}
  */
 export const addUnconfirmedTransactions = ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	transactions,
 }: {
 	selectedWallet?: TWalletName;
@@ -211,13 +211,6 @@ export const addUnconfirmedTransactions = ({
 	transactions: IFormattedTransactions;
 }): Result<string> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-
 		let unconfirmedTransactions: IFormattedTransactions = {};
 		Object.keys(transactions).forEach((key) => {
 			const confirmations = blockHeightToConfirmations({
@@ -261,8 +254,8 @@ export const addUnconfirmedTransactions = ({
 export const injectFakeTransaction = ({
 	id = 'fake-transaction',
 	fakeTx,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	id?: string;
 	fakeTx?: IFormattedTransactions;
@@ -270,13 +263,6 @@ export const injectFakeTransaction = ({
 	selectedNetwork?: EAvailableNetwork;
 }): Result<string> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-
 		const fakeTransaction = fakeTx ?? getFakeTransaction(id);
 
 		const payload = {
@@ -440,13 +426,10 @@ export const addBoostedTransaction = async ({
  * This resets a given wallet to defaultWalletShape
  */
 export const resetSelectedWallet = async ({
-	selectedWallet,
+	selectedWallet = getSelectedWallet(),
 }: {
 	selectedWallet?: TWalletName;
 }): Promise<void> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
 	dispatch({
 		type: actions.RESET_SELECTED_WALLET,
 		payload: { selectedWallet },
@@ -687,14 +670,11 @@ const txSpeedToFeeId = (txSpeed: ETransactionSpeed): EFeeId => {
  */
 export const updateHeader = ({
 	header,
-	selectedNetwork,
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	header: IHeader;
 	selectedNetwork?: EAvailableNetwork;
 }): void => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	const payload = {
 		header,
 		selectedNetwork,
@@ -724,8 +704,8 @@ export const resetExchangeRates = (): Result<string> => {
  * @returns {Promise<Result<string>>}
  */
 export const replaceImpactedAddresses = async ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	impactedAddresses,
 }: {
 	selectedWallet?: TWalletName;
@@ -733,13 +713,6 @@ export const replaceImpactedAddresses = async ({
 	impactedAddresses: TGetImpactedAddressesRes; // Retrieved from getImpactedAddresses
 }): Promise<Result<string>> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-
 		const { currentWallet } = getCurrentWallet({
 			selectedWallet,
 			selectedNetwork,
@@ -757,9 +730,6 @@ export const replaceImpactedAddresses = async ({
 			impactedAddresses.impactedChangeAddresses;
 
 		allImpactedAddresses.map(({ addressType, addresses }) => {
-			if (!selectedNetwork) {
-				selectedNetwork = getSelectedNetwork();
-			}
 			addresses.map((impactedAddress) => {
 				const invalidScriptHash = impactedAddress.storedAddress.scriptHash;
 				const validScriptHash = impactedAddress.generatedAddress.scriptHash;
@@ -780,9 +750,6 @@ export const replaceImpactedAddresses = async ({
 		});
 
 		allImpactedChangeAddresses.map(({ addressType, addresses }) => {
-			if (!selectedNetwork) {
-				selectedNetwork = getSelectedNetwork();
-			}
 			addresses.map((impactedAddress) => {
 				const invalidScriptHash = impactedAddress.storedAddress.scriptHash;
 				const validScriptHash = impactedAddress.generatedAddress.scriptHash;

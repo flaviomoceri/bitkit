@@ -184,8 +184,8 @@ export const processInputData = async ({
 	data,
 	source = 'mainScanner',
 	sdk,
-	selectedNetwork,
-	selectedWallet,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	skip = [],
 	showErrors = true,
 }: {
@@ -199,13 +199,6 @@ export const processInputData = async ({
 }): Promise<Result<TProcessedData>> => {
 	data = data.trim();
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-
 		const decodeRes = await decodeQRData(data, selectedNetwork);
 		if (decodeRes.isErr()) {
 			const errorMessage = i18n.t('other:scan_err_interpret_msg');
@@ -333,7 +326,7 @@ export const processInputData = async ({
  */
 export const decodeQRData = async (
 	data: string,
-	selectedNetwork?: EAvailableNetwork,
+	selectedNetwork: EAvailableNetwork = getSelectedNetwork(),
 ): Promise<Result<QRData[]>> => {
 	if (!data) {
 		return err('No data provided.');
@@ -372,10 +365,6 @@ export const decodeQRData = async (
 		return ok([{ qrDataType: EQRDataType.slashtagURL, url: data }]);
 	} else if (data.startsWith('slashfeed:')) {
 		return ok([{ qrDataType: EQRDataType.slashFeedURL, url: data }]);
-	}
-
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
 	}
 
 	let foundNetworksInQR: (
@@ -603,8 +592,8 @@ export const processBitcoinTransactionData = async ({
 	data = [],
 	preferredPaymentMethod,
 	showErrors = true,
-	selectedNetwork,
-	selectedWallet,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	data: QRData[];
 	preferredPaymentMethod?: EQRDataType;
@@ -613,13 +602,6 @@ export const processBitcoinTransactionData = async ({
 	selectedWallet?: TWalletName;
 }): Promise<Result<QRData>> => {
 	try {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-
 		let response;
 		let error: ToastOptions | undefined; //Information that will be passed as a notification.
 		let requestedAmount = 0; //Amount requested in sats by the provided invoice.
@@ -770,8 +752,8 @@ export const processBitcoinTransactionData = async ({
  */
 export const handleData = async ({
 	data,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	data: QRData;
 	selectedWallet?: TWalletName;
@@ -784,13 +766,6 @@ export const handleData = async ({
 			description: i18n.t('other:qr_error_no_data_text'),
 		});
 		return err('Unable to read or interpret the provided data.');
-	}
-
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
 	}
 
 	const qrDataType = data.qrDataType;
@@ -1057,8 +1032,8 @@ export const validateInputData = async ({
 	source = 'mainScanner',
 	sdk,
 	showErrors,
-	selectedNetwork,
-	selectedWallet,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	data: string;
 	source?: 'mainScanner' | 'send';
@@ -1069,13 +1044,6 @@ export const validateInputData = async ({
 }): Promise<Result<QRData>> => {
 	if (!data) {
 		return err('No data provided.');
-	}
-
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
 	}
 
 	try {

@@ -91,18 +91,12 @@ export const updateLightningNodeVersionThunk = async (): Promise<
  * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const updateLightningChannelsThunk = async ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
 	const lightningChannelsRes = await getLightningChannels();
 	if (lightningChannelsRes.isErr()) {
 		return err(lightningChannelsRes.error.message);
@@ -194,15 +188,9 @@ export const createLightningInvoice = async ({
 	amountSats,
 	description,
 	expiryDeltaSeconds,
-	selectedNetwork,
-	selectedWallet,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: TCreateLightningInvoice): Promise<Result<TInvoice>> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
 	const invoice = await createPaymentRequest({
 		amountSats,
 		description,
@@ -224,21 +212,14 @@ export const createLightningInvoice = async ({
  * @param {string} peer
  */
 export const savePeer = ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	peer,
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 	peer: string;
 }): Result<string> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
 	if (!peer) {
 		return err('The peer data appears to be invalid.');
 	}
@@ -272,20 +253,14 @@ export const savePeer = ({
  * @returns {Result<string>}
  */
 export const removePeer = ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	peer,
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 	peer: string;
 }): Result<string> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	if (!peer) {
 		return err('The peer data appears to be invalid.');
 	}
