@@ -61,8 +61,8 @@ export const getNewProfileUrl = (url: string, webRelayUrl: string): string => {
 export const updateSlashPayConfig2 = debounce(
 	async ({
 		forceUpdate = false,
-		selectedWallet,
-		selectedNetwork,
+		selectedWallet = getSelectedWallet(),
+		selectedNetwork = getSelectedNetwork(),
 	}: {
 		forceUpdate?: boolean;
 		selectedWallet?: TWalletName;
@@ -71,12 +71,6 @@ export const updateSlashPayConfig2 = debounce(
 		if (!webRelayClient) {
 			console.debug('webRelayClient not ready yet');
 			return;
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
 		}
 		const slashpay = new SlashpayConfig(webRelayClient);
 		const url = await slashpay.createURL();

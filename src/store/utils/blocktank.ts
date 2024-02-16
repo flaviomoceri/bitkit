@@ -232,8 +232,8 @@ export const startChannelPurchase = async ({
 	couponCode,
 	turboChannel = true,
 	zeroConfPayment = false,
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	remoteBalance: number;
 	localBalance: number;
@@ -252,13 +252,6 @@ export const startChannelPurchase = async ({
 		transactionFeeEstimate: number;
 	}>
 > => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-
 	const buyChannelResponse = await createOrder({
 		lspBalanceSat: localBalance,
 		channelExpiryWeeks: channelExpiry,
@@ -355,20 +348,13 @@ export const startChannelPurchase = async ({
  */
 export const confirmChannelPurchase = async ({
 	order,
-	selectedNetwork,
-	selectedWallet,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	order: IBtOrder;
 	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 }): Promise<Result<{ txid: string; useUnconfirmedInputs: boolean }>> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-
 	const rawTx = await createTransaction();
 	if (rawTx.isErr()) {
 		showToast({

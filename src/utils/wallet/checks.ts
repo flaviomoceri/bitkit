@@ -43,18 +43,12 @@ import { dispatch } from '../../store/helpers';
 import { EAddressType } from 'beignet';
 
 export const runChecks = async ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	selectedWallet: TWalletName;
 	selectedNetwork: EAvailableNetwork;
 }): Promise<Result<{ ranStorageCheck: boolean }>> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	const storageCheckRes = await runStorageCheck({
 		selectedWallet,
 		selectedNetwork,
@@ -77,20 +71,14 @@ export const runChecks = async ({
  * @returns {Promise<Result<string>>}
  */
 export const runStorageCheck = async ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	allAddressTypes = false,
 }: {
 	selectedWallet: TWalletName;
 	selectedNetwork: EAvailableNetwork;
 	allAddressTypes?: boolean;
 }): Promise<Result<string>> => {
-	if (!selectedWallet) {
-		getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		getSelectedNetwork();
-	}
 	const selectedAddressType = getSelectedAddressType({
 		selectedWallet,
 		selectedNetwork,
@@ -180,20 +168,14 @@ export const runStorageCheck = async ({
  * @returns {Promise<Result<TAddressStorageCheckRes>>}
  */
 export const addressStorageCheck = async ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	addressTypesToCheck,
 }: {
 	selectedNetwork?: EAvailableNetwork;
 	selectedWallet?: TWalletName;
 	addressTypesToCheck?: IAddressTypeData[];
 }): Promise<Result<TAddressStorageCheckRes>> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
 	const { currentWallet } = getCurrentWallet({
 		selectedWallet,
 		selectedNetwork,
@@ -368,20 +350,14 @@ const _createMinMaxData = async ({
  * @returns {TGetImpactedAddressesRes}
  */
 export const getImpactedAddresses = async ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 	storageCheckData,
 }: {
 	selectedWallet: TWalletName;
 	selectedNetwork: EAvailableNetwork;
 	storageCheckData: TMinMaxData[]; // Retrieved by calling addressStorageCheck
 }): Promise<Result<TGetImpactedAddressesRes>> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
 	const { currentWallet } = getCurrentWallet({
 		selectedWallet,
 		selectedNetwork,
@@ -395,9 +371,6 @@ export const getImpactedAddresses = async ({
 		changeAddress,
 		addressType,
 	} of storageCheckData) {
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
-		}
 		const keyDerivationPathResponse = getKeyDerivationPathObject({
 			selectedNetwork,
 			path: addressTypes[addressType].path,

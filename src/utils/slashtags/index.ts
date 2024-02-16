@@ -185,8 +185,8 @@ export const updateSlashPayConfig = debounce(
 	async ({
 		forceUpdate = false,
 		sdk,
-		selectedWallet,
-		selectedNetwork,
+		selectedWallet = getSelectedWallet(),
+		selectedNetwork = getSelectedNetwork(),
 	}: {
 		forceUpdate?: boolean;
 		sdk?: SDK;
@@ -196,12 +196,6 @@ export const updateSlashPayConfig = debounce(
 		if (!sdk) {
 			// sdk is not ready yet
 			return;
-		}
-		if (!selectedWallet) {
-			selectedWallet = getSelectedWallet();
-		}
-		if (!selectedNetwork) {
-			selectedNetwork = getSelectedNetwork();
 		}
 		const slashtag = getSelectedSlashtag(sdk);
 		const drive = slashtag.drivestore.get();

@@ -66,15 +66,11 @@ export enum EBackupCategories {
 
 export const performLdkRestore = async ({
 	backupServerDetails,
-	selectedNetwork,
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	backupServerDetails: TBackupServerDetails;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<{ backupExists: boolean }>> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
 	const storageRes = await setLdkStoragePath();
 	if (storageRes.isErr()) {
 		return err(storageRes.error);
@@ -140,15 +136,12 @@ export const performLdkRestore = async ({
 
 export const performLdkRestoreDeprecated = async ({
 	slashtag,
-	selectedNetwork,
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	slashtag: Slashtag;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<{ backupExists: boolean }>> => {
 	console.warn(`Restoring ${selectedNetwork} from deprecated backup server.`);
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	const res = await listBackups(
 		slashtag,
 		EBackupCategoriesOld.ldkComplete,

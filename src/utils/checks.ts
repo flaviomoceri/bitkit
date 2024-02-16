@@ -22,16 +22,12 @@ import { v4 as uuidv4 } from 'uuid';
  * @returns {Promise<Result<number>>}
  */
 export const reportImpactedAddressBalance = async ({
-	selectedNetwork,
+	selectedNetwork = getSelectedNetwork(),
 	impactedAddressRes,
 }: {
 	selectedNetwork: EAvailableNetwork;
 	impactedAddressRes: TGetImpactedAddressesRes;
 }): Promise<Result<number>> => {
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
 	const addresses = impactedAddressRes.impactedAddresses;
 	const changeAddresses = impactedAddressRes.impactedChangeAddresses;
 
@@ -88,16 +84,13 @@ export const reportImpactedAddressBalance = async ({
 };
 
 export const reportLdkChannelMigrations = async ({
-	selectedNetwork,
+	selectedNetwork = getSelectedNetwork(),
 	channels,
 }: {
 	selectedNetwork: EAvailableNetwork;
 	channels: TChannel[];
 }): Promise<Result<string>> => {
 	const selectedWallet = getSelectedWallet();
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	const warnings = getWarnings({ selectedNetwork });
 	const ldkMigrationWarnings = warnings.filter(
 		(w) => w.warningId === EWarningIds.ldkMigration,
@@ -159,20 +152,12 @@ export const reportLdkChannelMigrations = async ({
  * @returns {Promise<number>}
  */
 export const reportUnreportedWarnings = async ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<number> => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
-
 	const warnings = getWarnings({ selectedWallet, selectedNetwork });
 
 	const unreportedWarnings = warnings.filter(
@@ -183,12 +168,6 @@ export const reportUnreportedWarnings = async ({
 
 	await Promise.all(
 		unreportedWarnings.map(async (warning: TStorageWarning) => {
-			if (!selectedWallet) {
-				selectedWallet = getSelectedWallet();
-			}
-			if (!selectedNetwork) {
-				selectedNetwork = getSelectedNetwork();
-			}
 			const reportRes = await reportImpactedAddressBalance({
 				selectedNetwork,
 				impactedAddressRes: warning.data as TGetImpactedAddressesRes,
@@ -220,17 +199,11 @@ export const reportUnreportedWarnings = async ({
  * @returns {TStorageWarning[]}
  */
 export const getWarnings = ({
-	selectedWallet,
-	selectedNetwork,
+	selectedWallet = getSelectedWallet(),
+	selectedNetwork = getSelectedNetwork(),
 }: {
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): TStorageWarning[] => {
-	if (!selectedWallet) {
-		selectedWallet = getSelectedWallet();
-	}
-	if (!selectedNetwork) {
-		selectedNetwork = getSelectedNetwork();
-	}
 	return getChecksStore()[selectedWallet].warnings[selectedNetwork];
 };
