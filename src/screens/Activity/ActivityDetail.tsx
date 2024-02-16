@@ -67,7 +67,6 @@ import useColors from '../../hooks/colors';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 
 import { showBottomSheet } from '../../store/utils/ui';
-import { EPaymentType, EBoostType } from '../../store/types/wallet';
 import {
 	activityItemSelector,
 	activityItemsSelector,
@@ -96,6 +95,7 @@ import type {
 import { i18nTime } from '../../utils/i18n';
 import { useSwitchUnit } from '../../hooks/wallet';
 import { contactsSelector } from '../../store/reselect/slashtags';
+import { EBoostType, EPaymentType } from 'beignet';
 
 const Section = memo(
 	({ title, value }: { title: string; value: ReactNode }) => {

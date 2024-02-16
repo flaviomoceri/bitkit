@@ -1,4 +1,4 @@
-import { EPaymentType } from './wallet';
+import { EPaymentType } from 'beignet';
 
 export enum EActivityType {
 	onchain = 'onchain',

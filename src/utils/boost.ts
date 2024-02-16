@@ -2,11 +2,8 @@ import { getSelectedNetwork, getSelectedWallet } from './wallet';
 import { EAvailableNetwork } from './networks';
 import { getActivityStore, getWalletStore } from '../store/helpers';
 import { IActivityItem, TOnchainActivityItem } from '../store/types/activity';
-import {
-	EBoostType,
-	IBoostedTransactions,
-	TWalletName,
-} from '../store/types/wallet';
+import { TWalletName } from '../store/types/wallet';
+import { EBoostType, IBoostedTransactions } from 'beignet';
 
 /**
  * Returns boosted transactions object.
@@ -59,36 +56,8 @@ export const getBoostedTransactionParents = ({
 };
 
 /**
- * Determines if a given transaction was boosted via it's txid.
- * CURRENTLY UNUSED
- * @param {string} txid
- * @param {IBoostedTransactions} [boostedTransactions]
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @returns {boolean}
- */
-export const isTransactionBoosted = ({
-	txid,
-	boostedTransactions,
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-}: {
-	txid: string;
-	boostedTransactions?: IBoostedTransactions;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): boolean => {
-	if (!boostedTransactions) {
-		boostedTransactions = getBoostedTransactions({
-			selectedWallet,
-			selectedNetwork,
-		});
-	}
-	return txid in boostedTransactions;
-};
-
-/**
  * Determines if a given txid has any boosted parents.
+ * // TODO: Migrate to Beignet
  * @param {string} txid
  * @param {IBoostedTransactions} [boostedTransactions]
  * @param {TWalletName} [selectedWallet]
@@ -161,6 +130,7 @@ export const getRootParentActivity = ({
 /**
  * Returns an array of activity items for the provided array of parent txids.
  * CURRENTLY UNUSED
+ * // TODO: Migrate to Beignet
  * @param {string[]} [parents]
  * @param {IActivityItem[]} [items]
  */

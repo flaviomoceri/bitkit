@@ -19,7 +19,6 @@ import {
 	getTransactionOutputValue,
 } from '../../../utils/wallet/transactions';
 import { addTxInput, removeTxInput } from '../../../store/actions/wallet';
-import { IUtxo } from '../../../store/types/wallet';
 import type { SendScreenProps } from '../../../navigation/types';
 import {
 	transactionSelector,
@@ -27,6 +26,7 @@ import {
 } from '../../../store/reselect/wallet';
 import { coinSelectPreferenceSelector } from '../../../store/reselect/settings';
 import { TRANSACTION_DEFAULTS } from '../../../utils/wallet/constants';
+import { IUtxo } from 'beignet';
 
 /**
  * Some UTXO's may contain the same tx_hash.

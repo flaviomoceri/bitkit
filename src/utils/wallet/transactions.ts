@@ -1,29 +1,14 @@
-import ecc from '@bitcoinerlab/secp256k1';
-import { BIP32Factory, BIP32Interface } from 'bip32';
-import * as bip39 from 'bip39';
-import * as bitcoin from 'bitcoinjs-lib';
-import { Psbt } from 'bitcoinjs-lib';
 import { err, ok, Result } from '@synonymdev/result';
 import validate, { getAddressInfo } from 'bitcoin-address-validation';
 
-import { __E2E__, __JEST__ } from '../../constants/env';
-import { networks, EAvailableNetwork } from '../networks';
-import { reduceValue, shuffleArray } from '../helpers';
+import { __E2E__ } from '../../constants/env';
+import { EAvailableNetwork } from '../networks';
+import { reduceValue } from '../helpers';
 import { btcToSats, satsToBtc } from '../conversion';
-import { getKeychainValue } from '../keychain';
-import {
-	EBoostType,
-	EPaymentType,
-	IOutput,
-	IUtxo,
-	TGetByteCountInputs,
-	TGetByteCountOutputs,
-	TWalletName,
-} from '../../store/types/wallet';
+import { TWalletName } from '../../store/types/wallet';
 import {
 	getBalance,
 	getCurrentWallet,
-	getMnemonicPhrase,
 	getOnChainBalance,
 	getOnChainWallet,
 	getOnChainWalletElectrum,
@@ -43,7 +28,6 @@ import {
 import {
 	addBoostedTransaction,
 	deleteOnChainTransactionById,
-	getChangeAddress,
 	setupOnChainTransaction,
 	updateSendTransaction,
 } from '../../store/actions/wallet';
@@ -52,49 +36,24 @@ import {
 	TCoinSelectPreference,
 } from '../../store/types/settings';
 import { showToast } from '../notifications';
-import { getTransactions, subscribeToAddresses } from './electrum';
+import { subscribeToAddresses } from './electrum';
 import { TOnchainActivityItem } from '../../store/types/activity';
 import { initialFeesState } from '../../store/slices/fees';
 import { TRANSACTION_DEFAULTS } from './constants';
 import i18n from '../i18n';
 import {
 	EAddressType,
+	EBoostType,
 	EFeeId,
+	EPaymentType,
 	getByteCount,
 	IOnchainFees,
+	IOutput,
 	ISendTransaction,
+	IUtxo,
+	TGetByteCountInputs,
+	TGetByteCountOutputs,
 } from 'beignet';
-
-bitcoin.initEccLib(ecc);
-const bip32 = BIP32Factory(ecc);
-
-const setReplaceByFee = ({
-	psbt,
-	setRbf = true,
-}: {
-	psbt: Psbt;
-	setRbf: boolean;
-}): void => {
-	try {
-		const defaultSequence = bitcoin.Transaction.DEFAULT_SEQUENCE;
-		//Cannot set replace-by-fee on transaction without inputs.
-		// @ts-ignore type for Psbt is wrong
-		const ins = psbt.data.globalMap.unsignedTx.tx.ins;
-		if (ins.length !== 0) {
-			ins.forEach((x) => {
-				if (setRbf) {
-					if (x.sequence >= defaultSequence - 1) {
-						x.sequence = 0;
-					}
-				} else {
-					if (x.sequence < defaultSequence - 1) {
-						x.sequence = defaultSequence;
-					}
-				}
-			});
-		}
-	} catch (e) {}
-};
 
 /**
  * Constructs the parameter for getByteCount via an array of addresses.
@@ -180,257 +139,6 @@ interface ICreateTransaction {
 }
 
 /**
- * Creates a BIP32Interface from the selected wallet's mnemonic and passphrase
- * @param {TWalletName} selectedWallet
- * @param {EAvailableNetwork} selectedNetwork
- * @returns {Promise<Result<BIP32Interface>>}
- */
-const getBip32Interface = async (
-	selectedWallet: TWalletName,
-	selectedNetwork: EAvailableNetwork,
-): Promise<Result<BIP32Interface>> => {
-	const network = networks[selectedNetwork];
-
-	const getMnemonicPhraseResult = await getMnemonicPhrase(selectedWallet);
-	if (getMnemonicPhraseResult.isErr()) {
-		return err(getMnemonicPhraseResult.error.message);
-	}
-
-	//Attempt to acquire the bip39Passphrase if available
-	let bip39Passphrase = '';
-	try {
-		const key = `${selectedWallet}passphrase`;
-		const bip39PassphraseResult = await getKeychainValue({ key });
-		if (!bip39PassphraseResult.error && bip39PassphraseResult.data) {
-			bip39Passphrase = bip39PassphraseResult.data;
-		}
-	} catch {}
-
-	const mnemonic = getMnemonicPhraseResult.value;
-	const seed = await bip39.mnemonicToSeed(mnemonic, bip39Passphrase);
-	const root = bip32.fromSeed(seed, network);
-
-	return ok(root);
-};
-
-interface ITargets {
-	value: number; // Amount denominated in sats.
-	index: number; // Used to specify which output to update or edit when using updateSendTransaction.
-	address?: string; // Amount denominated in sats.
-	script?: Buffer;
-}
-
-/**
- * Returns a PSBT that includes unsigned funding inputs.
- * @param {TWalletName} selectedWallet
- * @param {EAvailableNetwork} selectedNetwork
- * @param {ISendTransaction} transactionData
- * @param {BIP32Interface} bip32Interface
- * @return {Promise<Result<Psbt>>}
- */
-const createPsbtFromTransactionData = async ({
-	selectedWallet,
-	selectedNetwork,
-	transactionData,
-	bip32Interface,
-}: {
-	selectedWallet: TWalletName;
-	selectedNetwork: EAvailableNetwork;
-	transactionData: ISendTransaction;
-	bip32Interface?: BIP32Interface;
-}): Promise<Result<Psbt>> => {
-	const { inputs, outputs, fee, rbf } = transactionData;
-	let { changeAddress, message } = transactionData;
-
-	//Get balance of current inputs.
-	const balance = getTransactionInputValue({
-		inputs,
-	});
-
-	//Get value of current outputs.
-	const outputValue = getTransactionOutputValue({
-		outputs,
-	});
-
-	const network = networks[selectedNetwork];
-
-	//Collect all outputs.
-	let targets: ITargets[] = outputs.concat();
-
-	//Change address and amount to send back to wallet.
-	if (changeAddress) {
-		const changeAddressValue = balance - (outputValue + fee);
-		// Ensure we're not creating unspendable dust.
-		// If we have less than 2x the recommended base fee, just contribute it to the fee in this transaction.
-		if (changeAddressValue > TRANSACTION_DEFAULTS.dustLimit) {
-			targets.push({
-				address: changeAddress,
-				value: changeAddressValue,
-				index: targets.length,
-			});
-		}
-		// Looks like we don't need a change address.
-		// Double check we don't have any spare sats hanging around.
-	} else if (outputValue + fee < balance) {
-		// If we have spare sats hanging around and the difference is greater than the dust limit, generate a changeAddress to send them to.
-		const diffValue = balance - (outputValue + fee);
-		if (diffValue > TRANSACTION_DEFAULTS.dustLimit) {
-			const changeAddressRes = await getChangeAddress({});
-			if (changeAddressRes.isErr()) {
-				return err(changeAddressRes.error.message);
-			}
-			changeAddress = changeAddressRes.value.address;
-			targets.push({
-				address: changeAddress,
-				value: diffValue,
-				index: targets.length,
-			});
-		}
-	}
-
-	//Embed any OP_RETURN messages.
-	if (message.trim() !== '') {
-		const messageLength = message.length;
-		const lengthMin = 5;
-		//This is a patch for the following: https://github.com/coreyphillips/moonshine/issues/52
-		if (messageLength > 0 && messageLength < lengthMin) {
-			message += ' '.repeat(lengthMin - messageLength);
-		}
-		const data = Buffer.from(message, 'utf8');
-		const embed = bitcoin.payments.embed({
-			data: [data],
-			network,
-		});
-		targets.push({ script: embed.output!, value: 0, index: targets.length });
-	}
-
-	if (!bip32Interface) {
-		const bip32InterfaceRes = await getBip32Interface(
-			selectedWallet,
-			selectedNetwork,
-		);
-		if (bip32InterfaceRes.isErr()) {
-			return err(bip32InterfaceRes.error.message);
-		}
-		bip32Interface = bip32InterfaceRes.value;
-	}
-
-	const root = bip32Interface;
-	const psbt = new bitcoin.Psbt({ network });
-
-	//Add Inputs from inputs array
-	try {
-		for (const input of inputs) {
-			const path = input.path;
-			const keyPair: BIP32Interface = root.derivePath(path);
-			await addInput({
-				psbt,
-				keyPair,
-				input,
-				selectedNetwork,
-			});
-		}
-	} catch (e) {
-		return err(e);
-	}
-
-	//Set RBF if supported and prompted via rbf in Settings.
-	setReplaceByFee({ psbt, setRbf: !!rbf });
-
-	// Shuffle targets if not run from unit test and add outputs.
-	if (!__JEST__) {
-		targets = shuffleArray(targets);
-	}
-
-	targets.forEach((target) => {
-		//Check if OP_RETURN
-		let isOpReturn = false;
-		try {
-			isOpReturn = !!target.script;
-		} catch (e) {}
-		if (isOpReturn) {
-			if (target.script) {
-				psbt.addOutput({
-					script: target.script,
-					value: target.value ?? 0,
-				});
-			}
-		} else {
-			if (target.address && target.value) {
-				psbt.addOutput({
-					address: target.address,
-					value: target.value,
-				});
-			}
-		}
-	});
-
-	return ok(psbt);
-};
-
-/**
- * Uses the transaction data store to create an unsigned PSBT with funded inputs
- * CURRENTLY UNUSED
- * @param {TWalletName} selectedWallet
- * @param {EAvailableNetwork} selectedNetwork
- */
-export const createFundedPsbtTransaction = async ({
-	selectedWallet,
-	selectedNetwork,
-}: {
-	selectedWallet: TWalletName;
-	selectedNetwork: EAvailableNetwork;
-}): Promise<Result<Psbt>> => {
-	const transactionData = getOnchainTransactionData();
-
-	if (transactionData.isErr()) {
-		return err(transactionData.error.message);
-	}
-
-	//Create PSBT before signing inputs
-	return await createPsbtFromTransactionData({
-		selectedWallet,
-		selectedNetwork,
-		transactionData: transactionData.value,
-	});
-};
-
-/**
- * Loops through inputs and signs them
- * @param {Psbt} psbt
- * @param {BIP32Interface} bip32Interface
- * @param {TWalletName} selectedWallet
- * @param {EAvailableNetwork} selectedNetwork
- * @returns {Promise<Result<Psbt>>}
- */
-export const signPsbt = async ({
-	psbt,
-	bip32Interface,
-}: {
-	psbt: Psbt;
-	bip32Interface: BIP32Interface;
-}): Promise<Result<Psbt>> => {
-	const transactionDataRes = getOnchainTransactionData();
-	if (transactionDataRes.isErr()) {
-		return err(transactionDataRes.error.message);
-	}
-
-	const { inputs } = transactionDataRes.value;
-	for (const [index, input] of inputs.entries()) {
-		try {
-			const keyPair = bip32Interface.derivePath(input.path);
-			psbt.signInput(index, keyPair);
-		} catch (e) {
-			return err(e);
-		}
-	}
-
-	psbt.finalizeAllInputs();
-
-	return ok(psbt);
-};
-
-/**
  * Creates complete signed transaction using the transaction data store
  * @param {ISendTransaction} [transactionData]
  * @returns {Promise<Result<{id: string, hex: string}>>}
@@ -458,17 +166,6 @@ export const createTransaction = async ({
 };
 
 /**
- * Removes outputs that are below the dust limit.
- * @param {IOutput[]} outputs
- * @returns {IOutput[]}
- */
-export const removeDustOutputs = (outputs: IOutput[]): IOutput[] => {
-	return outputs.filter((output) => {
-		return output.value > TRANSACTION_DEFAULTS.dustLimit;
-	});
-};
-
-/**
  * Returns onchain transaction data related to the specified network and wallet.
  * @returns {Result<ISendTransaction>}
  */
@@ -481,87 +178,6 @@ export const getOnchainTransactionData = (): Result<ISendTransaction> => {
 		return err('Unable to get transaction data.');
 	} catch (e) {
 		return err(e);
-	}
-};
-export interface IAddInput {
-	psbt: Psbt;
-	keyPair: BIP32Interface;
-	input: IUtxo;
-	selectedNetwork?: EAvailableNetwork;
-}
-export const addInput = async ({
-	psbt,
-	keyPair,
-	input,
-	selectedNetwork = getSelectedNetwork(),
-}: IAddInput): Promise<Result<string>> => {
-	try {
-		const network = networks[selectedNetwork];
-		const { type } = getAddressInfo(input.address);
-
-		if (!input.value) {
-			return err('No input provided.');
-		}
-
-		if (type === 'p2wpkh') {
-			const p2wpkh = bitcoin.payments.p2wpkh({
-				pubkey: keyPair.publicKey,
-				network,
-			});
-			if (!p2wpkh?.output) {
-				return err('p2wpkh.output is undefined.');
-			}
-			psbt.addInput({
-				hash: input.tx_hash,
-				index: input.tx_pos,
-				witnessUtxo: {
-					script: p2wpkh.output,
-					value: input.value,
-				},
-			});
-		}
-
-		if (type === 'p2sh') {
-			const p2wpkh = bitcoin.payments.p2wpkh({
-				pubkey: keyPair.publicKey,
-				network,
-			});
-			const p2sh = bitcoin.payments.p2sh({ redeem: p2wpkh, network });
-			if (!p2sh?.output) {
-				return err('p2sh.output is undefined.');
-			}
-			if (!p2sh?.redeem) {
-				return err('p2sh.redeem.output is undefined.');
-			}
-			psbt.addInput({
-				hash: input.tx_hash,
-				index: input.tx_pos,
-				witnessUtxo: {
-					script: p2sh.output,
-					value: input.value,
-				},
-				redeemScript: p2sh.redeem.output,
-			});
-		}
-
-		if (type === 'p2pkh') {
-			const transaction = await getTransactions({
-				txHashes: [{ tx_hash: input.tx_hash }],
-			});
-			if (transaction.isErr()) {
-				return err(transaction.error.message);
-			}
-			const hex = transaction.value.data[0].result.hex;
-			const nonWitnessUtxo = Buffer.from(hex, 'hex');
-			psbt.addInput({
-				hash: input.tx_hash,
-				index: input.tx_pos,
-				nonWitnessUtxo,
-			});
-		}
-		return ok('Success');
-	} catch {
-		return err('Unable to add input.');
 	}
 };
 
@@ -713,7 +329,7 @@ export const getBlockExplorerLink = (
 	}
 };
 
-export interface IAddressTypes {
+export interface IAddressTypesIO {
 	inputs: {
 		[key in EAddressType]: number;
 	};
@@ -721,20 +337,13 @@ export interface IAddressTypes {
 		[key in EAddressType]: number;
 	};
 }
-/**
- * Returns the transaction fee and outputs along with the inputs that best fit the sort method.
- * @async
- * @param {IAddress[]} [inputs]
- * @param {IAddress[]} [outputs]
- * @param {number} [satsPerByte]
- * @param {sortMethod}
- * @return {Promise<number>}
- */
+
 export interface ICoinSelectResponse {
 	fee: number;
 	inputs: IUtxo[];
 	outputs: IOutput[];
 }
+// TODO: Migrate to Beignet
 export const autoCoinSelect = async ({
 	inputs = [],
 	outputs = [],
@@ -805,7 +414,7 @@ export const autoCoinSelect = async ({
 		let addressTypes = {
 			inputs: {},
 			outputs: {},
-		} as IAddressTypes;
+		} as IAddressTypesIO;
 
 		await Promise.all([
 			newInputs.map(({ address }) => {
@@ -1196,11 +805,10 @@ export const updateSendAmount = ({
 /**
  * Updates the OP_RETURN message.
  * CURRENTLY UNUSED
+ * // TODO: Migrate to Beignet
  * @param {string} message
  * @param {ISendTransaction} [transaction]
  * @param {number} [index]
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
  */
 export const updateMessage = async ({
 	message,
@@ -1462,6 +1070,7 @@ export const setupRbf = async ({
  * @param {TWalletName} [selectedWallet]
  * @param {EAvailableNetwork} [selectedNetwork]
  * @param {string} oldTxId
+ * @param {number} oldFee
  */
 export const broadcastBoost = async ({
 	selectedWallet = getSelectedWallet(),
@@ -1527,13 +1136,6 @@ export const broadcastBoost = async ({
 	}
 };
 
-export interface IGetFeeEstimatesResponse {
-	fastestFee: number;
-	halfHourFee: number;
-	hourFee: number;
-	minimumFee: number;
-}
-
 /**
  * Returns the current fee estimates for the provided network.
  * @param {EAvailableNetwork} [selectedNetwork]
@@ -1582,6 +1184,7 @@ export const getSelectedFeeId = (): EFeeId => {
 
 /**
  * Returns the amount of sats to send to a given output address in the transaction object by its index.
+ * // TODO: Migrate to Beignet
  * @param outputIndex
  * @returns {Result<number>}
  */

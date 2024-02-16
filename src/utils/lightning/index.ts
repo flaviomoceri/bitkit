@@ -4,7 +4,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import RNFS from 'react-native-fs';
 import { err, ok, Result } from '@synonymdev/result';
 import { TBroadcastTransaction } from '@synonymdev/react-native-ldk/dist/utils/types';
-import { TGetAddressHistory } from 'beignet';
+import { EPaymentType, TGetAddressHistory } from 'beignet';
 import lm, {
 	ldk,
 	DefaultTransactionDataShape,
@@ -74,7 +74,6 @@ import {
 import { addActivityItem } from '../../store/slices/activity';
 import { addCJitActivityItem } from '../../store/utils/activity';
 import {
-	EPaymentType,
 	ETransferStatus,
 	ETransferType,
 	IWalletItem,

@@ -1,9 +1,4 @@
-import {
-	IAddress,
-	IAddressTypeData,
-	IKeyDerivationPath,
-	TWalletName,
-} from '../../store/types/wallet';
+import { TWalletName } from '../../store/types/wallet';
 import { EAvailableNetwork } from '../networks';
 import { err, ok, Result } from '@synonymdev/result';
 import { getMinMaxObjects, TGetMinMaxObject } from '../helpers';
@@ -40,7 +35,12 @@ import {
 } from '../checks';
 import { addressTypes } from '../../store/shapes/wallet';
 import { dispatch } from '../../store/helpers';
-import { EAddressType } from 'beignet';
+import {
+	EAddressType,
+	IAddress,
+	IAddressTypeData,
+	IKeyDerivationPath,
+} from 'beignet';
 
 export const runChecks = async ({
 	selectedWallet = getSelectedWallet(),
@@ -262,7 +262,6 @@ export const addressStorageCheck = async ({
 /**
  * Generates specified addresses and formats them as needed for addressStorageCheck.
  * @param {TWalletName} selectedWallet
- * @param {EAvailableNetwork} selectedNetwork
  * @param {EAddressType} addressType
  * @param {IKeyDerivationPath} keyDerivationPath
  * @param {TGetMinMaxObject<IAddress>} minMaxAddresses
@@ -344,9 +343,9 @@ const _createMinMaxData = async ({
 
 /**
  * Returns impacted addresses or stored addresses that do not match their generated counterparts.
- * @param {TWalletName} selectedWallet]
- * @param {EAvailableNetwork} selectedNetwork]
- * @param {TMinMaxData[]} data
+ * @param {TWalletName} [selectedWallet]
+ * @param {EAvailableNetwork} [selectedNetwork]
+ * @param {TMinMaxData[]} storageCheckData
  * @returns {TGetImpactedAddressesRes}
  */
 export const getImpactedAddresses = async ({

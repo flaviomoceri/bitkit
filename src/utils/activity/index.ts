@@ -1,11 +1,10 @@
 import { err, ok, Result } from '@synonymdev/result';
-import { IFormattedTransaction } from 'beignet';
+import { EPaymentType, IFormattedTransaction } from 'beignet';
 
 import { btcToSats } from '../conversion';
 import { getCurrentWallet } from '../wallet';
 import i18n, { i18nTime } from '../../utils/i18n';
 import { getActivityStore } from '../../store/helpers';
-import { EPaymentType } from '../../store/types/wallet';
 import {
 	EActivityType,
 	IActivityItem,

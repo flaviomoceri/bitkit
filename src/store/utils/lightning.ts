@@ -34,8 +34,9 @@ import {
 	TCreateLightningInvoice,
 	TLightningNodeVersion,
 } from '../types/lightning';
-import { EPaymentType, ETransferType, TWalletName } from '../types/wallet';
+import { ETransferType, TWalletName } from '../types/wallet';
 import { EActivityType, TLightningActivityItem } from '../types/activity';
+import { EPaymentType } from 'beignet';
 
 /**
  * Attempts to update the node id for the selected wallet and network.

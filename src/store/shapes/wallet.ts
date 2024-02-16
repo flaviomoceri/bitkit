@@ -4,19 +4,18 @@ import { __WALLET_DEFAULT_SELECTED_NETWORK__ } from '../../constants/env';
 import { IHeader } from '../../utils/types/electrum';
 import { EAvailableNetwork } from '../../utils/networks';
 import { objectKeys } from '../../utils/objectKeys';
+import { IWalletItem, IWallet, IWalletStore } from '../types/wallet';
 import {
-	IWalletItem,
-	IWallet,
-	IWalletStore,
-	IKeyDerivationPath,
-	IAddressTypes,
-	IAddresses,
-	IAddress,
+	EAddressType,
 	EBoostType,
-} from '../types/wallet';
-import { EAddressType, EFeeId, ISendTransaction } from 'beignet';
+	EFeeId,
+	IAddress,
+	IAddresses,
+	ISendTransaction,
+	TAddressTypes,
+} from 'beignet';
 
-export const addressTypes: Readonly<IAddressTypes> = {
+export const addressTypes: Readonly<TAddressTypes> = {
 	[EAddressType.p2tr]: {
 		type: EAddressType.p2tr,
 		path: "m/86'/0'/0'/0/0",
@@ -79,13 +78,6 @@ export type IAddressTypeContent<T> = {
 	[key in EAddressType]: T;
 };
 
-export type TAddressIndexInfo = {
-	addressIndex: IAddress;
-	changeAddressIndex: IAddress;
-	lastUsedAddressIndex: IAddress;
-	lastUsedChangeAddressIndex: IAddress;
-};
-
 export const getAddressIndexShape = (): IWalletItem<
 	IAddressTypeContent<IAddress>
 > => {
@@ -138,14 +130,6 @@ export const defaultAddressContent: Readonly<IAddress> = {
 	address: '',
 	scriptHash: '',
 	publicKey: '',
-};
-
-export const defaultKeyDerivationPath: Readonly<IKeyDerivationPath> = {
-	purpose: '84',
-	coinType: '0',
-	account: '0',
-	change: '0',
-	addressIndex: '0',
 };
 
 export const defaultHeader: Readonly<IHeader> = {
