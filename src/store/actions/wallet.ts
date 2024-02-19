@@ -2,14 +2,9 @@ import { err, ok, Result } from '@synonymdev/result';
 
 import actions from './actions';
 import {
-	EBoostType,
 	ETransferStatus,
 	ETransferType,
-	IAddress,
 	ICreateWallet,
-	IFormattedTransactions,
-	IKeyDerivationPath,
-	IUtxo,
 	IWallets,
 	IWalletStore,
 	TTransfer,
@@ -43,13 +38,18 @@ import { updateActivityList } from '../utils/activity';
 import {
 	EAddressType,
 	EAvailableNetworks,
+	EBoostType,
 	EFeeId,
 	getDefaultWalletData,
 	getStorageKeyValues,
+	IAddress,
 	IBoostedTransaction,
+	IFormattedTransactions,
+	IKeyDerivationPath,
 	IOnchainFees,
 	IOutput,
 	ISendTransaction,
+	IUtxo,
 	IWalletData,
 	TSetupTransactionResponse,
 } from 'beignet';
@@ -246,7 +246,7 @@ export const addUnconfirmedTransactions = ({
  * FOR TESTING PURPOSES ONLY. DO NOT USE.
  * Injects a fake transaction into the store for testing.
  * @param {string} [id]
- * @param {IFormattedTransaction} [fakeTx]
+ * @param {IFormattedTransactions} [fakeTx]
  * @param {boolean} [shouldRefreshWallet]
  * @param {TWalletName} [selectedWallet]
  * @param {EAvailableNetwork} [selectedNetwork]

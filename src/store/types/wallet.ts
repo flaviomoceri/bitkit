@@ -4,22 +4,16 @@ import { IAddressTypeContent } from '../shapes/wallet';
 import { IHeader } from '../../utils/types/electrum';
 import {
 	EAddressType,
-	IFormattedTransaction,
+	IAddress,
+	IAddresses,
+	IBoostedTransactions,
+	IFormattedTransactions,
 	ISendTransaction,
+	IUtxo,
 	TServer,
 } from 'beignet';
 
-export enum EPaymentType {
-	sent = 'sent',
-	received = 'received',
-}
-
 export type TKeyDerivationAccountType = 'onchain';
-export type TKeyDerivationPurpose = '86' | '84' | '49' | '44'; //"p2tr" | "p2wpkh" | "p2sh" | "p2pkh";
-export type TKeyDerivationCoinType = '0' | '1'; //"mainnet" | "testnet";
-export type TKeyDerivationAccount = '0'; //"On-Chain Wallet";
-export type TKeyDerivationChange = '0' | '1'; //"Receiving Address" | "Change Address";
-export type TKeyDerivationAddressIndex = string;
 export type TAssetType = 'bitcoin' | 'tether';
 
 export enum EConversionUnit {
@@ -37,77 +31,6 @@ export enum EDenomination {
 	modern = 'modern',
 	classic = 'classic',
 }
-
-export type TGetByteCountInput =
-	| `MULTISIG-P2SH:${number}-${number}`
-	| `MULTISIG-P2WSH:${number}-${number}`
-	| `MULTISIG-P2SH-P2WSH:${number}-${number}`
-	| 'P2SH-P2WPKH'
-	| 'P2PKH'
-	| 'p2pkh'
-	| 'P2WPKH'
-	| 'p2wpkh'
-	| 'P2SH'
-	| 'p2sh'
-	| 'P2TR'
-	| 'p2tr';
-
-export type TGetByteCountOutput =
-	| 'P2SH'
-	| 'P2PKH'
-	| 'P2WPKH'
-	| 'P2WSH'
-	| 'p2wpkh'
-	| 'p2sh'
-	| 'p2pkh'
-	| 'P2TR'
-	| 'p2tr';
-
-export type TGetByteCountInputs = {
-	[key in TGetByteCountInput]?: number;
-};
-
-export type TGetByteCountOutputs = {
-	[key in TGetByteCountOutput]?: number;
-};
-
-export enum EBoostType {
-	rbf = 'rbf',
-	cpfp = 'cpfp',
-}
-
-export interface IAddressTypeData {
-	type: EAddressType;
-	path: string;
-	name: string;
-	shortName: string;
-	description: string;
-	example: string;
-}
-
-export type IAddressTypes = {
-	[key in EAddressType]: Readonly<IAddressTypeData>;
-};
-
-// m / purpose' / coin_type' / account' / change / address_index
-export interface IKeyDerivationPath {
-	purpose: TKeyDerivationPurpose;
-	coinType: TKeyDerivationCoinType;
-	account: TKeyDerivationAccount;
-	change: TKeyDerivationChange;
-	addressIndex: TKeyDerivationAddressIndex;
-}
-
-export interface IKeyDerivationPathData {
-	pathString: string;
-	pathObject: IKeyDerivationPath;
-}
-
-export type TProcessUnconfirmedTransactions = {
-	unconfirmedTxs: IFormattedTransactions; // zero-conf transactions
-	outdatedTxs: IUtxo[]; // Transactions that are no longer confirmed.
-	ghostTxs: string[]; // Transactions that have been removed from the mempool.
-};
 
 export type TWalletName = `wallet${number}`;
 
@@ -128,18 +51,6 @@ export interface IWalletItem<T> {
 	timestamp?: number | null;
 }
 
-export interface IAddress {
-	index: number;
-	path: string;
-	address: string;
-	scriptHash: string;
-	publicKey: string;
-}
-
-export interface IAddresses {
-	[scriptHash: string]: IAddress;
-}
-
 export interface ICreateWallet {
 	walletName?: TWalletName;
 	mnemonic: string;
@@ -150,38 +61,6 @@ export interface ICreateWallet {
 	addressTypesToCreate?: EAddressType[];
 	selectedNetwork?: EAvailableNetwork;
 	servers?: TServer | TServer[];
-}
-
-export interface IUtxo {
-	address: string;
-	index: number;
-	path: string;
-	scriptHash: string;
-	height: number;
-	tx_hash: string;
-	tx_pos: number;
-	value: number;
-}
-
-export interface IOutput {
-	address: string; // Address to send to.
-	value: number; // Amount denominated in sats.
-	index: number; // Used to specify which output to update or edit when using updateSendTransaction.
-}
-
-export interface IFormattedTransactions {
-	[txId: string]: IFormattedTransaction;
-}
-
-export interface IBoostedTransaction {
-	parentTransactions: string[]; // Array of parent txids to the currently boosted transaction.
-	childTransaction: string; // Child txid of the currently boosted transaction.
-	type: EBoostType;
-	fee: number;
-}
-
-export interface IBoostedTransactions {
-	[txId: string]: IBoostedTransaction;
 }
 
 export type TTransfer = TTransferToSpending | TTransferToSavings;

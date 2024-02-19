@@ -1,7 +1,6 @@
 import { ok, Result } from '@synonymdev/result';
 import { TChannel } from '@synonymdev/react-native-ldk';
 
-import { EPaymentType } from '../types/wallet';
 import { EActivityType, TLightningActivityItem } from '../types/activity';
 import { getBlocktankStore, dispatch } from '../helpers';
 import { getCurrentWallet } from '../../utils/wallet';
@@ -13,6 +12,7 @@ import { updateSettings } from '../slices/settings';
 import { closeSheet } from '../slices/ui';
 import { addActivityItem, updateActivityItems } from '../slices/activity';
 import { showBottomSheet } from './ui';
+import { EPaymentType } from 'beignet';
 
 /**
  * Attempts to determine if a given channel open was in response to

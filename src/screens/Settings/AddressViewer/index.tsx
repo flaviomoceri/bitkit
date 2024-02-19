@@ -36,7 +36,7 @@ import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from '../../../store/reselect/wallet';
-import { IAddress, IUtxo, TWalletName } from '../../../store/types/wallet';
+import { TWalletName } from '../../../store/types/wallet';
 import Button from '../../../components/Button';
 import {
 	defaultAddressContent,
@@ -69,7 +69,7 @@ import { setupLdk } from '../../../utils/lightning';
 import { startWalletServices } from '../../../utils/startup';
 import { updateOnchainFeeEstimates } from '../../../store/utils/fees';
 import { viewControllerIsOpenSelector } from '../../../store/reselect/ui';
-import { EAddressType } from 'beignet';
+import { EAddressType, IAddress, IUtxo } from 'beignet';
 
 export type TAddressViewerData = {
 	[EAddressType.p2tr]: {

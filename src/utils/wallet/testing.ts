@@ -1,4 +1,4 @@
-import { EPaymentType, IFormattedTransactions } from '../../store/types/wallet';
+import { EPaymentType, IFormattedTransactions } from 'beignet';
 
 /**
  * Used to generate a fake transaction for testing purposes.

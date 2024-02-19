@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
 import { StyleSheet, TextInputProps, View } from 'react-native';
-import { IAddress } from '../../../store/types/wallet';
 import { TouchableOpacity } from '../../../styles/components';
 import { Subtitle, Text01M } from '../../../styles/text';
 import { Checkmark } from '../../../styles/icons';
 import { IThemeColors } from '../../../styles/themes';
+import { IAddress } from 'beignet';
 
 type ListItemProps = TextInputProps & {
 	item: IAddress;

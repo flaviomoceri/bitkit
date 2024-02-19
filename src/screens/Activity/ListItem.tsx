@@ -22,11 +22,12 @@ import {
 import { useAppSelector } from '../../hooks/redux';
 import { useProfile2 } from '../../hooks/slashtags2';
 import { useFeeText } from '../../hooks/fees';
-import { EPaymentType, TTransferToSavings } from '../../store/types/wallet';
+import { TTransferToSavings } from '../../store/types/wallet';
 import { slashTagsUrlSelector } from '../../store/reselect/metadata';
 import { truncate } from '../../utils/helpers';
 import { getActivityItemDate } from '../../utils/activity';
 import { transferSelector } from '../../store/reselect/wallet';
+import { EPaymentType } from 'beignet';
 
 export const ListItem = ({
 	title,

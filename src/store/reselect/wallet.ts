@@ -1,16 +1,15 @@
-import { EAddressType, IFormattedTransaction, ISendTransaction } from 'beignet';
+import {
+	EAddressType,
+	IBoostedTransactions,
+	IFormattedTransaction,
+	IFormattedTransactions,
+	ISendTransaction,
+	IUtxo,
+} from 'beignet';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { RootState } from '..';
-import {
-	IWalletStore,
-	IWallets,
-	IWallet,
-	TWalletName,
-	IBoostedTransactions,
-	IFormattedTransactions,
-	IUtxo,
-} from '../types/wallet';
+import { IWalletStore, IWallets, IWallet, TWalletName } from '../types/wallet';
 import { defaultSendTransaction } from '../shapes/wallet';
 import { EAvailableNetwork } from '../../utils/networks';
 import { IExchangeRates } from '../../utils/exchange-rate';

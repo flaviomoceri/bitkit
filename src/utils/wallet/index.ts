@@ -9,35 +9,16 @@ import { err, ok, Result } from '@synonymdev/result';
 
 import { EAvailableNetwork, networks } from '../networks';
 import {
-	addressTypes,
 	getDefaultWalletShape,
 	getDefaultWalletStoreShape,
-	TAddressIndexInfo,
 } from '../../store/shapes/wallet';
 import {
-	EPaymentType,
-	IAddress,
-	IAddresses,
-	IFormattedTransactions,
-	IKeyDerivationPath,
-	IKeyDerivationPathData,
-	IOutput,
-	IUtxo,
 	IWallet,
 	IWallets,
-	TKeyDerivationAccount,
 	TKeyDerivationAccountType,
-	TKeyDerivationChange,
-	TKeyDerivationCoinType,
-	TKeyDerivationPurpose,
 	TWalletName,
 } from '../../store/types/wallet';
-import {
-	IGetAddress,
-	IGenerateAddresses,
-	IGetAddressResponse,
-	IGetInfoFromAddressPath,
-} from '../types';
+import { IGetAddress, IGenerateAddresses } from '../types';
 import i18n from '../i18n';
 import { btcToSats } from '../conversion';
 import { getKeychainValue, setKeychainValue } from '../keychain';
@@ -58,33 +39,38 @@ import {
 } from '../../store/actions/wallet';
 import { TCoinSelectPreference } from '../../store/types/settings';
 import { updateActivityList } from '../../store/utils/activity';
-import {
-	getBlockHeader,
-	getTransactionsFromInputs,
-	TTxResult,
-} from './electrum';
+import { getBlockHeader } from './electrum';
 import { invokeNodeJsMethod } from '../nodejs-mobile';
 import { DefaultNodeJsMethodsShape } from '../nodejs-mobile/shapes';
 import { refreshLdk } from '../lightning';
-import { BITKIT_WALLET_SEED_HASH_PREFIX, CHUNK_LIMIT } from './constants';
+import { BITKIT_WALLET_SEED_HASH_PREFIX } from './constants';
 import { moveMetaIncTxTags } from '../../store/utils/metadata';
 import { refreshOrdersList } from '../../store/utils/blocktank';
 import { TNode } from '../../store/types/lightning';
 import { showNewOnchainTxPrompt, showNewTxPrompt } from '../../store/utils/ui';
 import { promiseTimeout, reduceValue } from '../helpers';
-import { objectKeys } from '../objectKeys';
 import {
 	EAddressType,
 	EAvailableNetworks,
 	EElectrumNetworks,
 	Electrum,
 	getByteCount,
+	IAddress,
 	ICustomGetAddress,
 	IFormattedTransaction,
+	IFormattedTransactions,
 	IGenerateAddressesResponse,
+	IGetAddressResponse,
+	IKeyDerivationPath,
+	IOutput,
 	IRbfData,
 	ISendTransaction,
+	IUtxo,
 	IWalletData,
+	TKeyDerivationAccount,
+	TKeyDerivationChange,
+	TKeyDerivationCoinType,
+	TKeyDerivationPurpose,
 	TOnMessage,
 	Transaction,
 	TTransactionMessage,
@@ -265,92 +251,6 @@ export const getKeyDerivationAccount = (
 ): TKeyDerivationAccount => {
 	return keyDerivationAccountTypes[accountType];
 };
-/**
- * Formats and returns the provided derivation path string and object.
- * @param {IKeyDerivationPath} path
- * @param {TKeyDerivationPurpose | string} [purpose]
- * @param {boolean} [changeAddress]
- * @param {TKeyDerivationAccountType} [accountType]
- * @param {string} [addressIndex]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @return {Result<{IKeyDerivationPathData}>} Derivation Path Data
- */
-export const formatKeyDerivationPath = ({
-	path,
-	purpose,
-	selectedNetwork = getSelectedNetwork(),
-	accountType = 'onchain',
-	changeAddress = false,
-	addressIndex = '0',
-}: {
-	path: IKeyDerivationPath | string;
-	purpose?: TKeyDerivationPurpose;
-	selectedNetwork?: EAvailableNetwork;
-	accountType?: TKeyDerivationAccountType;
-	changeAddress?: boolean;
-	addressIndex?: string;
-}): Result<IKeyDerivationPathData> => {
-	try {
-		if (typeof path === 'string') {
-			const derivationPathResponse = getKeyDerivationPathObject({
-				path,
-				purpose,
-				selectedNetwork,
-				accountType,
-				changeAddress,
-				addressIndex,
-			});
-			if (derivationPathResponse.isErr()) {
-				return err(derivationPathResponse.error.message);
-			}
-			path = derivationPathResponse.value;
-		}
-		const pathObject = path;
-
-		const pathStringResponse = getKeyDerivationPathString({
-			path: pathObject,
-			purpose,
-			selectedNetwork,
-			accountType,
-			changeAddress,
-			addressIndex,
-		});
-		if (pathStringResponse.isErr()) {
-			return err(pathStringResponse.error.message);
-		}
-		const pathString = pathStringResponse.value;
-		return ok({ pathObject, pathString });
-	} catch (e) {
-		return err(e);
-	}
-};
-
-/**
- * Returns the derivation path object for the specified addressType and network.
- * @param {EAddressType} addressType
- * @param {EAvailableNetwork} [selectedNetwork]
- * @returns Result<IKeyDerivationPath>
- */
-export const getKeyDerivationPath = ({
-	addressType,
-	selectedNetwork = getSelectedNetwork(),
-}: {
-	addressType: EAddressType;
-	selectedNetwork?: EAvailableNetwork;
-}): Result<IKeyDerivationPath> => {
-	try {
-		const keyDerivationPathResponse = getKeyDerivationPathObject({
-			selectedNetwork,
-			path: addressTypes[addressType].path,
-		});
-		if (keyDerivationPathResponse.isErr()) {
-			return err(keyDerivationPathResponse.error.message);
-		}
-		return ok(keyDerivationPathResponse.value);
-	} catch (e) {
-		return err(e);
-	}
-};
 
 /**
  * Get onchain mnemonic phrase for a given wallet from storage.
@@ -391,21 +291,6 @@ export const getBip39Passphrase = async (
 	} catch {
 		return '';
 	}
-};
-
-export const getSeed = async (
-	selectedWallet: TWalletName,
-): Promise<Result<Buffer>> => {
-	const getMnemonicPhraseResponse = await getMnemonicPhrase(selectedWallet);
-	if (getMnemonicPhraseResponse.isErr()) {
-		return err(getMnemonicPhraseResponse.error.message);
-	}
-
-	//Attempt to acquire the bip39Passphrase if available
-	const bip39Passphrase = await getBip39Passphrase(selectedWallet);
-
-	const mnemonic = getMnemonicPhraseResponse.value;
-	return ok(await bip39.mnemonicToSeed(mnemonic, bip39Passphrase));
 };
 
 /**
@@ -530,31 +415,6 @@ export const customGetAddress = async ({
 };
 
 /**
- * Get info from an address path "m/49'/0'/0'/0/1"
- * @param {string} path - The path to derive information from.
- * @return {{error: <boolean>, isChangeAddress: <number>, addressIndex: <number>, data: <string>}}
- */
-export const getInfoFromAddressPath = (path = ''): IGetInfoFromAddressPath => {
-	try {
-		if (path === '') {
-			return { error: true, data: 'No path specified' };
-		}
-		let isChangeAddress = false;
-		const lastIndex = path.lastIndexOf('/');
-		const addressIndex = Number(path.substr(lastIndex + 1));
-		const firstIndex = path.lastIndexOf('/', lastIndex - 1);
-		const addressType = path.substr(firstIndex + 1, lastIndex - firstIndex - 1);
-		if (Number(addressType) === 1) {
-			isChangeAddress = true;
-		}
-		return { error: false, isChangeAddress, addressIndex };
-	} catch (e) {
-		console.log(e);
-		return { error: true, isChangeAddress: false, addressIndex: 0, data: e };
-	}
-};
-
-/**
  * Determine if a given mnemonic is valid.
  * @param {string} mnemonic - The mnemonic to validate.
  * @return {boolean}
@@ -582,169 +442,6 @@ export const getOnChainBalance = ({
 	selectedNetwork?: EAvailableNetwork;
 } = {}): number => {
 	return getWalletStore().wallets[selectedWallet]?.balance[selectedNetwork];
-};
-
-/**
- *
- * @param {string} asset
- * @return {string}
- */
-export const getAssetTicker = (asset = 'bitcoin'): string => {
-	try {
-		switch (asset) {
-			case 'bitcoin':
-				return 'BTC';
-			case 'bitcoinTestnet':
-				return 'BTC';
-			default:
-				return '';
-		}
-	} catch {
-		return '';
-	}
-};
-
-/**
- * This method will compare a set of specified addresses to the currently stored addresses and remove any duplicates.
- * @param {IAddresses} addresses
- * @param {IAddresses} changeAddresses
- * @param {selectedWallet} selectedWallet
- * @param {selectedNetwork} selectedNetwork
- */
-export const removeDuplicateAddresses = async ({
-	addresses = {},
-	changeAddresses = {},
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-}: {
-	addresses?: IAddresses;
-	changeAddresses?: IAddresses;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): Promise<Result<IGenerateAddressesResponse>> => {
-	try {
-		const { currentWallet } = getCurrentWallet({
-			selectedWallet,
-			selectedNetwork,
-		});
-		const currentAddressTypeContent = currentWallet.addresses[selectedNetwork];
-		const currentChangeAddressTypeContent =
-			currentWallet.changeAddresses[selectedNetwork];
-
-		//Remove any duplicate addresses.
-		await Promise.all([
-			objectKeys(currentAddressTypeContent).map(async (addressType) => {
-				await Promise.all(
-					objectKeys(addresses).map((scriptHash) => {
-						if (scriptHash in currentAddressTypeContent[addressType]) {
-							delete addresses[scriptHash];
-						}
-					}),
-				);
-			}),
-
-			objectKeys(currentChangeAddressTypeContent).map(async (addressType) => {
-				await Promise.all(
-					objectKeys(changeAddresses).map((scriptHash) => {
-						if (scriptHash in currentChangeAddressTypeContent[addressType]) {
-							delete changeAddresses[scriptHash];
-						}
-					}),
-				);
-			}),
-		]);
-
-		return ok({ addresses, changeAddresses });
-	} catch (e) {
-		return err(e);
-	}
-};
-
-interface ITxHashes extends TTxResult {
-	scriptHash: string;
-}
-interface IIndexes {
-	addressIndex: IAddress;
-	changeAddressIndex: IAddress;
-	foundAddressIndex: boolean;
-	foundChangeAddressIndex: boolean;
-}
-
-export const getHighestUsedIndexFromTxHashes = ({
-	txHashes,
-	addresses,
-	changeAddresses,
-	addressIndex,
-	changeAddressIndex,
-}: {
-	txHashes: ITxHashes[];
-	addresses: IAddresses;
-	changeAddresses: IAddresses;
-	addressIndex: IAddress;
-	changeAddressIndex: IAddress;
-}): Result<IIndexes> => {
-	try {
-		let foundAddressIndex = false;
-		let foundChangeAddressIndex = false;
-
-		txHashes = txHashes.flat();
-		txHashes.forEach(({ scriptHash }) => {
-			if (
-				scriptHash in addresses &&
-				addresses[scriptHash].index >= addressIndex.index
-			) {
-				foundAddressIndex = true;
-				addressIndex = addresses[scriptHash];
-			} else if (
-				scriptHash in changeAddresses &&
-				changeAddresses[scriptHash].index >= changeAddressIndex.index
-			) {
-				foundChangeAddressIndex = true;
-				changeAddressIndex = changeAddresses[scriptHash];
-			}
-		});
-
-		const data = {
-			addressIndex,
-			changeAddressIndex,
-			foundAddressIndex,
-			foundChangeAddressIndex,
-		};
-
-		return ok(data);
-	} catch (e) {
-		return err(e);
-	}
-};
-
-/**
- * Returns the highest address and change address index stored in the app for the specified wallet and network.
- */
-export const getHighestStoredAddressIndex = ({
-	addressType,
-}: {
-	addressType: EAddressType;
-}): Result<{
-	addressIndex: IAddress;
-	changeAddressIndex: IAddress;
-}> => {
-	try {
-		const currentWallet = getOnChainWalletData();
-		const addresses = currentWallet.addresses[addressType];
-		const changeAddresses = currentWallet.changeAddresses[addressType];
-
-		const addressIndex = Object.values(addresses).reduce((prev, current) => {
-			return prev.index > current.index ? prev : current;
-		});
-
-		const changeAddressIndex = Object.values(changeAddresses).reduce(
-			(prev, current) => (prev.index > current.index ? prev : current),
-		);
-
-		return ok({ addressIndex, changeAddressIndex });
-	} catch (e) {
-		return err(e);
-	}
 };
 
 /**
@@ -885,234 +582,6 @@ export interface ITransaction<T> {
 export interface ITxHash {
 	tx_hash: string;
 }
-
-type InputData = {
-	[key: string]: {
-		addresses: string[];
-		value: number;
-	};
-};
-
-export const getInputData = async ({
-	inputs,
-}: {
-	inputs: { tx_hash: string; vout: number }[];
-	selectedNetwork?: EAvailableNetwork;
-}): Promise<Result<InputData>> => {
-	try {
-		const inputData: InputData = {};
-
-		for (let i = 0; i < inputs.length; i += CHUNK_LIMIT) {
-			const chunk = inputs.slice(i, i + CHUNK_LIMIT);
-
-			const getTransactionsResponse = await getTransactionsFromInputs({
-				txHashes: chunk,
-			});
-			if (getTransactionsResponse.isErr()) {
-				return err(getTransactionsResponse.error.message);
-			}
-			getTransactionsResponse.value.data.map(({ data, result }) => {
-				const vout = result.vout[data.vout];
-				const addresses = vout.scriptPubKey.addresses
-					? vout.scriptPubKey.addresses
-					: vout.scriptPubKey.address
-					? [vout.scriptPubKey.address]
-					: [];
-				const value = vout.value;
-				const key = `${data.tx_hash}${vout.n}`;
-				inputData[key] = { addresses, value };
-			});
-		}
-		return ok(inputData);
-	} catch (e) {
-		return err(e);
-	}
-};
-
-export const formatTransactions = async ({
-	transactions,
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-}: {
-	transactions: ITransaction<IUtxo>[];
-	selectedNetwork?: EAvailableNetwork;
-	selectedWallet?: TWalletName;
-}): Promise<Result<IFormattedTransactions>> => {
-	if (transactions.length < 1) {
-		return ok({});
-	}
-	const { currentWallet } = getCurrentWallet({
-		selectedNetwork,
-		selectedWallet,
-	});
-
-	// Batch and pre-fetch input data.
-	const inputs: { tx_hash: string; vout: number }[] = [];
-	transactions.forEach(({ result }) => {
-		result.vin.forEach((v) => inputs.push({ tx_hash: v.txid, vout: v.vout }));
-	});
-	const inputDataResponse = await getInputData({
-		selectedNetwork,
-		inputs,
-	});
-	if (inputDataResponse.isErr()) {
-		return err(inputDataResponse.error.message);
-	}
-	const addressTypeKeys = objectKeys(EAddressType);
-	const inputData = inputDataResponse.value;
-	const currentAddresses = currentWallet.addresses[selectedNetwork];
-	const currentChangeAddresses = currentWallet.changeAddresses[selectedNetwork];
-
-	let addresses = {} as IAddresses;
-	let changeAddresses = {} as IAddresses;
-
-	addressTypeKeys.map((addressType) => {
-		// Check if addresses of this type have been generated. If not, skip.
-		if (Object.keys(currentAddresses[addressType])?.length > 0) {
-			addresses = {
-				...addresses,
-				...currentAddresses[addressType],
-			};
-		}
-		// Check if change addresses of this type have been generated. If not, skip.
-		if (Object.keys(currentChangeAddresses[addressType])?.length > 0) {
-			changeAddresses = {
-				...changeAddresses,
-				...currentChangeAddresses[addressType],
-			};
-		}
-	});
-
-	// Create combined address/change-address object for easier/faster reference later on.
-	const combinedAddressObj: { [key: string]: IAddress } = {};
-	[...Object.values(addresses), ...Object.values(changeAddresses)].map(
-		(data) => {
-			combinedAddressObj[data.address] = data;
-		},
-	);
-
-	const formattedTransactions: IFormattedTransactions = {};
-	transactions.map(async ({ data, result }) => {
-		if (!result.txid) {
-			return;
-		}
-
-		let totalInputValue = 0; // Total value of all inputs.
-		let matchedInputValue = 0; // Total value of all inputs with addresses that belong to this wallet.
-		let totalOutputValue = 0; // Total value of all outputs.
-		let matchedOutputValue = 0; // Total value of all outputs with addresses that belong to this wallet.
-		let messages: string[] = []; // Array of OP_RETURN messages.
-
-		//Iterate over each input
-		result.vin.map(({ txid, scriptSig, vout }) => {
-			//Push any OP_RETURN messages to messages array
-			try {
-				const asm = scriptSig.asm;
-				if (asm !== '' && asm.includes('OP_RETURN')) {
-					const OpReturnMessages = decodeOpReturnMessage(asm);
-					messages = messages.concat(OpReturnMessages);
-				}
-			} catch {}
-
-			const { addresses: _addresses, value } = inputData[`${txid}${vout}`];
-			totalInputValue = totalInputValue + value;
-			_addresses.map((address) => {
-				if (address in combinedAddressObj) {
-					matchedInputValue = matchedInputValue + value;
-				}
-			});
-		});
-
-		//Iterate over each output
-		result.vout.map(({ scriptPubKey, value }) => {
-			const _addresses = scriptPubKey.addresses
-				? scriptPubKey.addresses
-				: scriptPubKey.address
-				? [scriptPubKey.address]
-				: [];
-			totalOutputValue = totalOutputValue + value;
-			_addresses.map((address) => {
-				if (address in combinedAddressObj) {
-					matchedOutputValue = matchedOutputValue + value;
-				}
-			});
-		});
-
-		const txid = result.txid;
-		const type =
-			matchedInputValue > matchedOutputValue
-				? EPaymentType.sent
-				: EPaymentType.received;
-		const totalMatchedValue = matchedOutputValue - matchedInputValue;
-		const value = Number(totalMatchedValue.toFixed(8));
-		const totalValue = totalInputValue - totalOutputValue;
-		const fee = Number(Math.abs(totalValue).toFixed(8));
-		const vsize = result.vsize;
-		const satsPerByte = btcToSats(fee) / vsize;
-		const { address, height, scriptHash } = data;
-		let timestamp = Date.now();
-		let confirmTimestamp: number | undefined;
-
-		if (height > 0 && result.blocktime) {
-			confirmTimestamp = result.blocktime * 1000;
-			//In the event we're recovering, set the older timestamp.
-			if (confirmTimestamp < timestamp) {
-				timestamp = confirmTimestamp;
-			}
-		}
-
-		formattedTransactions[txid] = {
-			address,
-			height,
-			scriptHash,
-			totalInputValue,
-			matchedInputValue,
-			totalOutputValue,
-			matchedOutputValue,
-			fee,
-			satsPerByte,
-			type,
-			value,
-			txid,
-			messages,
-			timestamp,
-			confirmTimestamp,
-			vsize,
-			vin: result.vin,
-		};
-	});
-
-	return ok(formattedTransactions);
-};
-
-//Returns an array of messages from an OP_RETURN message
-export const decodeOpReturnMessage = (opReturn = ''): string[] => {
-	let messages: string[] = [];
-	try {
-		//Remove OP_RETURN from the string & trim the string.
-		if (opReturn.includes('OP_RETURN')) {
-			opReturn = opReturn.replace('OP_RETURN', '');
-			opReturn = opReturn.trim();
-		}
-
-		const regex = /[0-9A-Fa-f]{6}/g;
-		//Separate the string into an array based upon a space and insert each message into an array to be returned
-		const data = opReturn.split(' ');
-		data.forEach((msg) => {
-			try {
-				//Ensure the message is in fact a hex
-				if (regex.test(msg)) {
-					const message = Buffer.from(msg, 'hex').toString();
-					messages.push(message);
-				}
-			} catch {}
-		});
-		return messages;
-	} catch (e) {
-		console.log(e);
-		return messages;
-	}
-};
 
 export const getCustomElectrumPeers = ({
 	selectedNetwork = getSelectedNetwork(),
@@ -1545,6 +1014,7 @@ export interface ICoinSelectResponse {
 
 /**
  * This method will do its best to select only the necessary inputs that are provided base on the selected sortMethod.
+ * // TODO: Migrate to Beignet
  * @param {IUtxo[]} [inputs]
  * @param {IUtxo[]} [outputs]
  * @param {number} [satsPerByte]
@@ -1680,60 +1150,6 @@ export const autoCoinSelect = async ({
 };
 
 /**
- * Parses a key derivation path object and returns it in string format. Ex: "m/84'/0'/0'/0/0"
- * @param {IKeyDerivationPath} path
- * @param {TKeyDerivationPurpose | string} [purpose]
- * @param {boolean} [changeAddress]
- * @param {TKeyDerivationAccountType} [accountType]
- * @param {string} [addressIndex]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @return {Result<string>}
- */
-export const getKeyDerivationPathString = ({
-	path,
-	purpose,
-	accountType,
-	changeAddress,
-	addressIndex = '0',
-	selectedNetwork,
-}: {
-	path: IKeyDerivationPath;
-	purpose?: TKeyDerivationPurpose;
-	accountType?: TKeyDerivationAccountType;
-	changeAddress?: boolean;
-	addressIndex?: string;
-	selectedNetwork?: EAvailableNetwork;
-}): Result<string> => {
-	try {
-		if (!path) {
-			return err('No path specified.');
-		}
-		//Specifically specifying purpose will override the default accountType purpose value.
-		if (purpose) {
-			path.purpose = purpose;
-		}
-
-		if (selectedNetwork) {
-			path.coinType =
-				selectedNetwork.toLocaleLowerCase() === EAvailableNetworks.bitcoin
-					? '0'
-					: '1';
-		}
-		if (accountType) {
-			path.account = getKeyDerivationAccount(accountType);
-		}
-		if (changeAddress !== undefined) {
-			path.change = changeAddress ? '1' : '0';
-		}
-		return ok(
-			`m/${path.purpose}'/${path.coinType}'/${path.account}'/${path.change}/${addressIndex}`,
-		);
-	} catch (e) {
-		return err(e);
-	}
-};
-
-/**
  * Parses a key derivation path in string format Ex: "m/84'/0'/0'/0/0" and returns IKeyDerivationPath.
  * @param {string} keyDerivationPath
  * @param {TKeyDerivationPurpose | string} [purpose]
@@ -1793,49 +1209,6 @@ export const getKeyDerivationPathObject = ({
 			account,
 			change,
 			addressIndex,
-		});
-	} catch (e) {
-		return err(e);
-	}
-};
-
-/**
- * The method returns the base key derivation path for a given address type.
- * @param {EAddressType} [addressType]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @param {TWalletName} [selectedWallet]
- * @param {boolean} [changeAddress]
- * @return {Result<{ pathString: string, pathObject: IKeyDerivationPath }>}
- */
-export const getAddressTypePath = ({
-	addressType,
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-	changeAddress,
-}: {
-	addressType?: EAddressType;
-	selectedNetwork?: EAvailableNetwork;
-	selectedWallet?: TWalletName;
-	changeAddress?: boolean;
-}): Result<IKeyDerivationPathData> => {
-	try {
-		if (!addressType) {
-			addressType = getSelectedAddressType({ selectedNetwork, selectedWallet });
-		}
-
-		const path = addressTypes[addressType].path;
-		const pathData = formatKeyDerivationPath({
-			path,
-			selectedNetwork,
-			changeAddress,
-		});
-		if (pathData.isErr()) {
-			return err(pathData.error.message);
-		}
-
-		return ok({
-			pathString: pathData.value.pathString,
-			pathObject: pathData.value.pathObject,
 		});
 	} catch (e) {
 		return err(e);
@@ -1975,108 +1348,6 @@ export const getBalance = ({
 };
 
 /**
- * Returns the difference between the current address index and the last used address index.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @param {EAddressType} [addressType]
- * @returns {Result<{ addressDelta: number; changeAddressDelta: number }>}
- */
-export const getGapLimit = ({
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-	addressType,
-}: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-	addressType?: EAddressType;
-}): Result<{ addressDelta: number; changeAddressDelta: number }> => {
-	try {
-		if (!addressType) {
-			addressType = getSelectedAddressType({ selectedNetwork, selectedWallet });
-		}
-		const { currentWallet } = getCurrentWallet({
-			selectedWallet,
-			selectedNetwork,
-		});
-		const addressIndex =
-			currentWallet.addressIndex[selectedNetwork][addressType].index;
-		const lastUsedAddressIndex =
-			currentWallet.lastUsedAddressIndex[selectedNetwork][addressType].index;
-		const changeAddressIndex =
-			currentWallet.changeAddressIndex[selectedNetwork][addressType].index;
-		const lastUsedChangeAddressIndex =
-			currentWallet.lastUsedChangeAddressIndex[selectedNetwork][addressType]
-				.index;
-		const addressDelta = Math.abs(
-			addressIndex - (lastUsedAddressIndex > 0 ? lastUsedAddressIndex : 0),
-		);
-		const changeAddressDelta = Math.abs(
-			changeAddressIndex -
-				(lastUsedChangeAddressIndex > 0 ? lastUsedChangeAddressIndex : 0),
-		);
-
-		return ok({ addressDelta, changeAddressDelta });
-	} catch (e) {
-		console.log(e);
-		return err(e);
-	}
-};
-
-/**
- * Get address for a given scriptPubKey.
- * @param scriptPubKey
- * @param selectedNetwork
- * @returns {string}
- */
-export const getAddressFromScriptPubKey = (
-	scriptPubKey: string,
-	selectedNetwork: EAvailableNetwork = getSelectedNetwork(),
-): string => {
-	const network = networks[selectedNetwork];
-	return bitcoin.address.fromOutputScript(
-		Buffer.from(scriptPubKey, 'hex'),
-		network,
-	);
-};
-
-/**
- * Returns current address index information.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @param {EAddressType} [addressType]
- */
-export const getAddressIndexInfo = ({
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-	addressType,
-}: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-	addressType?: EAddressType;
-}): TAddressIndexInfo => {
-	if (!addressType) {
-		addressType = getSelectedAddressType({ selectedNetwork, selectedWallet });
-	}
-	const { currentWallet } = getCurrentWallet({
-		selectedWallet,
-		selectedNetwork,
-	});
-	const addressIndex = currentWallet.addressIndex[selectedNetwork][addressType];
-	const changeAddressIndex =
-		currentWallet.addressIndex[selectedNetwork][addressType];
-	const lastUsedAddressIndex =
-		currentWallet.lastUsedAddressIndex[selectedNetwork][addressType];
-	const lastUsedChangeAddressIndex =
-		currentWallet.lastUsedChangeAddressIndex[selectedNetwork][addressType];
-	return {
-		addressIndex,
-		changeAddressIndex,
-		lastUsedAddressIndex,
-		lastUsedChangeAddressIndex,
-	};
-};
-
-/**
  * This method will clear the utxo array for each address type and reset the
  * address indexes back to the original/default app values. Once cleared & reset
  * the app will rescan the wallet's addresses from index zero.
@@ -2095,27 +1366,6 @@ export const rescanAddresses = async ({
 		shouldClearAddresses,
 		shouldClearTransactions,
 	});
-};
-
-/**
- * Returns the current wallet's unconfirmed transactions.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @returns {Promise<Result<IFormattedTransactions>>}
- */
-export const getUnconfirmedTransactions = async ({
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-}: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): Promise<Result<IFormattedTransactions>> => {
-	const { currentWallet } = getCurrentWallet({
-		selectedWallet,
-		selectedNetwork,
-	});
-
-	return ok(currentWallet?.unconfirmedTransactions[selectedNetwork] ?? {});
 };
 
 /**
@@ -2142,29 +1392,6 @@ export const blockHeightToConfirmations = ({
 		return 0;
 	}
 	return currentHeight - blockHeight + 1;
-};
-
-/**
- * Returns the block height for a given number of confirmations.
- * @param {number} confirmations
- * @param {number} [currentHeight]
- * @returns {number}
- */
-export const confirmationsToBlockHeight = ({
-	confirmations,
-	currentHeight,
-}: {
-	confirmations: number;
-	currentHeight?: number;
-}): number => {
-	if (!currentHeight) {
-		const header = getBlockHeader();
-		currentHeight = header.height;
-	}
-	if (confirmations > currentHeight) {
-		return 0;
-	}
-	return currentHeight - confirmations;
 };
 
 export const getOnChainWallet = (): Wallet => {
