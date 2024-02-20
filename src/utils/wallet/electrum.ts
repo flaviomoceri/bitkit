@@ -40,21 +40,6 @@ export const isConnectedElectrum = async (): Promise<boolean> => {
 };
 
 /**
- * Returns UTXO's for a given wallet and network along with the available balance.
- * @param {TWalletName} [selectedWallet]
- * @param {boolean} [scanAllAddresses]
- * @returns {Promise<Result<IGetUtxosResponse>>}
- */
-export const getUtxos = async ({
-	scanAllAddresses = false,
-}: {
-	scanAllAddresses?: boolean;
-}): Promise<Result<IGetUtxosResponse>> => {
-	const wallet = getOnChainWallet();
-	return await wallet.getUtxos({ scanAllAddresses });
-};
-
-/**
  * Formats a provided array of addresses a returns their UTXO's & balances.
  * @param {IAddress[]} allAddresses
  * @returns {Promise<Result<IGetUtxosResponse>>}

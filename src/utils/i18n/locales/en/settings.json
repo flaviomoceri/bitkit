@@ -141,6 +141,10 @@
 		"section_networks": "Networks",
 		"section_other": "Other",
 		"address_type": "Bitcoin Address Type",
+		"monitored_address_types": "Monitored Address Types",
+		"monitored_address_types_update_title": "Monitored Address Types Updated",
+		"monitored_address_types_update_description": "Changes will take full effect after app restarts.",
+		"gap_limit": "Address Gap Limit",
 		"coin_selection": "Coin Selection",
 		"cs_method": "Coin Selection Method",
 		"cs_manual": "Manual",
@@ -234,6 +238,12 @@
 		"protocol": "Protocol",
 		"button_reset": "Reset To Default",
 		"button_connect": "Connect To Host"
+	},
+	"gap": {
+		"save": "Save",
+		"reset": "Reset",
+		"gap_limit_update_title": "Address Gap Limit Updated",
+		"gap_limit_update_description": "Changes will take full effect after app restarts."
 	},
 	"rgs": {
 		"server_url": "Rapid-Gossip-Sync Server URL",

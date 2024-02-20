@@ -12,6 +12,7 @@ import { defaultBlocktankInfoShape } from '../shapes/blocktank';
 import { initialTodosState } from '../shapes/todos';
 import { defaultViewControllers } from '../shapes/ui';
 import {
+	getDefaultGapLimitOptions,
 	getDefaultWalletStoreShape,
 	getNetworkContent,
 } from '../shapes/wallet';
@@ -508,6 +509,15 @@ const migrations = {
 			};
 		}
 		return newState;
+	},
+	38: (state): PersistedState => {
+		return {
+			...state,
+			wallet: {
+				...state.wallet,
+				gapLimitOptions: getDefaultGapLimitOptions(),
+			},
+		};
 	},
 };
 

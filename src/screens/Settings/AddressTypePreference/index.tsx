@@ -1,16 +1,23 @@
-import React, { memo, ReactElement, useMemo } from 'react';
+import React, { memo, ReactElement, useMemo, useState } from 'react';
 import { useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData } from '../../../components/List';
 import SettingsView from '../SettingsView';
 import { refreshWallet } from '../../../utils/wallet';
-import { updateSelectedAddressType } from '../../../store/actions/wallet';
-import { addressTypeSelector } from '../../../store/reselect/wallet';
+import {
+	updateSelectedAddressType,
+	updateWallet,
+} from '../../../store/actions/wallet';
+import {
+	addressTypeSelector,
+	addressTypesToMonitorSelector,
+} from '../../../store/reselect/wallet';
 import { addressTypes } from '../../../store/shapes/wallet';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import { enableDevOptionsSelector } from '../../../store/reselect/settings';
 import { EAddressType } from 'beignet';
+import { showToast } from '../../../utils/notifications';
 
 const AddressTypeSettings = ({
 	navigation,
@@ -18,6 +25,9 @@ const AddressTypeSettings = ({
 	const { t } = useTranslation('settings');
 	const selectedAddressType = useAppSelector(addressTypeSelector);
 	const isDeveloperMode = useAppSelector(enableDevOptionsSelector);
+
+	const [hasShownMonitorNotification, setHasShownMonitorNotification] =
+		useState(false);
 
 	const availableAddressTypes = useMemo(() => {
 		if (isDeveloperMode) {
@@ -27,9 +37,10 @@ const AddressTypeSettings = ({
 			(addressType) => addressType.type !== EAddressType.p2tr,
 		);
 	}, [isDeveloperMode]);
+	const addressTypesToMonitor = useAppSelector(addressTypesToMonitorSelector);
 
-	const listData: IListData[] = useMemo(
-		() => [
+	const listData = useMemo((): IListData[] => {
+		const data: IListData[] = [
 			{
 				title: t('adv.address_type'),
 				data: Object.values(availableAddressTypes).map((addressType) => ({
@@ -46,9 +57,62 @@ const AddressTypeSettings = ({
 					testID: addressType.type,
 				})),
 			},
-		],
-		[t, availableAddressTypes, selectedAddressType, navigation],
-	);
+		];
+
+		if (isDeveloperMode) {
+			const monitoredTypes: IListData = {
+				title: t('adv.monitored_address_types'),
+				data: Object.values(availableAddressTypes).map((addressType) => ({
+					type: EItemType.button,
+					title: `${addressType.name} ${addressType.example}`,
+					subtitle: addressType.description,
+					value: addressTypesToMonitor.includes(addressType.type),
+					hide: !isDeveloperMode,
+					useCheckmark: true,
+					onPress: async (): Promise<void> => {
+						const needsToBeAdded = !addressTypesToMonitor.includes(
+							addressType.type,
+						);
+						let newAddressTypesToMonitor: EAddressType[] = [];
+						if (needsToBeAdded) {
+							newAddressTypesToMonitor = [
+								...addressTypesToMonitor,
+								addressType.type,
+							];
+						} else {
+							newAddressTypesToMonitor = addressTypesToMonitor.filter(
+								(type) => type !== addressType.type,
+							);
+						}
+						updateWallet({
+							addressTypesToMonitor: newAddressTypesToMonitor,
+						});
+						if (!hasShownMonitorNotification) {
+							showToast({
+								type: 'success',
+								title: t('adv.monitored_address_types_update_title'),
+								description: t(
+									'adv.monitored_address_types_update_description',
+								),
+							});
+							setHasShownMonitorNotification(true);
+						}
+					},
+					testID: `Monitor${addressType.type}`,
+				})),
+			};
+			data.push(monitoredTypes);
+		}
+		return data;
+	}, [
+		t,
+		availableAddressTypes,
+		isDeveloperMode,
+		selectedAddressType,
+		navigation,
+		addressTypesToMonitor,
+		hasShownMonitorNotification,
+	]);
 
 	return (
 		<SettingsView

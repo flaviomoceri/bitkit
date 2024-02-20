@@ -46,6 +46,13 @@ const AdvancedSettings = ({
 				type: EItemType.button,
 				onPress: (): void => navigation.navigate('PaymentPreference'),
 			},
+			{
+				title: t('adv.gap_limit'),
+				type: EItemType.button,
+				onPress: (): void => navigation.navigate('GapLimit'),
+				testID: 'GapLimit',
+				hide: !enableDevOptions,
+			},
 		];
 
 		const networks: ItemData[] = [

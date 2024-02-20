@@ -1,10 +1,9 @@
 import cloneDeep from 'lodash/cloneDeep';
-
 import { __WALLET_DEFAULT_SELECTED_NETWORK__ } from '../../constants/env';
 import { IHeader } from '../../utils/types/electrum';
 import { EAvailableNetwork } from '../../utils/networks';
 import { objectKeys } from '../../utils/objectKeys';
-import { IWalletItem, IWallet, IWalletStore } from '../types/wallet';
+import { IWallet, IWalletItem, IWalletStore } from '../types/wallet';
 import {
 	EAddressType,
 	EBoostType,
@@ -13,6 +12,7 @@ import {
 	IAddresses,
 	ISendTransaction,
 	TAddressTypes,
+	TGapLimitOptions,
 } from 'beignet';
 
 export const addressTypes: Readonly<TAddressTypes> = {
@@ -163,12 +163,22 @@ export const defaultWalletShape: Readonly<IWallet> = {
 	},
 };
 
+const defaultGapLimitOptions = {
+	lookAhead: 1,
+	lookBehind: 5,
+};
+
+export const getDefaultGapLimitOptions = (): TGapLimitOptions => {
+	return cloneDeep(defaultGapLimitOptions);
+};
+
 export const defaultWalletStoreShape: Readonly<IWalletStore> = {
 	walletExists: false,
 	selectedNetwork: __WALLET_DEFAULT_SELECTED_NETWORK__,
 	selectedWallet: 'wallet0',
 	exchangeRates: {},
 	addressTypesToMonitor: [EAddressType.p2wpkh],
+	gapLimitOptions: getDefaultGapLimitOptions(),
 	header: {
 		bitcoin: defaultHeader,
 		bitcoinTestnet: defaultHeader,

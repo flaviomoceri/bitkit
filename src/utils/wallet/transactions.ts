@@ -14,7 +14,6 @@ import {
 	getOnChainWalletElectrum,
 	getOnChainWalletTransaction,
 	getRbfData,
-	getScriptHash,
 	getSelectedNetwork,
 	getSelectedWallet,
 	getTransactionById,
@@ -36,7 +35,6 @@ import {
 	TCoinSelectPreference,
 } from '../../store/types/settings';
 import { showToast } from '../notifications';
-import { subscribeToAddresses } from './electrum';
 import { TOnchainActivityItem } from '../../store/types/activity';
 import { initialFeesState } from '../../store/slices/fees';
 import { TRANSACTION_DEFAULTS } from './constants';
@@ -183,35 +181,15 @@ export const getOnchainTransactionData = (): Result<ISendTransaction> => {
 
 export const broadcastTransaction = async ({
 	rawTx,
-	selectedNetwork = getSelectedNetwork(),
 	subscribeToOutputAddress = true,
 }: {
 	rawTx: string;
-	selectedNetwork?: EAvailableNetwork;
 	subscribeToOutputAddress?: boolean;
 }): Promise<Result<string>> => {
-	/**
-	 * Subscribe to the output address and refresh the wallet when the Electrum server detects it.
-	 * This prevents updating the wallet prior to the Electrum server detecting the new tx in the mempool.
-	 */
-	if (subscribeToOutputAddress) {
-		const transaction = getOnchainTransactionData();
-		if (transaction.isErr()) {
-			return err(transaction.error.message);
-		}
-		const address = transaction.value.outputs[0]?.address;
-		if (address) {
-			const scriptHash = await getScriptHash(address, selectedNetwork);
-			if (scriptHash) {
-				await subscribeToAddresses({
-					scriptHashes: [scriptHash],
-				});
-			}
-		}
-	}
 	const electrum = getOnChainWalletElectrum();
 	return await electrum.broadcastTransaction({
 		rawTx,
+		subscribeToOutputAddress,
 	});
 };
 
@@ -1097,7 +1075,6 @@ export const broadcastBoost = async ({
 
 		const broadcastResult = await broadcastTransaction({
 			rawTx: rawTx.value.hex,
-			selectedNetwork,
 			subscribeToOutputAddress: false,
 		});
 		if (broadcastResult.isErr()) {

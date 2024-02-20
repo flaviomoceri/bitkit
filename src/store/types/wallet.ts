@@ -9,6 +9,7 @@ import {
 	IBoostedTransactions,
 	IFormattedTransactions,
 	ISendTransaction,
+	TGapLimitOptions,
 	IUtxo,
 	TServer,
 } from 'beignet';
@@ -41,6 +42,7 @@ export interface IWalletStore {
 	exchangeRates: IExchangeRates;
 	header: IWalletItem<IHeader>;
 	addressTypesToMonitor: EAddressType[];
+	gapLimitOptions: TGapLimitOptions;
 	wallets: { [key: TWalletName]: IWallet };
 }
 
