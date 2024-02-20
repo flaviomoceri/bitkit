@@ -4,6 +4,7 @@ import {
 	IFormattedTransaction,
 	IFormattedTransactions,
 	ISendTransaction,
+	TGapLimitOptions,
 	IUtxo,
 } from 'beignet';
 import { createSelector } from '@reduxjs/toolkit';
@@ -56,6 +57,21 @@ export const currentWalletSelector = createSelector(
 	(wallet, selectedWallet): IWallet => {
 		return wallet.wallets[selectedWallet];
 	},
+);
+
+/**
+ * Returns the saved gap limit options for the wallet.
+ * @param {RootState} state
+ * @returns {TGapLimitOptions}
+ */
+export const gapLimitOptionsSelector = createSelector(
+	[walletState],
+	(wallet): TGapLimitOptions => wallet.gapLimitOptions,
+);
+
+export const addressTypesToMonitorSelector = createSelector(
+	[walletState],
+	(wallet): EAddressType[] => wallet.addressTypesToMonitor,
 );
 
 /**

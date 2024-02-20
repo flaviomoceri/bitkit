@@ -5,6 +5,7 @@ import { generateMnemonic, TServer } from 'beignet';
 import {
 	getAddressTypesToMonitor,
 	getBip39Passphrase,
+	getGapLimitOptions,
 	getMnemonicPhrase,
 	getSelectedAddressType,
 	getSelectedNetwork,
@@ -113,10 +114,10 @@ export const startWalletServices = async ({
 			return err(mnemonicResponse.error.message);
 		}
 		const mnemonic = mnemonicResponse.value;
+		const bip39Passphrase = await getBip39Passphrase();
 
 		const walletExists = getWalletStore()?.walletExists;
 		if (!walletExists) {
-			const bip39Passphrase = await getBip39Passphrase();
 			const createRes = await createWallet({ mnemonic, bip39Passphrase });
 			if (createRes.isErr()) {
 				return err(createRes.error.message);
@@ -127,12 +128,14 @@ export const startWalletServices = async ({
 				selectedNetwork,
 			});
 			const addressTypesToMonitor = getAddressTypesToMonitor();
+			const gapLimitOptions = getGapLimitOptions();
 			const onChainSetupRes = await setupOnChainWallet({
 				name: selectedWallet,
 				selectedNetwork,
-				bip39Passphrase: await getBip39Passphrase(),
+				bip39Passphrase,
 				addressType,
 				addressTypesToMonitor,
+				gapLimitOptions,
 			});
 			if (onChainSetupRes.isErr()) {
 				return err(onChainSetupRes.error.message);

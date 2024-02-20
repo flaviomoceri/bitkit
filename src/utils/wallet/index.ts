@@ -9,6 +9,7 @@ import { err, ok, Result } from '@synonymdev/result';
 
 import { EAvailableNetwork, networks } from '../networks';
 import {
+	getDefaultGapLimitOptions,
 	getDefaultWalletShape,
 	getDefaultWalletStoreShape,
 } from '../../store/shapes/wallet';
@@ -67,6 +68,7 @@ import {
 	ISendTransaction,
 	IUtxo,
 	IWalletData,
+	TGapLimitOptions,
 	TKeyDerivationAccount,
 	TKeyDerivationChange,
 	TKeyDerivationCoinType,
@@ -114,6 +116,7 @@ export const refreshWallet = async ({
 
 		if (onchain) {
 			await wallet.refreshWallet({ scanAllAddresses });
+			checkGapLimit();
 		}
 
 		if (lightning) {
@@ -133,6 +136,20 @@ export const refreshWallet = async ({
 		return ok('');
 	} catch (e) {
 		return err(e);
+	}
+};
+
+/**
+ * In the event we temporarily changed the gap limit in Beignet when restoring Bitkit, we need to reset it back to Bitkit's default/saved values.
+ */
+const checkGapLimit = (): void => {
+	const savedGapLimitOptions = getGapLimitOptions();
+	const beignetGapLimit = wallet.gapLimitOptions;
+	if (
+		beignetGapLimit.lookAhead !== savedGapLimitOptions.lookAhead ||
+		beignetGapLimit.lookBehind !== savedGapLimitOptions.lookBehind
+	) {
+		wallet.updateGapLimit(savedGapLimitOptions);
 	}
 };
 
@@ -480,6 +497,14 @@ export const getAddressTypesToMonitor = (): EAddressType[] => {
 };
 
 /**
+ * Returns the currently monitored address types (p2pkh | p2sh | p2wpkh | p2tr).
+ * @returns {EAddressType[]}
+ */
+export const getGapLimitOptions = (): TGapLimitOptions => {
+	return getWalletStore().gapLimitOptions;
+};
+
+/**
  * Returns the currently selected wallet (Ex: 'wallet0').
  * @return {TWalletName}
  */
@@ -744,6 +769,15 @@ export const createDefaultWallet = async ({
 
 		await createDefaultWalletStructure({ walletName });
 
+		let gapLimitOptions = getDefaultGapLimitOptions();
+		if (restore) {
+			// Temporarily increase the gap limit to ensure all addresses are scanned.
+			gapLimitOptions = {
+				lookAhead: 20,
+				lookBehind: 20,
+			};
+		}
+
 		const defaultWalletShape = getDefaultWalletShape();
 		const setupWalletRes = await setupOnChainWallet({
 			name: walletName,
@@ -753,6 +787,7 @@ export const createDefaultWallet = async ({
 			servers,
 			disableMessagesOnCreate: true,
 			addressTypesToMonitor: addressTypesToCreate,
+			gapLimitOptions,
 		});
 		if (setupWalletRes.isErr()) {
 			return err(setupWalletRes.error.message);
@@ -931,6 +966,7 @@ export const setupOnChainWallet = async ({
 	servers,
 	disableMessagesOnCreate = false,
 	addressTypesToMonitor = [addressType],
+	gapLimitOptions = getDefaultGapLimitOptions(),
 }: {
 	name: TWalletName;
 	mnemonic?: string;
@@ -941,6 +977,7 @@ export const setupOnChainWallet = async ({
 	servers?: TServer | TServer[];
 	disableMessagesOnCreate?: boolean;
 	addressTypesToMonitor?: EAddressType[];
+	gapLimitOptions?: TGapLimitOptions;
 }): Promise<Result<Wallet>> => {
 	if (!mnemonic) {
 		const mnemonicRes = await getMnemonicPhrase(name);
@@ -970,6 +1007,7 @@ export const setupOnChainWallet = async ({
 			tls: global.tls,
 			net: global.net,
 		},
+		gapLimitOptions,
 		storage,
 		addressType,
 		customGetAddress: customGetAddress,
@@ -1232,7 +1270,8 @@ export const getReceiveAddress = async ({
 		if (!addressType) {
 			addressType = getSelectedAddressType({ selectedNetwork });
 		}
-		return wallet.getReceiveAddress({ addressType });
+		const address = await wallet.getAddress({ addressType });
+		return address ? ok(address) : err('Unable to get receive address.');
 	} catch (e) {
 		return err(e);
 	}
@@ -1330,7 +1369,8 @@ export const getBalance = ({
 	const result = reduceValue(claimableBalances, 'amount_satoshis');
 	const claimableBalance = result.isOk() ? result.value : 0;
 
-	const onchainBalance = currentWallet.balance[selectedNetwork];
+	const onchainBalance =
+		wallet.getBalance() ?? currentWallet.balance[selectedNetwork];
 	const lightningBalance = spendingBalance + reserveBalance + claimableBalance;
 	const spendableBalance = onchainBalance + spendingBalance;
 	const totalBalance =
