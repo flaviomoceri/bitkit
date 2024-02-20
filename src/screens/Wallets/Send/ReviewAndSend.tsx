@@ -284,7 +284,6 @@ const ReviewAndSend = ({
 		}
 		const response = await broadcastTransaction({
 			rawTx: rawTx.hex,
-			selectedNetwork,
 		});
 		if (response.isErr()) {
 			// Check if it failed to broadcast due to low fee.
@@ -324,7 +323,7 @@ const ReviewAndSend = ({
 		}
 
 		navigation.navigate('Result', { success: true, txId: rawTx.id });
-	}, [rawTx, selectedNetwork, _onError, navigation, transaction, dispatch, t]);
+	}, [rawTx, _onError, navigation, transaction, dispatch, t]);
 
 	useEffect(() => {
 		if (rawTx) {

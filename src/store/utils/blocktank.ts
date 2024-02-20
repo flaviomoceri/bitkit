@@ -372,7 +372,6 @@ export const confirmChannelPurchase = async ({
 	const broadcastResponse = await broadcastTransaction({
 		rawTx: rawTx.value.hex,
 		subscribeToOutputAddress: false,
-		selectedNetwork,
 	});
 	if (broadcastResponse.isErr()) {
 		showToast({
