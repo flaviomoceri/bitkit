@@ -99,7 +99,8 @@ const CoinSelection = ({
 				(item) =>
 					item.index === current.index &&
 					item.tx_pos === current.tx_pos &&
-					item.value === current.value,
+					item.value === current.value &&
+					item.tx_hash === current.tx_hash,
 			);
 			if (!x) {
 				return acc.concat([current]);
