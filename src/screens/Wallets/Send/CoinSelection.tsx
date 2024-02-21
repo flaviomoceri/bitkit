@@ -18,7 +18,11 @@ import {
 	getTransactionInputValue,
 	getTransactionOutputValue,
 } from '../../../utils/wallet/transactions';
-import { addTxInput, removeTxInput } from '../../../store/actions/wallet';
+import {
+	addTxInput,
+	removeTxInput,
+	setupFeeForOnChainTransaction,
+} from '../../../store/actions/wallet';
 import type { SendScreenProps } from '../../../navigation/types';
 import {
 	transactionSelector,
@@ -27,6 +31,7 @@ import {
 import { coinSelectPreferenceSelector } from '../../../store/reselect/settings';
 import { TRANSACTION_DEFAULTS } from '../../../utils/wallet/constants';
 import { IUtxo } from 'beignet';
+import { showToast } from '../../../utils/notifications';
 
 /**
  * Some UTXO's may contain the same tx_hash.
@@ -154,6 +159,19 @@ const CoinSelection = ({
 		txOutputValue > TRANSACTION_DEFAULTS.dustLimit &&
 		txInputValue >= txOutputValue;
 
+	const onContinue = (): void => {
+		const feeSetupRes = setupFeeForOnChainTransaction();
+		if (feeSetupRes.isErr()) {
+			showToast({
+				type: 'error',
+				title: t('send_output_to_small_title'),
+				description: t('send_coin_selection_output_to_small_description'),
+			});
+			return;
+		}
+		navigation.navigate('ReviewAndSend');
+	};
+
 	return (
 		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader title={t('selection_title')} />
@@ -220,7 +238,7 @@ const CoinSelection = ({
 						size="large"
 						text={t('continue')}
 						disabled={!isValid}
-						onPress={(): void => navigation.navigate('ReviewAndSend')}
+						onPress={onContinue}
 					/>
 				</View>
 			</View>

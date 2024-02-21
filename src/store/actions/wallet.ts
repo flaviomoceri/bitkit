@@ -55,7 +55,7 @@ import {
 } from 'beignet';
 import { ETransactionSpeed } from '../types/settings';
 import { updateOnchainFeeEstimates } from '../utils/fees';
-import { getMaxSendAmount } from '../../utils/wallet/transactions';
+import { getMaxSendAmount, updateFee } from '../../utils/wallet/transactions';
 import { getExchangeRates, IExchangeRates } from '../../utils/exchange-rate';
 
 export const updateWallet = (
@@ -645,7 +645,19 @@ export const setupFeeForOnChainTransaction = (): Result<string> => {
 		transaction.selectedFeeId === 'none'
 			? preferredFeeRate
 			: transaction.satsPerByte;
-	return wallet.setupFeeForOnChainTransaction({ satsPerByte, selectedFeeId });
+	const feeSetupRes = wallet.setupFeeForOnChainTransaction({
+		satsPerByte,
+		selectedFeeId,
+	});
+	if (feeSetupRes.isOk()) {
+		return feeSetupRes;
+	}
+	// If unable to set up fee using the selectedFeeId, attempt 1 satsPerByte. Otherwise, return error.
+	const updateRes = updateFee({ satsPerByte: 1, transaction });
+	if (updateRes.isErr()) {
+		return err(feeSetupRes.error.message);
+	}
+	return ok('Successfully set up fee for on-chain transaction');
 };
 
 const txSpeedToFeeId = (txSpeed: ETransactionSpeed): EFeeId => {

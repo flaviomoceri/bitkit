@@ -34,10 +34,7 @@ import {
 	getTotalFee,
 	getTransactionOutputValue,
 } from '../../../utils/wallet/transactions';
-import {
-	setupFeeForOnChainTransaction,
-	removeTxTag,
-} from '../../../store/actions/wallet';
+import { removeTxTag } from '../../../store/actions/wallet';
 import {
 	updateMetaTxTags,
 	addMetaTxSlashtagsUrl,
@@ -172,12 +169,6 @@ const ReviewAndSend = ({
 	const selectedFeeId = transaction.selectedFeeId;
 	const satsPerByte = transaction.satsPerByte;
 	const address = transaction?.outputs[outputIndex]?.address ?? '';
-
-	useEffect(() => {
-		if (!transaction.lightningInvoice) {
-			setupFeeForOnChainTransaction();
-		}
-	}, [transaction.lightningInvoice]);
 
 	const _onError = useCallback(
 		(errorTitle: string, errorMessage: string) => {
