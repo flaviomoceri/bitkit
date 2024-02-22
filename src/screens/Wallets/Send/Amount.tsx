@@ -45,6 +45,7 @@ import {
 import { useAppSelector } from '../../../hooks/redux';
 import { useBalance, useSwitchUnit } from '../../../hooks/wallet';
 import {
+	setupFeeForOnChainTransaction,
 	setupOnChainTransaction,
 	updateSendTransaction,
 } from '../../../store/actions/wallet';
@@ -201,6 +202,17 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 		if (!coinSelectAuto && !transaction.lightningInvoice) {
 			navigation.navigate('CoinSelection');
 		} else {
+			if (!transaction.lightningInvoice) {
+				const feeSetupRes = setupFeeForOnChainTransaction();
+				if (feeSetupRes.isErr()) {
+					showToast({
+						type: 'error',
+						title: t('send_output_to_small_title'),
+						description: t('send_output_to_small_description'),
+					});
+					return;
+				}
+			}
 			navigation.navigate('ReviewAndSend');
 		}
 	}, [
