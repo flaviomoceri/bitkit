@@ -12,6 +12,7 @@ import {
 } from '../../../store/reselect/lightning';
 import {
 	isConnectedToElectrumSelector,
+	isElectrumThrottledSelector,
 	isLDKReadySelector,
 	isOnlineSelector,
 } from '../../../store/reselect/ui';
@@ -87,6 +88,7 @@ const AppStatus = ({}: SettingsScreenProps<'AppStatus'>): ReactElement => {
 	const { t: tTime } = useTranslation('intl', { i18n: i18nTime });
 	const isOnline = useAppSelector(isOnlineSelector);
 	const isConnectedToElectrum = useAppSelector(isConnectedToElectrumSelector);
+	const isElectrumThrottled = useAppSelector(isElectrumThrottledSelector);
 	const isLDKReady = useAppSelector(isLDKReadySelector);
 	const openChannels = useAppSelector(openChannelsSelector);
 	const pendingChannels = useAppSelector(pendingChannelsSelector);
@@ -99,11 +101,11 @@ const AppStatus = ({}: SettingsScreenProps<'AppStatus'>): ReactElement => {
 	}, [isOnline]);
 
 	const bitcoinNodeState: TItemState = useMemo(() => {
-		if (isOnline && !isConnectedToElectrum) {
+		if (isOnline && !isConnectedToElectrum && !isElectrumThrottled) {
 			return 'pending';
 		}
 		return isConnectedToElectrum ? 'ready' : 'error';
-	}, [isConnectedToElectrum, isOnline]);
+	}, [isConnectedToElectrum, isElectrumThrottled, isOnline]);
 
 	const lightningNodeState: TItemState = useMemo(() => {
 		return isLDKReady ? 'ready' : 'error';

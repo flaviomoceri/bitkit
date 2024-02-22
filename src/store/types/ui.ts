@@ -69,6 +69,7 @@ export type TUiState = {
 	availableUpdate: TAvailableUpdate | null;
 	isAuthenticated: boolean;
 	isConnectedToElectrum: boolean;
+	isElectrumThrottled: boolean;
 	isOnline: boolean;
 	isLDKReady: boolean;
 	isProfiling: boolean;

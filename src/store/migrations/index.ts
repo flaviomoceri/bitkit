@@ -519,6 +519,15 @@ const migrations = {
 			},
 		};
 	},
+	39: (state): PersistedState => {
+		return {
+			...state,
+			ui: {
+				...state.ui,
+				isElectrumThrottled: false,
+			},
+		};
+	},
 };
 
 export default migrations;

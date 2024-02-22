@@ -197,5 +197,9 @@
 	"balance_hidden_title": "Wallet Balance Hidden",
 	"balance_hidden_message": "Swipe your wallet balance to reveal it again.",
 	"balance_unit_switched_title": "Switched to {unit}",
-	"balance_unit_switched_message": "Tap your wallet balance to switch it back to {unit}."
+	"balance_unit_switched_message": "Tap your wallet balance to switch it back to {unit}.",
+	"refresh_error_title": "Refresh Failed",
+	"refresh_error_description": "Bitkit was unable to refresh your wallet.",
+	"refresh_error_throttle_title": "Connection Throttled",
+	"refresh_error_throttle_description": "Electrum server connection is throttled. Please wait several minutes before trying again."
 }

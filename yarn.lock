@@ -5711,10 +5711,10 @@ bech32@^1.1.2, bech32@^1.1.4:
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.4.tgz#e38c9f37bf179b8eb16ae3a772b40c356d4832e9"
   integrity sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==
 
-beignet@0.0.23:
-  version "0.0.23"
-  resolved "https://registry.yarnpkg.com/beignet/-/beignet-0.0.23.tgz#7c7860a671ad691f7c1fad1598a349085dada8c8"
-  integrity sha512-BD5KnjJrBaLkI/qm5ac9qHckMBbOGcamTFopLdEvcfasB66PPAZSGd60/6zuWFN/ihe81XjwV2EM4kcMoxkx8A==
+beignet@0.0.24:
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/beignet/-/beignet-0.0.24.tgz#769dc526017cd3be075c2ba8136d4529ed0eede4"
+  integrity sha512-2Tay0aaunF7+5c1MAGljRvDHsqluYMmDJ863gu5qrAGAYUbt4m0eGmIytHxzSSL38V3nODrc81VovPvBEEQmRw==
   dependencies:
     "@bitcoinerlab/secp256k1" "1.0.5"
     bech32 "2.0.0"
@@ -5727,7 +5727,7 @@ beignet@0.0.23:
     ecpair "2.1.0"
     lodash.clonedeep "4.5.0"
     net "1.0.2"
-    rn-electrum-client "0.0.11"
+    rn-electrum-client "^0.0.12"
 
 bencode@^2.0.0, bencode@^2.0.3:
   version "2.0.3"
@@ -13294,10 +13294,10 @@ rn-android-keyboard-adjust@2.1.2:
   resolved "https://registry.yarnpkg.com/rn-android-keyboard-adjust/-/rn-android-keyboard-adjust-2.1.2.tgz#f2b792628700dcb026215420192317ce43fd954f"
   integrity sha512-pUYiMT7aucw5YnV4geGdalyl6o6rEwRYhDnw2oPQwDym1BZHtmKsxFLupky1Kj2ZNkNKadpEyoyHOElLo+f3sA==
 
-rn-electrum-client@0.0.11:
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/rn-electrum-client/-/rn-electrum-client-0.0.11.tgz#150372294c9712ffd54b237820042c63a5b38081"
-  integrity sha512-XfpUPyWf+/Bqcc67DmvBvCtlzc/FLaCSikOrUtFaba6zunWDCmXRgNNtvHQEoC40FrfDIo1bh8wv4oymyx+2xg==
+rn-electrum-client@^0.0.12:
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/rn-electrum-client/-/rn-electrum-client-0.0.12.tgz#f4857471d558f0db8b34c5c62488b41afef2b022"
+  integrity sha512-vaRcZR9zxPo66MhSZcjlnEFmb3FqTMj/OrQpvA+eW2xMpmINoLGUd/jLX+MiHxbci5haom5c6NYVvzK9Ongxdw==
 
 "rn-electrum-client@github:synonymdev/react-native-electrum-client#a32a292d4e4918a04d280137e24e5961c74c543f":
   version "0.0.8"
