@@ -32,6 +32,7 @@ export const initialUiState: TUiState = {
 	availableUpdate: null,
 	isAuthenticated: false,
 	isConnectedToElectrum: true,
+	isElectrumThrottled: false,
 	isOnline: true,
 	isLDKReady: false, // LDK node running and connected
 	isProfiling: false,

@@ -115,8 +115,7 @@ export const refreshWallet = async ({
 		let notificationTxid: string | undefined;
 
 		if (onchain) {
-			await wallet.refreshWallet({ scanAllAddresses });
-			checkGapLimit();
+			await refreshBeignet(scanAllAddresses);
 		}
 
 		if (lightning) {
@@ -136,6 +135,47 @@ export const refreshWallet = async ({
 		return ok('');
 	} catch (e) {
 		return err(e);
+	}
+};
+
+/**
+ * Refreshes the on-chain wallet by calling the Beignet refreshWallet method.
+ * Does not update the activity list info. Use the refreshWallet method with onchain set to true for that.
+ * @async
+ * @param {boolean} [scanAllAddresses] - If set to false, on-chain scanning will adhere to the saved gap limit.
+ * @return {Promise<void>}
+ */
+const refreshBeignet = async (
+	scanAllAddresses: boolean = false,
+): Promise<void> => {
+	const refreshWalletRes = await wallet.refreshWallet({ scanAllAddresses });
+	if (refreshWalletRes.isErr()) {
+		handleRefreshError(refreshWalletRes.error.message);
+	} else {
+		// If refresh was successful, reset the throttled state.
+		if (getStore().ui.isElectrumThrottled) {
+			dispatch(updateUi({ isElectrumThrottled: false }));
+		}
+	}
+	checkGapLimit();
+};
+
+const handleRefreshError = (msg): void => {
+	// If the error is due to the batch limit being exceeded, show a toast and set the throttled state.
+	if (msg.includes('Batch limit exceeded')) {
+		showToast({
+			type: 'error',
+			title: i18n.t('wallet:refresh_error_throttle_title'),
+			description: i18n.t('wallet:refresh_error_throttle_description'),
+		});
+		dispatch(updateUi({ isElectrumThrottled: true }));
+	} else {
+		// If the error is not due to the batch limit, show a toast with the error message.
+		showToast({
+			type: 'error',
+			title: i18n.t('wallet:refresh_error_title'),
+			description: msg,
+		});
 	}
 };
 
@@ -1402,10 +1442,15 @@ export const rescanAddresses = async ({
 	shouldClearAddresses?: boolean;
 	shouldClearTransactions?: boolean;
 }): Promise<Result<IWalletData>> => {
-	return wallet.rescanAddresses({
+	const res = await wallet.rescanAddresses({
 		shouldClearAddresses,
 		shouldClearTransactions,
 	});
+	if (res.isErr()) {
+		handleRefreshError(res.error.message);
+		return err(res.error.message);
+	}
+	return res;
 };
 
 /**

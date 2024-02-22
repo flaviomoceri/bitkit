@@ -87,6 +87,11 @@ export const isConnectedToElectrumSelector = createSelector(
 	(ui): boolean => ui.isConnectedToElectrum,
 );
 
+export const isElectrumThrottledSelector = createSelector(
+	[uiState],
+	(ui): boolean => ui.isElectrumThrottled,
+);
+
 export const availableUpdateSelector = createSelector(
 	[uiState],
 	(ui) => ui.availableUpdate,
