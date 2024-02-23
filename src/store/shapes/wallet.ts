@@ -164,7 +164,7 @@ export const defaultWalletShape: Readonly<IWallet> = {
 };
 
 const defaultGapLimitOptions = {
-	lookAhead: 1,
+	lookAhead: 5,
 	lookBehind: 5,
 };
 
