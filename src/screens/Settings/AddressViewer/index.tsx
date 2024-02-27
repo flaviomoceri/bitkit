@@ -384,9 +384,11 @@ const AddressViewer = ({
 				return;
 			}
 
-			if (!selectedAddress.address) {
+			if (!selectedAddress?.address) {
 				const type = config.addressType;
-				setSelectedAddress(getAllAddressesRes.value[type].addresses[0]);
+				if (getAllAddressesRes.value[type].addresses.length) {
+					setSelectedAddress(getAllAddressesRes.value[type].addresses[0]);
+				}
 			}
 
 			resetUtxos();
@@ -431,7 +433,7 @@ const AddressViewer = ({
 			handleScroll,
 			loadingAddresses,
 			resetUtxos,
-			selectedAddress.address,
+			selectedAddress?.address,
 			selectedWallet,
 		],
 	);
@@ -580,7 +582,7 @@ const AddressViewer = ({
 	 * Handles opening the block explorer url link for the currently selected address.
 	 */
 	const openBlockExplorer = useCallback(async () => {
-		if (!selectedAddress.address) {
+		if (!selectedAddress?.address) {
 			return;
 		}
 		const blockExplorerUrl = getBlockExplorerLink(
@@ -724,7 +726,7 @@ const AddressViewer = ({
 				title: t('addr.copied'),
 				description: privateKey,
 			});
-		} else if (selectedAddress.address) {
+		} else if (selectedAddress?.address) {
 			Clipboard.setString(selectedAddress.address);
 			showToast({
 				type: 'success',
@@ -732,7 +734,7 @@ const AddressViewer = ({
 				description: selectedAddress.address,
 			});
 		}
-	}, [privateKey, selectedAddress.address, t]);
+	}, [privateKey, selectedAddress?.address, t]);
 
 	/**
 	 * Will retrieve and display the private key of the selected address.
@@ -767,7 +769,7 @@ const AddressViewer = ({
 
 	const onCheckMarkPress = useCallback(
 		(utxo, isSelected) => {
-			if (!utxo) {
+			if (!utxo?.address) {
 				return;
 			}
 			if (isSelected) {
@@ -930,7 +932,7 @@ const AddressViewer = ({
 								onPress={onQrCodePress}
 								style={styles.qrCode}>
 								<QRCode
-									value={privateKey ?? selectedAddress.address}
+									value={privateKey ?? selectedAddress?.address}
 									size={100}
 								/>
 							</TouchableOpacity>
@@ -1085,7 +1087,7 @@ const AddressViewer = ({
 							}
 						}
 						const backgroundColor = getAddressTypeButtonColor(
-							selectedAddress.address === item.address,
+							selectedAddress?.address === item.address,
 						);
 						return (
 							<AddressViewerListItem
