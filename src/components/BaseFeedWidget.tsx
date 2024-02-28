@@ -13,6 +13,7 @@ import {
 } from '../styles/icons';
 import { useAppDispatch } from '../hooks/redux';
 import { useSlashfeed } from '../hooks/widgets';
+import { truncate } from '../utils/helpers';
 import { deleteWidget } from '../store/slices/widgets';
 import Dialog from './Dialog';
 import SvgImage from './SvgImage';
@@ -80,7 +81,7 @@ const BaseFeedWidget = ({
 							</View>
 
 							<Text01M style={styles.name} numberOfLines={1}>
-								{widgetName}
+								{truncate(widgetName, 18)}
 							</Text01M>
 						</View>
 
