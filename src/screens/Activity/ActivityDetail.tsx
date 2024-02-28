@@ -27,6 +27,7 @@ import {
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useTranslation } from 'react-i18next';
 import { parse } from '@synonymdev/slashtags-url';
+import { EBoostType, EPaymentType } from 'beignet';
 
 import { View as ThemedView } from '../../styles/components';
 import { Caption13Up, Text02M, Title } from '../../styles/text';
@@ -77,7 +78,7 @@ import {
 } from '../../store/slices/metadata';
 import { getTransactions } from '../../utils/wallet/electrum';
 import { ITransaction, ITxHash } from '../../utils/wallet';
-import { openURL } from '../../utils/helpers';
+import { ellipsis, openURL } from '../../utils/helpers';
 import { getBoostedTransactionParents } from '../../utils/boost';
 import { showToast } from '../../utils/notifications';
 import {
@@ -95,7 +96,6 @@ import type {
 import { i18nTime } from '../../utils/i18n';
 import { useSwitchUnit } from '../../hooks/wallet';
 import { contactsSelector } from '../../store/reselect/slashtags';
-import { EBoostType, EPaymentType } from 'beignet';
 
 const Section = memo(
 	({ title, value }: { title: string; value: ReactNode }) => {
@@ -285,14 +285,14 @@ const OnchainActivityDetail = ({
 		await openURL(blockExplorerUrl);
 	}, [blockExplorerUrl]);
 
-	const copyTransactionId = useCallback(() => {
-		Clipboard.setString(id);
+	const onCopy = (text: string): void => {
+		Clipboard.setString(text);
 		showToast({
 			type: 'success',
-			title: t('activity_copied_tx'),
-			description: id,
+			title: t('copied'),
+			description: ellipsis(text, 40),
 		});
-	}, [id, t]);
+	};
 
 	const getOutputAddresses = useCallback(() => {
 		if (txDetails && txDetails.vout.length > 0) {
@@ -552,19 +552,21 @@ const OnchainActivityDetail = ({
 			) : (
 				<>
 					<TouchableOpacity
-						onPress={copyTransactionId}
-						style={styles.sectionContainer}>
+						style={styles.sectionContainer}
+						onPress={(): void => onCopy(id)}>
 						<Section
 							title={t('activity_tx_id')}
 							value={<Text02M>{id}</Text02M>}
 						/>
 					</TouchableOpacity>
-					<View style={styles.sectionContainer}>
+					<TouchableOpacity
+						style={styles.sectionContainer}
+						onPress={(): void => onCopy(address)}>
 						<Section
 							title={t('activity_address')}
 							value={<Text02M>{address}</Text02M>}
 						/>
-					</View>
+					</TouchableOpacity>
 					{txDetails ? (
 						<>
 							<View style={styles.sectionContainer}>
@@ -682,14 +684,14 @@ const LightningActivityDetail = ({
 		});
 	};
 
-	const copyTransactionId = useCallback(() => {
-		Clipboard.setString(id);
+	const onCopy = (text: string): void => {
+		Clipboard.setString(text);
 		showToast({
 			type: 'success',
-			title: t('activity_copied_tx'),
-			description: id,
+			title: t('copied'),
+			description: ellipsis(text, 40),
 		});
-	}, [id, t]);
+	};
 
 	const isSend = txType === EPaymentType.sent;
 	const total = value + (fee ?? 0);
@@ -914,19 +916,21 @@ const LightningActivityDetail = ({
 			) : (
 				<>
 					<TouchableOpacity
-						onPress={copyTransactionId}
-						style={styles.sectionContainer}>
+						style={styles.sectionContainer}
+						onPress={(): void => onCopy(id)}>
 						<Section
 							title={t('activity_payment_hash')}
 							value={<Text02M>{id}</Text02M>}
 						/>
 					</TouchableOpacity>
-					<View style={styles.sectionContainer}>
+					<TouchableOpacity
+						style={styles.sectionContainer}
+						onPress={(): void => onCopy(address)}>
 						<Section
 							title={t('activity_invoice')}
 							value={<Text02M>{address}</Text02M>}
 						/>
-					</View>
+					</TouchableOpacity>
 				</>
 			)}
 		</>

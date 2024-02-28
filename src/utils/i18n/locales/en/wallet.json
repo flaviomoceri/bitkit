@@ -124,7 +124,6 @@
 	"activity_error_get": "Transaction Retrieval Failed",
 	"activity_error_get_description": "Bitkit was not able to fetch the transaction data.",
 	"activity_error_tx_not_found": "The transaction was not found.",
-	"activity_copied_tx": "Copied To Clipboard",
 	"activity_confirming": "Confirming",
 	"activity_confirmed": "Confirmed",
 	"activity_removed": "Removed from Mempool",
