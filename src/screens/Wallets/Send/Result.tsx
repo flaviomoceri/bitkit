@@ -145,7 +145,7 @@ const Result = ({
 				return;
 			}
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('send_error_contact'),
 				description: res.error.message,
 			});

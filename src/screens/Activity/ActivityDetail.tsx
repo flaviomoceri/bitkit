@@ -195,7 +195,7 @@ const OnchainActivityDetail = ({
 		getTransactions({ txHashes: [{ tx_hash: id }] }).then((txResponse) => {
 			if (txResponse.isErr()) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('activity_error_get'),
 					description: t('activity_error_get_description'),
 				});
@@ -204,7 +204,7 @@ const OnchainActivityDetail = ({
 			const txData = txResponse.value.data;
 			if (txData.length === 0) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('activity_error_get'),
 					description: t('activity_error_tx_not_found'),
 				});

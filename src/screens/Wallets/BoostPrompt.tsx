@@ -100,7 +100,7 @@ const BoostForm = ({
 			});
 			if (res.isErr()) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('send_fee_error'),
 					description: res.error.message,
 				});
@@ -120,7 +120,7 @@ const BoostForm = ({
 		});
 		if (res.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('send_fee_error'),
 				description: res.error.message,
 			});
@@ -134,7 +134,7 @@ const BoostForm = ({
 		});
 		if (res.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('send_fee_error'),
 				description: res.error.message,
 			});
@@ -147,7 +147,7 @@ const BoostForm = ({
 		if (transactionIsValid.isErr()) {
 			setLoading(false);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('tx_invalid'),
 				description: transactionIsValid.error.message,
 			});
@@ -177,7 +177,7 @@ const BoostForm = ({
 				});
 			} else {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('boost_error_title'),
 					description: t('boost_error_msg'),
 				});

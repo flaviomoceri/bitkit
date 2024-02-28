@@ -62,7 +62,7 @@ const FeeRate = ({ navigation }: SendScreenProps<'FeeRate'>): ReactElement => {
 			});
 			if (res.isErr()) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('send_fee_error'),
 					description: res.error.message,
 				});

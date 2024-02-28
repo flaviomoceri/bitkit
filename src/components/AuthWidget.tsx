@@ -58,7 +58,7 @@ const AuthWidget = ({
 					: `An error occurred: ${e.message}`;
 
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('auth_error_link'),
 				description: message,
 			});
@@ -67,7 +67,7 @@ const AuthWidget = ({
 		if (magiclink) {
 			Linking.openURL(magiclink.url).catch((e) => {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('auth_error_link'),
 					description: e.message,
 				});

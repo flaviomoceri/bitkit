@@ -67,7 +67,7 @@ const ReceiveConnect = ({
 		});
 		if (cJitEntryResponse.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('receive_cjit_error'),
 				description: cJitEntryResponse.error.message,
 			});

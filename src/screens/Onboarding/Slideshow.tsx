@@ -83,7 +83,7 @@ const Slideshow = ({
 		if (res.isErr()) {
 			setIsCreatingWallet(false);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('error_create'),
 				description: res.error.message,
 			});

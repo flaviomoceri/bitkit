@@ -95,7 +95,7 @@ const Contact = ({
 		} else {
 			console.log(res.error.message);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('contact_pay_error'),
 				description: `An error occurred: ${res.error.message}`,
 			});

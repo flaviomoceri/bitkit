@@ -73,7 +73,7 @@ const Introduction = ({
 								onPress={(): void => {
 									if (accountVersion < 2) {
 										showToast({
-											type: 'error',
+											type: 'warning',
 											title: t('migrating_ldk_title'),
 											description: t('migrating_ldk_description'),
 										});
@@ -93,7 +93,7 @@ const Introduction = ({
 								onPress={(): void => {
 									if (accountVersion < 2) {
 										showToast({
-											type: 'error',
+											type: 'warning',
 											title: t('migrating_ldk_title'),
 											description: t('migrating_ldk_description'),
 										});

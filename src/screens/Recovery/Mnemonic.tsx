@@ -27,7 +27,7 @@ const Mnemonic = ({
 			if (mnemoncicResult.isErr()) {
 				console.log(mnemoncicResult.error.message);
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('mnemonic_error'),
 					description: t('mnemonic_error_description'),
 				});

@@ -81,7 +81,7 @@ const AskForBiometrics = ({
 			})
 			.catch(() => {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('bio_error_title'),
 					description: t('bio_error_message', { type: biometricsName }),
 				});

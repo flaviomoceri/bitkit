@@ -408,7 +408,7 @@ const ReviewAndSend = ({
 			if (res.isErr()) {
 				console.log(res.error.message);
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('tag_remove_error_title'),
 					description: t('tag_remove_error_description'),
 				});

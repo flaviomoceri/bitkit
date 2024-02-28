@@ -23,7 +23,7 @@ const ScannerScreen = (): ReactElement => {
 	const onRead = async (data: string): Promise<void> => {
 		if (!data) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('qr_error_header'),
 				description: t('qr_error_text'),
 			});

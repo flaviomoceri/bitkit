@@ -59,7 +59,7 @@ const RestoringScreen = (): ReactElement => {
 		if (res.isErr()) {
 			console.log(res.error.message);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('restore_error_title'),
 				description: t('restore_error_description'),
 			});

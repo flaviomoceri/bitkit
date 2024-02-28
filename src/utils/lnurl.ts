@@ -77,7 +77,7 @@ export const handleLnurlPay = async ({
 	if (!nodeId) {
 		const message = i18n.t('other:lnurl_ln_error_msg');
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:lnurl_pay_error'),
 			description: message,
 		});
@@ -98,7 +98,7 @@ export const handleLnurlPay = async ({
 
 		if (callbackRes.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: i18n.t('other:lnurl_pay_error'),
 				description: `An error occurred: ${callbackRes.error.message}`,
 			});
@@ -108,7 +108,7 @@ export const handleLnurlPay = async ({
 		return ok(callbackRes.value.pr);
 	} catch (e) {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:lnurl_pay_error'),
 			description: `An error occurred: ${e.message}`,
 		});
@@ -135,7 +135,7 @@ export const handleLnurlChannel = async ({
 	if (peer.includes('onion')) {
 		const message = i18n.t('lightning:error_add_tor');
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:lnurl_channel_error'),
 			description: message,
 		});
@@ -146,7 +146,7 @@ export const handleLnurlChannel = async ({
 	if (!nodeId) {
 		const message = i18n.t('other:lnurl_ln_error_msg');
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:lnurl_channel_error'),
 			description: message,
 		});
@@ -163,7 +163,7 @@ export const handleLnurlChannel = async ({
 		if (addPeerRes.isErr()) {
 			console.log(addPeerRes.error.message);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: i18n.t('other:lnurl_channel_error'),
 				description: i18n.t('lightning:error_add'),
 			});
@@ -173,7 +173,7 @@ export const handleLnurlChannel = async ({
 		if (savePeerRes.isErr()) {
 			console.log(savePeerRes.error.message);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: i18n.t('other:lnurl_channel_error'),
 				description: i18n.t('lightning:error_save'),
 			});
@@ -189,7 +189,7 @@ export const handleLnurlChannel = async ({
 	});
 	if (callbackRes.isErr()) {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:lnurl_channel_error'),
 			description: `An error occurred: ${callbackRes.error.message}`,
 		});
@@ -200,7 +200,7 @@ export const handleLnurlChannel = async ({
 	if (channelStatusRes.status !== 200) {
 		const message = i18n.t('other:lnurl_blocktank_error');
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:lnurl_channel_error'),
 			description: message,
 		});
@@ -210,7 +210,7 @@ export const handleLnurlChannel = async ({
 
 	if (jsonRes.status === 'ERROR') {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:lnurl_channel_error'),
 			description: `An error occurred: ${jsonRes.reason}`,
 		});
@@ -257,7 +257,7 @@ export const handleLnurlAuth = async ({
 	if (authRes.isErr()) {
 		console.log(authRes.error.message);
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:lnurl_auth_error'),
 			description: `An error occurred: ${authRes.error.message}`,
 		});
@@ -303,7 +303,7 @@ export const handleLnurlWithdraw = async ({
 	if (invoice.isErr()) {
 		const message = i18n.t('other:lnurl_withdr_error_create_invoice');
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:lnurl_withdr_error'),
 			description: message,
 		});
@@ -316,7 +316,7 @@ export const handleLnurlWithdraw = async ({
 	if (callbackRes.isErr()) {
 		console.log(callbackRes.error.message);
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:lnurl_withdr_error'),
 			description: i18n.t('other:lnurl_withdr_error_generic'),
 		});
@@ -330,7 +330,7 @@ export const handleLnurlWithdraw = async ({
 		if (jsonRes.status === 'ERROR') {
 			console.log(jsonRes.reason);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: i18n.t('other:lnurl_withdr_error'),
 				description: i18n.t('other:lnurl_withdr_error_generic'),
 			});
@@ -347,7 +347,7 @@ export const handleLnurlWithdraw = async ({
 	} catch (e) {
 		console.log(e.message);
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:lnurl_withdr_error'),
 			description: i18n.t('other:lnurl_withdr_error_generic'),
 		});

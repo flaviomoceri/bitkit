@@ -261,7 +261,7 @@ const Channels = ({
 	const handleAdd = useCallback((): void => {
 		if (accountVersion < 2) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('migrating_ldk_title'),
 				description: t('migrating_ldk_description'),
 			});
@@ -280,7 +280,7 @@ const Channels = ({
 		const result = await zipLogs();
 		if (result.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('error_logs'),
 				description: t('error_logs_description'),
 			});
@@ -312,7 +312,7 @@ const Channels = ({
 		});
 		if (createPaymentRequest.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('error_invoice'),
 				description: createPaymentRequest.error.message,
 			});
@@ -348,7 +348,7 @@ const Channels = ({
 		});
 		if (addPeerRes.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('error_add_title'),
 				description: addPeerRes.error.message,
 			});
@@ -357,7 +357,7 @@ const Channels = ({
 		const savePeerRes = savePeer({ selectedWallet, selectedNetwork, peer });
 		if (savePeerRes.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('error_save_title'),
 				description: savePeerRes.error.message,
 			});
@@ -557,7 +557,7 @@ const Channels = ({
 									});
 								} else {
 									showToast({
-										type: 'error',
+										type: 'warning',
 										title: 'No stuck outputs recovered',
 										description: res.error.message,
 									});
@@ -616,7 +616,7 @@ const Channels = ({
 												const invoice = await Clipboard.getString();
 												if (!invoice) {
 													showToast({
-														type: 'error',
+														type: 'warning',
 														title: 'No Invoice Detected',
 														description:
 															'Unable to retrieve anything from the clipboard.',
@@ -625,7 +625,7 @@ const Channels = ({
 												const response = await payLightningInvoice(invoice);
 												if (response.isErr()) {
 													showToast({
-														type: 'error',
+														type: 'warning',
 														title: 'Invoice Payment Failed',
 														description: response.error.message,
 													});

@@ -86,7 +86,7 @@ const Recipient = ({
 
 		if (!text) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('send_clipboard_empty_title'),
 				description: t('send_clipboard_empty_text'),
 			});

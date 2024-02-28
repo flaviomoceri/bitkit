@@ -100,7 +100,7 @@ const ForceTransfer = (): ReactElement => {
 		});
 		if (closeResponse.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('close_error'),
 				description: closeResponse.error.message,
 			});
@@ -118,7 +118,7 @@ const ForceTransfer = (): ReactElement => {
 			} else {
 				console.log('force close failed.');
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('force_failed_title'),
 					description: t('force_failed_msg'),
 				});

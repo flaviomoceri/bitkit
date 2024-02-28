@@ -435,7 +435,7 @@ const CustomSetup = ({
 				});
 			}
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('error_channel_purchase'),
 				description: msg,
 			});

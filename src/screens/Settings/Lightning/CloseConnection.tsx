@@ -48,7 +48,7 @@ const CloseConnection = ({
 		// If error, display error notification and return.
 		if (closeResponse.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('close_error'),
 				description: closeResponse.error.message,
 			});

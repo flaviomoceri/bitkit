@@ -116,7 +116,7 @@ const AppOnboarded = (): ReactElement => {
 				dispatch(updateUi({ isOnline: true }));
 			} else {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('connection_issue'),
 					description: t('connection_issue_explain'),
 				});

@@ -128,7 +128,7 @@ const _SlashAuthModal = (): ReactElement => {
 		} catch (e) {
 			console.log(e.message);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('signin_to_error_header'),
 				description:
 					e.message === 'channel closed'
@@ -154,7 +154,7 @@ const _SlashAuthModal = (): ReactElement => {
 		} else {
 			console.log(response.message);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('signin_to_error_header'),
 				description: response?.message
 					? `An error occurred: ${response.message}`

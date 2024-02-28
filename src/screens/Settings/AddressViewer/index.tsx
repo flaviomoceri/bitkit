@@ -840,7 +840,7 @@ const AddressViewer = ({
 					if (utxosRes.isErr()) {
 						console.log(utxosRes.error.message);
 						showToast({
-							type: 'error',
+							type: 'warning',
 							title: t('addr.rescan_error'),
 							description: t('addr.rescan_error_description'),
 						});

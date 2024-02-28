@@ -191,7 +191,7 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 		});
 		if (result.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('send_amount_error_title'),
 				description: result.error.message,
 			});
@@ -206,7 +206,7 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 				const feeSetupRes = setupFeeForOnChainTransaction();
 				if (feeSetupRes.isErr()) {
 					showToast({
-						type: 'error',
+						type: 'warning',
 						title: t('send_output_to_small_title'),
 						description: t('send_output_to_small_description'),
 					});
