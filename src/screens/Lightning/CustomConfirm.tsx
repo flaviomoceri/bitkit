@@ -53,9 +53,9 @@ const CustomConfirm = ({
 	const fiatTransactionFee = useDisplayValues(transactionFee);
 	const clientBalance = useDisplayValues(order?.clientBalanceSat ?? 0);
 
-	// avoid flashing different price after confirmation
+	// TODO: avoid flashing different price & allocation after confirmation
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const txFee = useMemo(() => fiatTransactionFee.fiatValue, [orderId]);
+	const txFee = fiatTransactionFee.fiatValue;
 	const lspFee = purchaseFeeValue.fiatValue - clientBalance.fiatValue;
 
 	const handleConfirm = async (): Promise<void> => {
