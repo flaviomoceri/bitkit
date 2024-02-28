@@ -164,7 +164,7 @@ const handleRefreshError = (msg): void => {
 	// If the error is due to the batch limit being exceeded, show a toast and set the throttled state.
 	if (msg.includes('Batch limit exceeded')) {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('wallet:refresh_error_throttle_title'),
 			description: i18n.t('wallet:refresh_error_throttle_description'),
 		});
@@ -172,7 +172,7 @@ const handleRefreshError = (msg): void => {
 	} else {
 		// If the error is not due to the batch limit, show a toast with the error message.
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('wallet:refresh_error_title'),
 			description: msg,
 		});
@@ -926,7 +926,7 @@ const onElectrumConnectionChange = (isConnected: boolean): void => {
 	if (isConnectedToElectrum && !isConnected) {
 		dispatch(updateUi({ isConnectedToElectrum: isConnected }));
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:connection_reconnect_title'),
 			description: i18n.t('other:connection_reconnect_msg'),
 		});
@@ -983,7 +983,7 @@ const onMessage: TOnMessage = (key, data) => {
 		case 'rbf':
 			const rbfData = data as string[];
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: i18n.t('wallet:activity_removed_title'),
 				description: i18n.t('wallet:activity_removed_msg', {
 					count: rbfData.length,

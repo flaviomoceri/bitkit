@@ -64,7 +64,7 @@ const WebRelay = ({
 			const validityCheck = validateInput(newUrl, t);
 			if (validityCheck.isErr()) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('wr.error_wr'),
 					description: validityCheck.error.message,
 				});
@@ -75,7 +75,7 @@ const WebRelay = ({
 			const response = await fetch(newUrl + '/health-check?format=json');
 			if (response.status !== 200) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('wr.error_wr'),
 					description: t('wr.error_healthcheck'),
 				});
@@ -111,7 +111,7 @@ const WebRelay = ({
 				return;
 			}
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('slashtags:error_saving_profile'),
 				description: res.error.message,
 			});

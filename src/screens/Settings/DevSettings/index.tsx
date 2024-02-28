@@ -73,7 +73,7 @@ const DevSettings = ({
 		});
 		if (result.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('error_logs'),
 				description: t('error_logs_description'),
 			});

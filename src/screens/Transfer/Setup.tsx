@@ -156,7 +156,7 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 		setLoading(false);
 		if (purchaseResponse.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('error_channel_purchase'),
 				description: purchaseResponse.error.message,
 			});

@@ -38,7 +38,7 @@ const Recovery = ({
 		const result = await zipLogs({ limit: 20, allAccounts: true });
 		if (result.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('lightning:error_logs'),
 				description: t('lightning:error_logs_description'),
 			});

@@ -69,8 +69,8 @@
 		"wallet": "Back up your wallet",
 		"export": "Export wallet data to phone",
 		"reset": "Reset and restore wallet",
-		"failed_title": "Data Backup Failed",
-		"failed_message": "Bitkit failed to back up wallet data. Please check your connection.",
+		"failed_title": "Data Backup Failure",
+		"failed_message": "Bitkit failed to back up wallet data. Retrying in {interval, plural, one {# minute} other {# minutes}}.",
 		"latest": "latest data backups",
 		"status_failed": "Failed Backup: {time}",
 		"status_success": "Latest Backup: {time}",
@@ -111,25 +111,25 @@
 			"pending": "Reconnecting...",
 			"error": "Disconnected"
 		},
-		"bitcoin_node" : {
+		"bitcoin_node": {
 			"title": "Bitcoin Node",
 			"ready": "Connected",
 			"pending": "Connecting...",
 			"error": "Could not connect to Electrum"
 		},
-		"lightning_node" : {
+		"lightning_node": {
 			"title": "Lightning Node",
 			"ready": "Synced",
 			"pending": "Syncing...",
 			"error": "Could not initiate"
 		},
-		"lightning_connection" : {
+		"lightning_connection": {
 			"title": "Lightning Connection",
 			"ready": "Open",
 			"pending": "Opening...",
 			"error": "No open connections"
 		},
-		"full_backup" : {
+		"full_backup": {
 			"title": "Latest Full Data Backup",
 			"ready": "Backed up",
 			"pending": "Backing up...",

@@ -129,7 +129,7 @@ const PinPad = ({
 					vibrate({ type: 'default' });
 					await wipeApp();
 					showToast({
-						type: 'error',
+						type: 'warning',
 						title: t('wiped_title'),
 						description: t('wiped_message'),
 					});

@@ -36,7 +36,7 @@ export const saveProfile2 = async (
 	} catch (e) {
 		console.log('profile saving error', e);
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('slashtags:error_saving_contact'),
 			description: `An error occurred: ${e.message}`,
 		});

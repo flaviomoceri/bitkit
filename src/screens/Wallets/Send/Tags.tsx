@@ -31,7 +31,7 @@ const Tags = ({ navigation }: SendScreenProps<'Tags'>): ReactElement => {
 		if (res.isErr()) {
 			console.log(res.error.message);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('tags_add_error_header'),
 				description: t('tags_add_error_description'),
 			});
@@ -48,7 +48,7 @@ const Tags = ({ navigation }: SendScreenProps<'Tags'>): ReactElement => {
 		if (res.isErr()) {
 			console.log(res.error.message);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('tags_add_error_header'),
 				description: t('tags_add_error_description'),
 			});

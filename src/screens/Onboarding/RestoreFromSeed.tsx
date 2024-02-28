@@ -111,7 +111,7 @@ const RestoreFromSeed = (): ReactElement => {
 		});
 		if (res.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('restore_error_title'),
 				description: res.error.message,
 			});

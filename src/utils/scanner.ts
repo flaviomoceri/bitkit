@@ -204,7 +204,7 @@ export const processInputData = async ({
 			const errorMessage = i18n.t('other:scan_err_interpret_msg');
 			if (showErrors) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('other:scan_err_decoding'),
 					description: errorMessage,
 				});
@@ -217,7 +217,7 @@ export const processInputData = async ({
 			const errorMessage = i18n.t('other:scan_err_interpret_msg');
 			if (showErrors) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('other:scan_err_interpret_title'),
 					description: errorMessage,
 				});
@@ -261,7 +261,7 @@ export const processInputData = async ({
 			if (response.isErr()) {
 				if (showErrors) {
 					showToast({
-						type: 'error',
+						type: 'warning',
 						title: i18n.t('slashtags:error_pay_title'),
 						description: `An error occurred: ${response.error.message}`,
 					});
@@ -273,7 +273,7 @@ export const processInputData = async ({
 				const errorMessage = i18n.t('slashtags:error_pay_empty_msg');
 				if (showErrors) {
 					showToast({
-						type: 'error',
+						type: 'warning',
 						title: i18n.t('slashtags:error_pay_title'),
 						description: errorMessage,
 					});
@@ -638,7 +638,7 @@ export const processBitcoinTransactionData = async ({
 				requestedAmount = decodedLightningInvoice.amount_satoshis ?? 0;
 				if (decodedLightningInvoice.is_expired) {
 					error = {
-						type: 'error',
+						type: 'warning',
 						title: 'Lightning Invoice Expired',
 						description: 'This Lightning invoice has expired.',
 					};
@@ -662,7 +662,7 @@ export const processBitcoinTransactionData = async ({
 				response = filteredLightningInvoice;
 			} else {
 				error = {
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('other:pay_insufficient_spending'),
 					description: i18n.t(
 						'other:pay_insufficient_spending_amount_description',
@@ -696,7 +696,7 @@ export const processBitcoinTransactionData = async ({
 
 					if (showErrors) {
 						showToast({
-							type: 'error',
+							type: 'warning',
 							title: i18n.t('other:pay_insufficient_savings'),
 							description: i18n.t(
 								'other:pay_insufficient_savings_amount_description',
@@ -719,7 +719,7 @@ export const processBitcoinTransactionData = async ({
 		} else {
 			if (requestedAmount) {
 				error = {
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('other:pay_insufficient_savings'),
 					description: i18n.t(
 						'other:pay_insufficient_savings_amount_description',
@@ -730,7 +730,7 @@ export const processBitcoinTransactionData = async ({
 				};
 			} else {
 				error = {
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('other:pay_insufficient_savings'),
 					description: i18n.t('other:pay_insufficient_savings_description'),
 				};
@@ -761,7 +761,7 @@ export const handleData = async ({
 }): Promise<Result<TProcessedData>> => {
 	if (!data) {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:qr_error_no_data_header'),
 			description: i18n.t('other:qr_error_no_data_text'),
 		});
@@ -775,7 +775,7 @@ export const handleData = async ({
 			EAvailableNetwork[data.network] !== EAvailableNetwork[selectedNetwork]
 		) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: i18n.t('other:qr_error_network_header'),
 				description: i18n.t('other:qr_error_network_text', {
 					selectedNetwork,
@@ -838,7 +838,7 @@ export const handleData = async ({
 			if (decodedInvoice.isErr()) {
 				console.log(decodedInvoice.error.message);
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('lightning:error_decode'),
 					description: i18n.t('other:qr_error_no_data_text'),
 				});
@@ -891,7 +891,7 @@ export const handleData = async ({
 
 			if (lightningBalance.localBalance < params.minSendable) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('other:lnurl_pay_error'),
 					description: i18n.t('other:lnurl_pay_error_no_capacity'),
 				});
@@ -936,7 +936,7 @@ export const handleData = async ({
 
 			if (params.minWithdrawable > params.maxWithdrawable) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('other:lnurl_withdr_error'),
 					description: i18n.t('other:lnurl_withdr_error_minmax'),
 				});
@@ -954,7 +954,7 @@ export const handleData = async ({
 
 			if (lightningBalance.remoteBalance < params.minWithdrawable) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('other:lnurl_withdr_error'),
 					description: i18n.t('other:lnurl_withdr_error_no_capacity'),
 				});
@@ -973,7 +973,7 @@ export const handleData = async ({
 			}
 			if (peer.includes('onion')) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('lightning:error_add_title'),
 					description: i18n.t('lightning:error_add_tor'),
 				});
@@ -985,7 +985,7 @@ export const handleData = async ({
 			});
 			if (addPeerRes.isErr()) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('lightning:error_add'),
 					description: addPeerRes.error.message,
 				});
@@ -994,7 +994,7 @@ export const handleData = async ({
 			const savePeerRes = savePeer({ selectedWallet, selectedNetwork, peer });
 			if (savePeerRes.isErr()) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('lightning:error_save_title'),
 					description: savePeerRes.error.message,
 				});
@@ -1052,7 +1052,7 @@ export const validateInputData = async ({
 			const errorMessage = i18n.t('other:scan_err_interpret_msg');
 			if (showErrors) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: i18n.t('other:scan_err_interpret_title'),
 					description: errorMessage,
 				});
@@ -1098,7 +1098,7 @@ export const validateInputData = async ({
 					const errorMessage = response.error.message;
 					if (showErrors) {
 						showToast({
-							type: 'error',
+							type: 'warning',
 							title: i18n.t('slashtags:error_pay_title'),
 							description: `An error occurred: ${errorMessage}`,
 						});
@@ -1109,7 +1109,7 @@ export const validateInputData = async ({
 					const errorMessage = i18n.t('slashtags:error_pay_empty_msg');
 					if (showErrors) {
 						showToast({
-							type: 'error',
+							type: 'warning',
 							title: i18n.t('slashtags:error_pay_title'),
 							description: errorMessage,
 						});
@@ -1127,7 +1127,7 @@ export const validateInputData = async ({
 				const errorMessage = i18n.t('other:scan_err_not_payable_msg');
 				if (showErrors) {
 					showToast({
-						type: 'error',
+						type: 'warning',
 						title: i18n.t('slashtags:error_pay_title'),
 						description: errorMessage,
 					});
@@ -1143,7 +1143,7 @@ export const validateInputData = async ({
 				const errorMessage = i18n.t('other:scan_err_not_payable_msg');
 				if (showErrors) {
 					showToast({
-						type: 'error',
+						type: 'warning',
 						title: i18n.t('slashtags:error_pay_title'),
 						description: errorMessage,
 					});

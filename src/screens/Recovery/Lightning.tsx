@@ -77,7 +77,7 @@ const LightningWithSlashtags = ({
 			if (res.isErr()) {
 				console.error(res.error);
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('lightning_recovery_error'),
 					description: res.error.message,
 				});
@@ -124,7 +124,7 @@ const LightningWithSlashtags = ({
 			console.log(res.error);
 			setIsFetchingBackup(false);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('lightning_recovery_error'),
 				description: res.error.message,
 			});
@@ -145,7 +145,7 @@ const LightningWithSlashtags = ({
 
 		if (Object.keys(backup.data.channel_monitors).length === 0) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('lightning_recovery_error'),
 				description: t('lightning_recovery_no_channels'),
 			});
@@ -162,7 +162,7 @@ const LightningWithSlashtags = ({
 			console.error(storageRes.error);
 			setIsRecoveringChannels(false);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('lightning_recovery_error'),
 				description: storageRes.error.message,
 			});
@@ -176,7 +176,7 @@ const LightningWithSlashtags = ({
 			console.error(importRes.error);
 			setIsRecoveringChannels(false);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('lightning_recovery_error'),
 				description: importRes.error.message,
 			});
@@ -192,7 +192,7 @@ const LightningWithSlashtags = ({
 
 		if (setupRes.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('lightning_recovery_error'),
 				description: setupRes.error.message,
 			});
@@ -203,7 +203,7 @@ const LightningWithSlashtags = ({
 		const balances = await ldk.claimableBalances(false);
 		if (balances.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('lightning_recovery_error'),
 				description: balances.error.message,
 			});

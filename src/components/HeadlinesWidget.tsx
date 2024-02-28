@@ -79,7 +79,7 @@ const HeadlinesWidget = ({
 				console.error(error);
 				setIsLoading(false);
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('widget_error_drive'),
 					description: `An error occurred: ${error.message}`,
 				});

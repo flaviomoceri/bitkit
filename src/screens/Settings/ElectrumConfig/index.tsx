@@ -129,7 +129,7 @@ const ElectrumConfig = ({
 			const validityCheck = validateInput(peerData, t);
 			if (validityCheck.isErr()) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('es.error_peer'),
 					description: validityCheck.error.message,
 				});
@@ -174,7 +174,7 @@ const ElectrumConfig = ({
 				console.log(connectResponse.error.message);
 				dispatch(updateUi({ isConnectedToElectrum: false }));
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('es.server_error'),
 					description: t('es.server_error_description'),
 				});
@@ -238,7 +238,7 @@ const ElectrumConfig = ({
 		const validityCheck = validateInput(connectData, t);
 		if (validityCheck.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('es.error_peer'),
 				description: validityCheck.error.message,
 			});

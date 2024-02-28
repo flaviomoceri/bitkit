@@ -119,7 +119,9 @@ const EnabledSlashtag = (): ReactElement => {
 			showToast({
 				type: 'error',
 				title: t('backup.failed_title'),
-				description: t('backup.failed_message'),
+				description: t('backup.failed_message', {
+					interval: BACKUP_CHECK_INTERVAL / 60000, // displayed in minutes
+				}),
 			});
 		}, FAILED_BACKUP_NOTIFICATION_INTERVAL);
 

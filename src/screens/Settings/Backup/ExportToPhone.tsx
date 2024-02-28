@@ -51,7 +51,7 @@ const ExportToPhone = ({
 		} catch (error) {
 			if (JSON.stringify(error).indexOf('CANCELLED') < 0) {
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('export_error_title'),
 					description: t('export_error_msg'),
 				});
@@ -68,7 +68,7 @@ const ExportToPhone = ({
 			console.log(fileRes.error.message);
 			setIsCreating(false);
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('export_error_title'),
 				description: t('export_error_file'),
 			});

@@ -34,7 +34,7 @@ const ScannerScreen = ({
 	const onRead = (data: string): void => {
 		if (!data) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('qr_error_header'),
 				description: t('qr_error_text'),
 			});

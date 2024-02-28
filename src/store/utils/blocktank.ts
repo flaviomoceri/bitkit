@@ -271,7 +271,7 @@ export const startChannelPurchase = async ({
 	const orderData = await getOrder(buyChannelData.id);
 	if (orderData.isErr()) {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('other:bt_error_retrieve'),
 			description: `An error occurred: ${orderData.error.message}`,
 		});
@@ -358,7 +358,7 @@ export const confirmChannelPurchase = async ({
 	const rawTx = await createTransaction();
 	if (rawTx.isErr()) {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('wallet:error_create_tx'),
 			description: rawTx.error.message,
 		});
@@ -375,7 +375,7 @@ export const confirmChannelPurchase = async ({
 	});
 	if (broadcastResponse.isErr()) {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('wallet:error_broadcast_tx'),
 			description: broadcastResponse.error.message,
 		});
@@ -427,7 +427,7 @@ const handleOrderStateChange = (order: IBtOrder): void => {
 	// given up
 	if (order.payment.bolt11Invoice.state === 'failed') {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('lightning:order_given_up_title'),
 			description: i18n.t('lightning:order_given_up_msg'),
 		});
@@ -437,7 +437,7 @@ const handleOrderStateChange = (order: IBtOrder): void => {
 	// order expired
 	if (order.state === BtOrderState.EXPIRED) {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('lightning:order_expired_title'),
 			description: i18n.t('lightning:order_expired_msg'),
 		});

@@ -48,7 +48,7 @@ const ShowMnemonic = ({
 			if (res.isErr()) {
 				console.log(res.error.message);
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('mnemonic_error'),
 					description: t('mnemonic_error_description'),
 				});

@@ -10,6 +10,7 @@ import React, {
 import { StyleSheet, View, TouchableOpacity, Keyboard } from 'react-native';
 import { TInvoice } from '@synonymdev/react-native-ldk';
 import { useTranslation } from 'react-i18next';
+import { validateTransaction } from 'beignet';
 
 import { Caption13Up, Text02M } from '../../../styles/text';
 import {
@@ -75,7 +76,7 @@ import { updateLastPaidContacts } from '../../../store/slices/slashtags';
 import { truncate } from '../../../utils/helpers';
 import AmountToggle from '../../../components/AmountToggle';
 import LightningSyncing from '../../../components/LightningSyncing';
-import { validateTransaction } from 'beignet';
+import { i18nTime } from '../../../utils/i18n';
 
 const Section = memo(
 	({
@@ -106,6 +107,7 @@ const ReviewAndSend = ({
 	navigation,
 }: SendScreenProps<'ReviewAndSend'>): ReactElement => {
 	const { t, i18n } = useTranslation('wallet');
+	const { t: tTime } = useTranslation('intl', { i18n: i18nTime });
 	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const onChainBalance = useAppSelector(onChainBalanceSelector);
@@ -408,7 +410,7 @@ const ReviewAndSend = ({
 			if (res.isErr()) {
 				console.log(res.error.message);
 				showToast({
-					type: 'error',
+					type: 'warning',
 					title: t('tag_remove_error_title'),
 					description: t('tag_remove_error_description'),
 				});
@@ -562,6 +564,10 @@ const ReviewAndSend = ({
 		}
 	}, [selectedFeeId]);
 
+	const invoiceExpiryTimestamp = new Date(
+		new Date().getTime() + decodedInvoice?.expiry_time! * 1000,
+	);
+
 	return (
 		<>
 			<GradientView style={styles.container}>
@@ -646,7 +652,17 @@ const ReviewAndSend = ({
 										<>
 											<ClockIcon style={styles.icon} color="purple" />
 											<Text02M>
-												{(decodedInvoice.expiry_time / 60).toFixed()} minutes
+												{tTime('dateTime', {
+													v: invoiceExpiryTimestamp,
+													formatParams: {
+														v: {
+															month: 'short',
+															day: 'numeric',
+															hour: 'numeric',
+															minute: 'numeric',
+														},
+													},
+												})}
 											</Text02M>
 										</>
 									}

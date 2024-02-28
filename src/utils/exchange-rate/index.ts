@@ -81,7 +81,7 @@ export const getExchangeRates = async (): Promise<Result<IExchangeRates>> => {
 
 		if (lastUpdatedAt) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: i18n.t('other:rate_error_title'),
 				description: i18n.t('other:rate_error_msg_date', {
 					date: timeAgo(lastUpdatedAt),
@@ -89,7 +89,7 @@ export const getExchangeRates = async (): Promise<Result<IExchangeRates>> => {
 			});
 		} else {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: i18n.t('other:rate_error_title'),
 				description: i18n.t('other:rate_error_msg_nodate'),
 			});

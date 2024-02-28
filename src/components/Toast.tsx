@@ -39,9 +39,14 @@ const Toast = ({
 		gradientColor = '#00294e';
 	}
 
-	if (type === 'error') {
+	if (type === 'warning') {
 		titleColor = 'brand';
 		gradientColor = '#411a00';
+	}
+
+	if (type === 'error') {
+		titleColor = 'red';
+		gradientColor = '#2b1215';
 	}
 
 	return (
@@ -73,5 +78,6 @@ const styles = StyleSheet.create({
 export const toastConfig: ToastConfig = {
 	success: (props) => <Toast {...props} />,
 	info: (props) => <Toast {...props} />,
+	warning: (props) => <Toast {...props} />,
 	error: (props) => <Toast {...props} />,
 };

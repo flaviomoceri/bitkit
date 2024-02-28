@@ -76,7 +76,7 @@ export const saveContact = async (
 	await drive?.put('/' + id, encodeJSON(record)).catch((error: Error) => {
 		console.log(error.message);
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('slashtags:error_saving_contact'),
 			description: `An error occurred: ${error.message}`,
 		});
@@ -95,7 +95,7 @@ export const saveProfile = async (
 	const drive = await slashtag?.drivestore.get();
 	await drive.put('/profile.json', encodeJSON(profile)).catch((error: Error) =>
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('slashtags:error_saving_profile'),
 			description: error.message,
 		}),
@@ -127,7 +127,7 @@ export const deleteContact = async (
 	const { id } = parse(url);
 	await drive.del('/' + id).catch((error: Error) => {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('slashtags:error_delete_contact'),
 			description: error.message,
 		});
@@ -173,7 +173,7 @@ export const onSDKError = (error: Error): void => {
 	}
 
 	showToast({
-		type: 'error',
+		type: 'warning',
 		title: 'Data Connection Issue',
 		description: error.message,
 	});
@@ -410,7 +410,7 @@ function noop(): void {}
 function checkClosed(slashtag: Slashtag): boolean {
 	if (slashtag.drivestore.closed) {
 		showToast({
-			type: 'error',
+			type: 'warning',
 			title: i18n.t('slashtags:error_sdk_title'),
 			description: i18n.t('slashtags:error_sdk_msg'),
 		});

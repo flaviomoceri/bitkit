@@ -46,7 +46,7 @@ const Contacts = ({
 			navigation.navigate('Amount');
 		} else {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('contact_pay_error'),
 				description: res.error.message,
 			});

@@ -164,7 +164,7 @@ const CoinSelection = ({
 		const feeSetupRes = setupFeeForOnChainTransaction();
 		if (feeSetupRes.isErr()) {
 			showToast({
-				type: 'error',
+				type: 'warning',
 				title: t('send_output_to_small_title'),
 				description: t('send_coin_selection_output_to_small_description'),
 			});
