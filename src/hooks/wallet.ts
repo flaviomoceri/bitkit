@@ -103,24 +103,6 @@ export const useBalance = (): {
 	};
 };
 
-/**
- * Returs true, if current wallet has no transactions
- */
-export function useNoTransactions(): boolean {
-	const empty = useAppSelector((store) => {
-		const wallet = store.wallet.selectedWallet;
-		const network = store.wallet.selectedNetwork;
-		if (wallet && store.wallet?.wallets[wallet]) {
-			const transactions =
-				store.wallet?.wallets[wallet]?.transactions[network] ?? {};
-			return Object.keys(transactions).length === 0;
-		}
-		return true;
-	});
-
-	return empty;
-}
-
 export const useSwitchUnit = (): (() => void) => {
 	const dispatch = useAppDispatch();
 	const nextUnit = useAppSelector(nextUnitSelector);

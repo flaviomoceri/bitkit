@@ -37,6 +37,7 @@ import {
 	ClockIcon,
 	GitBranchIcon,
 	HourglassIcon,
+	HourglassSimpleIcon,
 	LightningIcon,
 	ReceiveIcon,
 	SendIcon,
@@ -649,7 +650,7 @@ const LightningActivityDetail = ({
 	const { t: tTime } = useTranslation('intl', { i18n: i18nTime });
 	const switchUnit = useSwitchUnit();
 	const colors = useColors();
-	const { id, txType, value, fee, message, timestamp, address } = item;
+	const { id, txType, status, value, fee, message, timestamp, address } = item;
 
 	const dispatch = useAppDispatch();
 	const tags = useAppSelector((state) => tagSelector(state, id));
@@ -696,10 +697,43 @@ const LightningActivityDetail = ({
 	const isSend = txType === EPaymentType.sent;
 	const total = value + (fee ?? 0);
 
-	const status = (
+	let statusText = t('activity_successful');
+	let statusIcon = <LightningIcon style={styles.rowIcon} color="purple" />;
+	let icon = (
+		<>
+			{isSend ? (
+				<SendIcon height={19} color="purple" />
+			) : (
+				<ReceiveIcon height={19} color="purple" />
+			)}
+		</>
+	);
+
+	if (status === 'pending') {
+		statusText = t('activity_pending');
+		statusIcon = (
+			<HourglassSimpleIcon style={styles.rowIcon} color="purple" width={16} />
+		);
+		icon = (
+			<>
+				<HourglassSimpleIcon color="purple" width={24} />
+			</>
+		);
+	}
+	if (status === 'failed') {
+		statusText = t('activity_failed');
+		statusIcon = <XIcon style={styles.rowIcon} color="purple" width={16} />;
+		icon = (
+			<>
+				<XIcon color="purple" width={24} />
+			</>
+		);
+	}
+
+	const StatusRow = (
 		<View style={styles.row}>
-			<LightningIcon style={styles.rowIcon} color="purple" />
-			<Text02M color="purple">{t('activity_successful')}</Text02M>
+			{statusIcon}
+			<Text02M color="purple">{statusText}</Text02M>
 		</View>
 	);
 
@@ -718,18 +752,14 @@ const LightningActivityDetail = ({
 				</View>
 
 				<ThemedView style={styles.iconContainer} color="purple16">
-					{isSend ? (
-						<SendIcon height={19} color="purple" />
-					) : (
-						<ReceiveIcon height={19} color="purple" />
-					)}
+					{icon}
 				</ThemedView>
 			</TouchableOpacity>
 
 			{!extended ? (
 				<>
 					<View style={styles.sectionContainer}>
-						<Section title={t('activity_status')} value={status} />
+						<Section title={t('activity_status')} value={StatusRow} />
 					</View>
 
 					<View style={styles.sectionContainer}>
@@ -923,14 +953,16 @@ const LightningActivityDetail = ({
 							value={<Text02M>{id}</Text02M>}
 						/>
 					</TouchableOpacity>
-					<TouchableOpacity
-						style={styles.sectionContainer}
-						onPress={(): void => onCopy(address)}>
-						<Section
-							title={t('activity_invoice')}
-							value={<Text02M>{address}</Text02M>}
-						/>
-					</TouchableOpacity>
+					{address && (
+						<TouchableOpacity
+							style={styles.sectionContainer}
+							onPress={(): void => onCopy(address)}>
+							<Section
+								title={t('activity_invoice')}
+								value={<Text02M>{address}</Text02M>}
+							/>
+						</TouchableOpacity>
+					)}
 				</>
 			)}
 		</>

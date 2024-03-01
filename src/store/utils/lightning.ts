@@ -21,6 +21,7 @@ import { getSelectedNetwork, getSelectedWallet } from '../../utils/wallet';
 import {
 	addPeers,
 	createPaymentRequest,
+	decodeLightningInvoice,
 	getClaimableBalances,
 	getClaimedLightningPayments,
 	getCustomLightningPeers,
@@ -294,46 +295,59 @@ export const updateClaimableBalancesThunk = async (): Promise<
 export const syncLightningTxsWithActivityList = async (): Promise<
 	Result<string>
 > => {
-	let items: TLightningActivityItem[] = [];
+	const items: TLightningActivityItem[] = [];
 
-	const claimedTxs = await getClaimedLightningPayments();
-	for (const tx of claimedTxs) {
-		//Required to add in bolt11 and description
-		const invoice = await getPendingInvoice(tx.payment_hash);
+	const claimed = await getClaimedLightningPayments();
+	for (const payment of claimed) {
+		// Required to add in bolt11 and description
+		const invoice = await getPendingInvoice(payment.payment_hash);
 
 		items.push({
-			id: tx.payment_hash,
+			id: payment.payment_hash,
 			activityType: EActivityType.lightning,
 			txType: EPaymentType.received,
+			status: 'successful',
 			message: invoice?.description ?? '',
 			address: invoice?.to_str ?? '',
-			confirmed: tx.state === 'successful',
-			value: tx.amount_sat,
-			timestamp: tx.unix_timestamp * 1000,
+			confirmed: payment.state === 'successful',
+			value: payment.amount_sat,
+			timestamp: payment.unix_timestamp * 1000,
 		});
 	}
 
-	const sentTxs = await getSentLightningPayments();
-	for (const tx of sentTxs) {
-		const sats = tx.amount_sat;
-		if (!sats || tx.state === 'failed') {
+	const payments = await getSentLightningPayments();
+	for (const payment of payments) {
+		if (!payment.amount_sat) {
 			continue;
 		}
 
+		// Decode invoice to get description
+		// TODO: Persist description in react-native-ldk so we don't have to decode here
+		let invoiceNote = '';
+		if (payment.bolt11_invoice) {
+			const decodeInvoiceResponse = await decodeLightningInvoice({
+				paymentRequest: payment.bolt11_invoice,
+			});
+			if (decodeInvoiceResponse.isOk()) {
+				invoiceNote = decodeInvoiceResponse.value.description ?? '';
+			}
+		}
+
 		items.push({
-			id: tx.payment_hash,
+			id: payment.payment_hash,
 			activityType: EActivityType.lightning,
 			txType: EPaymentType.sent,
-			message: '',
-			address: '',
-			confirmed: tx.state === 'successful',
-			value: sats,
-			fee: tx.fee_paid_sat ?? 0,
-			timestamp: tx.unix_timestamp * 1000,
+			status: payment.state,
+			message: invoiceNote,
+			address: payment.bolt11_invoice ?? '',
+			confirmed: payment.state === 'successful',
+			value: payment.amount_sat,
+			fee: payment.fee_paid_sat ?? 0,
+			timestamp: payment.unix_timestamp * 1000,
 		});
 	}
 
-	//TODO remove temp hack when this is complete and descriptions/bolt11 can be added from stored tx: https://github.com/synonymdev/react-native-ldk/issues/156
+	// TODO: remove temp hack when this is complete and descriptions/bolt11 can be added from stored tx: https://github.com/synonymdev/react-native-ldk/issues/156
 	items.forEach((item) => {
 		const res = getActivityItemById(item.id);
 		if (res.isOk()) {

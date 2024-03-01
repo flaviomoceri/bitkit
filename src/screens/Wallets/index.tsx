@@ -1,10 +1,4 @@
-import React, {
-	memo,
-	ReactElement,
-	useState,
-	useCallback,
-	useMemo,
-} from 'react';
+import React, { memo, ReactElement, useState, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { StyleSheet, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -12,7 +6,7 @@ import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import Animated, { FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useNoTransactions } from '../../hooks/wallet';
+import { useBalance } from '../../hooks/wallet';
 import useColors from '../../hooks/colors';
 import { updateSettings } from '../../store/slices/settings';
 import { widgetsSelector } from '../../store/reselect/widgets';
@@ -53,6 +47,7 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	const [refreshing, setRefreshing] = useState(false);
 	const colors = useColors();
 	const dispatch = useAppDispatch();
+	const { totalBalance } = useBalance();
 	const enableSwipeToHideBalance = useAppSelector(
 		enableSwipeToHideBalanceSelector,
 	);
@@ -63,11 +58,7 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	const hideOnboardingSetting = useAppSelector(hideOnboardingMessageSelector);
 	const showWidgets = useAppSelector(showWidgetsSelector);
 	const widgets = useAppSelector(widgetsSelector);
-	const noTransactions = useNoTransactions();
 	const insets = useSafeAreaInsets();
-	const empty = useMemo(() => {
-		return noTransactions && Object.values(widgets).length === 0;
-	}, [noTransactions, widgets]);
 	const { t } = useTranslation('wallet');
 
 	// tell WalletNavigator that this screen is focused
@@ -105,7 +96,10 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 		setRefreshing(false);
 	};
 
-	const hideOnboarding = hideOnboardingSetting || !empty;
+	const hideOnboarding =
+		hideOnboardingSetting ||
+		totalBalance > 0 ||
+		Object.keys(widgets).length > 0;
 
 	return (
 		<>

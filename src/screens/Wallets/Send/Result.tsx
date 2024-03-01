@@ -117,7 +117,7 @@ const Result = ({
 			dispatch(closeSheet('sendNavigation'));
 			rootNavigation.navigate('ActivityDetail', {
 				id: activityItem.id,
-				extended: true,
+				extended: false,
 			});
 		}
 	};

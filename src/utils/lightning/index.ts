@@ -6,6 +6,7 @@ import { err, ok, Result } from '@synonymdev/result';
 import {
 	TBroadcastTransaction,
 	TChannelManagerChannelClosed,
+	TChannelManagerPaymentFailed,
 } from '@synonymdev/react-native-ldk/dist/utils/types';
 import { EPaymentType, TGetAddressHistory } from 'beignet';
 import lm, {
@@ -99,6 +100,10 @@ import {
 } from '../../constants/env';
 import { addTransfer } from '../../store/actions/wallet';
 import { decodeRawTx } from '../wallet/txdecoder';
+import { showToast } from '../notifications';
+import i18n from '../i18n';
+
+const PAYMENT_TIMEOUT = 8 * 1000; // 8 seconds
 
 let LDKIsStayingSynced = false;
 
@@ -118,10 +123,14 @@ export const FALLBACK_BLOCKTANK_PEERS: IWalletItem<string[]> = {
 	bitcoinTestnet: [],
 };
 
-let paymentSubscription: EmitterSubscription | undefined;
+// let paymentPathSuccessSubscription: EmitterSubscription | undefined;
+// let paymentPathFailedSubscription: EmitterSubscription | undefined;
+let paymentSentSubscription: EmitterSubscription | undefined;
+let paymentFailedSubscription: EmitterSubscription | undefined;
+let paymentClaimedSubscription: EmitterSubscription | undefined;
 let onChannelSubscription: EmitterSubscription | undefined;
 let onChannelClose: EmitterSubscription | undefined;
-let onSpendableOutputsSubscription: EmitterSubscription | undefined;
+// let onSpendableOutputsSubscription: EmitterSubscription | undefined;
 let onBackupStateUpdate: EmitterSubscription | undefined;
 
 /**
@@ -415,6 +424,7 @@ export const handleLightningPaymentSubscription = async ({
 		id: payment.payment_hash,
 		activityType: EActivityType.lightning,
 		txType: EPaymentType.received,
+		status: 'successful',
 		message,
 		address,
 		value: payment.amount_sat,
@@ -442,8 +452,48 @@ export const subscribeToLightningPayments = ({
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): void => {
-	if (!paymentSubscription) {
-		paymentSubscription = ldk.onEvent(
+	// if (!paymentPathSuccessSubscription) {
+	// 	paymentPathSuccessSubscription = ldk.onEvent(
+	// 		EEventTypes.channel_manager_payment_path_successful,
+	// 		(_res: TChannelManagerPaymentPathSuccessful) => {},
+	// 	);
+	// }
+	// if (!paymentPathFailedSubscription) {
+	// 	paymentPathFailedSubscription = ldk.onEvent(
+	// 		EEventTypes.channel_manager_payment_path_failed,
+	// 		(_res: TChannelManagerPaymentPathFailed) => {},
+	// 	);
+	// }
+	if (!paymentSentSubscription) {
+		paymentSentSubscription = ldk.onEvent(
+			EEventTypes.channel_manager_payment_sent,
+			(res: TChannelManagerPaymentSent) => {
+				console.log({ channel_manager_payment_sent: res });
+				showToast({
+					type: 'success',
+					title: i18n.t('wallet:toast_payment_success_title'),
+					description: i18n.t('wallet:toast_payment_success_description'),
+				});
+			},
+		);
+	}
+	if (!paymentFailedSubscription) {
+		paymentFailedSubscription = ldk.onEvent(
+			EEventTypes.channel_manager_payment_failed,
+			async (res: TChannelManagerPaymentFailed) => {
+				console.log({ channel_manager_payment_failed: res });
+				await refreshLdk({ selectedWallet, selectedNetwork });
+				showToast({
+					type: 'error',
+					title: 'Payment Failed',
+					description: 'Your instant payment failed. Please try again.',
+					autoHide: false,
+				});
+			},
+		);
+	}
+	if (!paymentClaimedSubscription) {
+		paymentClaimedSubscription = ldk.onEvent(
 			EEventTypes.channel_manager_payment_claimed,
 			(res: TChannelManagerClaim) => {
 				handleLightningPaymentSubscription({
@@ -459,9 +509,7 @@ export const subscribeToLightningPayments = ({
 			EEventTypes.new_channel,
 			async (_res: TChannelUpdate) => {
 				// New Channel will open in 1 block confirmation
-
 				await refreshLdk({ selectedWallet, selectedNetwork });
-
 				// Check if this is a CJIT Entry that needs to be added to the activity list.
 				addCJitActivityItem(_res.channel_id).then();
 			},
@@ -478,12 +526,12 @@ export const subscribeToLightningPayments = ({
 			},
 		);
 	}
-	if (!onSpendableOutputsSubscription) {
-		onSpendableOutputsSubscription = ldk.onEvent(
-			EEventTypes.channel_manager_spendable_outputs,
-			() => {},
-		);
-	}
+	// if (!onSpendableOutputsSubscription) {
+	// 	onSpendableOutputsSubscription = ldk.onEvent(
+	// 		EEventTypes.channel_manager_spendable_outputs,
+	// 		() => {},
+	// 	);
+	// }
 	if (!onBackupStateUpdate) {
 		onBackupStateUpdate = ldk.onEvent(
 			EEventTypes.backup_state_update,
@@ -501,10 +549,14 @@ export const subscribeToLightningPayments = ({
 };
 
 export const unsubscribeFromLightningSubscriptions = (): void => {
-	paymentSubscription?.remove();
+	// paymentPathSuccessSubscription?.remove();
+	// paymentPathFailedSubscription?.remove();
+	paymentSentSubscription?.remove();
+	paymentFailedSubscription?.remove();
+	paymentClaimedSubscription?.remove();
 	onChannelSubscription?.remove();
 	onChannelClose?.remove();
-	onSpendableOutputsSubscription?.remove();
+	// onSpendableOutputsSubscription?.remove();
 	onBackupStateUpdate?.remove();
 };
 
@@ -1526,55 +1578,36 @@ export const createPaymentRequest = (
 /**
  * Attempts to pay a bolt11 invoice.
  * @param {string} invoice
- * @param {number} [sats]
+ * @param {number} [amount]
  * @returns {Promise<Result<string>>}
  */
 export const payLightningInvoice = async (
 	invoice: string,
-	sats?: number,
-): Promise<Result<TChannelManagerPaymentSent>> => {
+	amount = 0,
+): Promise<Result<string>> => {
 	try {
 		const addPeersResponse = await addPeers();
 		if (addPeersResponse.isErr()) {
 			return err(addPeersResponse.error.message);
 		}
-		const decodedInvoice = await decodeLightningInvoice({
-			paymentRequest: invoice,
-		});
-		if (decodedInvoice.isErr()) {
-			return err(decodedInvoice.error.message);
-		}
 
-		const payResponse = await lm.payWithTimeout({
+		const payPromise = lm.payWithTimeout({
 			paymentRequest: invoice,
-			amountSats: sats ?? 0,
+			amountSats: amount,
 			timeout: 60000,
 		});
+
+		const payResponse = await promiseTimeout<
+			Result<TChannelManagerPaymentSent>
+		>(PAYMENT_TIMEOUT, payPromise);
+
+		refreshLdk().then();
+
 		if (payResponse.isErr()) {
-			//On occasion a payment can time out but still be pending, so we need to sync with react-native-ldk's stored pending payments
-			await syncLightningTxsWithActivityList();
 			return err(payResponse.error.message);
 		}
 
-		let value = decodedInvoice.value.amount_satoshis ?? 0;
-		if (sats) {
-			value = sats;
-		}
-		const activityItem: TLightningActivityItem = {
-			id: decodedInvoice.value.payment_hash,
-			activityType: EActivityType.lightning,
-			txType: EPaymentType.sent,
-			message: decodedInvoice.value.description ?? '',
-			address: invoice,
-			value,
-			confirmed: true,
-			fee: payResponse.value.fee_paid_sat ?? 0,
-			timestamp: new Date().getTime(),
-		};
-		//TODO rather sync with ldk for txs
-		dispatch(addActivityItem(activityItem));
-		refreshLdk().then();
-		return ok(payResponse.value);
+		return ok(payResponse.value.payment_hash);
 	} catch (e) {
 		console.log(e);
 		return err(e);

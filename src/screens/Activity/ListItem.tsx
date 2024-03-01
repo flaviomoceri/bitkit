@@ -6,10 +6,12 @@ import { TouchableOpacity, View as ThemedView } from '../../styles/components';
 import { Caption13M, Text01M } from '../../styles/text';
 import {
 	HeartbeatIcon,
+	HourglassSimpleIcon,
 	ReceiveIcon,
 	SendIcon,
 	TimerIconAlt,
 	TransferIcon,
+	XIcon,
 } from '../../styles/icons';
 import Money from '../../components/Money';
 import ProfileImage from '../../components/ProfileImage';
@@ -175,10 +177,30 @@ const LightningListItem = ({
 	icon: JSX.Element;
 }): ReactElement => {
 	const { t } = useTranslation('wallet');
-	const { txType, value, fee, message, timestamp } = item;
-	const title = t(
+	const { txType, status, value, fee, message, timestamp } = item;
+
+	let title = t(
 		txType === EPaymentType.sent ? 'activity_sent' : 'activity_received',
 	);
+
+	if (status === 'pending') {
+		title = t('activity_pending');
+		icon = (
+			<ThemedView style={styles.icon} color="purple16">
+				<HourglassSimpleIcon color="purple" width={16} />
+			</ThemedView>
+		);
+	}
+
+	if (status === 'failed') {
+		title = t('activity_failed');
+		icon = (
+			<ThemedView style={styles.icon} color="purple16">
+				<XIcon color="purple" width={16} />
+			</ThemedView>
+		);
+	}
+
 	const description = message || getActivityItemDate(timestamp);
 	const isSend = txType === EPaymentType.sent;
 	const amount = isSend ? value + (fee ?? 0) : value;

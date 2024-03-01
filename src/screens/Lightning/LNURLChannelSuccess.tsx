@@ -1,8 +1,9 @@
 import React, { ReactElement, memo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import type { LightningScreenProps } from '../../navigation/types';
+import { Text01B } from '../../styles/text';
 import InfoScreen from '../../components/InfoScreen';
+import type { LightningScreenProps } from '../../navigation/types';
 
 const imageSrc = require('../../assets/illustrations/switch.png');
 
@@ -22,7 +23,13 @@ const LNURLChannelSuccess = ({
 			navTitle={t('lnurl_channel_header')}
 			displayBackButton={false}
 			title={t('lnurl_channel_connecting')}
-			description={t('lnurl_channel_connecting_text')}
+			description={
+				<Trans
+					t={t}
+					i18nKey="lnurl_channel_connecting_text"
+					components={{ highlight: <Text01B color="white" /> }}
+				/>
+			}
 			image={imageSrc}
 			buttonText={t('lightning:awesome')}
 			testID="LNURLChannelSuccess"
