@@ -102,7 +102,7 @@ const MainSettings = ({
 			},
 		];
 
-		return [{ title: t('general.section_title'), data }];
+		return [{ data }];
 	}, [enableDevOptions, navigation, t]);
 
 	return (
