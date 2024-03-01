@@ -24,6 +24,11 @@ export const accountVersionSelector = createSelector(
 	(lightning) => lightning.accountVersion,
 );
 
+export const pendingPaymentsSelector = createSelector(
+	lightningState,
+	(lightning) => lightning.pendingPayments,
+);
+
 export const nodeSelector = createSelector(
 	[
 		lightningState,

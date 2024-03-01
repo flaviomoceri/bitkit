@@ -519,6 +519,15 @@ const migrations = {
 			},
 		};
 	},
+	39: (state): PersistedState => {
+		return {
+			...state,
+			lightning: {
+				...state.lightning,
+				pendingPayments: [],
+			},
+		};
+	},
 };
 
 export default migrations;

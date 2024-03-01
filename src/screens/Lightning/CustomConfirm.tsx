@@ -54,7 +54,6 @@ const CustomConfirm = ({
 	const clientBalance = useDisplayValues(order?.clientBalanceSat ?? 0);
 
 	// TODO: avoid flashing different price & allocation after confirmation
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const txFee = fiatTransactionFee.fiatValue;
 	const lspFee = purchaseFeeValue.fiatValue - clientBalance.fiatValue;
 

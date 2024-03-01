@@ -622,7 +622,7 @@ const Channels = ({
 															'Unable to retrieve anything from the clipboard.',
 													});
 												}
-												const response = await payLightningInvoice(invoice);
+												const response = await payLightningInvoice({ invoice });
 												if (response.isErr()) {
 													showToast({
 														type: 'warning',

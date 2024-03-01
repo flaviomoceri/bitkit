@@ -20,4 +20,5 @@ export const initialLightningState: TLightningState = {
 	nodes: {
 		[defaultWalletShape.name]: defaultLightningShape,
 	},
+	pendingPayments: [],
 };

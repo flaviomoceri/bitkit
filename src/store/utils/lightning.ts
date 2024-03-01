@@ -7,6 +7,7 @@ import { dispatch, getLightningStore, getMetaDataStore } from '../helpers';
 import { updateActivityItems } from '../slices/activity';
 import {
 	removeLightningPeer,
+	removePendingPayment,
 	saveLightningPeer,
 	updateClaimableBalances,
 	updateLightningChannels,
@@ -315,8 +316,21 @@ export const syncLightningTxsWithActivityList = async (): Promise<
 		});
 	}
 
-	const payments = await getSentLightningPayments();
-	for (const payment of payments) {
+	// Remove pending payments from store that are no longer pending
+	const sent = await getSentLightningPayments();
+	const pendingPayments = sent.filter((p) => p.state === 'pending');
+	const pendingWatched = getLightningStore().pendingPayments;
+	const pendingToRemove = pendingWatched.filter((p) => {
+		return !pendingPayments.find((pp) => pp.payment_hash === p.payment_hash);
+	});
+
+	if (pendingToRemove.length > 0) {
+		pendingToRemove.forEach(({ payment_hash }) => {
+			dispatch(removePendingPayment(payment_hash));
+		});
+	}
+
+	for (const payment of sent) {
 		if (!payment.amount_sat) {
 			continue;
 		}

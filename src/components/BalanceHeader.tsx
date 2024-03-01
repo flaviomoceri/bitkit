@@ -16,7 +16,8 @@ import { unitSelector, hideBalanceSelector } from '../store/reselect/settings';
 const BalanceHeader = (): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const onSwitchUnit = useSwitchUnitAnnounced();
-	const { totalBalance, pendingBalance } = useBalance();
+	const { totalBalance, pendingPaymentsBalance, balanceInTransfer } =
+		useBalance();
 	const dispatch = useAppDispatch();
 	const unit = useAppSelector(unitSelector);
 	const hideBalance = useAppSelector(hideBalanceSelector);
@@ -28,7 +29,25 @@ const BalanceHeader = (): ReactElement => {
 	return (
 		<View style={styles.container}>
 			<View style={styles.totalBalanceRow}>
-				{pendingBalance ? (
+				{balanceInTransfer ? (
+					<Trans
+						t={t}
+						i18nKey="balance_total_transferring"
+						components={{
+							text: <Caption13Up color="gray1" />,
+							pending: (
+								<Money
+									color="gray1"
+									size="caption13Up"
+									sats={balanceInTransfer}
+									unit={unit}
+									enableHide={true}
+									symbol={false}
+								/>
+							),
+						}}
+					/>
+				) : pendingPaymentsBalance ? (
 					<Trans
 						t={t}
 						i18nKey="balance_total_pending"
@@ -38,7 +57,7 @@ const BalanceHeader = (): ReactElement => {
 								<Money
 									color="gray1"
 									size="caption13Up"
-									sats={pendingBalance}
+									sats={pendingPaymentsBalance}
 									unit={unit}
 									enableHide={true}
 									symbol={false}

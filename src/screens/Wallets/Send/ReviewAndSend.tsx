@@ -71,6 +71,7 @@ import {
 	pinSelector,
 } from '../../../store/reselect/settings';
 import { onChainFeesSelector } from '../../../store/reselect/fees';
+import { addPendingPayment } from '../../../store/slices/lightning';
 import { updateOnChainActivityList } from '../../../store/utils/activity';
 import { updateLastPaidContacts } from '../../../store/slices/slashtags';
 import { truncate } from '../../../utils/helpers';
@@ -210,21 +211,25 @@ const ReviewAndSend = ({
 		}
 
 		// Determine if we should override the invoice amount
-		let customAmount = 0;
-		if (!decodedInvoice.amount_satoshis && amount !== 0) {
-			customAmount = amount;
-		}
+		const paymentAmount = decodedInvoice.amount_satoshis ?? amount;
 
-		const payInvoiceResponse = await payLightningInvoice(
-			transaction.lightningInvoice,
-			customAmount,
-		);
+		const payInvoiceResponse = await payLightningInvoice({
+			invoice: transaction.lightningInvoice,
+			// If the invoice has an amount, leave undefined
+			amount: !decodedInvoice.amount_satoshis ? paymentAmount : undefined,
+		});
 
 		setIsLoading(false);
 
 		if (payInvoiceResponse.isErr()) {
 			const errorMessage = payInvoiceResponse.error.message;
 			if (errorMessage === 'Timed Out.') {
+				dispatch(
+					addPendingPayment({
+						payment_hash: decodedInvoice.payment_hash,
+						amount: paymentAmount,
+					}),
+				);
 				navigation.navigate('Pending', { txId: decodedInvoice.payment_hash });
 				return;
 			}

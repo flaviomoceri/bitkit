@@ -11,6 +11,7 @@ import {
 	TChannels,
 	TLdkAccountVersion,
 	TLightningNodeVersion,
+	TPendingPayment,
 } from '../types/lightning';
 
 export const lightningSlice = createSlice({
@@ -107,6 +108,15 @@ export const lightningSlice = createSlice({
 		) => {
 			state.accountVersion = action.payload;
 		},
+		addPendingPayment: (state, action: PayloadAction<TPendingPayment>) => {
+			state.pendingPayments.push(action.payload);
+		},
+		removePendingPayment: (state, action: PayloadAction<string>) => {
+			const filtered = state.pendingPayments.filter(
+				(payment) => payment.payment_hash !== action.payload,
+			);
+			state.pendingPayments = filtered;
+		},
 		resetLightningState: () => initialLightningState,
 	},
 });
@@ -122,6 +132,8 @@ export const {
 	updateClaimableBalances,
 	updateBackupState,
 	updateLdkAccountVersion,
+	addPendingPayment,
+	removePendingPayment,
 	resetLightningState,
 } = actions;
 

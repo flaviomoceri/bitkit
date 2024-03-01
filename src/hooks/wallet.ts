@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import {
 	claimableBalanceSelector,
 	openChannelsSelector,
+	pendingPaymentsSelector,
 } from '../store/reselect/lightning';
 import { updateSettings } from '../store/slices/settings';
 import { unitSelector, nextUnitSelector } from '../store/reselect/settings';
@@ -31,9 +32,10 @@ export const useBalance = (): {
 	reserveBalance: number; // Share of lightning funds that are locked up in channels
 	claimableBalance: number; // Funds that will be available after a channel opens/closes
 	spendableBalance: number; // Total spendable funds (onchain + spendable lightning)
+	pendingPaymentsBalance: number; // LN funds that have not been claimed by payee (hold invoices)
+	balanceInTransfer: number; // Funds that are currently in transfer
 	balanceInTransferToSpending: number;
 	balanceInTransferToSavings: number;
-	pendingBalance: number; // Funds that are currently in transfer
 	totalBalance: number; // Total funds (all of the above)
 } => {
 	const selectedWallet = useAppSelector(selectedWalletSelector);
@@ -42,6 +44,7 @@ export const useBalance = (): {
 		return currentWalletSelector(state, selectedWallet);
 	});
 	const transfers = useAppSelector(transfersSelector);
+	const pendingPayments = useAppSelector(pendingPaymentsSelector);
 	const openChannels = useAppSelector(openChannelsSelector);
 	const claimableBalance = useAppSelector(claimableBalanceSelector);
 	const newChannels = useAppSelector(newChannelsNotificationsSelector);
@@ -61,6 +64,10 @@ export const useBalance = (): {
 	const onchainBalance = currentWallet.balance[selectedNetwork];
 	const lightningBalance = spendingBalance + reserveBalance + claimableBalance;
 	const spendableBalance = onchainBalance + spendingBalance;
+	const pendingPaymentsBalance = pendingPayments.reduce(
+		(acc, payment) => acc + payment.amount,
+		0,
+	);
 
 	let balanceInTransferToSpending = transfers.reduce((acc, transfer) => {
 		if (transfer.type === 'open' && transfer.status === 'pending') {
@@ -75,7 +82,7 @@ export const useBalance = (): {
 		return acc;
 	}, 0);
 
-	const pendingBalance =
+	const balanceInTransfer =
 		balanceInTransferToSpending + balanceInTransferToSavings;
 
 	if (newChannels.length > 0) {
@@ -96,7 +103,8 @@ export const useBalance = (): {
 		reserveBalance,
 		claimableBalance,
 		spendableBalance,
-		pendingBalance,
+		pendingPaymentsBalance,
+		balanceInTransfer,
 		balanceInTransferToSpending,
 		balanceInTransferToSavings,
 		totalBalance,

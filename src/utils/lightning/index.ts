@@ -468,12 +468,16 @@ export const subscribeToLightningPayments = ({
 		paymentSentSubscription = ldk.onEvent(
 			EEventTypes.channel_manager_payment_sent,
 			(res: TChannelManagerPaymentSent) => {
-				console.log({ channel_manager_payment_sent: res });
-				showToast({
-					type: 'success',
-					title: i18n.t('wallet:toast_payment_success_title'),
-					description: i18n.t('wallet:toast_payment_success_description'),
-				});
+				const pending = getLightningStore().pendingPayments;
+				const found = pending.find((p) => p.payment_hash === res.payment_hash);
+
+				if (found) {
+					showToast({
+						type: 'success',
+						title: i18n.t('wallet:toast_payment_success_title'),
+						description: i18n.t('wallet:toast_payment_success_description'),
+					});
+				}
 			},
 		);
 	}
@@ -481,14 +485,17 @@ export const subscribeToLightningPayments = ({
 		paymentFailedSubscription = ldk.onEvent(
 			EEventTypes.channel_manager_payment_failed,
 			async (res: TChannelManagerPaymentFailed) => {
-				console.log({ channel_manager_payment_failed: res });
-				await refreshLdk({ selectedWallet, selectedNetwork });
-				showToast({
-					type: 'error',
-					title: 'Payment Failed',
-					description: 'Your instant payment failed. Please try again.',
-					autoHide: false,
-				});
+				const pending = getLightningStore().pendingPayments;
+				const found = pending.find((p) => p.payment_hash === res.payment_hash);
+
+				if (found) {
+					await refreshLdk({ selectedWallet, selectedNetwork });
+					showToast({
+						type: 'error',
+						title: i18n.t('wallet:toast_payment_failed_title'),
+						description: i18n.t('wallet:toast_payment_failed_description'),
+					});
+				}
 			},
 		);
 	}
@@ -1581,10 +1588,13 @@ export const createPaymentRequest = (
  * @param {number} [amount]
  * @returns {Promise<Result<string>>}
  */
-export const payLightningInvoice = async (
-	invoice: string,
-	amount = 0,
-): Promise<Result<string>> => {
+export const payLightningInvoice = async ({
+	invoice,
+	amount,
+}: {
+	invoice: string;
+	amount?: number;
+}): Promise<Result<string>> => {
 	try {
 		const addPeersResponse = await addPeers();
 		if (addPeersResponse.isErr()) {

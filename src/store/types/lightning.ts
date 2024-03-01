@@ -35,10 +35,16 @@ export type TNodes = {
 	[walletName: TWalletName]: TNode;
 };
 
+export type TPendingPayment = {
+	payment_hash: string;
+	amount: number;
+};
+
 export type TLightningState = {
 	accountVersion: TLdkAccountVersion;
 	version: TLightningNodeVersion;
 	nodes: TNodes;
+	pendingPayments: TPendingPayment[];
 };
 
 export type TLightningNodeVersion = {
