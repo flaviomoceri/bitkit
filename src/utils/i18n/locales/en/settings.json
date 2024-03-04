@@ -24,7 +24,6 @@
 	},
 	"dev_title": "Dev Settings",
 	"general": {
-		"section_title": "Categories",
 		"currency_local": "Local currency",
 		"currency_local_title": "Local Currency",
 		"currency_footer": "Prices powered by Bitfinex & CoinGecko.",

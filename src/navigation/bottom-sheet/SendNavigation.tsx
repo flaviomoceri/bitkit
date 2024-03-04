@@ -16,6 +16,7 @@ import ReviewAndSend from '../../screens/Wallets/Send/ReviewAndSend';
 import Tags from '../../screens/Wallets/Send/Tags';
 import AutoRebalance from '../../screens/Wallets/Send/AutoRebalance';
 import PinCheck from '../../screens/Wallets/Send/PinCheck';
+import Pending from '../../screens/Wallets/Send/Pending';
 import Result from '../../screens/Wallets/Send/Result';
 import Contacts from '../../screens/Wallets/Send/Contacts';
 import Address from '../../screens/Wallets/Send/Address';
@@ -54,6 +55,7 @@ export type SendStackParamList = {
 	ReviewAndSend: undefined;
 	Tags: undefined;
 	AutoRebalance: undefined;
+	Pending: { txId: string };
 	Result: {
 		success: boolean;
 		txId?: string;
@@ -146,6 +148,7 @@ const SendNavigation = (): ReactElement => {
 					<Stack.Screen name="Tags" component={Tags} />
 					<Stack.Screen name="AutoRebalance" component={AutoRebalance} />
 					<Stack.Screen name="PinCheck" component={PinCheck} />
+					<Stack.Screen name="Pending" component={Pending} />
 					<Stack.Screen name="Result" component={Result} />
 				</Stack.Navigator>
 			</NavigationContainer>

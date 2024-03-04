@@ -71,6 +71,7 @@ import {
 	pinSelector,
 } from '../../../store/reselect/settings';
 import { onChainFeesSelector } from '../../../store/reselect/fees';
+import { addPendingPayment } from '../../../store/slices/lightning';
 import { updateOnChainActivityList } from '../../../store/utils/activity';
 import { updateLastPaidContacts } from '../../../store/slices/slashtags';
 import { truncate } from '../../../utils/helpers';
@@ -172,7 +173,7 @@ const ReviewAndSend = ({
 	const satsPerByte = transaction.satsPerByte;
 	const address = transaction?.outputs[outputIndex]?.address ?? '';
 
-	const _onError = useCallback(
+	const onError = useCallback(
 		(errorTitle: string, errorMessage: string) => {
 			navigation.navigate('Result', {
 				success: false,
@@ -184,59 +185,69 @@ const ReviewAndSend = ({
 	);
 
 	const createLightningTransaction = useCallback(async () => {
-		if (!transaction.lightningInvoice) {
-			_onError(t('send_error_create_tx'), t('error_no_invoice'));
-			setIsLoading(false);
-			return;
-		}
-		const amountRequestedFromInvoice = decodedInvoice?.amount_satoshis ?? 0;
-		// Determine if we should add a custom sat value to the lightning invoice.
-		let customSatAmount = 0;
-		if (
-			amountRequestedFromInvoice <= 0 &&
-			(transaction.outputs[0].value ?? 0) > 0
-		) {
-			customSatAmount = transaction.outputs[0].value;
-		}
-		const payInvoiceResponse = await payLightningInvoice(
-			transaction.lightningInvoice,
-			customSatAmount,
-		);
-		if (payInvoiceResponse.isErr()) {
-			_onError(t('send_error_create_tx'), payInvoiceResponse.error.message);
+		if (!transaction.lightningInvoice || !decodedInvoice) {
+			onError(t('send_error_create_tx'), t('error_no_invoice'));
 			setIsLoading(false);
 			return;
 		}
 
-		// save tags to metadata
+		// save tags metadata
 		dispatch(
 			updateMetaTxTags({
-				txId: payInvoiceResponse.value.payment_hash,
+				txId: decodedInvoice.payment_hash,
 				tags: transaction.tags,
 			}),
 		);
 
 		if (transaction.slashTagsUrl) {
+			// save contact metadata
 			dispatch(updateLastPaidContacts(transaction.slashTagsUrl));
-			// save Slashtags contact to metadata
 			dispatch(
 				addMetaTxSlashtagsUrl({
-					txId: payInvoiceResponse.value.payment_hash,
+					txId: decodedInvoice.payment_hash,
 					url: transaction.slashTagsUrl,
 				}),
 			);
 		}
 
-		refreshWallet({ onchain: false, lightning: true }).then();
+		// Determine if we should override the invoice amount
+		const paymentAmount = decodedInvoice.amount_satoshis ?? amount;
+
+		const payInvoiceResponse = await payLightningInvoice({
+			invoice: transaction.lightningInvoice,
+			// If the invoice has an amount, leave undefined
+			amount: !decodedInvoice.amount_satoshis ? paymentAmount : undefined,
+		});
+
 		setIsLoading(false);
+
+		if (payInvoiceResponse.isErr()) {
+			const errorMessage = payInvoiceResponse.error.message;
+			if (errorMessage === 'Timed Out.') {
+				dispatch(
+					addPendingPayment({
+						payment_hash: decodedInvoice.payment_hash,
+						amount: paymentAmount,
+					}),
+				);
+				navigation.navigate('Pending', { txId: decodedInvoice.payment_hash });
+				return;
+			}
+
+			onError(t('send_error_create_tx'), payInvoiceResponse.error.message);
+			return;
+		}
+
+		refreshWallet({ onchain: false, lightning: true }).then();
 
 		navigation.navigate('Result', {
 			success: true,
-			txId: payInvoiceResponse.value.payment_hash,
+			txId: decodedInvoice.payment_hash,
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
-		_onError,
+		onError,
+		amount,
 		decodedInvoice?.amount_satoshis,
 		transaction.lightningInvoice,
 		transaction.outputs,
@@ -251,13 +262,13 @@ const ReviewAndSend = ({
 			const transactionIsValid = validateTransaction(transaction);
 			if (transactionIsValid.isErr()) {
 				setIsLoading(false);
-				_onError(t('send_error_create_tx'), transactionIsValid.error.message);
+				onError(t('send_error_create_tx'), transactionIsValid.error.message);
 				return;
 			}
 			const response = await createTransaction({});
 			if (response.isErr()) {
 				setIsLoading(false);
-				_onError(t('send_error_create_tx'), response.error.message);
+				onError(t('send_error_create_tx'), response.error.message);
 				return;
 			}
 			if (__DEV__) {
@@ -265,14 +276,14 @@ const ReviewAndSend = ({
 			}
 			setRawTx(response.value);
 		} catch (error) {
-			_onError(t('send_error_create_tx'), (error as Error).message);
+			onError(t('send_error_create_tx'), (error as Error).message);
 			setIsLoading(false);
 		}
-	}, [transaction, _onError, t]);
+	}, [transaction, onError, t]);
 
 	const _broadcast = useCallback(async () => {
 		if (!rawTx?.id || !rawTx?.hex) {
-			_onError(t('error_no_tx_title'), t('error_no_tx_msg'));
+			onError(t('error_no_tx_title'), t('error_no_tx_msg'));
 			return;
 		}
 		const response = await broadcastTransaction({
@@ -281,11 +292,11 @@ const ReviewAndSend = ({
 		if (response.isErr()) {
 			// Check if it failed to broadcast due to low fee.
 			if (response.error.message.includes('min relay fee not met')) {
-				_onError(t('error_min_fee_title'), t('error_min_fee_msg'));
+				onError(t('error_min_fee_title'), t('error_min_fee_msg'));
 			} else {
 				// Most likely a connection error with the Electrum server.
 				// TODO: Add a backup method to broadcast via an api if unable to broadcast through Electrum.
-				_onError(
+				onError(
 					t('error_broadcast_tx'),
 					t('error_broadcast_tx_connection', {
 						message: response.error.message,
@@ -316,7 +327,7 @@ const ReviewAndSend = ({
 		}
 
 		navigation.navigate('Result', { success: true, txId: rawTx.id });
-	}, [rawTx, _onError, navigation, transaction, dispatch, t]);
+	}, [rawTx, onError, navigation, transaction, dispatch, t]);
 
 	useEffect(() => {
 		if (rawTx) {

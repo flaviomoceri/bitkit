@@ -622,7 +622,7 @@ const Channels = ({
 															'Unable to retrieve anything from the clipboard.',
 													});
 												}
-												const response = await payLightningInvoice(invoice);
+												const response = await payLightningInvoice({ invoice });
 												if (response.isErr()) {
 													showToast({
 														type: 'warning',
@@ -632,15 +632,8 @@ const Channels = ({
 													setPayingInvoice(false);
 													return;
 												}
-												await Promise.all([
-													refreshLdk({ selectedWallet, selectedNetwork }),
-												]);
+												await refreshLdk({ selectedWallet, selectedNetwork });
 												setPayingInvoice(false);
-												showToast({
-													type: 'success',
-													title: 'Invoice Payment Success',
-													description: `Fee: ${response.value.fee_paid_sat} sats`,
-												});
 											}}
 										/>
 									</>

@@ -11,7 +11,6 @@ import Button from '../../../components/Button';
 import { closeSheet } from '../../../store/slices/ui';
 import { ignoreBackup } from '../../../store/slices/user';
 import { showBottomSheet } from '../../../store/utils/ui';
-import { useNoTransactions } from '../../../hooks/wallet';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import { useBalance } from '../../../hooks/wallet';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
@@ -34,7 +33,6 @@ const CHECK_DELAY = 2000; // how long user needs to stay on Wallets screen befor
 const BackupPrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 	const { t } = useTranslation('security');
 	const snapPoints = useSnapPoints('medium');
-	const empty = useNoTransactions();
 	const dispatch = useAppDispatch();
 	const viewControllers = useAppSelector(viewControllersSelector);
 	const ignoreTimestamp = useAppSelector(ignoreBackupTimestampSelector);
@@ -71,11 +69,17 @@ const BackupPrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 			enabled &&
 			!__E2E__ &&
 			!backupVerified &&
-			!empty &&
+			totalBalance > 0 &&
 			isTimeoutOver &&
 			!anyBottomSheetIsOpen
 		);
-	}, [enabled, backupVerified, empty, ignoreTimestamp, anyBottomSheetIsOpen]);
+	}, [
+		enabled,
+		backupVerified,
+		totalBalance,
+		ignoreTimestamp,
+		anyBottomSheetIsOpen,
+	]);
 
 	useEffect(() => {
 		if (!shouldShowBottomSheet) {

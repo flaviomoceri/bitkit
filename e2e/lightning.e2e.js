@@ -80,6 +80,8 @@ d('Lightning', () => {
 				await element(by.id('DevOptions')).multiTap(5); // enable dev mode
 			}
 			await element(by.id('AdvancedSettings')).tap();
+			// wait for LDK to start
+			await sleep(5000);
 			await element(by.id('LightningNodeInfo')).tap();
 			await waitFor(element(by.id('LDKNodeID')))
 				.toBeVisible()
