@@ -203,7 +203,6 @@ const WalletsDetail = ({
 											<Money
 												sats={totalBalance}
 												enableHide={true}
-												highlight={true}
 												size="title"
 											/>
 										</TouchableOpacity>
@@ -227,7 +226,6 @@ const WalletsDetail = ({
 												<Money
 													sats={totalBalance}
 													enableHide={true}
-													highlight={true}
 													symbol={true}
 													symbolColor="white40"
 												/>

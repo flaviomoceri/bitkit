@@ -145,7 +145,7 @@ d('Lightning', () => {
 			await element(by.id('Channels')).tap();
 			await element(by.id('Channel')).atIndex(0).tap();
 			await expect(
-				element(by.id('MoneyPrimary').withAncestor(by.id('TotalSize'))),
+				element(by.id('MoneyText').withAncestor(by.id('TotalSize'))),
 			).toHaveText('100 000');
 			await element(by.id('ChannelScrollView')).scrollTo('bottom');
 			await expect(element(by.id('IsReadyYes'))).toBeVisible();
@@ -164,7 +164,7 @@ d('Lightning', () => {
 				.withTimeout(10000);
 			await element(by.id('NewTxPrompt')).swipe('down');
 			await waitFor(
-				element(by.id('MoneyPrimary').withAncestor(by.id('TotalBalance'))),
+				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			)
 				.toHaveText('50 000')
 				.withTimeout(10000);
@@ -194,7 +194,7 @@ d('Lightning', () => {
 				.withTimeout(10000);
 			await element(by.id('NewTxPrompt')).swipe('down');
 			await waitFor(
-				element(by.id('MoneyPrimary').withAncestor(by.id('TotalBalance'))),
+				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			)
 				.toHaveText('50 111')
 				.withTimeout(10000);
@@ -220,7 +220,7 @@ d('Lightning', () => {
 				.withTimeout(10000);
 			await element(by.id('Close')).tap();
 			await waitFor(
-				element(by.id('MoneyPrimary').withAncestor(by.id('TotalBalance'))),
+				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			)
 				.toHaveText('50 000')
 				.withTimeout(10000);
@@ -247,7 +247,7 @@ d('Lightning', () => {
 				.withTimeout(10000);
 			await element(by.id('Close')).tap();
 			await waitFor(
-				element(by.id('MoneyPrimary').withAncestor(by.id('TotalBalance'))),
+				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			)
 				.toHaveText('49 000')
 				.withTimeout(10000);
@@ -381,7 +381,7 @@ d('Lightning', () => {
 
 			// check balance
 			await waitFor(
-				element(by.id('MoneyPrimary').withAncestor(by.id('TotalBalance'))),
+				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			)
 				.toHaveText('49 000')
 				.withTimeout(10000);

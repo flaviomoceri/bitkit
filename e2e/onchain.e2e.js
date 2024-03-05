@@ -92,7 +92,7 @@ d('Onchain', () => {
 
 			// balance should be 2 bitcoins
 			await expect(
-				element(by.id('MoneyPrimary').withAncestor(by.id('TotalBalance'))),
+				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			).toHaveText('200 000 000');
 
 			const coreAddress = await rpc.getNewAddress();
@@ -145,7 +145,7 @@ d('Onchain', () => {
 
 			// balance should be 0
 			await expect(
-				element(by.id('MoneyPrimary').withAncestor(by.id('TotalBalance'))),
+				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			).toHaveText('0');
 
 			// check Activity
@@ -270,7 +270,7 @@ d('Onchain', () => {
 
 			// enter amount that would leave dust
 			let { label: amount } = await element(
-				by.id('MoneyPrimary').withAncestor(by.id('AvailableAmount')),
+				by.id('MoneyText').withAncestor(by.id('AvailableAmount')),
 			).getAttributes();
 			amount = amount.replace(/\s/g, '');
 			amount = amount - 300;
@@ -312,7 +312,7 @@ d('Onchain', () => {
 
 			// balance should be 0
 			await expect(
-				element(by.id('MoneyPrimary').withAncestor(by.id('TotalBalance'))),
+				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			).toHaveText('0');
 
 			// check number of outputs for send tx

@@ -81,11 +81,8 @@ d('Settings', () => {
 			const fiatSymbol = await element(
 				by.id('MoneyFiatSymbol').withAncestor(by.id('TotalBalance')),
 			);
-			const balancePrim = await element(
-				by.id('MoneyPrimary').withAncestor(by.id('TotalBalance')),
-			);
-			const balanceSecd = await element(
-				by.id('MoneySecondary').withAncestor(by.id('TotalBalance')),
+			const balance = await element(
+				by.id('MoneyText').withAncestor(by.id('TotalBalance')),
 			);
 			const unitRow = await element(
 				by.id('Value').withAncestor(by.id('UnitSettings')),
@@ -103,8 +100,7 @@ d('Settings', () => {
 			await expect(unitRow).toHaveText('GBP');
 			await element(by.id('NavigationClose')).tap();
 			await expect(fiatSymbol).toHaveText('£');
-			await expect(balancePrim).toHaveText('0');
-			await expect(balanceSecd).toHaveText('.00');
+			await expect(balance).toHaveText('0.00');
 
 			// switch back to BTC
 			await element(by.id('Settings')).tap();
@@ -114,7 +110,7 @@ d('Settings', () => {
 			await element(by.id('NavigationBack')).tap();
 			await expect(unitRow).toHaveText('Bitcoin');
 			await element(by.id('NavigationClose')).tap();
-			await expect(balancePrim).toHaveText('0');
+			await expect(balance).toHaveText('0');
 
 			// switch to classic denomination
 			await element(by.id('Settings')).tap();
@@ -124,7 +120,7 @@ d('Settings', () => {
 			await element(by.id('NavigationBack')).tap();
 			await expect(unitRow).toHaveText('Bitcoin');
 			await element(by.id('NavigationClose')).tap();
-			await expect(balancePrim).toHaveText('0.00000000');
+			await expect(balance).toHaveText('0.00000000');
 
 			markComplete('settings-unit');
 		});

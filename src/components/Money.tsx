@@ -1,6 +1,5 @@
 import React, { memo, ReactElement, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { useAppSelector } from '../hooks/redux';
 
 import {
 	Caption13M,
@@ -10,11 +9,12 @@ import {
 	Text02M,
 	Title,
 } from '../styles/text';
+import { IColors } from '../styles/colors';
 import { BitcoinIcon } from '../styles/icons';
+import { useAppSelector } from '../hooks/redux';
 import { useDisplayValues } from '../hooks/displayValues';
 import { abbreviateNumber } from '../utils/helpers';
 import { EDenomination, EUnit } from '../store/types/wallet';
-import { IColors } from '../styles/colors';
 import {
 	unitSelector,
 	hideBalanceSelector,
@@ -22,11 +22,10 @@ import {
 	nextUnitSelector,
 } from '../store/reselect/settings';
 
-interface IMoney {
+type MoneyProps = {
 	sats: number;
 	unitType?: 'primary' | 'secondary'; // force primary or secondary unit. Can be overwritten by unit prop
 	unit?: EUnit; // force value formatting
-	highlight?: boolean; // gray out decimals in fiat
 	decimalLength?: 'long' | 'short'; // whether to show 5 or 8 decimals for BTC
 	symbol?: boolean; // show symbol icon
 	symbolColor?: keyof IColors;
@@ -42,16 +41,15 @@ interface IMoney {
 		| 'caption13M'
 		| 'caption13Up'
 		| 'title';
-}
+};
 
-const Money = (props: IMoney): ReactElement => {
+const Money = (props: MoneyProps): ReactElement => {
 	const primaryUnit = useAppSelector(unitSelector);
 	const nextUnit = useAppSelector(nextUnitSelector);
 	const denomination = useAppSelector(denominationSelector);
 	const hideBalance = useAppSelector(hideBalanceSelector);
 
 	const sats = Math.abs(props.sats);
-	const highlight = props.highlight ?? false;
 	const decimalLength = props.decimalLength ?? 'long';
 	const size = props.size ?? 'display';
 	const unit =
@@ -118,41 +116,36 @@ const Money = (props: IMoney): ReactElement => {
 		iconMargin,
 	]);
 
-	let [prim = '', secd = ''] = useMemo(() => {
+	let text = useMemo(() => {
 		switch (unit) {
 			case EUnit.fiat: {
 				if (dv.fiatWhole.length > 12) {
 					const { newValue, abbreviation } = abbreviateNumber(dv.fiatWhole);
-					return highlight
-						? [newValue, abbreviation]
-						: [newValue + abbreviation];
+					return `${newValue}${abbreviation}`;
 				}
-				return highlight
-					? [dv.fiatWhole, dv.fiatDecimalSymbol + dv.fiatDecimal]
-					: [dv.fiatFormatted];
+
+				return dv.fiatFormatted;
 			}
 			case EUnit.BTC: {
 				if (denomination === EDenomination.classic) {
 					if (decimalLength === 'long') {
-						return [Number(dv.bitcoinFormatted).toFixed(8)];
+						return Number(dv.bitcoinFormatted).toFixed(8);
 					}
 
-					return [Number(dv.bitcoinFormatted).toFixed(5)];
+					return Number(dv.bitcoinFormatted).toFixed(5);
 				}
 
-				return [dv.bitcoinFormatted];
+				return dv.bitcoinFormatted;
 			}
 		}
-	}, [highlight, dv, unit, denomination, decimalLength]);
+	}, [dv, unit, denomination, decimalLength]);
 
 	if (hide) {
 		if (size === 'display') {
-			prim = ' • • • • • • • • •';
+			text = ' • • • • • • • • •';
 		} else {
-			prim = ' • • • • •';
+			text = ' • • • • •';
 		}
-
-		secd = '';
 	}
 
 	return (
@@ -167,14 +160,9 @@ const Money = (props: IMoney): ReactElement => {
 				</Text>
 			)}
 			{showSymbol && symbol}
-			<Text lineHeight={lineHeight} color={color} testID="MoneyPrimary">
-				{prim}
+			<Text lineHeight={lineHeight} color={color} testID="MoneyText">
+				{text}
 			</Text>
-			{secd !== '' && (
-				<Text lineHeight={lineHeight} color="white50" testID="MoneySecondary">
-					{secd}
-				</Text>
-			)}
 		</View>
 	);
 };
