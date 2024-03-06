@@ -353,7 +353,10 @@ export const setupLdk = async ({
 			removeUnusedPeers({ selectedWallet, selectedNetwork }),
 		]);
 		if (shouldRefreshLdk) {
-			await refreshLdk({ selectedWallet, selectedNetwork });
+			const refreshRes = await refreshLdk({ selectedWallet, selectedNetwork });
+			if (refreshRes.isErr()) {
+				return err(refreshRes.error.message);
+			}
 		}
 
 		subscribeToLightningPayments({
@@ -641,9 +644,18 @@ export const refreshLdk = async ({
 			addPeers({ selectedNetwork, selectedWallet }),
 		];
 		const results = await Promise.all(promises);
+		// Handle & Return syncLdk errors.
+		if (results[0].isErr()) {
+			showToast({
+				type: 'error',
+				title: i18n.t('wallet:ldk_sync_error_title'),
+				description: results[0].error.message,
+			});
+			return handleRefreshError(results[0].error.message);
+		}
 		for (const result of results) {
 			if (result.isErr()) {
-				//Can fail, but we should still continue and make UI ready so payments can be attempted
+				//setFees & addPeers can fail, but we should still continue and make UI ready so payments can be attempted
 				console.error(result.error.message);
 			}
 		}
