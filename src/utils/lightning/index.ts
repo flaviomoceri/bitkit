@@ -91,7 +91,7 @@ import {
 	TLightningNodeVersion,
 } from '../../store/types/lightning';
 import { getBlocktankInfo, isGeoBlocked } from '../blocktank';
-import { updateOnchainFeeEstimates } from '../../store/utils/fees';
+import { refreshOnchainFeeEstimates } from '../../store/utils/fees';
 import { reportLdkChannelMigrations } from '../checks';
 import {
 	__BACKUPS_SERVER_HOST__,
@@ -1524,8 +1524,8 @@ export const closeAllChannels = async ({
 			return err(refreshRes.error.message);
 		}
 
-		// Update fees before closing channels
-		await updateOnchainFeeEstimates({ selectedNetwork, forceUpdate: true });
+		// Force update fees before closing channels
+		await refreshOnchainFeeEstimates({ forceUpdate: true });
 
 		const channelsUnableToCoopClose: TChannel[] = [];
 		await Promise.all(

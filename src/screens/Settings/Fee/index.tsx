@@ -16,8 +16,7 @@ import {
 	updateOnchainFees,
 	updateOverrideFees,
 } from '../../../store/slices/fees';
-import { updateOnchainFeeEstimates } from '../../../store/utils/fees';
-import { selectedNetworkSelector } from '../../../store/reselect/wallet';
+import { refreshOnchainFeeEstimates } from '../../../store/utils/fees';
 import { EItemType, IListData } from '../../../components/List';
 import Button from '../../../components/Button';
 import SafeAreaInset from '../../../components/SafeAreaInset';
@@ -78,7 +77,6 @@ const FeeSettings = ({}: SettingsScreenProps<'FeeSettings'>): ReactElement => {
 	const dispatch = useAppDispatch();
 	const fees = useAppSelector(onChainFeesSelector);
 	const override = useAppSelector(overrideFeeSelector);
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const [loading, setLoading] = useState(false);
 
 	const handleMinus = (title: string): void => {
@@ -140,7 +138,7 @@ const FeeSettings = ({}: SettingsScreenProps<'FeeSettings'>): ReactElement => {
 						value: updated,
 						type: EItemType.textButton,
 						onPress: (): void => {
-							updateOnchainFeeEstimates({ selectedNetwork, forceUpdate: true });
+							refreshOnchainFeeEstimates({ forceUpdate: true });
 						},
 					},
 					{
@@ -154,7 +152,7 @@ const FeeSettings = ({}: SettingsScreenProps<'FeeSettings'>): ReactElement => {
 				],
 			},
 		];
-	}, [override, fees, tTime, selectedNetwork, dispatch]);
+	}, [override, fees, tTime, dispatch]);
 
 	return (
 		<ThemedView style={styles.container}>
