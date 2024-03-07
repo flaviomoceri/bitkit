@@ -212,5 +212,6 @@
 	"refresh_error_title": "Refresh Failed",
 	"refresh_error_description": "Bitkit was unable to refresh your wallet.",
 	"refresh_error_throttle_title": "Connection Throttled",
-	"refresh_error_throttle_description": "Electrum server connection is throttled. Please wait several minutes before trying again."
+	"refresh_error_throttle_description": "Electrum server connection is throttled. Please wait several minutes before trying again.",
+	"ldk_sync_error_title": "Lightning Sync Error"
 }
