@@ -10,9 +10,11 @@ import { __E2E__ } from '../constants/env';
 const imageSrc = require('../assets/illustrations/hourglass.png');
 
 const HourglassSpinner = ({
+	imageSize = 230,
 	glowColor,
 	style,
 }: {
+	imageSize?: number;
 	glowColor?: keyof IColors;
 	style?: StyleProp<ViewStyle>;
 }): ReactElement => {
@@ -41,7 +43,7 @@ const HourglassSpinner = ({
 			entering={__E2E__ ? undefined : entering}
 			color="transparent"
 			testID="HourglassSpinner">
-			<GlowImage image={imageSrc} imageSize={230} glowColor={glowColor} />
+			<GlowImage image={imageSrc} imageSize={imageSize} glowColor={glowColor} />
 		</AnimatedView>
 	);
 };

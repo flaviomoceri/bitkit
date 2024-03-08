@@ -57,12 +57,6 @@ export interface IColors {
 }
 
 const colors: IColors = {
-	lightGray: '#7C7C7C',
-	gray: '#5F5F5F',
-	darkGray: '#6e6e6e',
-
-	// Design Guide
-
 	// Brand
 	brand: '#FF6600',
 	tether: '#009393',
@@ -90,7 +84,10 @@ const colors: IColors = {
 	gray5: '#1C1C1D',
 	gray4: '#3A3A3C',
 	gray3: '#48484A',
+	gray: '#5F5F5F',
 	gray2: '#636366',
+	darkGray: '#6e6e6e',
+	lightGray: '#7C7C7C',
 	gray1: '#8E8E93',
 
 	// Alpha

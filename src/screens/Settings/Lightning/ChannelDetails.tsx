@@ -509,7 +509,7 @@ const ChannelDetails = ({
 								symbol={true}
 								symbolColor="gray1"
 								color="white"
-								unit={EBitcoinUnit.satoshi}
+								unit={EUnit.BTC}
 							/>
 						}
 					/>
@@ -522,7 +522,7 @@ const ChannelDetails = ({
 								symbol={true}
 								symbolColor="gray1"
 								color="white"
-								unit={EBitcoinUnit.satoshi}
+								unit={EUnit.BTC}
 							/>
 						}
 					/>

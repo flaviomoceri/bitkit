@@ -63,7 +63,6 @@ export const ListItem = ({
 					enableHide={true}
 					size="text01m"
 					sign={isSend ? '-' : '+'}
-					highlight={true}
 					unitType="primary"
 				/>
 				<Money

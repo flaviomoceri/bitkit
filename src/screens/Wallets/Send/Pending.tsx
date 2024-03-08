@@ -7,15 +7,13 @@ import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigati
 import AmountToggle from '../../../components/AmountToggle';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
-import GlowImage from '../../../components/GlowImage';
+import HourglassSpinner from '../../../components/HourglassSpinner';
 import Button from '../../../components/Button';
 import { rootNavigation } from '../../../navigation/root/RootNavigator';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { closeSheet } from '../../../store/slices/ui';
 import { activityItemSelector } from '../../../store/reselect/activity';
 import type { SendScreenProps } from '../../../navigation/types';
-
-const imageSrc = require('../../../assets/illustrations/hourglass.png');
 
 const Pending = ({ route }: SendScreenProps<'Pending'>): ReactElement => {
 	const dispatch = useAppDispatch();
@@ -58,7 +56,7 @@ const Pending = ({ route }: SendScreenProps<'Pending'>): ReactElement => {
 					/>
 				)}
 
-				<GlowImage image={imageSrc} imageSize={200} glowColor="purple" />
+				<HourglassSpinner imageSize={200} glowColor="purple" />
 
 				<Text01S style={styles.note} color="gray1">
 					{t('send_pending_note')}

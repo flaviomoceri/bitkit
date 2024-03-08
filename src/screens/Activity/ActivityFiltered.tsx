@@ -1,6 +1,9 @@
 import React, { ReactElement, memo, useMemo, useState, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Gesture, GestureType } from 'react-native-gesture-handler';
+import { EPaymentType } from 'beignet';
+import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia';
+import { SharedValue, useSharedValue } from 'react-native-reanimated';
 import {
 	StyleSheet,
 	TouchableOpacity,
@@ -28,7 +31,6 @@ import type { WalletScreenProps } from '../../navigation/types';
 import TimeRangePrompt from './TimeRangePrompt';
 import TagsPrompt from './TagsPrompt';
 import { TActivityFilter } from '../../utils/activity';
-import { EPaymentType } from 'beignet';
 
 type TTab = {
 	id: string;
@@ -71,12 +73,30 @@ const Tab = ({
 	);
 };
 
+const Glow = ({
+	size,
+}: {
+	size: SharedValue<{ width: number; height: number }>;
+}): ReactElement => {
+	return (
+		<Rect x={0} y={0} width={size.value.width} height={size.value.width}>
+			<LinearGradient
+				start={vec(0, 0)}
+				end={vec(size.value.width, 0)}
+				positions={[0, 1]}
+				colors={['#1e1e1e', '#161616']}
+			/>
+		</Rect>
+	);
+};
+
 const ActivityFiltered = ({
 	navigation,
 }: WalletScreenProps<'ActivityFiltered'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const insets = useSafeAreaInsets();
 	const dispatch = useAppDispatch();
+	const size = useSharedValue({ width: 0, height: 0 });
 	const panGestureRef = useRef<GestureType>(Gesture.Pan());
 	const [radiusContainerHeight, setRadiusContainerHeight] = useState(0);
 	const [currentTab, setCurrentTab] = useState(0);
@@ -126,6 +146,9 @@ const ActivityFiltered = ({
 						setRadiusContainerHeight((h) => (h === 0 ? hh : h));
 					}}>
 					<BlurView>
+						<Canvas style={styles.glowCanvas} onSize={size}>
+							<Glow size={size} />
+						</Canvas>
 						<SafeAreaInset type="top" />
 						<NavigationHeader
 							title={t('activity_all')}
@@ -222,6 +245,11 @@ const ActivityFiltered = ({
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+	},
+	glowCanvas: {
+		width: '100%',
+		height: '100%',
+		position: 'absolute',
 	},
 	radiusContainer: {
 		overflow: 'hidden',

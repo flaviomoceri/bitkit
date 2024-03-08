@@ -8,7 +8,7 @@ import { EyeIcon } from '../styles/icons';
 import Money from './Money';
 import { useBalance, useSwitchUnitAnnounced } from '../hooks/wallet';
 import { updateSettings } from '../store/slices/settings';
-import { unitSelector, hideBalanceSelector } from '../store/reselect/settings';
+import { hideBalanceSelector } from '../store/reselect/settings';
 
 /**
  * Displays the total available balance for the current wallet & network.
@@ -19,7 +19,6 @@ const BalanceHeader = (): ReactElement => {
 	const { totalBalance, pendingPaymentsBalance, balanceInTransfer } =
 		useBalance();
 	const dispatch = useAppDispatch();
-	const unit = useAppSelector(unitSelector);
 	const hideBalance = useAppSelector(hideBalanceSelector);
 
 	const toggleHideBalance = (): void => {
@@ -40,7 +39,6 @@ const BalanceHeader = (): ReactElement => {
 									color="gray1"
 									size="caption13Up"
 									sats={balanceInTransfer}
-									unit={unit}
 									enableHide={true}
 									symbol={false}
 								/>
@@ -58,7 +56,6 @@ const BalanceHeader = (): ReactElement => {
 									color="gray1"
 									size="caption13Up"
 									sats={pendingPaymentsBalance}
-									unit={unit}
 									enableHide={true}
 									symbol={false}
 								/>
@@ -74,13 +71,7 @@ const BalanceHeader = (): ReactElement => {
 				style={styles.row}
 				testID="TotalBalance"
 				onPress={onSwitchUnit}>
-				<Money
-					sats={totalBalance}
-					unit={unit}
-					enableHide={true}
-					highlight={true}
-					symbol={true}
-				/>
+				<Money sats={totalBalance} enableHide={true} symbol={true} />
 				{hideBalance && (
 					<TouchableOpacity
 						style={styles.toggle}
