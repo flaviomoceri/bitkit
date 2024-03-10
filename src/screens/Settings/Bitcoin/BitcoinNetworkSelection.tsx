@@ -9,6 +9,7 @@ import { networkLabels } from '../../../utils/networks';
 import { switchNetwork } from '../../../utils/wallet';
 import { SettingsScreenProps } from '../../../navigation/types';
 import { startWalletServices } from '../../../utils/startup';
+import { showToast } from '../../../utils/notifications';
 
 const BitcoinNetworkSelection = ({
 	navigation,
@@ -28,9 +29,18 @@ const BitcoinNetworkSelection = ({
 						loading,
 						onPress: async (): Promise<void> => {
 							setLoading(true);
-							await switchNetwork(network.id);
+							const switchNetworkRes = await switchNetwork(network.id);
+							if (switchNetworkRes.isErr()) {
+								setLoading(false);
+								showToast({
+									type: 'error',
+									title: 'Error Switching Networks',
+									description: switchNetworkRes.error.message,
+								});
+								return;
+							}
 							// Start wallet services with the newly selected network.
-							await startWalletServices({ selectedNetwork });
+							await startWalletServices({ selectedNetwork: network.id });
 							setLoading(false);
 							navigation.goBack();
 						},

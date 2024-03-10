@@ -150,7 +150,6 @@ export const runStorageCheck = async ({
 		onchain: true,
 		lightning: true,
 		scanAllAddresses: true,
-		updateAllAddressTypes: allAddressTypes,
 		showNotification: false,
 	});
 

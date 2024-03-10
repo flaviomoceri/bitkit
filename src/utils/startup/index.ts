@@ -160,7 +160,6 @@ export const startWalletServices = async ({
 				onchain: restore,
 				lightning,
 				scanAllAddresses: restore,
-				updateAllAddressTypes: true, // Ensure we scan all address types when spinning up the app.
 				showNotification: !restore,
 			});
 			await runChecks({ selectedWallet, selectedNetwork });
