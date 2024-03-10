@@ -101,7 +101,6 @@ export const refreshWallet = async ({
 	onchain?: boolean;
 	lightning?: boolean;
 	scanAllAddresses?: boolean;
-	updateAllAddressTypes?: boolean;
 	showNotification?: boolean;
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
@@ -832,6 +831,7 @@ export const createDefaultWallet = async ({
 		if (setupWalletRes.isErr()) {
 			return err(setupWalletRes.error.message);
 		}
+		checkGapLimit(); // Revert temporarily increased gap limit.
 		const walletData = setupWalletRes.value.data;
 
 		const payload: IWallets = {
@@ -1520,6 +1520,7 @@ export const switchNetwork = async (
 		updateWallet({ selectedNetwork: originalNetwork });
 		return err(response.error.message);
 	}
+	wallet = response.value;
 	setTimeout(updateActivityList, 500);
 	return ok(true);
 };
