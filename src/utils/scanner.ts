@@ -25,7 +25,11 @@ import {
 } from './wallet/transactions';
 import { dispatch, getLightningStore } from '../store/helpers';
 import { showToast, ToastOptions } from './notifications';
-import { updateSendTransaction } from '../store/actions/wallet';
+import {
+	resetSendTransaction,
+	setupOnChainTransaction,
+	updateSendTransaction,
+} from '../store/actions/wallet';
 import { getBalance, getSelectedNetwork, getSelectedWallet } from './wallet';
 import { closeSheet } from '../store/slices/ui';
 import { showBottomSheet } from '../store/utils/ui';
@@ -602,6 +606,10 @@ export const processBitcoinTransactionData = async ({
 	selectedWallet?: TWalletName;
 }): Promise<Result<QRData>> => {
 	try {
+		// Reset existing transaction state and prepare for a new one.
+		await resetSendTransaction();
+		await setupOnChainTransaction({});
+
 		let response;
 		let error: ToastOptions | undefined; //Information that will be passed as a notification.
 		let requestedAmount = 0; //Amount requested in sats by the provided invoice.
