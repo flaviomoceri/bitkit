@@ -36,6 +36,7 @@ import {
 	payLightningInvoice,
 	rebroadcastAllKnownTransactions,
 	recoverOutputs,
+	recoverOutputsFromForceClose,
 	refreshLdk,
 	setupLdk,
 } from '../../../utils/lightning';
@@ -553,6 +554,29 @@ const Channels = ({
 									showToast({
 										type: 'info',
 										title: 'Stuck outputs recovered',
+										description: res.value,
+									});
+								} else {
+									showToast({
+										type: 'warning',
+										title: 'No stuck outputs recovered',
+										description: res.error.message,
+									});
+								}
+								setSpendingStuckOutputs(false);
+							}}
+						/>
+						<Button
+							style={styles.devButton}
+							text="Spend outputs from force close"
+							loading={spendingStuckOutputs}
+							onPress={async (): Promise<void> => {
+								setSpendingStuckOutputs(true);
+								const res = await recoverOutputsFromForceClose();
+								if (res.isOk()) {
+									showToast({
+										type: 'info',
+										title: 'Completed',
 										description: res.value,
 									});
 								} else {
