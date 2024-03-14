@@ -512,7 +512,7 @@ export const decodeQRData = async (
 		if (decodedInvoice.isOk()) {
 			foundNetworksInQR.push({
 				qrDataType: EQRDataType.lightningPaymentRequest,
-				lightningPaymentRequest: data,
+				lightningPaymentRequest: lightningInvoice,
 				network: selectedNetwork,
 				sats: decodedInvoice.value.amount_satoshis ?? 0,
 				message: decodedInvoice.value.description ?? '',
