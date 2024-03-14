@@ -517,11 +517,23 @@ export const subscribeToLightningPayments = ({
 	if (!onChannelSubscription) {
 		onChannelSubscription = ldk.onEvent(
 			EEventTypes.new_channel,
-			async (_res: TChannelUpdate) => {
-				// New Channel will open in 1 block confirmation
+			async (res: TChannelUpdate) => {
 				await refreshLdk({ selectedWallet, selectedNetwork });
 				// Check if this is a CJIT Entry that needs to be added to the activity list.
-				addCJitActivityItem(_res.channel_id).then();
+				addCJitActivityItem(res.channel_id).then();
+
+				const closedChannels = getClosedChannels();
+				const result = await getOpenChannels();
+				const openChannels = result.isOk() ? result.value : [];
+
+				// If this is the first channel opened, show a toast
+				if (openChannels.length === 1 && closedChannels.length === 0) {
+					showToast({
+						type: 'success',
+						title: i18n.t('lightning:channel_opened_title'),
+						description: i18n.t('lightning:channel_opened_msg'),
+					});
+				}
 			},
 		);
 	}
@@ -1465,6 +1477,24 @@ export const getOpenChannels = async ({
 	});
 
 	return ok(openChannels);
+};
+
+/**
+ * Returns an array of closed lightning channels
+ * @returns {TChannel[]}
+ */
+export const getClosedChannels = (): TChannel[] => {
+	const selectedWallet = getSelectedWallet();
+	const selectedNetwork = getSelectedNetwork();
+
+	const node = getLightningStore().nodes[selectedWallet];
+	const channels = node.channels[selectedNetwork];
+	const openChannelIds = node.openChannelIds[selectedNetwork];
+	const closedChannels = Object.values(channels).filter((channel) => {
+		return !openChannelIds.includes(channel.channel_id);
+	});
+
+	return closedChannels;
 };
 
 /**
