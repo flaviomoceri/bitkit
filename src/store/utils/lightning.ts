@@ -1,6 +1,6 @@
 import { LNURLChannelParams } from 'js-lnurl';
 import { err, ok, Result } from '@synonymdev/result';
-import { ldk, TChannel, TInvoice } from '@synonymdev/react-native-ldk';
+import { ldk, TInvoice } from '@synonymdev/react-native-ldk';
 import { getLNURLParams, lnurlChannel } from '@synonymdev/react-native-lnurl';
 import { EPaymentType } from 'beignet';
 
@@ -22,18 +22,21 @@ import { getSelectedNetwork, getSelectedWallet } from '../../utils/wallet';
 import {
 	addPeers,
 	createPaymentRequest,
+	getChannels,
 	getClaimableBalances,
 	getClaimedLightningPayments,
 	getCustomLightningPeers,
-	getLightningChannels,
+	getLdkChannels,
 	getNodeVersion,
 	getPendingInvoice,
 	getSentLightningPayments,
 	parseUri,
 } from '../../utils/lightning';
 import {
+	EChannelStatus,
 	TCreateLightningInvoice,
 	TLightningNodeVersion,
+	TChannel,
 } from '../types/lightning';
 import { ETransferType, TWalletName } from '../types/wallet';
 import { EActivityType, TLightningActivityItem } from '../types/activity';
@@ -87,7 +90,7 @@ export const updateLightningNodeVersionThunk = async (): Promise<
 
 /**
  * Attempts to update the lightning channels for the given wallet and network.
- * This method will save all channels (both pending, open & closed) to redux and update openChannelIds to reference channels that are currently open.
+ * This method will save all channels (both pending, open & closed) to redux.
  * @param {TWalletName} [selectedWallet]
  * @param {EAvailableNetwork} [selectedNetwork]
  */
@@ -98,33 +101,48 @@ export const updateLightningChannelsThunk = async ({
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
-	const lightningChannelsRes = await getLightningChannels();
-	if (lightningChannelsRes.isErr()) {
-		return err(lightningChannelsRes.error.message);
+	const result = await getLdkChannels();
+	if (result.isErr()) {
+		return err(result.error.message);
 	}
 
+	const ldkChannels = result.value;
+	const storedChannels = getChannels();
 	const channels: { [channelId: string]: TChannel } = {};
-	const openChannelIds: string[] = [];
-	const lightningChannels = lightningChannelsRes.value;
 
-	lightningChannels.forEach((channel) => {
-		channels[channel.channel_id] = channel;
-		if (!openChannelIds.includes(channel.channel_id)) {
-			openChannelIds.push(channel.channel_id);
+	ldkChannels.forEach((channel) => {
+		const status = channel.is_channel_ready
+			? EChannelStatus.open
+			: EChannelStatus.pending;
 
-			if (channel.is_channel_ready && channel.funding_txid) {
-				updateTransfer({
-					txId: channel.funding_txid,
-					type: ETransferType.open,
-				});
-			}
+		channels[channel.channel_id] = { ...channel, status };
+
+		if (status === EChannelStatus.open && channel.funding_txid) {
+			updateTransfer({
+				txId: channel.funding_txid,
+				type: ETransferType.open,
+			});
 		}
+	});
+
+	// LDK only returns open channels, so we need to compare with stored channels to find closed ones
+	const closedChannels = storedChannels.filter(
+		(o) => !ldkChannels.some((i) => i.channel_id === o.channel_id),
+	);
+
+	// Mark closed channels as such
+	closedChannels.forEach((channel) => {
+		channels[channel.channel_id] = {
+			...channel,
+			is_channel_ready: false,
+			is_usable: false,
+			status: EChannelStatus.closed,
+		};
 	});
 
 	dispatch(
 		updateLightningChannels({
 			channels,
-			openChannelIds,
 			selectedWallet,
 			selectedNetwork,
 		}),

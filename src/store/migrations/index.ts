@@ -21,6 +21,7 @@ import { initialChecksState } from '../slices/checks';
 import { initialWidgetsState } from '../slices/widgets';
 import { EBackupCategories } from '../utils/backup';
 import { EDenomination, EUnit } from '../types/wallet';
+import { EChannelStatus } from '../types/lightning';
 
 const migrations = {
 	0: (state): PersistedState => {
@@ -526,6 +527,38 @@ const migrations = {
 				...state.lightning,
 				pendingPayments: [],
 			},
+		};
+	},
+	40: (state): PersistedState => {
+		const nodes = { ...state.lightning.nodes };
+		// Loop through all nodes
+		for (const walletName in nodes) {
+			const newChannels = { ...nodes[walletName].channels };
+
+			// Loop through all networks
+			Object.values(EAvailableNetwork).forEach((network) => {
+				const channels = nodes[walletName].channels[network];
+
+				// Loop through all channels and add the status field
+				for (const channelId in channels) {
+					channels[channelId] = {
+						...channels[channelId],
+						status: EChannelStatus.open,
+					};
+				}
+
+				newChannels[network] = channels;
+			});
+
+			nodes[walletName] = {
+				...nodes[walletName],
+				channels: newChannels,
+			};
+		}
+
+		return {
+			...state,
+			lightning: { ...state.lightning, nodes },
 		};
 	},
 };

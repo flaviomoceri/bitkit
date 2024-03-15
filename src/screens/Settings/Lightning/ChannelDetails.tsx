@@ -25,10 +25,7 @@ import { getBlockExplorerLink } from '../../../utils/wallet/transactions';
 import { openURL } from '../../../utils/helpers';
 import { createOrderSupportLink } from '../../../utils/support';
 import { EUnit } from '../../../store/types/wallet';
-import {
-	selectedNetworkSelector,
-	selectedWalletSelector,
-} from '../../../store/reselect/wallet';
+import { selectedNetworkSelector } from '../../../store/reselect/wallet';
 import { enableDevOptionsSelector } from '../../../store/reselect/settings';
 import {
 	channelIsOpenSelector,
@@ -213,7 +210,6 @@ const ChannelDetails = ({
 	const [txTime, setTxTime] = useState<string>();
 	const { spendingAvailable, receivingAvailable, capacity } =
 		useLightningChannelBalance(channel);
-	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const enableDevOptions = useAppSelector(enableDevOptionsSelector);
 	const paidBlocktankOrders = usePaidBlocktankOrders();
@@ -238,12 +234,7 @@ const ChannelDetails = ({
 	}, []);
 
 	const channelIsOpen = useAppSelector((state) => {
-		return channelIsOpenSelector(
-			state,
-			selectedWallet,
-			selectedNetwork,
-			channel.channel_id,
-		);
+		return channelIsOpenSelector(state, channel.channel_id);
 	});
 
 	// TODO: show status for non-blocktank channels

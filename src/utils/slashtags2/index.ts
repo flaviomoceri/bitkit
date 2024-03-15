@@ -15,10 +15,10 @@ import { webRelayClient } from '../../components/SlashtagsProvider2';
 import {
 	decodeLightningInvoice,
 	getClaimedLightningPayments,
+	getOpenChannels,
 	waitForLdk,
 } from '../lightning';
 import {
-	getCurrentWallet,
 	getReceiveAddress,
 	getSelectedAddressType,
 	getSelectedNetwork,
@@ -122,13 +122,9 @@ export const updateSlashPayConfig2 = debounce(
 
 		// check if we need to update LN invoice
 		await waitForLdk();
-		const { currentLightningNode } = getCurrentWallet({
-			selectedWallet,
-			selectedNetwork,
-		});
-		const openChannelIds = currentLightningNode.openChannelIds[selectedNetwork];
 
-		if (openChannelIds.length) {
+		const openChannels = getOpenChannels();
+		if (openChannels.length) {
 			const currentInvoice =
 				payConfig.find(({ type }) => type === 'lightningInvoice')?.value ?? '';
 

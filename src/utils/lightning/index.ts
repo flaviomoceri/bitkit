@@ -16,7 +16,7 @@ import lm, {
 	EEventTypes,
 	ENetworks,
 	TAccount,
-	TChannel,
+	TChannel as TLdkChannel,
 	TChannelManagerClaim,
 	TChannelManagerPaymentSent,
 	TChannelUpdate,
@@ -89,6 +89,8 @@ import { updateSlashPayConfig2 } from '../slashtags2';
 import {
 	TLdkAccountVersion,
 	TLightningNodeVersion,
+	TChannel,
+	EChannelStatus,
 } from '../../store/types/lightning';
 import { getBlocktankInfo, isGeoBlocked } from '../blocktank';
 import { refreshOnchainFeeEstimates } from '../../store/utils/fees';
@@ -189,7 +191,7 @@ const broadcastTransaction: TBroadcastTransaction = async (
 
 	const transaction = decodeRawTx(rawTx, bitcoin.networks.regtest);
 
-	// TODO: distinguish between different coop and force-close
+	// TODO: distinguish between coop and force-close
 	addTransfer({
 		txId: transaction.txid,
 		type: ETransferType.coopClose,
@@ -519,12 +521,9 @@ export const subscribeToLightningPayments = ({
 			EEventTypes.new_channel,
 			async (res: TChannelUpdate) => {
 				await refreshLdk({ selectedWallet, selectedNetwork });
-				// Check if this is a CJIT Entry that needs to be added to the activity list.
-				addCJitActivityItem(res.channel_id).then();
 
+				const openChannels = getOpenChannels();
 				const closedChannels = getClosedChannels();
-				const result = await getOpenChannels();
-				const openChannels = result.isOk() ? result.value : [];
 
 				// If this is the first channel opened, show a toast
 				if (openChannels.length === 1 && closedChannels.length === 0) {
@@ -534,6 +533,9 @@ export const subscribeToLightningPayments = ({
 						description: i18n.t('lightning:channel_opened_msg'),
 					});
 				}
+
+				// Check if this is a CJIT Entry that needs to be added to the activity list.
+				addCJitActivityItem(res.channel_id).then();
 			},
 		);
 	}
@@ -884,21 +886,9 @@ const closeLdkV1Account = async (
 	selectedWallet = getSelectedWallet(),
 	selectedNetwork = getSelectedNetwork(),
 ): Promise<Result<string>> => {
-	const openChannelsRes = await getOpenChannels({
-		fromStorage: false,
-		selectedNetwork,
-		selectedWallet,
-	});
-	if (openChannelsRes.isErr()) {
-		return err(openChannelsRes.error.message);
-	}
-	const channels = openChannelsRes.value;
+	const channels = getOpenChannels();
 	if (channels.length) {
-		const closeRes = await closeAllChannels({
-			channels,
-			selectedWallet,
-			selectedNetwork,
-		});
+		const closeRes = await closeAllChannels();
 		if (closeRes.isErr()) {
 			return err(closeRes.error.message);
 		}
@@ -929,17 +919,9 @@ export const migrateToLdkV2Account = async (
 			return err('Only migrate if mainnet.');
 		}
 		const lightningBalance = getLightningBalance({
-			selectedWallet,
-			selectedNetwork,
-			includeReserveBalance: true,
+			includeReserve: true,
 		});
-		const openChannels = await getOpenChannels({
-			selectedNetwork,
-			selectedWallet,
-		});
-		if (openChannels.isErr()) {
-			return err(openChannels.error.message);
-		}
+		const openChannels = getOpenChannels();
 		const claimableBalances = await getClaimableBalances();
 		const result = reduceValue(claimableBalances, 'amount_satoshis');
 		const claimableBalance = result.isOk() ? result.value : 0;
@@ -953,7 +935,7 @@ export const migrateToLdkV2Account = async (
 			lightningBalance.localBalance ||
 			lightningBalance.remoteBalance ||
 			claimableBalance ||
-			openChannels.value.length
+			openChannels.length
 		) {
 			return err('Not ready to migrate.');
 		}
@@ -1406,77 +1388,37 @@ export const getLightningNodePeers = async ({
  * Returns an array of pending and open channels
  * @returns Promise<Result<TChannel[]>>
  */
-export const getLightningChannels = (): Promise<Result<TChannel[]>> => {
+export const getLdkChannels = (): Promise<Result<TLdkChannel[]>> => {
 	return ldk.listChannels();
 };
 
 /**
- * Returns an array of unconfirmed/pending lightning channels from either storage or directly from the LDK node.
- * CURRENTLY UNUSED
- * @param {boolean} [fromStorage]
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @returns {Promise<Result<TChannel[]>>}
+ * Returns lightning channels from redux store.
+ * @returns {TChannel[]}
  */
-export const getPendingChannels = async ({
-	fromStorage = false,
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-}: {
-	fromStorage?: boolean;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): Promise<Result<TChannel[]>> => {
-	let channels: TChannel[];
-	if (fromStorage) {
-		const channelsStore =
-			getLightningStore().nodes[selectedWallet].channels[selectedNetwork];
-		channels = Object.values(channelsStore);
-	} else {
-		const channelsResponse = await getLightningChannels();
-		if (channelsResponse.isErr()) {
-			return err(channelsResponse.error.message);
-		}
-		channels = channelsResponse.value;
-	}
-	const pendingChannels = channels.filter(
-		(channel) => !channel.is_channel_ready,
-	);
-	return ok(pendingChannels);
+export const getChannels = (): TChannel[] => {
+	const selectedWallet = getSelectedWallet();
+	const selectedNetwork = getSelectedNetwork();
+	const node = getLightningStore().nodes[selectedWallet];
+	const channels = node.channels[selectedNetwork];
+	return Object.values(channels);
 };
 
 /**
- * Returns an array of confirmed/open lightning channels from either storage or LDK directly..
- * @returns {Promise<Result<TChannel[]>>}
+ * Returns an array of confirmed/open lightning channels from redux store.
+ * @returns {TChannel[]}
  */
-export const getOpenChannels = async ({
-	fromStorage = false,
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-}: {
-	fromStorage?: boolean;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-} = {}): Promise<Result<TChannel[]>> => {
-	let channels: TChannel[];
+export const getOpenChannels = (): TChannel[] => {
+	const selectedWallet = getSelectedWallet();
+	const selectedNetwork = getSelectedNetwork();
+
 	const node = getLightningStore().nodes[selectedWallet];
-
-	if (fromStorage) {
-		channels = Object.values(node.channels[selectedNetwork]);
-	} else {
-		const getChannelsResponse = await getLightningChannels();
-		if (getChannelsResponse.isErr()) {
-			return err(getChannelsResponse.error.message);
-		}
-		channels = getChannelsResponse.value;
-	}
-
-	const openChannelIds = node.openChannelIds[selectedNetwork];
-	const openChannels = channels.filter((channel) => {
-		return openChannelIds.includes(channel.channel_id);
+	const channels = node.channels[selectedNetwork];
+	const openChannels = Object.values(channels).filter((channel) => {
+		return channel.status === EChannelStatus.open;
 	});
 
-	return ok(openChannels);
+	return openChannels;
 };
 
 /**
@@ -1489,9 +1431,8 @@ export const getClosedChannels = (): TChannel[] => {
 
 	const node = getLightningStore().nodes[selectedWallet];
 	const channels = node.channels[selectedNetwork];
-	const openChannelIds = node.openChannelIds[selectedNetwork];
 	const closedChannels = Object.values(channels).filter((channel) => {
-		return !openChannelIds.includes(channel.channel_id);
+		return channel.status === EChannelStatus.closed;
 	});
 
 	return closedChannels;
@@ -1530,36 +1471,18 @@ export const closeChannel = async ({
  * Attempts to close all known channels.
  * It will always attempt to coop close channels first and only force close if set to true.
  * Returns an array of channels it was not able to successfully close.
- * @param {TChannel[]} [channels]
  * @param {boolean} [force]
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<TChannel[]>>}
  */
 export const closeAllChannels = async ({
-	channels,
 	force = false,
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
 }: {
-	channels?: TChannel[];
 	force?: boolean; // It will always try to coop close first and only force close if set to true.
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): Promise<Result<TChannel[]>> => {
-	try {
-		if (!channels) {
-			const openChannelsRes = await getOpenChannels({
-				fromStorage: true,
-				selectedNetwork,
-				selectedWallet,
-			});
-			if (openChannelsRes.isErr()) {
-				return err(openChannelsRes.error.message);
-			}
-			channels = openChannelsRes.value;
-		}
+} = {}): Promise<Result<TChannel[]>> => {
+	const selectedWallet = getSelectedWallet();
+	const selectedNetwork = getSelectedNetwork();
 
+	try {
 		// Ensure we're fully up-to-date.
 		const refreshRes = await refreshLdk({ selectedWallet, selectedNetwork });
 		if (refreshRes.isErr()) {
@@ -1569,6 +1492,7 @@ export const closeAllChannels = async ({
 		// Force update fees before closing channels
 		await refreshOnchainFeeEstimates({ forceUpdate: true });
 
+		const channels = getOpenChannels();
 		const channelsUnableToCoopClose: TChannel[] = [];
 		await Promise.all(
 			channels.map(async (channel) => {
@@ -1714,24 +1638,6 @@ export const keepLdkSynced = async ({
 	}
 };
 
-/**
- * Returns whether the user has any open lightning channels.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @returns {boolean}
- */
-export const hasOpenLightningChannels = ({
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-}: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): boolean => {
-	const availableChannels =
-		getLightningStore().nodes[selectedWallet].openChannelIds[selectedNetwork];
-	return availableChannels.length > 0;
-};
-
 export const rebroadcastAllKnownTransactions = async (): Promise<any> => {
 	return await lm.rebroadcastAllKnownTransactions();
 };
@@ -1742,27 +1648,13 @@ export const recoverOutputs = async (): Promise<Result<string>> => {
 
 /**
  * Returns total reserve balance for all open lightning channels.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @returns {Promise<number>}
+ * @returns {number}
  */
-export const getLightningReserveBalance = ({
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-}: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-}): number => {
-	const node = getLightningStore().nodes[selectedWallet];
-	const openChannelIds = node.openChannelIds[selectedNetwork];
-	const channels = node.channels[selectedNetwork];
-	const openChannels = Object.values(channels).filter((channel) => {
-		return openChannelIds.includes(channel.channel_id);
-	});
-
+export const getLightningReserveBalance = (): number => {
+	const openChannels = getOpenChannels();
 	const result = reduceValue(openChannels, 'unspendable_punishment_reserve');
-	const reserveBalances = result.isOk() ? result.value : 0;
-	return reserveBalances;
+	const reserveBalance = result.isOk() ? result.value : 0;
+	return reserveBalance;
 };
 
 /**
@@ -1810,7 +1702,7 @@ export const removeUnusedPeers = async ({
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
-	const getChannelsResponse = await getLightningChannels();
+	const getChannelsResponse = await getLdkChannels();
 	if (getChannelsResponse.isErr()) {
 		return err(getChannelsResponse.error.message);
 	}
@@ -1846,60 +1738,32 @@ export const removeUnusedPeers = async ({
 
 /**
  * Returns the lightning balance of all known open and pending channels.
- * @param {TWalletName} [selectedWallet]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @param {boolean} [includeReserveBalance] Whether or not to include each channel's reserve balance (~1% per channel participant) in the returned balance.
+ * @param {boolean} [includeReserve] Whether or not to include each channel's reserve balance (~1% per channel participant) in the returned balance.
  * @returns {{ localBalance: number; remoteBalance: number; }}
  */
 export const getLightningBalance = ({
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
-	includeReserveBalance = true,
+	includeReserve = true,
 }: {
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
-	includeReserveBalance?: boolean;
-}): {
+	includeReserve?: boolean;
+} = {}): {
 	localBalance: number;
 	remoteBalance: number;
 } => {
-	const node = getLightningStore().nodes[selectedWallet];
-	const openChannelIds = node.openChannelIds[selectedNetwork];
-	const channels = node.channels[selectedNetwork];
-	const openChannels = openChannelIds.filter((channelId) => {
-		const channel = channels[channelId];
-		return channel.is_channel_ready;
+	const openChannels = getOpenChannels();
+
+	let localBalance = 0;
+	let remoteBalance = 0;
+
+	openChannels.forEach((channel) => {
+		const reserve = channel.unspendable_punishment_reserve ?? 0;
+		localBalance += includeReserve
+			? channel.outbound_capacity_sat + reserve
+			: channel.outbound_capacity_sat;
+
+		remoteBalance += includeReserve
+			? channel.inbound_capacity_sat + reserve
+			: channel.inbound_capacity_sat;
 	});
-
-	const localBalance = Object.values(channels).reduce((acc, cur) => {
-		if (openChannels.includes(cur.channel_id)) {
-			if (!includeReserveBalance) {
-				return acc + cur.outbound_capacity_sat;
-			} else {
-				return (
-					acc +
-					cur.outbound_capacity_sat +
-					(cur.unspendable_punishment_reserve ?? 0)
-				);
-			}
-		}
-		return acc;
-	}, 0);
-
-	const remoteBalance = Object.values(channels).reduce((acc, cur) => {
-		if (openChannelIds.includes(cur.channel_id)) {
-			if (!includeReserveBalance) {
-				return acc + cur.inbound_capacity_sat;
-			} else {
-				return (
-					acc +
-					cur.inbound_capacity_sat +
-					(cur.unspendable_punishment_reserve ?? 0)
-				);
-			}
-		}
-		return acc;
-	}, 0);
 
 	return { localBalance, remoteBalance };
 };

@@ -39,19 +39,12 @@ export const lightningSlice = createSlice({
 			state,
 			action: PayloadAction<{
 				channels: TChannels;
-				openChannelIds: string[];
 				selectedWallet: TWalletName;
 				selectedNetwork: EAvailableNetwork;
 			}>,
 		) => {
-			const { channels, openChannelIds, selectedWallet, selectedNetwork } =
-				action.payload;
-			state.nodes[selectedWallet].channels[selectedNetwork] = {
-				...state.nodes[selectedWallet].channels[selectedNetwork],
-				...channels,
-			};
-			state.nodes[selectedWallet].openChannelIds[selectedNetwork] =
-				openChannelIds;
+			const { channels, selectedWallet, selectedNetwork } = action.payload;
+			state.nodes[selectedWallet].channels[selectedNetwork] = channels;
 		},
 		saveLightningPeer: (
 			state,

@@ -6,7 +6,6 @@ import {
 	StackNavigationOptions,
 	StackNavigationProp,
 } from '@react-navigation/stack';
-import { TChannel } from '@synonymdev/react-native-ldk';
 
 import MainSettings from '../../screens/Settings';
 import CurrenciesSettings from '../../screens/Settings/Currencies';
@@ -55,6 +54,7 @@ import LightningNavigator, {
 import WebRelay from '../../screens/Settings/WebRelay';
 import { __E2E__ } from '../../constants/env';
 import AppStatus from '../../screens/Settings/AppStatus';
+import { TChannel } from '../../store/types/lightning';
 
 export type SettingsNavigationProp =
 	StackNavigationProp<SettingsStackParamList>;

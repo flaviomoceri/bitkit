@@ -1,71 +1,43 @@
 import { useMemo } from 'react';
 import { useAppSelector } from '../hooks/redux';
 import { TChannel } from '@synonymdev/react-native-ldk';
+import { IBtOrder } from '@synonymdev/blocktank-lsp-http-client';
 
 import { ellipsis } from '../utils/helpers';
-
 import { TUseChannelBalance } from '../store/types/lightning';
-import {
-	selectedNetworkSelector,
-	selectedWalletSelector,
-} from '../store/reselect/wallet';
-import {
-	channelsSelector,
-	openChannelsSelector,
-	openChannelIdsSelector,
-} from '../store/reselect/lightning';
+import { openChannelsSelector } from '../store/reselect/lightning';
 import { usePaidBlocktankOrders } from './blocktank';
-import { IBtOrder } from '@synonymdev/blocktank-lsp-http-client';
 
 /**
  * Returns the lightning balance of all known open channels.
- * @param {boolean} [includeReserveBalance] Whether or not to include each channel's reserve balance (~1% per channel participant) in the returned balance.
+ * @param {boolean} [includeReserve] Whether or not to include each channel's reserve balance (~1% per channel participant) in the returned balance.
  * @returns {{ localBalance: number; remoteBalance: number; }}
  */
 export const useLightningBalance = (
-	includeReserveBalance = true,
+	includeReserve = true,
 ): {
 	localBalance: number;
 	remoteBalance: number;
 } => {
-	const selectedWallet = useAppSelector(selectedWalletSelector);
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
-	const openChannelIds = useAppSelector(openChannelIdsSelector);
-	const channels = useAppSelector((state) => {
-		return channelsSelector(state, selectedWallet, selectedNetwork);
-	});
 	const openChannels = useAppSelector(openChannelsSelector);
 
-	const localBalance = useMemo(() => {
-		return openChannels.reduce((acc, channel) => {
-			if (!includeReserveBalance) {
-				return acc + channel.outbound_capacity_sat;
-			} else {
-				return (
-					acc +
-					channel.outbound_capacity_sat +
-					(channel.unspendable_punishment_reserve ?? 0)
-				);
-			}
-		}, 0);
-	}, [openChannels, includeReserveBalance]);
+	const [localBalance, remoteBalance] = useMemo(() => {
+		let local = 0;
+		let remote = 0;
 
-	const remoteBalance = useMemo(() => {
-		return Object.values(channels).reduce((acc, cur) => {
-			if (openChannelIds.includes(cur.channel_id)) {
-				if (!includeReserveBalance) {
-					return acc + cur.inbound_capacity_sat;
-				} else {
-					return (
-						acc +
-						cur.inbound_capacity_sat +
-						(cur.unspendable_punishment_reserve ?? 0)
-					);
-				}
-			}
-			return acc;
-		}, 0);
-	}, [channels, includeReserveBalance, openChannelIds]);
+		openChannels.forEach((channel) => {
+			const reserve = channel.unspendable_punishment_reserve ?? 0;
+			local += includeReserve
+				? channel.outbound_capacity_sat + reserve
+				: channel.outbound_capacity_sat;
+
+			remote += includeReserve
+				? channel.inbound_capacity_sat + reserve
+				: channel.inbound_capacity_sat;
+		});
+
+		return [local, remote];
+	}, [openChannels, includeReserve]);
 
 	return { localBalance, remoteBalance };
 };

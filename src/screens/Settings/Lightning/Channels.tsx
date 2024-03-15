@@ -2,7 +2,6 @@ import React, { ReactElement, memo, useState, useCallback } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import Share from 'react-native-share';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { TChannel } from '@synonymdev/react-native-ldk';
 import { useTranslation } from 'react-i18next';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { IBtOrder, BtOrderState } from '@synonymdev/blocktank-lsp-http-client';
@@ -71,6 +70,7 @@ import {
 } from '../../../store/reselect/blocktank';
 import { TPaidBlocktankOrders } from '../../../store/types/blocktank';
 import { EUnit } from '../../../store/types/wallet';
+import { EChannelStatus, TChannel } from '../../../store/types/lightning';
 
 // Workaround for crash on Android
 // https://github.com/software-mansion/react-native-reanimated/issues/4306#issuecomment-1538184321
@@ -106,6 +106,7 @@ const getPendingBlocktankChannels = (
 		const fakeChannel: TChannel = {
 			channel_id: order.id,
 			confirmations: 0,
+			status: EChannelStatus.pending,
 			is_public: false,
 			is_usable: false,
 			is_channel_ready: false,
