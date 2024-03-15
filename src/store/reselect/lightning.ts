@@ -6,7 +6,6 @@ import {
 	TLightningState,
 	TNode,
 	TNodes,
-	TOpenChannelIds,
 } from '../types/lightning';
 import { RootState } from '..';
 import { TWalletName } from '../types/wallet';
@@ -125,23 +124,6 @@ export const closedChannelsSelector = createSelector(
 		return Object.values(channels).filter((channel) => {
 			return channel.status === EChannelStatus.closed;
 		});
-	},
-);
-
-export const openChannelIdsSelector = createSelector(
-	[openChannelsSelector],
-	(openChannels): TOpenChannelIds => {
-		return openChannels.map((channel) => channel.channel_id);
-	},
-);
-
-export const channelIsOpenSelector = createSelector(
-	[
-		openChannelsSelector,
-		(_openChannels, channelId: string): string => channelId,
-	],
-	(openChannels, channelId): boolean => {
-		return !!openChannels.find((channel) => channel.channel_id === channelId);
 	},
 );
 
