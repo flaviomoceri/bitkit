@@ -1710,6 +1710,12 @@ export const recoverOutputs = async (): Promise<Result<string>> => {
 	return await lm.recoverOutputs();
 };
 
+export const recoverOutputsFromForceClose = async (): Promise<
+	Result<string>
+> => {
+	return await lm.recoverOutputsFromForceClose();
+};
+
 /**
  * Returns total reserve balance for all open lightning channels.
  * @param {TWalletName} [selectedWallet]
