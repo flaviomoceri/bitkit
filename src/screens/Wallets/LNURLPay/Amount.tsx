@@ -44,7 +44,7 @@ const Amount = ({
 	const { t } = useTranslation('wallet');
 	const { pParams } = route.params;
 	const { minSendable, maxSendable } = pParams;
-	const balance = useBalance();
+	const { spendingBalance } = useBalance();
 	const switchUnit = useSwitchUnit();
 	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
@@ -68,8 +68,8 @@ const Amount = ({
 	const max = useMemo(() => {
 		// TODO: get routing fee
 		const fee = 100;
-		return Math.min(balance.spendingBalance - fee, maxSendable);
-	}, [maxSendable, balance.spendingBalance]);
+		return Math.min(spendingBalance - fee, maxSendable);
+	}, [maxSendable, spendingBalance]);
 
 	const maxSendableProps = {
 		...(error && { color: 'brand' as keyof IColors }),

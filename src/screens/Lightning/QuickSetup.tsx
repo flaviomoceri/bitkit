@@ -80,9 +80,9 @@ const QuickSetup = ({
 		return convertToSats(textFieldValue, conversionUnit);
 	}, [textFieldValue, conversionUnit]);
 
-	const lnSetup = useAppSelector((state) =>
-		lnSetupSelector(state, spendingAmount),
-	);
+	const lnSetup = useAppSelector((state) => {
+		return lnSetupSelector(state, spendingAmount);
+	});
 
 	const btSpendingLimitBalancedUsd = useMemo((): string => {
 		const { fiatWhole } = getFiatDisplayValues({

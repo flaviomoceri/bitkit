@@ -86,12 +86,12 @@ describe('Reselect', () => {
 			];
 
 			assert.deepEqual(balanceSelector(state), {
-				lightningBalance: 7,
+				lightningBalance: 4,
 				lightningClaimableBalance: 3,
 				lightningReserveBalance: 2,
 				lightningSpendingBalance: 2,
 				onchainBalance: 1,
-				totalBalance: 8,
+				totalBalance: 5,
 				totalSpendableBalance: 3,
 			});
 		});
@@ -220,11 +220,11 @@ describe('Reselect', () => {
 				slider: {
 					startValue: 0,
 					maxValue: 98,
-					endValue: 1005,
+					endValue: 1002,
 				},
 				btSpendingLimitBalanced: 98,
-				spendableBalance: 804,
-				defaultClientBalance: 5,
+				spendableBalance: 802,
+				defaultClientBalance: 2,
 				canContinue: true,
 			});
 		});

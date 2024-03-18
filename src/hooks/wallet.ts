@@ -58,32 +58,28 @@ export const useBalance = (): {
 		0,
 	);
 
-	let balanceInTransferToSpending = transfers.reduce((acc, transfer) => {
+	let inTransferToSpending = transfers.reduce((acc, transfer) => {
 		if (transfer.type === 'open' && transfer.status === 'pending') {
 			return acc + transfer.amount;
 		}
 		return acc;
 	}, 0);
-	let balanceInTransferToSavings = transfers.reduce((acc, transfer) => {
+	let inTransferToSavings = transfers.reduce((acc, transfer) => {
 		if (transfer.type === 'coop-close' && transfer.status === 'pending') {
 			return acc + transfer.amount;
 		}
 		return acc;
 	}, 0);
 
-	const balanceInTransfer =
-		balanceInTransferToSpending + balanceInTransferToSavings;
+	const inTransfer = inTransferToSpending + inTransferToSavings;
 
 	if (newChannels.length > 0) {
 		// avoid flashing wrong balance on channel open
-		balanceInTransferToSpending = 0;
+		inTransferToSpending = 0;
 	}
 
-	const totalBalance =
-		onchainBalance +
-		spendingBalance +
-		reserveBalance +
-		balanceInTransferToSpending;
+	// we don't include the LN reserve balance in the total balance
+	const totalBalance = onchainBalance + spendingBalance + inTransferToSpending;
 
 	return {
 		onchainBalance,
@@ -93,9 +89,9 @@ export const useBalance = (): {
 		claimableBalance,
 		spendableBalance,
 		pendingPaymentsBalance,
-		balanceInTransfer,
-		balanceInTransferToSpending,
-		balanceInTransferToSavings,
+		balanceInTransfer: inTransfer,
+		balanceInTransferToSpending: inTransferToSpending,
+		balanceInTransferToSavings: inTransferToSavings,
 		totalBalance,
 	};
 };

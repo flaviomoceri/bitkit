@@ -29,14 +29,12 @@ export const useLightningBalance = (
 		let remote = 0;
 
 		openChannels.forEach((channel) => {
-			const reserve = channel.unspendable_punishment_reserve ?? 0;
+			const localReserve = channel.unspendable_punishment_reserve ?? 0;
 			local += includeReserve
-				? channel.outbound_capacity_sat + reserve
+				? channel.outbound_capacity_sat + localReserve
 				: channel.outbound_capacity_sat;
 
-			remote += includeReserve
-				? channel.inbound_capacity_sat + reserve
-				: channel.inbound_capacity_sat;
+			remote += channel.inbound_capacity_sat;
 		});
 
 		return [local, remote];
@@ -61,18 +59,20 @@ export const useLightningChannelBalance = (
 		capacity: 0, // Total capacity of the channel. (spendingTotal + receivingTotal)
 	};
 
-	const channel_value_satoshis = channel.channel_value_satoshis;
-	const unspendable_punishment_reserve =
-		channel.unspendable_punishment_reserve ?? 0;
-	const outbound_capacity_sat = channel.outbound_capacity_sat;
-	const balance_sat = channel.balance_sat;
-	const inbound_capacity_sat = channel.inbound_capacity_sat;
+	const {
+		channel_value_satoshis,
+		balance_sat,
+		outbound_capacity_sat,
+		inbound_capacity_sat,
+		unspendable_punishment_reserve,
+	} = channel;
 
-	balance.spendingTotal =
-		outbound_capacity_sat + unspendable_punishment_reserve;
+	// user punishment reserve balance
+	const localReserve = unspendable_punishment_reserve ?? 0;
+
+	balance.spendingTotal = outbound_capacity_sat + localReserve;
 	balance.spendingAvailable = outbound_capacity_sat;
-	balance.receivingTotal =
-		channel_value_satoshis - balance_sat + unspendable_punishment_reserve;
+	balance.receivingTotal = channel_value_satoshis - balance_sat;
 	balance.receivingAvailable = inbound_capacity_sat;
 	balance.capacity = channel_value_satoshis;
 

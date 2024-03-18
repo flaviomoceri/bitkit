@@ -1761,14 +1761,12 @@ export const getLightningBalance = ({
 	let remoteBalance = 0;
 
 	openChannels.forEach((channel) => {
-		const reserve = channel.unspendable_punishment_reserve ?? 0;
+		const localReserve = channel.unspendable_punishment_reserve ?? 0;
 		localBalance += includeReserve
-			? channel.outbound_capacity_sat + reserve
+			? channel.outbound_capacity_sat + localReserve
 			: channel.outbound_capacity_sat;
 
-		remoteBalance += includeReserve
-			? channel.inbound_capacity_sat + reserve
-			: channel.inbound_capacity_sat;
+		remoteBalance += channel.inbound_capacity_sat;
 	});
 
 	return { localBalance, remoteBalance };

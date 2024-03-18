@@ -162,9 +162,7 @@ export const lightningBalanceSelector = createSelector(
 			spendingBalance += spendable;
 		});
 
-		// TODO: filter out some types of claimable balances
-		const lightningBalance =
-			spendingBalance + reserveBalance + claimableBalance;
+		const lightningBalance = spendingBalance + reserveBalance;
 
 		return {
 			lightningBalance,
