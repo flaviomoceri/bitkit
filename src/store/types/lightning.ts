@@ -1,6 +1,6 @@
 import {
 	TBackupStateUpdate,
-	TChannel,
+	TChannel as TLdkChannel,
 	TClaimableBalance,
 	TCreatePaymentReq,
 	TInvoice,
@@ -17,14 +17,22 @@ export type TCreateLightningInvoice = TCreatePaymentReq & {
 	selectedWallet?: TWalletName;
 };
 
-export type TOpenChannelIds = string[];
-
 export type TLdkAccountVersion = 1 | 2;
+
+export enum EChannelStatus {
+	open = 'open',
+	pending = 'pending',
+	closed = 'closed',
+}
+
+export type TChannel = TLdkChannel & {
+	status: EChannelStatus;
+	createdAt: number;
+};
 
 export type TNode = {
 	nodeId: IWalletItem<string>;
 	channels: IWalletItem<{ [key: string]: TChannel }>;
-	openChannelIds: IWalletItem<TOpenChannelIds>;
 	info: IWalletItem<{}>;
 	peers: IWalletItem<string[]>;
 	claimableBalances: IWalletItem<TClaimableBalance[]>;

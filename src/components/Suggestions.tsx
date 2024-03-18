@@ -12,7 +12,6 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { Caption13Up } from '../styles/text';
 import { View as ThemedView } from '../styles/components';
-import { showToast } from '../utils/notifications';
 import { ITodo, TTodoType } from '../store/types/todos';
 import { channelsNotificationsShown, hideTodo } from '../store/slices/todos';
 import { showBottomSheet } from '../store/utils/ui';
@@ -41,17 +40,12 @@ const Suggestions = (): ReactElement => {
 	const [index, setIndex] = useState(0);
 	const [showDialog, setShowDialog] = useState(false);
 
-	// show toast when new channels are opened and hide the notification
+	// this code is needed in order to avoid flashing wrong balance on channel open
+	// TODO: try to move/remove this
 	useEffect(() => {
 		if (newChannels.length === 0) {
 			return;
 		}
-
-		showToast({
-			type: 'success',
-			title: t('lightning:channel_opened_title'),
-			description: t('lightning:channel_opened_msg'),
-		});
 
 		const timer = setTimeout(() => {
 			const ids = newChannels.map((c) => c.channel_id);
@@ -59,7 +53,7 @@ const Suggestions = (): ReactElement => {
 		}, 4000);
 
 		return () => clearTimeout(timer);
-	}, [t, newChannels, dispatch]);
+	}, [newChannels, dispatch]);
 
 	const panGestureHandlerProps = useMemo(
 		() => ({ activeOffsetX: [-10, 10] }),

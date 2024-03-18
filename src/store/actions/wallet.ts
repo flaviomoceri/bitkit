@@ -341,7 +341,7 @@ export const updatePendingTransfers = (headerHeight: number): void => {
 	pendingTransfers.forEach((transfer) => {
 		const tx = transactions[transfer.txId];
 		if (tx && transfer.confirmations <= 6) {
-			const confs = tx.height === -1 ? 1 : headerHeight - tx.height + 1;
+			const confs = tx.height <= 0 ? 0 : headerHeight - tx.height + 1;
 			updateTransfer({
 				txId: transfer.txId,
 				type: ETransferType.coopClose,

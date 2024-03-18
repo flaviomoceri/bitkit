@@ -1,11 +1,11 @@
-import { TChannel } from '@synonymdev/react-native-ldk';
 import { createSelector } from '@reduxjs/toolkit';
 
 import {
+	TChannel,
+	EChannelStatus,
 	TLightningState,
 	TNode,
 	TNodes,
-	TOpenChannelIds,
 } from '../types/lightning';
 import { RootState } from '..';
 import { TWalletName } from '../types/wallet';
@@ -39,52 +39,11 @@ export const nodeSelector = createSelector(
 	},
 );
 
-/**
- * Returns open lightning channel ids for a given wallet and network.
- * @param {RootState} state
- * @returns {TOpenChannelIds}
- */
-export const openChannelIdsSelector = createSelector(
-	[lightningState, selectedWalletSelector, selectedNetworkSelector],
-	(lightning, selectedWallet, selectedNetwork): TOpenChannelIds =>
-		lightning.nodes[selectedWallet]?.openChannelIds[selectedNetwork] ?? [],
-);
-
-export const channelIsOpenSelector = createSelector(
-	[
-		lightningState,
-		(_nodes, selectedWallet: TWalletName): TWalletName => selectedWallet,
-		(
-			_lightning,
-			_selectedWallet,
-			selectedNetwork: EAvailableNetwork,
-		): EAvailableNetwork => selectedNetwork,
-		(
-			_lightning,
-			_selectedWallet,
-			_selectedNetwork,
-			channelId: string,
-		): string => channelId,
-	],
-	(lightning, selectedWallet, selectedNetwork, channelId): boolean => {
-		const openChannelIds =
-			lightning.nodes[selectedWallet]?.openChannelIds[selectedNetwork] ?? [];
-		return openChannelIds.includes(channelId);
-	},
-);
-
 export const channelsSelector = createSelector(
-	[
-		lightningState,
-		(_nodes, selectedWallet: TWalletName): TWalletName => selectedWallet,
-		(
-			_lightning,
-			_selectedWallet,
-			selectedNetwork: EAvailableNetwork,
-		): EAvailableNetwork => selectedNetwork,
-	],
-	(lightning, selectedWallet, selectedNetwork): { [key: string]: TChannel } =>
-		lightning.nodes[selectedWallet]?.channels[selectedNetwork],
+	[lightningState, selectedWalletSelector, selectedNetworkSelector],
+	(lightning, selectedWallet, selectedNetwork): { [key: string]: TChannel } => {
+		return lightning.nodes[selectedWallet]?.channels[selectedNetwork];
+	},
 );
 
 /**
@@ -120,12 +79,9 @@ export const openChannelsSelector = createSelector(
 	(lightning, selectedWallet, selectedNetwork): TChannel[] => {
 		const node = lightning.nodes[selectedWallet];
 		const channels = node.channels[selectedNetwork];
-		const openChannelIds = node.openChannelIds[selectedNetwork] ?? [];
 
 		return Object.values(channels).filter((channel) => {
-			return (
-				openChannelIds.includes(channel.channel_id) && channel?.is_channel_ready
-			);
+			return channel.status === EChannelStatus.open;
 		});
 	},
 );
@@ -140,13 +96,9 @@ export const pendingChannelsSelector = createSelector(
 	(lightning, selectedWallet, selectedNetwork): TChannel[] => {
 		const node = lightning.nodes[selectedWallet];
 		const channels = node.channels[selectedNetwork];
-		const openChannelIds = node.openChannelIds[selectedNetwork] ?? [];
 
 		return Object.values(channels).filter((channel) => {
-			return (
-				openChannelIds.includes(channel.channel_id) &&
-				!channel?.is_channel_ready
-			);
+			return channel.status === EChannelStatus.pending;
 		});
 	},
 );
@@ -161,10 +113,9 @@ export const closedChannelsSelector = createSelector(
 	(lightning, selectedWallet, selectedNetwork): TChannel[] => {
 		const node = lightning.nodes[selectedWallet];
 		const channels = node.channels[selectedNetwork];
-		const openChannelIds = node.openChannelIds[selectedNetwork] ?? [];
 
 		return Object.values(channels).filter((channel) => {
-			return !openChannelIds.includes(channel.channel_id);
+			return channel.status === EChannelStatus.closed;
 		});
 	},
 );
@@ -205,12 +156,10 @@ export const lightningBalanceSelector = createSelector(
 		let spendingBalance = 0;
 		let reserveBalance = 0;
 		openChannels.forEach((channel) => {
-			if (channel.is_channel_ready) {
-				const spendable = channel.outbound_capacity_sat;
-				const unspendable = channel.balance_sat - spendable;
-				reserveBalance += unspendable;
-				spendingBalance += spendable;
-			}
+			const spendable = channel.outbound_capacity_sat;
+			const unspendable = channel.balance_sat - spendable;
+			reserveBalance += unspendable;
+			spendingBalance += spendable;
 		});
 
 		// TODO: filter out some types of claimable balances

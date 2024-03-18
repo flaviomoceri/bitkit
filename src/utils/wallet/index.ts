@@ -43,7 +43,11 @@ import { updateActivityList } from '../../store/utils/activity';
 import { getBlockHeader } from './electrum';
 import { invokeNodeJsMethod } from '../nodejs-mobile';
 import { DefaultNodeJsMethodsShape } from '../nodejs-mobile/shapes';
-import { refreshLdk } from '../lightning';
+import {
+	getLightningBalance,
+	getLightningReserveBalance,
+	refreshLdk,
+} from '../lightning';
 import { BITKIT_WALLET_SEED_HASH_PREFIX } from './constants';
 import { moveMetaIncTxTags } from '../../store/utils/metadata';
 import { refreshOrdersList } from '../../store/utils/blocktank';
@@ -1386,24 +1390,11 @@ export const getBalance = ({
 		selectedWallet,
 		selectedNetwork,
 	});
-	const channels = node?.channels[selectedNetwork];
-	const openChannelIds = node?.openChannelIds[selectedNetwork];
 	const claimableBalances = node?.claimableBalances[selectedNetwork];
-	const openChannels = Object.values(channels).filter((channel) => {
-		return openChannelIds.includes(channel.channel_id);
-	});
 
 	// Get the total spending & reserved balance of all open channels
-	let spendingBalance = 0;
-	let reserveBalance = 0;
-	openChannels.forEach((channel) => {
-		if (channel.is_channel_ready) {
-			const spendable = channel.outbound_capacity_sat;
-			const unspendable = channel.balance_sat - spendable;
-			reserveBalance += unspendable;
-			spendingBalance += spendable;
-		}
-	});
+	const { localBalance: spendingBalance } = getLightningBalance();
+	const reserveBalance = getLightningReserveBalance();
 
 	// TODO: filter out some types of claimable balances
 	const result = reduceValue(claimableBalances, 'amount_satoshis');
@@ -1411,10 +1402,9 @@ export const getBalance = ({
 
 	const onchainBalance =
 		wallet.getBalance() ?? currentWallet.balance[selectedNetwork];
-	const lightningBalance = spendingBalance + reserveBalance + claimableBalance;
-	const spendableBalance = onchainBalance + spendingBalance;
-	const totalBalance =
-		onchainBalance + spendingBalance + reserveBalance + claimableBalance;
+	const lightningBalance = spendingBalance + claimableBalance;
+	const spendableBalance = onchainBalance + spendingBalance - reserveBalance;
+	const totalBalance = onchainBalance + spendingBalance + claimableBalance;
 
 	return {
 		onchainBalance,

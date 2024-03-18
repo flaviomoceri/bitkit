@@ -49,10 +49,7 @@ const ForceTransfer = (): ReactElement => {
 
 		const tryChannelCoopClose = async (): Promise<void> => {
 			console.log('trying coop close');
-			const closeResponse = await closeAllChannels({
-				selectedNetwork,
-				selectedWallet,
-			});
+			const closeResponse = await closeAllChannels();
 			if (closeResponse.isErr()) {
 				console.log('coop close failed.');
 			}
@@ -95,8 +92,6 @@ const ForceTransfer = (): ReactElement => {
 
 		const closeResponse = await closeAllChannels({
 			force: true,
-			selectedNetwork,
-			selectedWallet,
 		});
 		if (closeResponse.isErr()) {
 			showToast({

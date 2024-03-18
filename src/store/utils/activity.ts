@@ -4,7 +4,7 @@ import { TChannel } from '@synonymdev/react-native-ldk';
 import { EActivityType, TLightningActivityItem } from '../types/activity';
 import { getBlocktankStore, dispatch } from '../helpers';
 import { getCurrentWallet } from '../../utils/wallet';
-import { getLightningChannels } from '../../utils/lightning';
+import { getChannels } from '../../utils/lightning';
 import { formatBoostedActivityItems } from '../../utils/boost';
 import { onChainTransactionToActivityItem } from '../../utils/activity';
 import { checkPendingCJitEntries } from './blocktank';
@@ -20,20 +20,12 @@ import { EPaymentType } from 'beignet';
  * @param {string} channelId
  */
 export const addCJitActivityItem = async (channelId: string): Promise<void> => {
-	const lightningChannels = await getLightningChannels();
-	if (lightningChannels.isErr()) {
-		return;
-	}
-	const lightningChannel = lightningChannels.value.find(
-		(channel: TChannel) => channel.channel_id === channelId,
-	);
-	if (!lightningChannel) {
+	const channels = getChannels();
+	const channel = channels.find((c: TChannel) => c.channel_id === channelId);
+	if (!channel) {
 		return; // Channel not found.
 	}
-	if (
-		lightningChannel.confirmations_required !== 0 ||
-		lightningChannel.balance_sat === 0
-	) {
+	if (channel.confirmations_required !== 0 || channel.balance_sat === 0) {
 		return; // No need to take action.
 	}
 
@@ -42,7 +34,7 @@ export const addCJitActivityItem = async (channelId: string): Promise<void> => {
 
 	// Check if we have a CJIT entry for this channel.
 	const cJitEntry = getBlocktankStore().cJitEntries.find((entry) => {
-		return entry?.channel?.fundingTx.id === lightningChannel.funding_txid;
+		return entry?.channel?.fundingTx.id === channel.funding_txid;
 	});
 	if (!cJitEntry) {
 		// No CJIT entry found for this channel.
@@ -51,13 +43,13 @@ export const addCJitActivityItem = async (channelId: string): Promise<void> => {
 	}
 
 	const activityItem: TLightningActivityItem = {
-		id: lightningChannel.funding_txid ?? '',
+		id: channel.funding_txid ?? '',
 		activityType: EActivityType.lightning,
 		txType: EPaymentType.received,
 		status: 'successful',
 		message: '',
 		address: cJitEntry.invoice.request,
-		value: lightningChannel.balance_sat,
+		value: channel.balance_sat,
 		confirmed: true,
 		timestamp: new Date().getTime(),
 	};

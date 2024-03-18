@@ -1,10 +1,8 @@
 import assert from 'node:assert';
 import cloneDeep from 'lodash/cloneDeep';
-import { TChannel } from '@synonymdev/react-native-ldk';
 
 import '../src/utils/i18n';
 import store, { RootState } from '../src/store';
-
 import { createNewWallet } from '../src/utils/startup';
 import { updateWallet } from '../src/store/actions/wallet';
 import { EAvailableNetwork } from '../src/utils/networks';
@@ -12,6 +10,7 @@ import {
 	balanceSelector,
 	lnSetupSelector,
 } from '../src/store/reselect/aggregations';
+import { TChannel, EChannelStatus } from '../src/store/types/lightning';
 
 describe('Reselect', () => {
 	let s: RootState;
@@ -60,18 +59,21 @@ describe('Reselect', () => {
 
 			const channel1 = {
 				channel_id: 'channel1',
+				status: EChannelStatus.open,
 				is_channel_ready: true,
 				outbound_capacity_sat: 1,
 				balance_sat: 2,
 			} as TChannel;
 			const channel2 = {
 				channel_id: 'channel2',
+				status: EChannelStatus.open,
 				is_channel_ready: true,
 				outbound_capacity_sat: 1,
 				balance_sat: 2,
 			} as TChannel;
 			const channel3 = {
 				channel_id: 'channel3',
+				status: EChannelStatus.closed,
 				is_channel_ready: false,
 				outbound_capacity_sat: 1,
 				balance_sat: 2,
@@ -79,11 +81,6 @@ describe('Reselect', () => {
 
 			const lnWallet = state.lightning.nodes.wallet0;
 			lnWallet.channels.bitcoinRegtest = { channel1, channel2, channel3 };
-			lnWallet.openChannelIds.bitcoinRegtest = [
-				'channel1',
-				'channel2',
-				'channel3',
-			];
 			lnWallet.claimableBalances.bitcoinRegtest = [
 				{ amount_satoshis: 3, type: 'ClaimableOnChannelClose' },
 			];
@@ -208,13 +205,13 @@ describe('Reselect', () => {
 			};
 			const channel1 = {
 				channel_id: 'channel1',
+				status: EChannelStatus.open,
 				is_channel_ready: true,
 				outbound_capacity_sat: 1,
 				balance_sat: 2,
 			} as TChannel;
 			const lnWallet = s1.lightning.nodes.wallet0;
 			lnWallet.channels.bitcoinRegtest = { channel1 };
-			lnWallet.openChannelIds.bitcoinRegtest = ['channel1'];
 			lnWallet.claimableBalances.bitcoinRegtest = [
 				{ amount_satoshis: 3, type: 'ClaimableOnChannelClose' },
 			];

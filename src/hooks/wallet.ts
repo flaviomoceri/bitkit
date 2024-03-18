@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import {
 	claimableBalanceSelector,
-	openChannelsSelector,
+	lightningBalanceSelector,
 	pendingPaymentsSelector,
 } from '../store/reselect/lightning';
 import { updateSettings } from '../store/slices/settings';
@@ -45,24 +45,13 @@ export const useBalance = (): {
 	});
 	const transfers = useAppSelector(transfersSelector);
 	const pendingPayments = useAppSelector(pendingPaymentsSelector);
-	const openChannels = useAppSelector(openChannelsSelector);
 	const claimableBalance = useAppSelector(claimableBalanceSelector);
 	const newChannels = useAppSelector(newChannelsNotificationsSelector);
-
-	// Get the total spending & reserved balance of all open channels
-	let spendingBalance = 0;
-	let reserveBalance = 0;
-	openChannels.forEach((channel) => {
-		if (channel.is_channel_ready) {
-			const spendable = channel.outbound_capacity_sat;
-			const unspendable = channel.balance_sat - spendable;
-			reserveBalance += unspendable;
-			spendingBalance += spendable;
-		}
-	});
+	const { lightningBalance, spendingBalance, reserveBalance } = useAppSelector(
+		lightningBalanceSelector,
+	);
 
 	const onchainBalance = currentWallet.balance[selectedNetwork];
-	const lightningBalance = spendingBalance + reserveBalance + claimableBalance;
 	const spendableBalance = onchainBalance + spendingBalance;
 	const pendingPaymentsBalance = pendingPayments.reduce(
 		(acc, payment) => acc + payment.amount,

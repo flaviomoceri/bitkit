@@ -9,7 +9,6 @@ import { rootNavigation } from '../../navigation/root/RootNavigator';
 import { BasicProfile, SlashPayConfig } from '../../store/types/slashtags';
 import { showToast } from '../notifications';
 import {
-	getCurrentWallet,
 	getReceiveAddress,
 	getSelectedAddressType,
 	getSelectedNetwork,
@@ -18,6 +17,7 @@ import {
 import {
 	decodeLightningInvoice,
 	getClaimedLightningPayments,
+	getOpenChannels,
 	waitForLdk,
 } from '../lightning';
 import { EAvailableNetwork } from '../networks';
@@ -249,13 +249,9 @@ export const updateSlashPayConfig = debounce(
 
 		// check if we need to update LN invoice
 		await waitForLdk();
-		const { currentLightningNode } = getCurrentWallet({
-			selectedWallet,
-			selectedNetwork,
-		});
-		const openChannelIds = currentLightningNode.openChannelIds[selectedNetwork];
 
-		if (openChannelIds.length) {
+		const openChannels = getOpenChannels();
+		if (openChannels.length) {
 			const currentInvoice =
 				payConfig.find(({ type }) => type === 'lightningInvoice')?.value ?? '';
 

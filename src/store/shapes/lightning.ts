@@ -5,7 +5,6 @@ export const defaultLightningShape: TNode = {
 	nodeId: getNetworkContent(''),
 	info: getNetworkContent({}),
 	channels: getNetworkContent({}),
-	openChannelIds: getNetworkContent([]),
 	peers: getNetworkContent([]),
 	claimableBalances: getNetworkContent([]),
 	backup: getNetworkContent({}),

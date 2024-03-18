@@ -1,12 +1,10 @@
 import assert from 'node:assert';
 import cloneDeep from 'lodash/cloneDeep';
-import { TChannel } from '@synonymdev/react-native-ldk';
 import { IBtOrder } from '@synonymdev/blocktank-lsp-http-client';
 
 import '../src/utils/i18n';
 import { todosFullSelector } from '../src/store/reselect/todos';
 import store, { RootState } from '../src/store';
-
 import { updateWallet } from '../src/store/actions/wallet';
 import {
 	backupSeedPhraseTodo,
@@ -23,6 +21,7 @@ import {
 import { createNewWallet } from '../src/utils/startup';
 import { EAvailableNetwork } from '../src/utils/networks';
 import { ETransferStatus, ETransferType } from '../src/store/types/wallet';
+import { TChannel, EChannelStatus } from '../src/store/types/lightning';
 
 describe('Todos selector', () => {
 	let s: RootState;
@@ -119,10 +118,10 @@ describe('Todos selector', () => {
 
 		const channel1 = {
 			channel_id: 'channel1',
+			status: EChannelStatus.open,
 			is_channel_ready: true,
 		} as TChannel;
 		state.lightning.nodes.wallet0.channels.bitcoinRegtest = { channel1 };
-		state.lightning.nodes.wallet0.openChannelIds.bitcoinRegtest = ['channel1'];
 		state.user.startCoopCloseTimestamp = 123;
 
 		expect(todosFullSelector(state)).toEqual(
@@ -134,10 +133,10 @@ describe('Todos selector', () => {
 		const state = cloneDeep(s);
 		const channel1 = {
 			channel_id: 'channel1',
+			status: EChannelStatus.open,
 			is_channel_ready: true,
 		} as TChannel;
 		state.lightning.nodes.wallet0.channels.bitcoinRegtest = { channel1 };
-		state.lightning.nodes.wallet0.openChannelIds.bitcoinRegtest = ['channel1'];
 		state.wallet.wallets.wallet0.transfers.bitcoinRegtest.push({
 			txId: 'txid',
 			type: ETransferType.open,
@@ -169,12 +168,12 @@ describe('Todos selector', () => {
 
 		const channel1 = {
 			channel_id: 'channel1',
+			status: EChannelStatus.open,
 			is_channel_ready: true,
 			confirmations: 1,
 			confirmations_required: 1,
 		} as TChannel;
 		state.lightning.nodes.wallet0.channels.bitcoinRegtest = { channel1 };
-		state.lightning.nodes.wallet0.openChannelIds.bitcoinRegtest = ['channel1'];
 
 		expect(todosFullSelector(state)).toEqual(
 			expect.arrayContaining([lightningReadyTodo]),
@@ -186,12 +185,12 @@ describe('Todos selector', () => {
 
 		const channel1 = {
 			channel_id: 'channel1',
+			status: EChannelStatus.open,
 			is_channel_ready: true,
 			confirmations: 1,
 			confirmations_required: 1,
 		} as TChannel;
 		state.lightning.nodes.wallet0.channels.bitcoinRegtest = { channel1 };
-		state.lightning.nodes.wallet0.openChannelIds.bitcoinRegtest = ['channel1'];
 		state.todos.newChannelsNotifications = { channel1: +new Date() };
 
 		expect(todosFullSelector(state)).not.toEqual(

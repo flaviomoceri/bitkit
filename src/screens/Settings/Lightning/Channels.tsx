@@ -2,10 +2,10 @@ import React, { ReactElement, memo, useState, useCallback } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import Share from 'react-native-share';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { TChannel } from '@synonymdev/react-native-ldk';
 import { useTranslation } from 'react-i18next';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { IBtOrder, BtOrderState } from '@synonymdev/blocktank-lsp-http-client';
+import { IBtOrder } from '@synonymdev/blocktank-lsp-http-client';
+import { BtOrderState2 } from '@synonymdev/blocktank-lsp-http-client/dist/shared/BtOrderState2';
 
 import {
 	AnimatedView,
@@ -41,8 +41,6 @@ import {
 	setupLdk,
 } from '../../../utils/lightning';
 import { showToast } from '../../../utils/notifications';
-
-import { usePaidBlocktankOrders } from '../../../hooks/blocktank';
 import {
 	useLightningChannelName,
 	useLightningBalance,
@@ -72,6 +70,7 @@ import {
 } from '../../../store/reselect/blocktank';
 import { TPaidBlocktankOrders } from '../../../store/types/blocktank';
 import { EUnit } from '../../../store/types/wallet';
+import { EChannelStatus, TChannel } from '../../../store/types/lightning';
 
 // Workaround for crash on Android
 // https://github.com/software-mansion/react-native-reanimated/issues/4306#issuecomment-1538184321
@@ -107,6 +106,7 @@ const getPendingBlocktankChannels = (
 		const fakeChannel: TChannel = {
 			channel_id: order.id,
 			confirmations: 0,
+			status: EChannelStatus.pending,
 			is_public: false,
 			is_usable: false,
 			is_channel_ready: false,
@@ -123,12 +123,13 @@ const getPendingBlocktankChannels = (
 			short_channel_id: order.id,
 			config_forwarding_fee_base_msat: 0,
 			config_forwarding_fee_proportional_millionths: 0,
+			createdAt: new Date().getTime(),
 		};
 
-		if (order.state === BtOrderState.CREATED) {
+		if (order.state2 === BtOrderState2.CREATED) {
 			pendingOrders.push(fakeChannel);
 		}
-		if (order.state === BtOrderState.EXPIRED) {
+		if (order.state2 === BtOrderState2.EXPIRED) {
 			failedOrders.push(fakeChannel);
 		}
 	});
@@ -148,18 +149,7 @@ const Channel = memo(
 		closed?: boolean;
 		onPress: (channel: TChannel) => void;
 	}): ReactElement => {
-		const paidBlocktankOrders = usePaidBlocktankOrders();
-		const blocktankOrder = Object.values(paidBlocktankOrders).find((order) => {
-			// real channel
-			if (channel.funding_txid) {
-				return order.channel?.fundingTx.id === channel.funding_txid;
-			}
-
-			// fake channel
-			return order.id === channel.channel_id;
-		});
-
-		const channelName = useLightningChannelName(channel, blocktankOrder);
+		const channelName = useLightningChannelName(channel);
 
 		const getChannelStatus = (): TStatus => {
 			if (pending) {

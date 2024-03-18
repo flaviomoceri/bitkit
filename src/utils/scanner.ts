@@ -39,6 +39,7 @@ import {
 	addPeer,
 	decodeLightningInvoice,
 	getLightningBalance,
+	getOpenChannels,
 } from './lightning';
 import { EAvailableNetwork } from './networks';
 import { savePeer } from '../store/utils/lightning';
@@ -629,8 +630,7 @@ export const processBitcoinTransactionData = async ({
 		if (inputValue > onchainBalance) {
 			onchainBalance = inputValue;
 		}
-		const openLightningChannels =
-			getLightningStore().nodes[selectedWallet].openChannelIds[selectedNetwork];
+		const openChannels = getOpenChannels();
 
 		// Filter for the lightning invoice.
 		const filteredLightningInvoice = data.find(
@@ -662,7 +662,7 @@ export const processBitcoinTransactionData = async ({
 		if (
 			decodedLightningInvoice &&
 			!decodedLightningInvoice.is_expired &&
-			openLightningChannels.length &&
+			openChannels.length &&
 			spendingBalance
 		) {
 			// Ensure we can afford to pay the lightning invoice. If so, pass it through.
@@ -892,9 +892,7 @@ export const handleData = async ({
 
 			// Determine if we have enough sending capacity before proceeding.
 			const lightningBalance = getLightningBalance({
-				selectedWallet,
-				selectedNetwork,
-				includeReserveBalance: false,
+				includeReserve: false,
 			});
 
 			if (lightningBalance.localBalance < params.minSendable) {
@@ -955,9 +953,7 @@ export const handleData = async ({
 
 			// Determine if we have enough receiving capacity before proceeding.
 			const lightningBalance = getLightningBalance({
-				selectedWallet,
-				selectedNetwork,
-				includeReserveBalance: false,
+				includeReserve: false,
 			});
 
 			if (lightningBalance.remoteBalance < params.minWithdrawable) {

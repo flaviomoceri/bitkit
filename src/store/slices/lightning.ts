@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import {
+	TChannel as TLdkChannel,
 	TBackupStateUpdate,
 	TClaimableBalance,
 } from '@synonymdev/react-native-ldk';
@@ -8,6 +9,7 @@ import { initialLightningState } from '../shapes/lightning';
 import { EAvailableNetwork } from '../../utils/networks';
 import { TWalletName } from '../types/wallet';
 import {
+	EChannelStatus,
 	TChannels,
 	TLdkAccountVersion,
 	TLightningNodeVersion,
@@ -38,20 +40,53 @@ export const lightningSlice = createSlice({
 		updateLightningChannels: (
 			state,
 			action: PayloadAction<{
-				channels: TChannels;
-				openChannelIds: string[];
+				channels: TLdkChannel[];
 				selectedWallet: TWalletName;
 				selectedNetwork: EAvailableNetwork;
 			}>,
 		) => {
-			const { channels, openChannelIds, selectedWallet, selectedNetwork } =
-				action.payload;
-			state.nodes[selectedWallet].channels[selectedNetwork] = {
-				...state.nodes[selectedWallet].channels[selectedNetwork],
-				...channels,
-			};
-			state.nodes[selectedWallet].openChannelIds[selectedNetwork] =
-				openChannelIds;
+			const { channels, selectedWallet, selectedNetwork } = action.payload;
+
+			// add status and createdAt (if new channel)
+			const current = state.nodes[selectedWallet].channels[selectedNetwork];
+			const updated = channels.map((channel) => {
+				const existing = Object.values(current).find((c) => {
+					return c.channel_id === channel.channel_id;
+				});
+
+				const status = channel.is_channel_ready
+					? EChannelStatus.open
+					: EChannelStatus.pending;
+
+				return {
+					...channel,
+					status,
+					createdAt: existing?.createdAt ?? new Date().getTime(),
+				};
+			});
+
+			// LDK only returns open channels, so we need to compare with stored channels to find closed ones
+			const closedChannels = Object.values(current)
+				.filter((o) => !channels.some((i) => i.channel_id === o.channel_id))
+				.map((channel) => {
+					// Mark closed channels as such
+					return {
+						...channel,
+						status: EChannelStatus.closed,
+						is_channel_ready: false,
+						is_usable: false,
+					};
+				});
+
+			const allChannels = [...updated, ...closedChannels];
+			// Channels come in unsorted, so we sort them by the added createdAt
+			const sorted = allChannels.sort((a, b) => a.createdAt - b.createdAt);
+			const channelsObject = sorted.reduce<TChannels>((acc, channel) => {
+				acc[channel.channel_id] = channel;
+				return acc;
+			}, {});
+
+			state.nodes[selectedWallet].channels[selectedNetwork] = channelsObject;
 		},
 		saveLightningPeer: (
 			state,

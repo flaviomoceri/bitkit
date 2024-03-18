@@ -1,6 +1,5 @@
 import React, { ReactElement, memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Display, Text01B, Text01S } from '../../styles/text';
@@ -9,14 +8,11 @@ import GlowingBackground from '../../components/GlowingBackground';
 import NavigationHeader from '../../components/NavigationHeader';
 import GlowImage from '../../components/GlowImage';
 import Button from '../../components/Button';
+import { useAppDispatch } from '../../hooks/redux';
 import { refreshWallet } from '../../utils/wallet';
 import { closeAllChannels } from '../../utils/lightning';
 import type { TransferScreenProps } from '../../navigation/types';
 import { startCoopCloseTimer } from '../../store/slices/user';
-import {
-	selectedNetworkSelector,
-	selectedWalletSelector,
-} from '../../store/reselect/wallet';
 
 const imageSrc = require('../../assets/illustrations/exclamation-mark.png');
 
@@ -26,8 +22,6 @@ const Availability = ({
 	const { t } = useTranslation('lightning');
 	const [isLoading, setIsLoading] = useState(false);
 	const dispatch = useAppDispatch();
-	const selectedWallet = useAppSelector(selectedWalletSelector);
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	const onCancel = (): void => {
 		navigation.goBack();
@@ -35,10 +29,7 @@ const Availability = ({
 
 	const onContinue = async (): Promise<void> => {
 		setIsLoading(true);
-		const closeResponse = await closeAllChannels({
-			selectedNetwork,
-			selectedWallet,
-		});
+		const closeResponse = await closeAllChannels();
 
 		if (closeResponse.isOk() && closeResponse.value.length === 0) {
 			await refreshWallet();

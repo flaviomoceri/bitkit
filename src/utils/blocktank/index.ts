@@ -1,15 +1,13 @@
 import {
 	BlocktankClient,
-	BtOrderState,
-	BtPaymentState,
 	IBtInfo,
 	IBtOrder,
 	ICJitEntry,
 } from '@synonymdev/blocktank-lsp-http-client';
 import { err, ok, Result } from '@synonymdev/result';
 import { CJitStateEnum } from '@synonymdev/blocktank-lsp-http-client/dist/shared/CJitStateEnum';
-import { BtOpenChannelState } from '@synonymdev/blocktank-lsp-http-client/dist/shared/BtOpenChannelState';
 import { IBt0ConfMinTxFeeWindow } from '@synonymdev/blocktank-lsp-http-client/dist/shared/IBt0ConfMinTxFeeWindow';
+import { BtOrderState2 } from '@synonymdev/blocktank-lsp-http-client/dist/shared/BtOrderState2';
 
 import { EAvailableNetwork } from '../networks';
 import { addPeers, getNodeId, refreshLdk } from '../lightning';
@@ -18,7 +16,6 @@ import {
 	refreshOrder,
 	refreshOrdersList,
 } from '../../store/utils/blocktank';
-import i18n from '../../utils/i18n';
 import { sleep } from '../helpers';
 import { dispatch, getBlocktankStore, getUserStore } from '../../store/helpers';
 import {
@@ -267,7 +264,7 @@ export const watchPendingOrders = (): void => {
 	const { orders, paidOrders } = getBlocktankStore();
 	orders
 		.filter((order) => {
-			return order.state === BtOrderState.CREATED && order.id in paidOrders;
+			return order.state2 === BtOrderState2.CREATED && order.id in paidOrders;
 		})
 		.forEach((order) => {
 			watchOrder(order.id);
@@ -282,10 +279,10 @@ export const getPendingOrders = (): IBtOrder[] => {
 	const orders = getBlocktankStore().orders;
 	return orders.filter((order) => {
 		return [
-			BtOrderState.CREATED,
-			BtOrderState.OPEN,
-			BtOrderState.EXPIRED,
-		].includes(order.state);
+			BtOrderState2.CREATED,
+			BtOrderState2.EXECUTED,
+			BtOrderState2.EXPIRED,
+		].includes(order.state2);
 	});
 };
 
@@ -327,11 +324,11 @@ export const watchOrder = async (
 			error = res.error.message;
 			break;
 		}
-		if (res.value.state === BtOrderState.EXPIRED) {
+		if (res.value.state2 === BtOrderState2.EXPIRED) {
 			error = 'Order expired.';
 			break;
 		}
-		if (res.value.state === BtOrderState.OPEN) {
+		if (res.value.state2 === BtOrderState2.EXECUTED) {
 			settled = true;
 			await refreshOrdersList();
 			break;
@@ -341,56 +338,6 @@ export const watchOrder = async (
 	watchingOrders.splice(watchingOrders.indexOf(orderId), 1); // Remove from watchingOrders
 	const expiry = orderData.value.orderExpiresAt;
 	return ok(`Watching order (${orderId}) until it expires at ${expiry}`);
-};
-
-/**
- * @param {IBtOrder} order
- * @returns {string}
- */
-export const getStateMessage = (order: IBtOrder): string => {
-	const orderState: BtOrderState = order.state;
-	const paymentState: BtPaymentState = order.payment.state;
-	const channelState: BtOpenChannelState | undefined = order.channel?.state;
-
-	switch (orderState) {
-		case BtOrderState.EXPIRED:
-			return i18n.t('lightning:order_state.expired');
-	}
-
-	switch (paymentState) {
-		case BtPaymentState.REFUNDED:
-			return i18n.t('lightning:order_state.refunded');
-	}
-
-	if (channelState) {
-		switch (channelState) {
-			case BtOpenChannelState.OPENING:
-				return i18n.t('lightning:order_state.opening');
-			case BtOpenChannelState.OPEN:
-				return i18n.t('lightning:order_state.open');
-			case BtOpenChannelState.CLOSED:
-				return i18n.t('lightning:order_state.closed');
-		}
-	}
-
-	switch (orderState) {
-		case BtOrderState.CLOSED:
-			return i18n.t('lightning:order_state.closed');
-		case BtOrderState.OPEN:
-			return i18n.t('lightning:order_state.open');
-	}
-
-	switch (paymentState) {
-		case BtPaymentState.CREATED:
-			return i18n.t('lightning:order_state.awaiting_payment');
-		case BtPaymentState.PAID:
-			return i18n.t('lightning:order_state.paid');
-	}
-
-	switch (orderState) {
-		case BtOrderState.CREATED:
-			return i18n.t('lightning:order_state.awaiting_payment');
-	}
 };
 
 /**
