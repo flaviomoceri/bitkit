@@ -3,6 +3,7 @@ import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useTranslation } from 'react-i18next';
 import { BtOrderState2 } from '@synonymdev/blocktank-lsp-http-client/dist/shared/BtOrderState2';
+import { BtPaymentState2 } from '@synonymdev/blocktank-lsp-http-client/dist/shared/BtPaymentState2';
 import {
 	BtOpenChannelState,
 	IBtOrder,
@@ -36,7 +37,6 @@ import { i18nTime } from '../../../utils/i18n';
 import { updateOrder } from '../../../store/utils/blocktank';
 import { EChannelStatus } from '../../../store/types/lightning';
 import type { SettingsScreenProps } from '../../../navigation/types';
-import { BtPaymentState2 } from '@synonymdev/blocktank-lsp-http-client/dist/shared/BtPaymentState2';
 
 const Section = memo(
 	({
@@ -90,7 +90,7 @@ const ChannelDetails = ({
 		return order.id === channel.channel_id;
 	});
 
-	const channelName = useLightningChannelName(channel, blocktankOrder);
+	const channelName = useLightningChannelName(channel);
 	const channelIsOpen = channel.status === EChannelStatus.open;
 
 	useEffect(() => {
@@ -496,20 +496,21 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 	},
 	channel: {
-		paddingTop: 16,
 		paddingBottom: 32,
 		marginBottom: 16,
 		borderBottomWidth: 1,
 		borderBottomColor: 'rgba(255, 255, 255, 0.1)',
 	},
 	status: {
-		marginBottom: 16,
+		paddingBottom: 16,
+		borderBottomWidth: 1,
+		borderBottomColor: 'rgba(255, 255, 255, 0.1)',
 	},
 	section: {
-		marginTop: 16,
+		marginTop: 32,
 	},
 	sectionTitle: {
-		height: 30,
+		marginBottom: 8,
 		flexDirection: 'row',
 		alignItems: 'center',
 	},

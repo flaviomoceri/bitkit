@@ -40,17 +40,10 @@ export const nodeSelector = createSelector(
 );
 
 export const channelsSelector = createSelector(
-	[
-		lightningState,
-		(_nodes, selectedWallet: TWalletName): TWalletName => selectedWallet,
-		(
-			_lightning,
-			_selectedWallet,
-			selectedNetwork: EAvailableNetwork,
-		): EAvailableNetwork => selectedNetwork,
-	],
-	(lightning, selectedWallet, selectedNetwork): { [key: string]: TChannel } =>
-		lightning.nodes[selectedWallet]?.channels[selectedNetwork],
+	[lightningState, selectedWalletSelector, selectedNetworkSelector],
+	(lightning, selectedWallet, selectedNetwork): { [key: string]: TChannel } => {
+		return lightning.nodes[selectedWallet]?.channels[selectedNetwork];
+	},
 );
 
 /**

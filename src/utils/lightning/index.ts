@@ -675,7 +675,7 @@ export const refreshLdk = async ({
 		}
 
 		await Promise.all([
-			updateLightningChannelsThunk({ selectedWallet, selectedNetwork }),
+			updateLightningChannelsThunk(),
 			syncLightningTxsWithActivityList(),
 		]);
 

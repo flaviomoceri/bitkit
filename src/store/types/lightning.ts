@@ -27,6 +27,7 @@ export enum EChannelStatus {
 
 export type TChannel = TLdkChannel & {
 	status: EChannelStatus;
+	createdAt: number;
 };
 
 export type TNode = {

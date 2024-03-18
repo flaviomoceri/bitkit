@@ -1,12 +1,15 @@
 import { useMemo } from 'react';
-import { useAppSelector } from '../hooks/redux';
 import { TChannel } from '@synonymdev/react-native-ldk';
-import { IBtOrder } from '@synonymdev/blocktank-lsp-http-client';
+import { useTranslation } from 'react-i18next';
 
 import { ellipsis } from '../utils/helpers';
+import { useAppSelector } from '../hooks/redux';
 import { TUseChannelBalance } from '../store/types/lightning';
-import { openChannelsSelector } from '../store/reselect/lightning';
 import { usePaidBlocktankOrders } from './blocktank';
+import {
+	channelsSelector,
+	openChannelsSelector,
+} from '../store/reselect/lightning';
 
 /**
  * Returns the lightning balance of all known open channels.
@@ -96,22 +99,35 @@ export const useLightningMaxInboundCapacity = (): number => {
 /**
  * Returns the name of a channel.
  * @param {TChannel} channel
- * @param {IBtOrder} blocktankOrder
  * @returns {string}
  */
-export const useLightningChannelName = (
-	channel: TChannel,
-	blocktankOrder?: IBtOrder,
-): string => {
+export const useLightningChannelName = (channel: TChannel): string => {
+	const { t } = useTranslation('lightning');
+	const channels = useAppSelector(channelsSelector);
 	const paidBlocktankOrders = usePaidBlocktankOrders();
 
-	if (blocktankOrder) {
-		const index = paidBlocktankOrders.findIndex(
-			(order) => order.id === blocktankOrder.id,
-		);
-		return `Connection ${index + 1}`;
+	const pendingChannels = paidBlocktankOrders.filter((order) => {
+		return !Object.values(channels).find((c) => {
+			return c.funding_txid === order.channel?.fundingTx.id;
+		});
+	});
+	const pendingIndex = pendingChannels.findIndex((order) => {
+		return channel.channel_id === order.id;
+	});
+	const channelIndex = Object.values(channels).findIndex((c) => {
+		return channel.channel_id === c.channel_id;
+	});
+
+	if (channelIndex === -1) {
+		if (pendingIndex === -1) {
+			// If channel is found neither in open/closed channels nor in pending orders, show the channel id
+			const shortChannelId = ellipsis(channel.channel_id, 10);
+			return channel.inbound_scid_alias || shortChannelId;
+		} else {
+			const index = Object.values(channels).length + pendingIndex;
+			return `${t('connection')} ${index + 1}`;
+		}
 	} else {
-		const shortChannelId = ellipsis(channel.channel_id, 10);
-		return channel.inbound_scid_alias || shortChannelId;
+		return `${t('connection')} ${channelIndex + 1}`;
 	}
 };
