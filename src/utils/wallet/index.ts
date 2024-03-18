@@ -937,6 +937,8 @@ const onElectrumConnectionChange = (isConnected: boolean): void => {
 	}
 };
 
+// Used to prevent duplicate notifications for the same txid that seems to occur when Bitkit is brought from background to foreground.
+let receivedTxids: string[] = [];
 const onMessage: TOnMessage = (key, data) => {
 	switch (key) {
 		case 'transactionReceived':
@@ -953,11 +955,13 @@ const onMessage: TOnMessage = (key, data) => {
 				});
 				const isTransferToSavings = transfer?.type === 'coop-close' ?? false;
 
-				if (!isTransferToSavings) {
+				const isDuplicate = receivedTxids.includes(txId);
+				if (!isTransferToSavings && !isDuplicate) {
 					showNewOnchainTxPrompt({
 						id: txId,
 						value: btcToSats(txMsg.transaction.value),
 					});
+					receivedTxids.push(txId);
 				}
 			}
 			setTimeout(() => {
@@ -996,7 +1000,9 @@ const onMessage: TOnMessage = (key, data) => {
 			});
 			break;
 		case 'newBlock':
-			refreshWallet({}).then();
+			refreshWallet({
+				onchain: false, // Beignet will handle this.
+			}).then();
 	}
 };
 
