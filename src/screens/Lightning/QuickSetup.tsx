@@ -48,7 +48,6 @@ import {
 import { lnSetupSelector } from '../../store/reselect/aggregations';
 import NumberPadTextField from '../../components/NumberPadTextField';
 import { getNumberPadText } from '../../utils/numberpad';
-import { DEFAULT_CHANNEL_DURATION } from './CustomConfirm';
 
 const QuickSetup = ({
 	navigation,
@@ -146,7 +145,6 @@ const QuickSetup = ({
 			selectedWallet,
 			remoteBalance: spendingAmount!,
 			localBalance: lspBalance,
-			channelExpiry: DEFAULT_CHANNEL_DURATION,
 			lspNodeId: blocktankInfo.nodes[0].pubkey,
 			zeroConfPayment:
 				spendingAmount <= blocktankInfo.options.max0ConfClientBalanceSat,

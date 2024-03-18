@@ -15,7 +15,6 @@ import { useScreenSize } from '../../../hooks/screen';
 import { useCurrency, useDisplayValues } from '../../../hooks/displayValues';
 import { useLightningBalance } from '../../../hooks/lightning';
 import { receiveSelector } from '../../../store/reselect/receive';
-import { DEFAULT_CHANNEL_DURATION } from '../../Lightning/CustomConfirm';
 import { addCjitEntry } from '../../../store/slices/blocktank';
 import { updateInvoice } from '../../../store/slices/receive';
 import { createCJitEntry, estimateOrderFee } from '../../../utils/blocktank';
@@ -44,10 +43,7 @@ const ReceiveConnect = ({
 
 	useEffect(() => {
 		const getFeeEstimation = async (): Promise<void> => {
-			const estimate = await estimateOrderFee({
-				lspBalanceSat: amount,
-				channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
-			});
+			const estimate = await estimateOrderFee({ lspBalanceSat: amount });
 			if (estimate.isOk()) {
 				setFeeEstimate(estimate.value);
 			}
@@ -62,8 +58,6 @@ const ReceiveConnect = ({
 			channelSizeSat: maxChannelSizeSat,
 			invoiceSat: amount,
 			invoiceDescription: message,
-			channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
-			couponCode: 'bitkit',
 		});
 		if (cJitEntryResponse.isErr()) {
 			showToast({

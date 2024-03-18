@@ -22,13 +22,12 @@ import {
 	startChannelPurchase,
 } from '../../store/utils/blocktank';
 import { showToast } from '../../utils/notifications';
+import { DEFAULT_CHANNEL_DURATION } from '../../utils/wallet/constants';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 	transactionFeeSelector,
 } from '../../store/reselect/wallet';
-
-export const DEFAULT_CHANNEL_DURATION = 6;
 
 const CustomConfirm = ({
 	navigation,

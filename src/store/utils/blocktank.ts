@@ -48,6 +48,7 @@ import { showToast } from '../../utils/notifications';
 import { getDisplayValues } from '../../utils/displayValues';
 import i18n from '../../utils/i18n';
 import { refreshLdk } from '../../utils/lightning';
+import { DEFAULT_CHANNEL_DURATION } from '../../utils/wallet/constants';
 import { ETransferStatus, ETransferType, TWalletName } from '../types/wallet';
 import {
 	addPaidBlocktankOrder,
@@ -56,7 +57,6 @@ import {
 	updateBlocktankOrder,
 	updateCjitEntry,
 } from '../slices/blocktank';
-import { DEFAULT_CHANNEL_DURATION } from '../../screens/Lightning/CustomConfirm';
 
 /**
  * Retrieves & updates the status of stored orders that may have changed.
