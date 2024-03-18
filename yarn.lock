@@ -12667,10 +12667,9 @@ react-native-keyboard-accessory@0.1.16:
   resolved "https://registry.yarnpkg.com/react-native-keyboard-accessory/-/react-native-keyboard-accessory-0.1.16.tgz#f0babba9e6568c0c2c8f3fd774fcb2b90b8274ba"
   integrity sha512-zpdaduoGjp/spLtM0XxxyxFpCqFQu3fospy/HeYpaIfsXTqGdT1MIajS8tahDxeG6fHLDrWvEIYA6zWM5jni0w==
 
-react-native-keychain@8.1.2:
-  version "8.1.2"
-  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-8.1.2.tgz#34291ae472878e5124d081211af5ede7d810e64f"
-  integrity sha512-bhHEui+yMp3Us41NMoRGtnWEJiBE0g8tw5VFpq4mpmXAx6XJYahuM6K3WN5CsUeUl83hYysSL9oFZNKSTPSvYw==
+"react-native-keychain@git+ssh://git@github.com:synonymdev/react-native-keychain.git#refactor/android-data-store":
+  version "8.2.0"
+  resolved "git+ssh://git@github.com:synonymdev/react-native-keychain.git#7378c469afe81195487a3163295be425af79fa7a"
 
 react-native-localize@3.0.2:
   version "3.0.2"

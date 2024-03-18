@@ -548,7 +548,7 @@ PODS:
   - RNGestureHandler (2.13.4):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - RNKeychain (8.1.2):
+  - RNKeychain (8.2.0):
     - React-Core
   - RNLocalize (3.0.2):
     - React-Core
@@ -945,7 +945,7 @@ SPEC CHECKSUMS:
   RNExitApp: 00036cabe7bacbb413d276d5520bf74ba39afa6a
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 5102af8c91262d5a9b757a56e734b1a02071d83b
-  RNKeychain: a65256b6ca6ba6976132cc4124b238a5b13b3d9c
+  RNKeychain: bfe3d12bf4620fe488771c414530bf16e88f3678
   RNLocalize: dbea38dcb344bf80ff18a1757b1becf11f70cae4
   RNPermissions: 2c0eec471f4de66d04d226c339898d10a6e123c4
   RNQrGenerator: 90461ba3ca88c1d38ef73da50fade35d9648215d
