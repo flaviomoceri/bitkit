@@ -67,9 +67,12 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 
 	useFocusEffect(
 		useCallback(() => {
-			resetSendTransaction();
-			setupOnChainTransaction({}).then();
-			refreshBlocktankInfo().then();
+			const setupTransfer = async (): Promise<void> => {
+				await resetSendTransaction();
+				await setupOnChainTransaction();
+				refreshBlocktankInfo().then();
+			};
+			setupTransfer();
 		}, []),
 	);
 

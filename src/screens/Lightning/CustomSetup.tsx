@@ -138,10 +138,12 @@ const CustomSetup = ({
 
 	useFocusEffect(
 		useCallback(() => {
-			resetSendTransaction().then(() => {
-				setupOnChainTransaction({}).then();
-			});
-			refreshBlocktankInfo().then();
+			const setupTransfer = async (): Promise<void> => {
+				await resetSendTransaction();
+				await setupOnChainTransaction();
+				refreshBlocktankInfo().then();
+			};
+			setupTransfer();
 		}, []),
 	);
 

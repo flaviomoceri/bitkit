@@ -10,7 +10,6 @@ import {
 import {
 	addTransfer,
 	removeTransfer,
-	resetSendTransaction,
 	updateSendTransaction,
 } from '../actions/wallet';
 import { setLightningSetupStep } from '../slices/user';
@@ -391,9 +390,6 @@ export const confirmChannelPurchase = async ({
 		orderId: order.id,
 		amount: order.clientBalanceSat,
 	});
-
-	// Reset tx data.
-	await resetSendTransaction();
 
 	watchOrder(order.id).then();
 	dispatch(setLightningSetupStep(0));
