@@ -16,7 +16,10 @@ import { useCurrency, useDisplayValues } from '../../hooks/displayValues';
 import NumberPadWeeks from './NumberPadWeeks';
 import { LightningScreenProps } from '../../navigation/types';
 import { sleep } from '../../utils/helpers';
-import { blocktankOrderSelector } from '../../store/reselect/blocktank';
+import {
+	blocktankInfoSelector,
+	blocktankOrderSelector,
+} from '../../store/reselect/blocktank';
 import {
 	confirmChannelPurchase,
 	startChannelPurchase,
@@ -42,6 +45,7 @@ const CustomConfirm = ({
 	const transactionFee = useAppSelector(transactionFeeSelector);
 	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
+	const blocktankInfo = useAppSelector(blocktankInfoSelector);
 	const order = useAppSelector((state) => {
 		return blocktankOrderSelector(state, orderId);
 	});
@@ -70,11 +74,12 @@ const CustomConfirm = ({
 	};
 
 	const updateOrderExpiration = async (): Promise<void> => {
+		const max0ConfBalance = blocktankInfo.options.max0ConfClientBalanceSat;
 		const purchaseResponse = await startChannelPurchase({
 			remoteBalance: order.clientBalanceSat,
 			localBalance: order.lspBalanceSat,
 			channelExpiry: Math.max(weeks, 1),
-			zeroConfPayment: order.zeroConf,
+			zeroConfPayment: order.clientBalanceSat <= max0ConfBalance,
 			selectedWallet,
 			selectedNetwork,
 		});
