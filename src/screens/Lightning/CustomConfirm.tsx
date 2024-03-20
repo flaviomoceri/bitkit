@@ -74,12 +74,12 @@ const CustomConfirm = ({
 	};
 
 	const updateOrderExpiration = async (): Promise<void> => {
-		const max0ConfBalance = blocktankInfo.options.max0ConfClientBalanceSat;
+		const { max0ConfClientBalanceSat, minExpiryWeeks } = blocktankInfo.options;
 		const purchaseResponse = await startChannelPurchase({
 			remoteBalance: order.clientBalanceSat,
 			localBalance: order.lspBalanceSat,
-			channelExpiry: Math.max(weeks, 1),
-			zeroConfPayment: order.clientBalanceSat <= max0ConfBalance,
+			channelExpiry: Math.max(weeks, minExpiryWeeks),
+			zeroConfPayment: order.clientBalanceSat <= max0ConfClientBalanceSat,
 			selectedWallet,
 			selectedNetwork,
 		});
@@ -99,9 +99,7 @@ const CustomConfirm = ({
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('add_instant_payments')}
-				onClosePress={(): void => {
-					navigation.navigate('Wallet');
-				}}
+				onClosePress={(): void => navigation.navigate('Wallet')}
 			/>
 			<View style={styles.root} testID="CustomConfirm">
 				{!showNumberPad && (
@@ -179,11 +177,7 @@ const CustomConfirm = ({
 				)}
 
 				{showNumberPad && (
-					<AnimatedView
-						style={styles.weeks}
-						color="transparent"
-						entering={FadeIn}
-						exiting={FadeOut}>
+					<AnimatedView color="transparent" entering={FadeIn} exiting={FadeOut}>
 						<Caption13Up style={styles.text} color="purple">
 							{t('duration_week', { count: weeks })}
 						</Caption13Up>
@@ -226,10 +220,6 @@ const styles = StyleSheet.create({
 	},
 	block: {
 		marginBottom: 32,
-	},
-	weeks: {
-		alignSelf: 'flex-start',
-		alignItems: 'center',
 	},
 	buttonContainer: {
 		marginTop: 'auto',
