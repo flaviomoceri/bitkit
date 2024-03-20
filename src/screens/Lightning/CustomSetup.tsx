@@ -50,7 +50,6 @@ import {
 } from '../../store/reselect/wallet';
 import NumberPadTextField from '../../components/NumberPadTextField';
 import { getNumberPadText } from '../../utils/numberpad';
-import { DEFAULT_CHANNEL_DURATION } from './CustomConfirm';
 import { SPENDING_LIMIT_RATIO } from '../../utils/wallet/constants';
 import { refreshBlocktankInfo } from '../../store/utils/blocktank';
 import { useDisplayValues } from '../../hooks/displayValues';
@@ -139,10 +138,12 @@ const CustomSetup = ({
 
 	useFocusEffect(
 		useCallback(() => {
-			resetSendTransaction().then(() => {
-				setupOnChainTransaction({}).then();
-			});
-			refreshBlocktankInfo().then();
+			const setupTransfer = async (): Promise<void> => {
+				await resetSendTransaction();
+				await setupOnChainTransaction();
+				refreshBlocktankInfo().then();
+			};
+			setupTransfer();
 		}, []),
 	);
 
@@ -292,10 +293,8 @@ const CustomSetup = ({
 			}
 			const res = await estimateOrderFee({
 				lspBalanceSat: amount,
-				channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
 				options: {
 					clientBalanceSat: spendingAmount,
-					couponCode: 'bitkit',
 					lspNodeId: blocktankInfo.nodes[0].pubkey,
 					turboChannel:
 						spendingAmount <= blocktankInfo.options.max0ConfClientBalanceSat,
@@ -419,7 +418,6 @@ const CustomSetup = ({
 		const purchaseResponse = await startChannelPurchase({
 			remoteBalance: spendingAmount!,
 			localBalance: amount,
-			channelExpiry: DEFAULT_CHANNEL_DURATION,
 			zeroConfPayment:
 				spendingAmount! <= blocktankInfo.options.max0ConfClientBalanceSat,
 			selectedWallet,

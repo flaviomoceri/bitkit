@@ -389,9 +389,7 @@ export const deleteOnChainTransactionById = async ({
 	txid: string;
 }): Promise<void> => {
 	const wallet = getOnChainWallet();
-	return await wallet.deleteOnChainTransactionById({
-		txid,
-	});
+	return await wallet.deleteOnChainTransactionById({ txid });
 };
 
 /**
@@ -687,13 +685,9 @@ export const updateHeader = ({
 	header: IHeader;
 	selectedNetwork?: EAvailableNetwork;
 }): void => {
-	const payload = {
-		header,
-		selectedNetwork,
-	};
 	dispatch({
 		type: actions.UPDATE_HEADER,
-		payload,
+		payload: { header, selectedNetwork },
 	});
 };
 
@@ -868,6 +862,8 @@ export const setWalletData = async <K extends keyof IWalletData>(
 				const header = data as IHeader;
 				const selectedNetwork = getNetworkFromBeignet(network);
 				updateHeader({ header, selectedNetwork });
+				// Make sure transactions are updated after a new block is received.
+				await refreshWallet({ lightning: false });
 				updatePendingTransfers(header.height);
 				break;
 			case 'feeEstimates':

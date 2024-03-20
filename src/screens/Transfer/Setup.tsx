@@ -67,9 +67,12 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 
 	useFocusEffect(
 		useCallback(() => {
-			resetSendTransaction();
-			setupOnChainTransaction({}).then();
-			refreshBlocktankInfo().then();
+			const setupTransfer = async (): Promise<void> => {
+				await resetSendTransaction();
+				await setupOnChainTransaction();
+				refreshBlocktankInfo().then();
+			};
+			setupTransfer();
 		}, []),
 	);
 
@@ -77,9 +80,9 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 		return convertToSats(textFieldValue, conversionUnit);
 	}, [textFieldValue, conversionUnit]);
 
-	const lnSetup = useAppSelector((state) =>
-		lnSetupSelector(state, spendingAmount),
-	);
+	const lnSetup = useAppSelector((state) => {
+		return lnSetupSelector(state, spendingAmount);
+	});
 
 	const btSpendingLimitBalancedUsd = useMemo((): string => {
 		const { fiatWhole } = getFiatDisplayValues({

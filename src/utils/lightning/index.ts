@@ -191,14 +191,17 @@ const broadcastTransaction: TBroadcastTransaction = async (
 
 	const transaction = decodeRawTx(rawTx, bitcoin.networks.regtest);
 
-	// TODO: distinguish between coop and force-close
-	addTransfer({
-		txId: transaction.txid,
-		type: ETransferType.coopClose,
-		status: ETransferStatus.pending,
-		amount: transaction.outputs[0].satoshi,
-		confirmations: 0,
-	});
+	// only show transfer if transaction has an output to our wallet
+	if (transaction.outputs.length > 1) {
+		// TODO: distinguish between coop and force-close
+		addTransfer({
+			txId: transaction.txid,
+			type: ETransferType.coopClose,
+			status: ETransferStatus.pending,
+			amount: transaction.outputs[0].satoshi,
+			confirmations: 0,
+		});
+	}
 
 	return ok(res.value);
 };
@@ -1761,14 +1764,12 @@ export const getLightningBalance = ({
 	let remoteBalance = 0;
 
 	openChannels.forEach((channel) => {
-		const reserve = channel.unspendable_punishment_reserve ?? 0;
+		const localReserve = channel.unspendable_punishment_reserve ?? 0;
 		localBalance += includeReserve
-			? channel.outbound_capacity_sat + reserve
+			? channel.outbound_capacity_sat + localReserve
 			: channel.outbound_capacity_sat;
 
-		remoteBalance += includeReserve
-			? channel.inbound_capacity_sat + reserve
-			: channel.inbound_capacity_sat;
+		remoteBalance += channel.inbound_capacity_sat;
 	});
 
 	return { localBalance, remoteBalance };

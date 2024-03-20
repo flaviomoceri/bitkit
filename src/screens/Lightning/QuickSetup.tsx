@@ -48,7 +48,6 @@ import {
 import { lnSetupSelector } from '../../store/reselect/aggregations';
 import NumberPadTextField from '../../components/NumberPadTextField';
 import { getNumberPadText } from '../../utils/numberpad';
-import { DEFAULT_CHANNEL_DURATION } from './CustomConfirm';
 
 const QuickSetup = ({
 	navigation,
@@ -69,10 +68,12 @@ const QuickSetup = ({
 
 	useFocusEffect(
 		useCallback(() => {
-			resetSendTransaction().then(() => {
-				setupOnChainTransaction().then();
-			});
-			refreshBlocktankInfo().then();
+			const setupTransfer = async (): Promise<void> => {
+				await resetSendTransaction();
+				await setupOnChainTransaction();
+				refreshBlocktankInfo().then();
+			};
+			setupTransfer();
 		}, []),
 	);
 
@@ -80,9 +81,9 @@ const QuickSetup = ({
 		return convertToSats(textFieldValue, conversionUnit);
 	}, [textFieldValue, conversionUnit]);
 
-	const lnSetup = useAppSelector((state) =>
-		lnSetupSelector(state, spendingAmount),
-	);
+	const lnSetup = useAppSelector((state) => {
+		return lnSetupSelector(state, spendingAmount);
+	});
 
 	const btSpendingLimitBalancedUsd = useMemo((): string => {
 		const { fiatWhole } = getFiatDisplayValues({
@@ -146,7 +147,6 @@ const QuickSetup = ({
 			selectedWallet,
 			remoteBalance: spendingAmount!,
 			localBalance: lspBalance,
-			channelExpiry: DEFAULT_CHANNEL_DURATION,
 			lspNodeId: blocktankInfo.nodes[0].pubkey,
 			zeroConfPayment:
 				spendingAmount <= blocktankInfo.options.max0ConfClientBalanceSat,

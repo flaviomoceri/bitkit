@@ -34,7 +34,6 @@ import {
 	deletePendingInvoice,
 } from '../../../store/slices/metadata';
 import { createCJitEntry } from '../../../utils/blocktank';
-import { DEFAULT_CHANNEL_DURATION } from '../../Lightning/CustomConfirm';
 import { blocktankInfoSelector } from '../../../store/reselect/blocktank';
 import { isGeoBlockedSelector } from '../../../store/reselect/user';
 import { useLightningBalance } from '../../../hooks/lightning';
@@ -48,7 +47,7 @@ const imageSrc = require('../../../assets/illustrations/coin-stack-4.png');
 
 // hardcoded to be above fee (1092)
 // TODO: fee is dynamic so this should be fetched from the API
-const MINIMUM_AMOUNT = 5000;
+const MINIMUM_AMOUNT = 20000;
 
 const ReceiveDetails = ({
 	navigation,
@@ -98,8 +97,6 @@ const ReceiveDetails = ({
 				channelSizeSat: maxChannelSizeSat,
 				invoiceSat: invoice.amount,
 				invoiceDescription: invoice.message,
-				channelExpiryWeeks: DEFAULT_CHANNEL_DURATION,
-				couponCode: 'bitkit',
 			});
 			if (cJitEntryResponse.isErr()) {
 				console.log({ error: cJitEntryResponse.error.message });

@@ -48,7 +48,6 @@ const QuickConfirm = ({
 	const fiatTransactionFee = useDisplayValues(transactionFee);
 	const clientBalance = useDisplayValues(order?.clientBalanceSat ?? 0);
 
-	// TODO: avoid flashing different price & allocation after confirmation
 	const txFee = fiatTransactionFee.fiatValue;
 	const lspFee = purchaseFeeValue.fiatValue - clientBalance.fiatValue;
 

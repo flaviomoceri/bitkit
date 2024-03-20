@@ -166,7 +166,7 @@ d('Lightning', () => {
 			await waitFor(
 				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			)
-				.toHaveText('50 000')
+				.toHaveText('49 000')
 				.withTimeout(10000);
 
 			// send funds to LDK, 111 sats invoice
@@ -196,7 +196,7 @@ d('Lightning', () => {
 			await waitFor(
 				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			)
-				.toHaveText('50 111')
+				.toHaveText('49 111')
 				.withTimeout(10000);
 
 			// send funds to LND, 0 invoice
@@ -222,7 +222,7 @@ d('Lightning', () => {
 			await waitFor(
 				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			)
-				.toHaveText('50 000')
+				.toHaveText('49 000')
 				.withTimeout(10000);
 
 			// send funds to LND, 10000 invoice
@@ -249,7 +249,7 @@ d('Lightning', () => {
 			await waitFor(
 				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			)
-				.toHaveText('49 000')
+				.toHaveText('48 000')
 				.withTimeout(10000);
 
 			// check tx history
@@ -383,7 +383,7 @@ d('Lightning', () => {
 			await waitFor(
 				element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 			)
-				.toHaveText('49 000')
+				.toHaveText('48 000')
 				.withTimeout(10000);
 
 			// check tx history

@@ -17,6 +17,7 @@ import {
 	refreshOrdersList,
 } from '../../store/utils/blocktank';
 import { sleep } from '../helpers';
+import { DEFAULT_CHANNEL_DURATION } from '../../utils/wallet/constants';
 import { dispatch, getBlocktankStore, getUserStore } from '../../store/helpers';
 import {
 	ICreateOrderRequest,
@@ -25,7 +26,6 @@ import {
 import { updateUser } from '../../store/slices/user';
 import { setGeoBlock } from '../../store/utils/user';
 import { refreshWallet } from '../wallet';
-import { DEFAULT_CHANNEL_DURATION } from '../../screens/Lightning/CustomConfirm';
 import { __BLOCKTANK_HOST__ } from '../../constants/env';
 
 const bt = new BlocktankClient();
@@ -80,24 +80,22 @@ export const getBlocktankInfo = async (
  * @param {ICreateOrderRequest} data
  * @returns {Promise<Result<IBtOrder>>}
  */
-export const createOrder = async (
-	data: ICreateOrderRequest,
-): Promise<Result<IBtOrder>> => {
+export const createOrder = async ({
+	lspBalanceSat,
+	channelExpiryWeeks = DEFAULT_CHANNEL_DURATION,
+	options,
+}: ICreateOrderRequest): Promise<Result<IBtOrder>> => {
 	try {
 		// Ensure we're properly connected to the Blocktank node prior to buying a channel.
 		const addPeersRes = await addPeers();
 		if (addPeersRes.isErr()) {
 			return err('Unable to add Blocktank node as a peer at this time.');
 		}
-		const buyRes = await bt.createOrder(
-			data.lspBalanceSat,
-			data.channelExpiryWeeks,
-			{
-				...data.options,
-				couponCode: data.options?.couponCode ?? 'bitkit',
-				zeroReserve: true,
-			},
-		);
+		const buyRes = await bt.createOrder(lspBalanceSat, channelExpiryWeeks, {
+			...options,
+			couponCode: options?.couponCode ?? 'bitkit',
+			zeroReserve: true,
+		});
 		if (buyRes?.id) {
 			await refreshOrder(buyRes.id);
 		}
@@ -112,16 +110,18 @@ export const createOrder = async (
  * @param {ICreateOrderRequest} data
  * @returns {Promise<Result<number>>}
  */
-export const estimateOrderFee = async (
-	data: ICreateOrderRequest,
-): Promise<Result<number>> => {
+export const estimateOrderFee = async ({
+	lspBalanceSat,
+	channelExpiryWeeks = DEFAULT_CHANNEL_DURATION,
+	options,
+}: ICreateOrderRequest): Promise<Result<number>> => {
 	try {
 		const estimateRes = await bt.estimateOrderFee(
-			data.lspBalanceSat,
-			data.channelExpiryWeeks,
+			lspBalanceSat,
+			channelExpiryWeeks,
 			{
-				...data.options,
-				couponCode: data.options?.couponCode ?? 'bitkit',
+				...options,
+				couponCode: options?.couponCode ?? 'bitkit',
 				zeroReserve: true,
 			},
 		);
@@ -146,7 +146,7 @@ export const createCJitEntry = async ({
 	channelSizeSat: number;
 	invoiceSat: number;
 	invoiceDescription: string;
-	channelExpiryWeeks: number;
+	channelExpiryWeeks?: number;
 	couponCode?: string;
 }): Promise<Result<ICJitEntry>> => {
 	try {
