@@ -191,14 +191,17 @@ const broadcastTransaction: TBroadcastTransaction = async (
 
 	const transaction = decodeRawTx(rawTx, bitcoin.networks.regtest);
 
-	// TODO: distinguish between coop and force-close
-	addTransfer({
-		txId: transaction.txid,
-		type: ETransferType.coopClose,
-		status: ETransferStatus.pending,
-		amount: transaction.outputs[0].satoshi,
-		confirmations: 0,
-	});
+	// only show transfer if transaction has an output to our wallet
+	if (transaction.outputs.length > 1) {
+		// TODO: distinguish between coop and force-close
+		addTransfer({
+			txId: transaction.txid,
+			type: ETransferType.coopClose,
+			status: ETransferStatus.pending,
+			amount: transaction.outputs[0].satoshi,
+			confirmations: 0,
+		});
+	}
 
 	return ok(res.value);
 };
