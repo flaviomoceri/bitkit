@@ -71,6 +71,7 @@ import {
 import { TPaidBlocktankOrders } from '../../../store/types/blocktank';
 import { EUnit } from '../../../store/types/wallet';
 import { EChannelStatus, TChannel } from '../../../store/types/lightning';
+import { isGeoBlockedSelector } from '../../../store/reselect/user';
 
 // Workaround for crash on Android
 // https://github.com/software-mansion/react-native-reanimated/issues/4306#issuecomment-1538184321
@@ -238,6 +239,7 @@ const Channels = ({
 	const openChannels = useAppSelector(openChannelsSelector);
 	const pendingChannels = useAppSelector(pendingChannelsSelector);
 	const closedChannels = useAppSelector(closedChannelsSelector);
+	const isGeoBlocked = useAppSelector(isGeoBlockedSelector);
 	const blocktankNodeKey = useAppSelector((state) => {
 		return state.blocktank.info.nodes[0].pubkey;
 	});
@@ -362,7 +364,7 @@ const Channels = ({
 	}, [peer, selectedNetwork, selectedWallet, t]);
 
 	const addConnectionIsDisabled =
-		onchainBalance <= TRANSACTION_DEFAULTS.recommendedBaseFee;
+		onchainBalance <= TRANSACTION_DEFAULTS.recommendedBaseFee || isGeoBlocked;
 
 	return (
 		<ThemedView style={styles.root}>
@@ -370,7 +372,11 @@ const Channels = ({
 			<NavigationHeader
 				title={t('connections')}
 				onActionPress={addConnectionIsDisabled ? undefined : handleAdd}
-				actionIcon={<PlusIcon width={24} height={24} />}
+				actionIcon={
+					addConnectionIsDisabled ? undefined : (
+						<PlusIcon width={24} height={24} />
+					)
+				}
 			/>
 			<ScrollView
 				contentContainerStyle={styles.content}
