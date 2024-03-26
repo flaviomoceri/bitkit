@@ -978,15 +978,18 @@ const onMessage: TOnMessage = (key, data) => {
 			break;
 		case 'reorg':
 			const utxoArr = data as IUtxo[];
-			// Notify user that a reorg has occurred and that the transaction has been pushed back into the mempool.
-			showToast({
-				type: 'info',
-				title: i18n.t('wallet:reorg_detected'),
-				description: i18n.t('wallet:reorg_msg_begin', {
-					count: utxoArr.length,
-				}),
-				autoHide: false,
-			});
+			// Only notify users of reorg's that impact their transactions.
+			if (utxoArr.length) {
+				// Notify user that a reorg has occurred and that the transaction has been pushed back into the mempool.
+				showToast({
+					type: 'info',
+					title: i18n.t('wallet:reorg_detected'),
+					description: i18n.t('wallet:reorg_msg_begin', {
+						count: utxoArr.length,
+					}),
+					autoHide: false,
+				});
+			}
 			break;
 		case 'rbf':
 			const rbfData = data as string[];
