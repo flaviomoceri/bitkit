@@ -11,16 +11,18 @@ export const GAP_LIMIT = 20;
 // TODO: remove chunk logic and move it to rn-electrum library
 export const CHUNK_LIMIT = 15;
 
-//How much of the users funds we allow to be used for Lightning.
-export const SPENDING_LIMIT_RATIO = 0.8;
-
-export const LIGHTNING_DIFF = 0.01;
-
-export const LIGHTNING_DEFAULT_SLIDER = 0.2;
-
-export const DEFAULT_CHANNEL_DURATION = 6;
-
 export const TRANSACTION_DEFAULTS = {
 	recommendedBaseFee: 256, // Total recommended tx base fee in sats
 	dustLimit: 546, // Minimum value in sats for an output. Outputs below the dust limit may not be processed because the fees required to include them in a block would be greater than the value of the transaction itself.
 };
+
+// Default spending percentage for the transfer slider (of onchain balance)
+export const DEFAULT_SPENDING_PERCENTAGE = 0.2;
+
+// How much of the users funds we allow to be used for Lightning (of onchain balance)
+export const MAX_SPENDING_PERCENTAGE = 0.8;
+
+// Used to make sure LSP balance is bigger than client balance
+export const LIGHTNING_DIFF = 0.01;
+
+export const DEFAULT_CHANNEL_DURATION = 6;

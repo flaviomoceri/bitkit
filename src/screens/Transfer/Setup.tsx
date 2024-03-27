@@ -21,39 +21,32 @@ import Button from '../../components/Button';
 import Percentage from '../../components/Percentage';
 import FancySlider from '../../components/FancySlider';
 import NumberPadLightning from '../Lightning/NumberPadLightning';
-import { useBalance, useSwitchUnit } from '../../hooks/wallet';
+import { useSwitchUnit } from '../../hooks/wallet';
 import {
 	refreshBlocktankInfo,
 	startChannelPurchase,
 } from '../../store/utils/blocktank';
 import { convertToSats } from '../../utils/conversion';
 import { getNumberPadText } from '../../utils/numberpad';
-import { LIGHTNING_DIFF } from '../../utils/wallet/constants';
 import { showToast } from '../../utils/notifications';
 import { getFiatDisplayValues } from '../../utils/displayValues';
+import type { TransferScreenProps } from '../../navigation/types';
 import {
 	resetSendTransaction,
 	setupOnChainTransaction,
 } from '../../store/actions/wallet';
-import type { TransferScreenProps } from '../../navigation/types';
-import {
-	selectedNetworkSelector,
-	selectedWalletSelector,
-} from '../../store/reselect/wallet';
+import { blocktankInfoSelector } from '../../store/reselect/blocktank';
+import { lnSetupSelector } from '../../store/reselect/aggregations';
 import {
 	conversionUnitSelector,
 	denominationSelector,
 	nextUnitSelector,
 	unitSelector,
 } from '../../store/reselect/settings';
-import { blocktankInfoSelector } from '../../store/reselect/blocktank';
-import { lnSetupSelector } from '../../store/reselect/aggregations';
 
 const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 	const { t } = useTranslation('lightning');
 	const switchUnit = useSwitchUnit();
-	const { lightningBalance } = useBalance();
-
 	const [textFieldValue, setTextFieldValue] = useState('');
 	const [showNumberPad, setShowNumberPad] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -61,9 +54,9 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 	const nextUnit = useAppSelector(nextUnitSelector);
 	const conversionUnit = useAppSelector(conversionUnitSelector);
 	const denomination = useAppSelector(denominationSelector);
-	const selectedWallet = useAppSelector(selectedWalletSelector);
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const blocktankInfo = useAppSelector(blocktankInfoSelector);
+
+	const max0ConfClientBalance = blocktankInfo.options.max0ConfClientBalanceSat;
 
 	useFocusEffect(
 		useCallback(() => {
@@ -86,22 +79,22 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 
 	const btSpendingLimitBalancedUsd = useMemo((): string => {
 		const { fiatWhole } = getFiatDisplayValues({
-			satoshis: lnSetup.btSpendingLimitBalanced,
+			satoshis: lnSetup.limits.lsp,
 			currency: 'USD',
 		});
 
 		return fiatWhole;
-	}, [lnSetup.btSpendingLimitBalanced]);
+	}, [lnSetup.limits.lsp]);
 
 	// set initial value
 	useEffect(() => {
 		const result = getNumberPadText(
-			lnSetup.defaultClientBalance,
+			lnSetup.initialClientBalance,
 			denomination,
 			unit,
 		);
 		setTextFieldValue(result);
-		// ignore lnSetup.defaultClientBalance
+		// ignore lnSetup.initialClientBalance
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -128,32 +121,29 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 		setTextFieldValue(result);
 	}, [lnSetup.slider.maxValue, denomination, unit]);
 
+	const onCustomAmount = (): void => {
+		setShowNumberPad(true);
+		setTextFieldValue('0');
+	};
+
 	const onDone = useCallback(() => {
 		setShowNumberPad(false);
 	}, []);
 
 	const onContinue = useCallback(async (): Promise<void> => {
-		if (lnSetup.isTransferringToSavings) {
+		const { clientBalance, lspBalance, isTransferringToSavings } = lnSetup;
+
+		if (isTransferringToSavings) {
 			navigation.push('Confirm', { spendingAmount });
 			return;
 		}
 
-		// buy an additional channel from Blocktank with the difference
 		setLoading(true);
-		const remoteBalance = spendingAmount - lightningBalance;
-		// Ensure local balance is bigger than remote balance
-		const localBalance = Math.max(
-			Math.round(remoteBalance + remoteBalance * LIGHTNING_DIFF),
-			blocktankInfo.options.minChannelSizeSat,
-		);
 
 		const purchaseResponse = await startChannelPurchase({
-			selectedNetwork,
-			selectedWallet,
-			remoteBalance,
-			localBalance,
-			zeroConfPayment:
-				remoteBalance <= blocktankInfo.options.max0ConfClientBalanceSat,
+			clientBalance,
+			lspBalance,
+			zeroConfPayment: clientBalance <= max0ConfClientBalance,
 		});
 
 		setLoading(false);
@@ -167,19 +157,13 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 		if (purchaseResponse.isOk()) {
 			navigation.push('Confirm', {
 				spendingAmount,
-				orderId: purchaseResponse.value.order.id,
+				orderId: purchaseResponse.value.id,
 			});
 		}
-	}, [
-		t,
-		navigation,
-		selectedNetwork,
-		selectedWallet,
-		blocktankInfo,
-		lnSetup.isTransferringToSavings,
-		lightningBalance,
-		spendingAmount,
-	]);
+	}, [t, navigation, max0ConfClientBalance, lnSetup, spendingAmount]);
+
+	const showMaxSpendingNote = spendingAmount >= lnSetup.limits.local;
+	const showLspLimitNote = spendingAmount >= Math.round(lnSetup.limits.lsp);
 
 	return (
 		<GlowingBackground topLeft="purple">
@@ -236,8 +220,7 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 								</View>
 							</AnimatedView>
 
-							{spendingAmount ===
-								Math.round(lnSetup.btSpendingLimitBalanced) && (
+							{showLspLimitNote && (
 								<AnimatedView
 									style={styles.note}
 									entering={FadeIn}
@@ -250,7 +233,7 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 								</AnimatedView>
 							)}
 
-							{spendingAmount === lnSetup.spendableBalance && (
+							{showMaxSpendingNote && !showLspLimitNote && (
 								<AnimatedView
 									style={styles.note}
 									entering={FadeIn}
@@ -266,7 +249,7 @@ const Setup = ({ navigation }: TransferScreenProps<'Setup'>): ReactElement => {
 								<Button
 									style={styles.buttonCustom}
 									text={t('enter_custom_amount')}
-									onPress={(): void => setShowNumberPad(true)}
+									onPress={onCustomAmount}
 								/>
 							</AnimatedView>
 						</>

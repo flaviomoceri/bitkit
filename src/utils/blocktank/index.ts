@@ -81,7 +81,7 @@ export const getBlocktankInfo = async (
  * @returns {Promise<Result<IBtOrder>>}
  */
 export const createOrder = async ({
-	lspBalanceSat,
+	lspBalance,
 	channelExpiryWeeks = DEFAULT_CHANNEL_DURATION,
 	options,
 }: ICreateOrderRequest): Promise<Result<IBtOrder>> => {
@@ -91,7 +91,7 @@ export const createOrder = async ({
 		if (addPeersRes.isErr()) {
 			return err('Unable to add Blocktank node as a peer at this time.');
 		}
-		const buyRes = await bt.createOrder(lspBalanceSat, channelExpiryWeeks, {
+		const buyRes = await bt.createOrder(lspBalance, channelExpiryWeeks, {
 			...options,
 			couponCode: options?.couponCode ?? 'bitkit',
 			zeroReserve: true,
@@ -111,13 +111,13 @@ export const createOrder = async ({
  * @returns {Promise<Result<number>>}
  */
 export const estimateOrderFee = async ({
-	lspBalanceSat,
+	lspBalance,
 	channelExpiryWeeks = DEFAULT_CHANNEL_DURATION,
 	options,
 }: ICreateOrderRequest): Promise<Result<number>> => {
 	try {
 		const estimateRes = await bt.estimateOrderFee(
-			lspBalanceSat,
+			lspBalance,
 			channelExpiryWeeks,
 			{
 				...options,

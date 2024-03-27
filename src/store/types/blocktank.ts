@@ -19,7 +19,7 @@ export type TPaidBlocktankOrders = {
 export type TGeoBlockResponse = { error?: 'GEO_BLOCKED'; accept?: boolean };
 
 export interface ICreateOrderRequest {
-	lspBalanceSat: number;
+	lspBalance: number;
 	channelExpiryWeeks?: number;
 	options?: Partial<ICreateOrderOptions>;
 }

@@ -28,7 +28,6 @@ import { showToast } from '../../utils/notifications';
 import { DEFAULT_CHANNEL_DURATION } from '../../utils/wallet/constants';
 import {
 	selectedNetworkSelector,
-	selectedWalletSelector,
 	transactionFeeSelector,
 } from '../../store/reselect/wallet';
 
@@ -43,7 +42,6 @@ const CustomConfirm = ({
 	const [orderId, setOrderId] = useState(route.params.orderId);
 	const [showNumberPad, setShowNumberPad] = useState(false);
 	const transactionFee = useAppSelector(transactionFeeSelector);
-	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const blocktankInfo = useAppSelector(blocktankInfoSelector);
 	const order = useAppSelector((state) => {
@@ -76,12 +74,10 @@ const CustomConfirm = ({
 	const updateOrderExpiration = async (): Promise<void> => {
 		const { max0ConfClientBalanceSat, minExpiryWeeks } = blocktankInfo.options;
 		const purchaseResponse = await startChannelPurchase({
-			remoteBalance: order.clientBalanceSat,
-			localBalance: order.lspBalanceSat,
-			channelExpiry: Math.max(weeks, minExpiryWeeks),
+			clientBalance: order.clientBalanceSat,
+			lspBalance: order.lspBalanceSat,
+			channelExpiryWeeks: Math.max(weeks, minExpiryWeeks),
 			zeroConfPayment: order.clientBalanceSat <= max0ConfClientBalanceSat,
-			selectedWallet,
-			selectedNetwork,
 		});
 		if (purchaseResponse.isErr()) {
 			showToast({
@@ -91,7 +87,7 @@ const CustomConfirm = ({
 			});
 			return;
 		}
-		setOrderId(purchaseResponse.value.order.id);
+		setOrderId(purchaseResponse.value.id);
 	};
 
 	return (

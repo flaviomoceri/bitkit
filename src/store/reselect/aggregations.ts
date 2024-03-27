@@ -1,12 +1,12 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 import { blocktankInfoSelector } from './blocktank';
-import { lightningBalanceSelector } from './lightning';
+import { channelsSizeSelector, lightningBalanceSelector } from './lightning';
 import { onChainBalanceSelector } from './wallet';
 import {
 	LIGHTNING_DIFF,
-	LIGHTNING_DEFAULT_SLIDER,
-	SPENDING_LIMIT_RATIO,
+	DEFAULT_SPENDING_PERCENTAGE,
+	MAX_SPENDING_PERCENTAGE,
 } from '../../utils/wallet/constants';
 
 /**
@@ -41,9 +41,13 @@ export type TLnSetup = {
 		spendings: number;
 		savings: number;
 	};
-	spendableBalance: number;
-	btSpendingLimitBalanced: number;
-	defaultClientBalance: number;
+	limits: {
+		local: number;
+		lsp: number;
+	};
+	initialClientBalance: number;
+	clientBalance: number;
+	lspBalance: number;
 	canContinue: boolean;
 	isTransferringToSavings: boolean;
 };
@@ -55,40 +59,57 @@ export const lnSetupSelector = createSelector(
 	[
 		blocktankInfoSelector,
 		balanceSelector,
+		channelsSizeSelector,
 		(_, spendingAmount): number => spendingAmount,
 	],
-	(blocktankInfo, balance, spendingAmount: number): TLnSetup => {
-		const totalBalance = balance.totalBalance;
-		const lightningBalance = balance.lightningBalance;
+	(blocktankInfo, balance, channelsSize, spendingAmount: number): TLnSetup => {
+		const { totalBalance, onchainBalance, lightningBalance } = balance;
+		const clientBalance = spendingAmount - lightningBalance;
+		const maxTotalChannelSize = blocktankInfo.options.maxChannelSizeSat;
+		const minChannelSize = blocktankInfo.options.minChannelSizeSat;
+		const maxChannelSize = Math.max(0, maxTotalChannelSize - channelsSize);
 
-		const btMaxClientBalanceSat = blocktankInfo.options.maxClientBalanceSat;
-		const btMaxChannelSizeSat = blocktankInfo.options.maxChannelSizeSat;
-		const btSpendingLimitBalanced = Math.min(
-			Math.round(
-				btMaxChannelSizeSat / 2 - btMaxChannelSizeSat * LIGHTNING_DIFF,
-			),
-			btMaxClientBalanceSat,
+		// LSP balance must be at least 1.5% of the channel size
+		let minLspBalance = Math.round(maxChannelSize * 0.015);
+		if (minLspBalance < minChannelSize - clientBalance) {
+			// Fill up to minChannelSize
+			minLspBalance = minChannelSize - clientBalance;
+		}
+
+		const maxClientBalance = maxChannelSize - minLspBalance;
+		const maxClientBalanceBalanced = Math.min(
+			Math.round(maxChannelSize / 2 - maxChannelSize * LIGHTNING_DIFF),
+			maxClientBalance,
 		);
 
-		const spendableBalance = Math.round(totalBalance * SPENDING_LIMIT_RATIO);
+		const lspBalance = Math.max(
+			// Ensure LSP balance is bigger than client balance
+			Math.round(clientBalance + clientBalance * LIGHTNING_DIFF),
+			minLspBalance,
+		);
+
+		// 80% cap to leave buffer for fees
+		const localLimit = Math.round(totalBalance * MAX_SPENDING_PERCENTAGE);
+		// the maximum client balance below the node capacity limit
+		let lspLimit = lightningBalance + maxClientBalanceBalanced;
+		// too close to node capacity limit to open another channel
+		if (maxChannelSize < minChannelSize) {
+			lspLimit = lightningBalance;
+		}
+
+		const spendingLimit = Math.min(localLimit, lspLimit);
 		const savingsAmount = totalBalance - spendingAmount;
-		const spendingsPercentage = Math.round(
+		const spendingPercentage = Math.round(
 			(spendingAmount / totalBalance) * 100,
 		);
 		const savingsPercentage = Math.round((savingsAmount / totalBalance) * 100);
-		const spendingLimit = Math.max(
-			Math.min(spendableBalance, btSpendingLimitBalanced),
-			lightningBalance,
+
+		const defaultClientBalance = Math.min(
+			Math.round(onchainBalance * DEFAULT_SPENDING_PERCENTAGE),
+			maxClientBalanceBalanced,
 		);
 
-		let defaultClientBalance = lightningBalance;
-		if (!defaultClientBalance) {
-			defaultClientBalance = Math.min(
-				Math.round(balance.onchainBalance * LIGHTNING_DEFAULT_SLIDER),
-				btSpendingLimitBalanced,
-			);
-		}
-
+		const initialClientBalance = lightningBalance || defaultClientBalance;
 		const isTransferringToSavings = spendingAmount < lightningBalance;
 		const canContinue =
 			spendingAmount !== lightningBalance && spendingAmount <= spendingLimit;
@@ -101,12 +122,16 @@ export const lnSetupSelector = createSelector(
 				snapPoint: lightningBalance,
 			},
 			percentage: {
-				spendings: spendingsPercentage,
+				spendings: spendingPercentage,
 				savings: savingsPercentage,
 			},
-			spendableBalance,
-			btSpendingLimitBalanced,
-			defaultClientBalance,
+			limits: {
+				local: localLimit,
+				lsp: lspLimit,
+			},
+			initialClientBalance,
+			clientBalance,
+			lspBalance,
 			isTransferringToSavings,
 			canContinue,
 		};

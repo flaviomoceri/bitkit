@@ -40,7 +40,6 @@ import { EAvailableNetwork } from '../../utils/networks';
 import {
 	broadcastTransaction,
 	createTransaction,
-	getTotalFee,
 	updateFee,
 } from '../../utils/wallet/transactions';
 import { showToast } from '../../utils/notifications';
@@ -215,18 +214,17 @@ export const refreshBlocktankInfo = async (): Promise<Result<string>> => {
 
 /**
  * Attempts to start the purchase of a Blocktank channel.
- * @param {string} [productId]
- * @param {number} remoteBalance
- * @param {number} localBalance
+ * @param {number} clientBalance
+ * @param {number} lspBalance
  * @param {number} [channelExpiry]
  * @param {TWalletName} [selectedWallet]
  * @param {EAvailableNetwork} [selectedNetwork]
  * @returns {Promise<Result<string>>}
  */
 export const startChannelPurchase = async ({
-	remoteBalance,
-	localBalance,
-	channelExpiry = DEFAULT_CHANNEL_DURATION,
+	clientBalance,
+	lspBalance,
+	channelExpiryWeeks = DEFAULT_CHANNEL_DURATION,
 	lspNodeId,
 	couponCode,
 	turboChannel = true,
@@ -234,28 +232,21 @@ export const startChannelPurchase = async ({
 	selectedWallet = getSelectedWallet(),
 	selectedNetwork = getSelectedNetwork(),
 }: {
-	remoteBalance: number;
-	localBalance: number;
-	channelExpiry?: number;
+	clientBalance: number;
+	lspBalance: number;
+	channelExpiryWeeks?: number;
 	lspNodeId?: string;
 	couponCode?: string;
 	turboChannel?: boolean;
 	zeroConfPayment?: boolean;
 	selectedWallet?: TWalletName;
 	selectedNetwork?: EAvailableNetwork;
-}): Promise<
-	Result<{
-		order: IBtOrder;
-		channelOpenCost: number;
-		channelOpenFee: number;
-		transactionFeeEstimate: number;
-	}>
-> => {
+}): Promise<Result<IBtOrder>> => {
 	const buyChannelResponse = await createOrder({
-		lspBalanceSat: localBalance,
-		channelExpiryWeeks: channelExpiry,
+		lspBalance,
+		channelExpiryWeeks,
 		options: {
-			clientBalanceSat: remoteBalance,
+			clientBalanceSat: clientBalance,
 			lspNodeId,
 			couponCode,
 			turboChannel,
@@ -281,29 +272,22 @@ export const startChannelPurchase = async ({
 
 	// Get transaction fee
 	const fees = getFeesStore().onchain;
-	let satPerVByteFee = fees.fast;
-	if (remoteBalance === 0) {
+	let satsPerByte = fees.fast;
+	if (clientBalance === 0) {
 		// For orders with 0 client balance, we use the min 0-conf tx fee from BT to get a turbo channel.
 		const min0ConfTxFee = await getMin0ConfTxFee(orderData.value.id);
 		if (min0ConfTxFee.isErr()) {
 			return err(min0ConfTxFee.error.message);
 		}
-		satPerVByteFee = Math.ceil(min0ConfTxFee.value.satPerVByte); // might be float
+		satsPerByte = Math.ceil(min0ConfTxFee.value.satPerVByte); // might be float
 	}
 
-	let txFeeInSats = getTotalFee({ satsPerByte: satPerVByteFee });
-	const buyChannelDataFeeSat = Math.ceil(buyChannelData.feeSat);
-	const buyChannelDataClientBalanceFeeSat = Math.ceil(
-		buyChannelData.clientBalanceSat,
-	);
-	const channelOpenCost = buyChannelDataFeeSat;
-	const channelOpenFee = Math.abs(
-		buyChannelDataClientBalanceFeeSat - buyChannelDataFeeSat,
-	);
+	const amountToSend = Math.ceil(buyChannelData.feeSat);
+
 	// Ensure we have enough funds to pay for both the channel and the fee to broadcast the transaction.
-	if (channelOpenCost > onchainBalance) {
+	if (amountToSend > onchainBalance) {
 		// TODO: Attempt to re-calculate a lower fee channel-open that's not instant if unable to pay.
-		const delta = Math.abs(channelOpenCost - onchainBalance);
+		const delta = Math.abs(amountToSend - onchainBalance);
 		const cost = getDisplayValues({ satoshis: delta });
 		return err(
 			i18n.t('other:bt_channel_purchase_cost_error', {
@@ -317,25 +301,19 @@ export const startChannelPurchase = async ({
 			outputs: [
 				{
 					address: buyChannelData.payment.onchain.address,
-					value: buyChannelDataFeeSat,
+					value: amountToSend,
 					index: 0,
 				},
 			],
 		},
 	});
 
-	const feeRes = updateFee({ satsPerByte: satPerVByteFee });
+	const feeRes = updateFee({ satsPerByte });
 	if (feeRes.isErr()) {
 		return err(feeRes.error.message);
 	}
-	txFeeInSats = feeRes.value.fee;
 
-	return ok({
-		order: buyChannelData,
-		channelOpenCost,
-		channelOpenFee,
-		transactionFeeEstimate: txFeeInSats,
-	});
+	return ok(buyChannelData);
 };
 
 /**

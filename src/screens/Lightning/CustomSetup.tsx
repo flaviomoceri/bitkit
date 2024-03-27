@@ -44,14 +44,11 @@ import {
 	denominationSelector,
 } from '../../store/reselect/settings';
 import { blocktankInfoSelector } from '../../store/reselect/blocktank';
-import {
-	selectedNetworkSelector,
-	selectedWalletSelector,
-} from '../../store/reselect/wallet';
 import NumberPadTextField from '../../components/NumberPadTextField';
 import { getNumberPadText } from '../../utils/numberpad';
-import { SPENDING_LIMIT_RATIO } from '../../utils/wallet/constants';
+import { MAX_SPENDING_PERCENTAGE } from '../../utils/wallet/constants';
 import { refreshBlocktankInfo } from '../../store/utils/blocktank';
+import { lnSetupSelector } from '../../store/reselect/aggregations';
 import { useDisplayValues } from '../../hooks/displayValues';
 
 export type TPackage = {
@@ -110,10 +107,12 @@ const CustomSetup = ({
 	const nextUnit = useAppSelector(nextUnitSelector);
 	const conversionUnit = useAppSelector(conversionUnitSelector);
 	const denomination = useAppSelector(denominationSelector);
-	const selectedWallet = useAppSelector(selectedWalletSelector);
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const selectedCurrency = useAppSelector(selectedCurrencySelector);
 	const blocktankInfo = useAppSelector(blocktankInfoSelector);
+
+	const { limits } = useAppSelector((state) => {
+		return lnSetupSelector(state, spendingAmount);
+	});
 
 	const [textFieldValue, setTextFieldValue] = useState('');
 	const [channelOpenFee, setChannelOpenFee] = useState<{
@@ -148,15 +147,15 @@ const CustomSetup = ({
 	);
 
 	useEffect(() => {
-		const spendableBalance = Math.round(
-			onchainFiatBalance * SPENDING_LIMIT_RATIO,
+		const spendableBalanceFiat = Math.round(
+			onchainFiatBalance * MAX_SPENDING_PERCENTAGE,
 		);
 
 		let reachedSpendingCap = false;
 		const availSpendingPackages: TPackage[] = [];
 		PACKAGES_SPENDING.every((p, i) => {
 			// This ensures we have enough money to actually pay for the channel.
-			if (spendableBalance > p.fiatAmount) {
+			if (spendableBalanceFiat > p.fiatAmount) {
 				const convertedAmount = convertCurrency({
 					amount: p.fiatAmount,
 					from: 'USD',
@@ -172,7 +171,7 @@ const CustomSetup = ({
 					satoshis,
 				});
 			} else {
-				const satoshis = convertToSats(spendableBalance, EConversionUnit.fiat);
+				// if we can't afford a package, add a package with the maximum amount we can afford.
 				const convertedAmount = convertCurrency({
 					amount: PACKAGES_SPENDING[i].fiatAmount,
 					from: 'USD',
@@ -181,7 +180,7 @@ const CustomSetup = ({
 				availSpendingPackages.push({
 					...PACKAGES_SPENDING[i],
 					fiatAmount: convertedAmount.fiatValue,
-					satoshis,
+					satoshis: limits.local,
 				});
 				reachedSpendingCap = true;
 			}
@@ -222,7 +221,13 @@ const CustomSetup = ({
 		});
 		availReceivingPackages.sort((a, b) => a.satoshis - b.satoshis);
 		setReceivingPackages(availReceivingPackages);
-	}, [maxChannelSizeSat, onchainFiatBalance, selectedCurrency, spendingAmount]);
+	}, [
+		maxChannelSizeSat,
+		onchainFiatBalance,
+		selectedCurrency,
+		spendingAmount,
+		limits.local,
+	]);
 
 	// set initial spending/receiving amount
 	useEffect(() => {
@@ -273,8 +278,8 @@ const CustomSetup = ({
 	}, [textFieldValue, conversionUnit]);
 
 	const maxAmount = useMemo((): number => {
-		return spending ? onchainBalance : maxChannelSizeSat;
-	}, [spending, onchainBalance, maxChannelSizeSat]);
+		return spending ? limits.local : maxChannelSizeSat;
+	}, [spending, limits.local, maxChannelSizeSat]);
 
 	// fetch approximate channel open cost on ReceiveAmount screen
 	useEffect(() => {
@@ -292,7 +297,7 @@ const CustomSetup = ({
 				return;
 			}
 			const res = await estimateOrderFee({
-				lspBalanceSat: amount,
+				lspBalance: amount,
 				options: {
 					clientBalanceSat: spendingAmount,
 					lspNodeId: blocktankInfo.nodes[0].pubkey,
@@ -322,8 +327,6 @@ const CustomSetup = ({
 		spending,
 		channelOpenFee,
 		spendingAmount,
-		selectedWallet,
-		selectedNetwork,
 		blocktankInfo.nodes,
 		blocktankInfo.options.max0ConfClientBalanceSat,
 	]);
@@ -398,6 +401,11 @@ const CustomSetup = ({
 		}
 	}, [spending, spendingPackages, receivingPackages, denomination, unit]);
 
+	const onCustomAmount = (): void => {
+		setShowNumberPad(true);
+		setTextFieldValue('0');
+	};
+
 	const onDone = useCallback(() => {
 		setShowNumberPad(false);
 	}, []);
@@ -416,12 +424,10 @@ const CustomSetup = ({
 		setLoading(true);
 
 		const purchaseResponse = await startChannelPurchase({
-			remoteBalance: spendingAmount!,
-			localBalance: amount,
+			clientBalance: spendingAmount!,
+			lspBalance: amount,
 			zeroConfPayment:
 				spendingAmount! <= blocktankInfo.options.max0ConfClientBalanceSat,
-			selectedWallet,
-			selectedNetwork,
 		});
 
 		setLoading(false);
@@ -442,7 +448,7 @@ const CustomSetup = ({
 			navigation.navigate('CustomConfirm', {
 				spendingAmount: spendingAmount!,
 				receivingAmount: amount,
-				orderId: purchaseResponse.value.order.id,
+				orderId: purchaseResponse.value.id,
 			});
 		}
 	}, [
@@ -450,8 +456,6 @@ const CustomSetup = ({
 		spending,
 		spendingAmount,
 		amount,
-		selectedWallet,
-		selectedNetwork,
 		navigation,
 		maxChannelSizeSat,
 		blocktankInfo.options.max0ConfClientBalanceSat,
@@ -503,12 +507,14 @@ const CustomSetup = ({
 				{!showNumberPad && (
 					<AnimatedView color="transparent" entering={FadeIn} exiting={FadeOut}>
 						<View style={styles.barrels}>{getBarrels()}</View>
-						<Button
-							style={styles.buttonCustom}
-							text={t('enter_custom_amount')}
-							testID="CustomSetupCustomAmount"
-							onPress={(): void => setShowNumberPad((k) => !k)}
-						/>
+						{spending && (
+							<Button
+								style={styles.buttonCustom}
+								text={t('enter_custom_amount')}
+								testID="CustomSetupCustomAmount"
+								onPress={onCustomAmount}
+							/>
+						)}
 					</AnimatedView>
 				)}
 
