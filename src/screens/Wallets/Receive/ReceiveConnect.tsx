@@ -43,7 +43,7 @@ const ReceiveConnect = ({
 
 	useEffect(() => {
 		const getFeeEstimation = async (): Promise<void> => {
-			const estimate = await estimateOrderFee({ lspBalanceSat: amount });
+			const estimate = await estimateOrderFee({ lspBalance: amount });
 			if (estimate.isOk()) {
 				setFeeEstimate(estimate.value);
 			}

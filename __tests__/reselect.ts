@@ -128,7 +128,7 @@ describe('Reselect', () => {
 			});
 		});
 
-		it('should calculate btSpendingLimitBalanced without LN channels', () => {
+		it('should calculate client balance limits without LN channels', () => {
 			// max value is limited by btMaxChannelSizeSat / 2 - btMaxChannelSizeSat * DIFF
 			const s1 = cloneDeep(s);
 			s1.wallet.wallets.wallet0.balance.bitcoinRegtest = 1000;
@@ -139,69 +139,57 @@ describe('Reselect', () => {
 				maxClientBalanceSat: 100,
 			};
 
-			expect(lnSetupSelector(s1, 0)).toMatchObject({
+			const received1 = lnSetupSelector(s1, 0);
+			const expected1 = {
 				slider: {
 					startValue: 0,
 					maxValue: 98,
 					endValue: 1000,
 				},
-				btSpendingLimitBalanced: 98,
-				spendableBalance: 800,
-				defaultClientBalance: 98,
-			});
-
-			// max value is limited by btMaxClientBalanceSat
-			const s2 = cloneDeep(s);
-			s2.wallet.wallets.wallet0.balance.bitcoinRegtest = 1000;
-			s2.blocktank.info.options = {
-				...s2.blocktank.info.options,
-				minChannelSizeSat: 10,
-				maxChannelSizeSat: 200,
-				maxClientBalanceSat: 50,
+				limits: {
+					local: 800,
+					lsp: 98,
+				},
+				initialClientBalance: 98,
 			};
 
-			expect(lnSetupSelector(s2, 0)).toMatchObject({
-				slider: {
-					startValue: 0,
-					maxValue: 50,
-					endValue: 1000,
-				},
-				btSpendingLimitBalanced: 50,
-				spendableBalance: 800,
-				defaultClientBalance: 50,
-			});
+			expect(received1).toMatchObject(expected1);
 
 			// max value is limited by onchain balance
-			const s3 = cloneDeep(s);
-			s3.wallet.wallets.wallet0.balance.bitcoinRegtest = 50;
-			s3.blocktank.info.options = {
-				...s3.blocktank.info.options,
+			const s2 = cloneDeep(s);
+			s2.wallet.wallets.wallet0.balance.bitcoinRegtest = 50;
+			s2.blocktank.info.options = {
+				...s2.blocktank.info.options,
 				minChannelSizeSat: 10,
 				maxChannelSizeSat: 200,
 				maxClientBalanceSat: 100,
 			};
 
-			expect(lnSetupSelector(s3, 0)).toMatchObject({
+			const received2 = lnSetupSelector(s2, 0);
+			const expected2 = {
 				slider: {
 					startValue: 0,
 					maxValue: 40,
 					endValue: 50,
 				},
-				btSpendingLimitBalanced: 98,
-				spendableBalance: 40,
-				defaultClientBalance: 10,
-			});
+				limits: {
+					local: 40,
+					lsp: 98,
+				},
+				initialClientBalance: 10,
+			};
+
+			expect(received2).toMatchObject(expected2);
 		});
 
-		it('should calculate btSpendingLimitBalanced with LN channels', () => {
-			// max value is limited by btMaxChannelSizeSat / 2 - btMaxChannelSizeSat * DIFF
+		it('should calculate client balance limits with existing LN channels', () => {
+			// max value is limited by leftover node capacity
 			const s1 = cloneDeep(s);
 			s1.wallet.wallets.wallet0.balance.bitcoinRegtest = 1000;
 			s1.blocktank.info.options = {
 				...s1.blocktank.info.options,
 				minChannelSizeSat: 10,
 				maxChannelSizeSat: 200,
-				maxClientBalanceSat: 100,
 			};
 			const channel1 = {
 				channel_id: 'channel1',
@@ -209,24 +197,27 @@ describe('Reselect', () => {
 				is_channel_ready: true,
 				outbound_capacity_sat: 1,
 				balance_sat: 2,
+				channel_value_satoshis: 100,
 			} as TChannel;
 			const lnWallet = s1.lightning.nodes.wallet0;
 			lnWallet.channels.bitcoinRegtest = { channel1 };
-			lnWallet.claimableBalances.bitcoinRegtest = [
-				{ amount_satoshis: 3, type: 'ClaimableOnChannelClose' },
-			];
 
-			expect(lnSetupSelector(s1, 20)).toMatchObject({
+			const received1 = lnSetupSelector(s1, 20);
+			const expected1 = {
 				slider: {
 					startValue: 0,
-					maxValue: 98,
+					maxValue: 51,
 					endValue: 1002,
 				},
-				btSpendingLimitBalanced: 98,
-				spendableBalance: 802,
-				defaultClientBalance: 2,
+				limits: {
+					local: 802,
+					lsp: 51,
+				},
+				initialClientBalance: 2,
 				canContinue: true,
-			});
+			};
+
+			expect(received1).toMatchObject(expected1);
 		});
 	});
 });

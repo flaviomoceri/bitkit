@@ -5,8 +5,8 @@ import NumberPad from '../../components/NumberPad';
 import NumberPadButtons from '../Wallets/NumberPadButtons';
 import { vibrate } from '../../utils/helpers';
 import { handleNumberPadPress } from '../../utils/numberpad';
-
-const MAX_WEEKS = 12;
+import { useAppSelector } from '../../hooks/redux';
+import { blocktankInfoSelector } from '../../store/reselect/blocktank';
 
 const NumberPadWeeks = ({
 	weeks,
@@ -19,13 +19,16 @@ const NumberPadWeeks = ({
 	onDone: () => void;
 	style?: StyleProp<ViewStyle>;
 }): ReactElement => {
+	const blocktankInfo = useAppSelector(blocktankInfoSelector);
 	const [errorKey, setErrorKey] = useState<string>();
+
+	const { minExpiryWeeks, maxExpiryWeeks } = blocktankInfo.options;
 
 	const onPress = (key: string): void => {
 		const current = weeks.toString();
 		const newAmount = handleNumberPadPress(key, current, { maxLength: 2 });
 
-		if (Number(newAmount) > MAX_WEEKS) {
+		if (Number(newAmount) > maxExpiryWeeks) {
 			vibrate({ type: 'notificationWarning' });
 			setErrorKey(key);
 			setTimeout(() => setErrorKey(undefined), 500);
@@ -36,7 +39,7 @@ const NumberPadWeeks = ({
 	};
 
 	const handleDone = (): void => {
-		onChange(Math.max(weeks, 1));
+		onChange(Math.max(weeks, minExpiryWeeks));
 		onDone();
 	};
 
@@ -48,7 +51,7 @@ const NumberPadWeeks = ({
 			onPress={onPress}>
 			<NumberPadButtons
 				color="white"
-				onMax={(): void => onChange(MAX_WEEKS)}
+				onMax={(): void => onChange(maxExpiryWeeks)}
 				onDone={handleDone}
 			/>
 		</NumberPad>

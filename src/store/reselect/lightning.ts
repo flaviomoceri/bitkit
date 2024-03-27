@@ -121,6 +121,28 @@ export const closedChannelsSelector = createSelector(
 );
 
 /**
+ * Returns the summed up size of all open and pending channels.
+ * @param {RootState} state
+ * @returns {number}
+ */
+export const channelsSizeSelector = createSelector(
+	[openChannelsSelector, pendingChannelsSelector],
+	(openChannels, pendingChannels) => {
+		const openResult = reduceValue(openChannels, 'channel_value_satoshis');
+		const pendingResult = reduceValue(
+			pendingChannels,
+			'channel_value_satoshis',
+		);
+
+		const openChannelsSize = openResult.isOk() ? openResult.value : 0;
+		const pendingChannelsSize = pendingResult.isOk() ? pendingResult.value : 0;
+		const channelSize = openChannelsSize + pendingChannelsSize;
+
+		return channelSize;
+	},
+);
+
+/**
  * Returns claimable balances.
  * @param {RootState} state
  * @returns {number}

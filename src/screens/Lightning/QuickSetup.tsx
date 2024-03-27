@@ -18,6 +18,7 @@ import NavigationHeader from '../../components/NavigationHeader';
 import Percentage from '../../components/Percentage';
 import Button from '../../components/Button';
 import FancySlider from '../../components/FancySlider';
+import NumberPadTextField from '../../components/NumberPadTextField';
 import NumberPadLightning from './NumberPadLightning';
 import { useAppSelector } from '../../hooks/redux';
 import { useSwitchUnit } from '../../hooks/wallet';
@@ -31,13 +32,10 @@ import {
 } from '../../store/utils/blocktank';
 import { showToast } from '../../utils/notifications';
 import { convertToSats } from '../../utils/conversion';
+import { getNumberPadText } from '../../utils/numberpad';
 import { getFiatDisplayValues } from '../../utils/displayValues';
-import { LIGHTNING_DIFF } from '../../utils/wallet/constants';
 import type { LightningScreenProps } from '../../navigation/types';
-import {
-	selectedNetworkSelector,
-	selectedWalletSelector,
-} from '../../store/reselect/wallet';
+import { lnSetupSelector } from '../../store/reselect/aggregations';
 import { blocktankInfoSelector } from '../../store/reselect/blocktank';
 import {
 	conversionUnitSelector,
@@ -45,9 +43,6 @@ import {
 	nextUnitSelector,
 	unitSelector,
 } from '../../store/reselect/settings';
-import { lnSetupSelector } from '../../store/reselect/aggregations';
-import NumberPadTextField from '../../components/NumberPadTextField';
-import { getNumberPadText } from '../../utils/numberpad';
 
 const QuickSetup = ({
 	navigation,
@@ -58,13 +53,13 @@ const QuickSetup = ({
 	const nextUnit = useAppSelector(nextUnitSelector);
 	const conversionUnit = useAppSelector(conversionUnitSelector);
 	const denomination = useAppSelector(denominationSelector);
-	const selectedWallet = useAppSelector(selectedWalletSelector);
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const blocktankInfo = useAppSelector(blocktankInfoSelector);
 
 	const [loading, setLoading] = useState(false);
 	const [showNumberPad, setShowNumberPad] = useState(false);
 	const [textFieldValue, setTextFieldValue] = useState('');
+
+	const max0ConfClientBalance = blocktankInfo.options.max0ConfClientBalanceSat;
 
 	useFocusEffect(
 		useCallback(() => {
@@ -87,18 +82,18 @@ const QuickSetup = ({
 
 	const btSpendingLimitBalancedUsd = useMemo((): string => {
 		const { fiatWhole } = getFiatDisplayValues({
-			satoshis: lnSetup.btSpendingLimitBalanced,
+			satoshis: lnSetup.limits.lsp,
 			currency: 'USD',
 		});
 
 		return fiatWhole;
-	}, [lnSetup.btSpendingLimitBalanced]);
+	}, [lnSetup.limits.lsp]);
 
-	const setDefaultClientBalance = useCallback(() => {
-		const value = lnSetup.defaultClientBalance;
+	const setInitialClientBalance = useCallback(() => {
+		const value = lnSetup.initialClientBalance;
 		const result = getNumberPadText(value, denomination, unit);
 		setTextFieldValue(result);
-	}, [lnSetup.defaultClientBalance, denomination, unit]);
+	}, [lnSetup.initialClientBalance, denomination, unit]);
 
 	const onMax = useCallback(() => {
 		const result = getNumberPadText(
@@ -110,8 +105,8 @@ const QuickSetup = ({
 	}, [lnSetup.slider.maxValue, denomination, unit]);
 
 	useEffect(() => {
-		setDefaultClientBalance();
-	}, [setDefaultClientBalance, unit]);
+		setInitialClientBalance();
+	}, [setInitialClientBalance, unit]);
 
 	const onChangeUnit = (): void => {
 		const result = getNumberPadText(spendingAmount, denomination, nextUnit);
@@ -127,29 +122,25 @@ const QuickSetup = ({
 		[denomination, unit],
 	);
 
+	const onCustomAmount = (): void => {
+		setShowNumberPad(true);
+		setTextFieldValue('0');
+	};
+
 	const onDone = useCallback(() => {
 		setShowNumberPad(false);
 	}, []);
 
 	const onContinue = useCallback(async (): Promise<void> => {
+		const { clientBalance, lspBalance } = lnSetup;
+
 		setLoading(true);
 
-		const maxUsableLspBalance = Math.round(
-			blocktankInfo.options.maxChannelSizeSat - spendingAmount,
-		);
-		const minUsableLspBalance = Math.round(maxUsableLspBalance / 3);
-		let lspBalance = Math.max(
-			Math.round(spendingAmount + spendingAmount * LIGHTNING_DIFF),
-			minUsableLspBalance,
-		);
 		const purchaseResponse = await startChannelPurchase({
-			selectedNetwork,
-			selectedWallet,
-			remoteBalance: spendingAmount!,
-			localBalance: lspBalance,
+			clientBalance,
+			lspBalance,
 			lspNodeId: blocktankInfo.nodes[0].pubkey,
-			zeroConfPayment:
-				spendingAmount <= blocktankInfo.options.max0ConfClientBalanceSat,
+			zeroConfPayment: clientBalance <= max0ConfClientBalance,
 		});
 
 		setLoading(false);
@@ -162,18 +153,21 @@ const QuickSetup = ({
 		}
 		if (purchaseResponse.isOk()) {
 			navigation.push('QuickConfirm', {
-				spendingAmount: spendingAmount,
-				orderId: purchaseResponse.value.order.id,
+				spendingAmount,
+				orderId: purchaseResponse.value.id,
 			});
 		}
 	}, [
-		blocktankInfo,
+		lnSetup,
+		blocktankInfo.nodes,
+		max0ConfClientBalance,
 		spendingAmount,
-		selectedNetwork,
-		selectedWallet,
 		navigation,
 		t,
 	]);
+
+	const showMaxSpendingNote = spendingAmount >= lnSetup.limits.local;
+	const showLspLimitNote = spendingAmount >= Math.round(lnSetup.limits.lsp);
 
 	return (
 		<GlowingBackground topLeft="purple">
@@ -220,7 +214,7 @@ const QuickSetup = ({
 							</View>
 						</AnimatedView>
 
-						{spendingAmount >= Math.round(lnSetup.btSpendingLimitBalanced) && (
+						{showLspLimitNote && (
 							<AnimatedView
 								style={styles.note}
 								entering={FadeIn}
@@ -234,7 +228,7 @@ const QuickSetup = ({
 							</AnimatedView>
 						)}
 
-						{spendingAmount >= lnSetup.spendableBalance && (
+						{showMaxSpendingNote && !showLspLimitNote && (
 							<AnimatedView
 								style={styles.note}
 								entering={FadeIn}
@@ -252,7 +246,7 @@ const QuickSetup = ({
 								style={styles.buttonCustom}
 								text={t('enter_custom_amount')}
 								testID="QuickSetupCustomAmount"
-								onPress={(): void => setShowNumberPad(true)}
+								onPress={onCustomAmount}
 							/>
 						</AnimatedView>
 					</>
