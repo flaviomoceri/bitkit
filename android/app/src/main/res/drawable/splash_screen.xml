@@ -4,6 +4,6 @@
     android:opacity="opaque">
     <item android:drawable="@color/brand" />
     <item>
-        <bitmap android:src="@drawable/splash" android:gravity="center|clip_horizontal" />
+        <bitmap android:src="@drawable/splash_logo" android:gravity="center|clip_horizontal" />
     </item>
 </layer-list>
