@@ -172,7 +172,7 @@ d('Settings Security And Privacy', () => {
 		await device.matchFace();
 		await sleep(1000);
 		await element(by.id('ChangePIN')).tap();
-		await element(by.id('N2').withAncestor(by.id('PinPad'))).multiTap(4);
+		await element(by.id('N1').withAncestor(by.id('PinPad'))).multiTap(4);
 		await sleep(1000);
 		await element(by.id('N1').withAncestor(by.id('ChangePIN'))).multiTap(4);
 		await sleep(1000);
