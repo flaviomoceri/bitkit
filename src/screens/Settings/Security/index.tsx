@@ -128,7 +128,12 @@ const SecuritySettings = ({
 						hide: !pin,
 						testID: 'ChangePIN',
 						onPress: (): void => {
-							navigation.navigate('ChangePin');
+							navigation.navigate('AuthCheck', {
+								onSuccess: () => {
+									navigation.pop();
+									navigation.navigate('ChangePin');
+								},
+							});
 						},
 					},
 					{
