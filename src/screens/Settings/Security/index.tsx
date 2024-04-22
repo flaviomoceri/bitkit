@@ -131,7 +131,7 @@ const SecuritySettings = ({
 							navigation.navigate('AuthCheck', {
 								onSuccess: () => {
 									navigation.pop();
-									navigation.navigate('ChangePin2');
+									navigation.navigate('ChangePin');
 								},
 							});
 						},
