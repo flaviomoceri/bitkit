@@ -108,27 +108,26 @@ export const setupAddressGenerator = async ({
 	mnemonic?: string;
 	bip39Passphrase?: string;
 } = {}): Promise<Result<string>> => {
-	if (!mnemonic) {
-		const mnemonicResponse = await getMnemonicPhrase(selectedWallet);
-		if (mnemonicResponse.isErr()) {
-			return err(mnemonicResponse.error.message);
+	try {
+		if (!mnemonic) {
+			const mnemonicResponse = await getMnemonicPhrase(selectedWallet);
+			if (mnemonicResponse.isErr()) {
+				return err(mnemonicResponse.error.message);
+			}
+			mnemonic = mnemonicResponse.value;
 		}
-		mnemonic = mnemonicResponse.value;
+		if (!bip39Passphrase) {
+			bip39Passphrase = await getBip39Passphrase();
+		}
+		addressGenerator = new BitcoinActions({
+			mnemonic,
+			bip39Passphrase,
+			selectedNetwork,
+		});
+		return ok('Address generator setup successfully.');
+	} catch (e) {
+		return err(e);
 	}
-	if (!bip39Passphrase) {
-		bip39Passphrase = await getBip39Passphrase();
-	}
-	addressGenerator = new BitcoinActions();
-	const setupRes = addressGenerator.setup({
-		mnemonic,
-		selectedNetwork,
-		bip39Passphrase,
-	});
-	if (setupRes.isErr()) {
-		addressGenerator = undefined;
-		return err(setupRes.error.message);
-	}
-	return ok(setupRes.value);
 };
 
 export const refreshWallet = async ({

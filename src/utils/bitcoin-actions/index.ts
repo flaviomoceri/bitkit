@@ -1,4 +1,4 @@
-import { err, ok, Result } from '@synonymdev/result';
+import { err, Result } from '@synonymdev/result';
 
 import * as addressGenerator from 'react-native-address-generator';
 import { EAvailableNetwork } from '../networks.ts';
@@ -8,31 +8,17 @@ class BitcoinActions {
 	private bip39Passphrase: string;
 	private selectedNetwork: EAvailableNetwork;
 
-	constructor() {
-		this.mnemonic = '';
-		this.bip39Passphrase = '';
-		this.selectedNetwork = EAvailableNetwork.bitcoin;
-	}
-
-	setup({
-		mnemonic = this.mnemonic,
-		bip39Passphrase = this.bip39Passphrase,
-		selectedNetwork = this.selectedNetwork,
-	}): Result<string> {
-		try {
-			if (!mnemonic) {
-				return err('No mnemonic specified');
-			}
-			if (!selectedNetwork) {
-				return err('No network specified');
-			}
-			this.mnemonic = mnemonic;
-			this.selectedNetwork = selectedNetwork;
-			this.bip39Passphrase = bip39Passphrase;
-			return ok('Successfully setup bitcoin-actions.');
-		} catch (e) {
-			return err(e);
+	constructor({
+		mnemonic = '',
+		bip39Passphrase = '',
+		selectedNetwork = EAvailableNetwork.bitcoin,
+	}) {
+		if (!mnemonic) {
+			throw new Error('No mnemonic specified in BitcoinActions');
 		}
+		this.mnemonic = mnemonic;
+		this.bip39Passphrase = bip39Passphrase;
+		this.selectedNetwork = selectedNetwork;
 	}
 
 	async getPrivateKey({
@@ -44,9 +30,6 @@ class BitcoinActions {
 		try {
 			if (!mnemonic) {
 				return err('No mnemonic specified');
-			}
-			if (!selectedNetwork) {
-				return err('No network specified');
 			}
 			if (!path) {
 				return err('No path specified');
