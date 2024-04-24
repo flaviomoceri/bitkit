@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { ScrollView, View as ThemedView } from '../../styles/components';
-import { Text02S } from '../../styles/text';
+import { BodyS } from '../../styles/text';
 import { PlusIcon } from '../../styles/icons';
 import NavigationHeader from '../../components/NavigationHeader';
 import KeyboardAvoidingView from '../../components/KeyboardAvoidingView';
@@ -128,7 +128,7 @@ const ProfileEdit = ({
 		<ThemedView style={styles.container}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
-				title={t(onboardedProfile ? 'profile' : 'profile_create')}
+				title={t(onboardedProfile ? 'profile_edit' : 'profile_create')}
 				onClosePress={(): void => {
 					navigation.navigate(onboardedProfile ? 'Profile' : 'Wallet');
 				}}
@@ -157,7 +157,7 @@ const ProfileEdit = ({
 						onPress={onAddLink}
 					/>
 					<Divider />
-					<Text02S color="gray1">{t('profile_public_warn')}</Text02S>
+					<BodyS color="white50">{t('profile_public_warn')}</BodyS>
 
 					{/* leave button visible over keyboard for onboarding */}
 					<View style={onboardedProfile && styles.bottom}>

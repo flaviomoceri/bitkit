@@ -68,8 +68,6 @@ const Amount = ({
 		...(error && { color: 'brand' as keyof IColors }),
 	};
 
-	const isMaxSendAmount = amount === maxWithdrawable;
-
 	const onChangeUnit = (): void => {
 		const result = getNumberPadText(amount, denomination, nextUnit);
 		setText(result);
@@ -98,13 +96,13 @@ const Amount = ({
 				<View style={styles.numberPad} testID="SendAmountNumberPad">
 					<View style={styles.actions}>
 						<View>
-							<Caption13Up style={styles.maxWithdrawableText} color="gray1">
+							<Caption13Up style={styles.maxWithdrawableText} color="white50">
 								{t('lnurl_w_max')}
 							</Caption13Up>
 							<Money
 								key="small"
 								sats={maxWithdrawable}
-								size="text02m"
+								size="bodySSB"
 								testID="maxWithdrawable"
 								symbol={true}
 								{...maxWithdrawableProps}
@@ -117,9 +115,7 @@ const Amount = ({
 									color="white10"
 									testID="SendNumberPadMax"
 									onPress={onMaxAmount}>
-									<Caption13Up color={isMaxSendAmount ? 'orange' : 'brand'}>
-										{t('send_max')}
-									</Caption13Up>
+									<Caption13Up color="brand">{t('send_max')}</Caption13Up>
 								</TouchableOpacity>
 							</View>
 

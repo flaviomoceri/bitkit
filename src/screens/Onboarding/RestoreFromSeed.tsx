@@ -9,8 +9,8 @@ import {
 	Keyboard,
 	NativeSyntheticEvent,
 	StyleSheet,
-	TextInput,
 	TextInputKeyPressEventData,
+	TextInput as TTextInput,
 	View,
 } from 'react-native';
 import * as bip39 from 'bip39';
@@ -18,9 +18,12 @@ import rnAndroidKeyboardAdjust from 'rn-android-keyboard-adjust';
 import { KeyboardAccessoryView } from 'react-native-keyboard-accessory';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { ScrollView } from '../../styles/components';
-import { Display, Text01S, Text02S } from '../../styles/text';
-import GlowingBackground from '../../components/GlowingBackground';
+import {
+	View as ThemedView,
+	ScrollView,
+	TextInput,
+} from '../../styles/components';
+import { Display, BodyM, BodyS } from '../../styles/text';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import SeedInput from '../../components/SeedInput';
 import SeedInputAccessory from '../../components/SeedInputAccessory';
@@ -43,8 +46,8 @@ const RestoreFromSeed = (): ReactElement => {
 	const [focused, setFocused] = useState<number | null>(null);
 	const [showPassphrase, setShowPassphrase] = useState(false);
 	const [bip39Passphrase, setPassphrase] = useState<string>('');
-	const inputRefs = useRef<Array<TextInput>>([]);
-	const passRef = useRef<TextInput>(null);
+	const inputRefs = useRef<Array<TTextInput>>([]);
+	const passRef = useRef<TTextInput>(null);
 	const { t } = useTranslation('onboarding');
 	const enableButtons = useMemo(
 		() =>
@@ -151,7 +154,7 @@ const RestoreFromSeed = (): ReactElement => {
 		return (
 			<SeedInput
 				key={index}
-				ref={(el: TextInput): void => {
+				ref={(el: TTextInput): void => {
 					inputRefs.current[index] = el;
 				}}
 				index={index}
@@ -169,14 +172,14 @@ const RestoreFromSeed = (): ReactElement => {
 
 	if (isRestoringWallet) {
 		return (
-			<GlowingBackground key="back" topLeft="brand">
+			<ThemedView style={styles.root}>
 				<LoadingWalletScreen />
-			</GlowingBackground>
+			</ThemedView>
 		);
 	}
 
 	return (
-		<GlowingBackground key="back" topLeft="blue">
+		<ThemedView style={styles.root}>
 			<View style={styles.header}>
 				<SafeAreaInset type="top" />
 				<NavigationHeader displayBackButton={true} />
@@ -193,9 +196,15 @@ const RestoreFromSeed = (): ReactElement => {
 				</View>
 				<View>
 					<View style={styles.title}>
-						<Display>{t('restore_header')}</Display>
+						<Display>
+							<Trans
+								t={t}
+								i18nKey="restore_header"
+								components={{ accent: <Display color="blue" /> }}
+							/>
+						</Display>
 					</View>
-					<Text01S color="white80">{t('restore_phrase')}</Text01S>
+					<BodyM color="white80">{t('restore_phrase')}</BodyM>
 				</View>
 				<View style={styles.inputsContainer}>
 					<View style={styles.inputsColumn}>
@@ -210,37 +219,39 @@ const RestoreFromSeed = (): ReactElement => {
 				</View>
 
 				{showRedExplanation && (
-					<Text02S color="gray1" style={styles.explanation}>
+					<BodyS color="white50" style={styles.explanation}>
 						<Trans
 							t={t}
 							i18nKey="restore_red_explain"
-							components={{
-								red: <Text02S color="red" />,
-							}}
+							components={{ accent: <BodyS color="red" /> }}
 						/>
-					</Text02S>
+					</BodyS>
 				)}
 
 				{showInvalidChecksum && (
-					<Text02S color="red" style={styles.explanation}>
+					<BodyS color="red" style={styles.explanation}>
 						{t('restore_inv_checksum')}
-					</Text02S>
+					</BodyS>
 				)}
 
 				{showPassphrase && (
 					<>
-						<SeedInput
+						<TextInput
+							style={styles.passphrase}
 							ref={passRef}
 							value={bip39Passphrase}
+							returnKeyType="done"
+							autoCapitalize="none"
+							autoCompleteType="off"
+							autoCorrect={false}
+							placeholder={t('restore_passphrase_placeholder')}
+							testID="PassphraseInput"
 							onChangeText={setPassphrase}
 							onSubmitEditing={handleSubmitEditing}
-							placeholder={t('restore_passphrase_placeholder')}
-							valid={true}
-							testID="PassphraseInput"
 						/>
-						<Text02S color="gray1" style={styles.explanation}>
+						<BodyS color="white50" style={styles.explanation}>
 							{t('restore_passphrase_meaning')}
-						</Text02S>
+						</BodyS>
 					</>
 				)}
 
@@ -291,11 +302,14 @@ const RestoreFromSeed = (): ReactElement => {
 					}}
 				/>
 			)}
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
+	root: {
+		flex: 1,
+	},
 	header: {
 		position: 'absolute',
 		top: 0,
@@ -306,24 +320,29 @@ const styles = StyleSheet.create({
 		marginHorizontal: -50,
 	},
 	content: {
-		paddingHorizontal: 32,
 		flexGrow: 1,
 		justifyContent: 'space-between',
+		paddingTop: 16,
+		paddingHorizontal: 32,
 	},
 	title: {
-		marginBottom: 8,
+		marginBottom: 4,
 	},
 	inputsContainer: {
-		flexWrap: 'wrap',
 		flexDirection: 'row',
-		paddingHorizontal: -2,
-		marginTop: 38,
+		marginTop: 44,
+		gap: 4,
 	},
 	inputsColumn: {
-		width: '50%',
+		flex: 1,
 	},
 	explanation: {
 		marginTop: 16,
+	},
+	passphrase: {
+		fontSize: 17,
+		fontWeight: '600',
+		letterSpacing: 0.4,
 	},
 	buttonsContainer: {
 		marginTop: 'auto',

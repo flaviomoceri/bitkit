@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { Headline, Text01S } from '../styles/text';
-import { LightningHollow, SavingsIcon } from '../styles/icons';
+import { Headline, BodyMB } from '../styles/text';
+import { BitcoinCircleIcon, LightningCircleIcon } from '../styles/icons';
 
 type PercentageProps = {
 	value: number;
@@ -12,14 +12,14 @@ type PercentageProps = {
 const Percentage = ({ value, type, style }: PercentageProps): ReactElement => (
 	<View style={[styles.root, style]}>
 		{type === 'spending' ? (
-			<LightningHollow color="purple" height={32} width={32} />
+			<LightningCircleIcon style={styles.icon} width={32} height={32} />
 		) : (
-			<SavingsIcon color="orange" height={32} width={32} />
+			<BitcoinCircleIcon style={styles.icon} width={32} height={32} />
 		)}
 
-		<Headline lineHeight="40px" style={styles.text}>
+		<Headline style={styles.number}>
 			{value}
-			<Text01S>%</Text01S>
+			<BodyMB style={styles.sign}>%</BodyMB>
 		</Headline>
 	</View>
 );
@@ -30,9 +30,18 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 	},
-	text: {
-		marginLeft: 8,
-		paddingTop: Platform.OS === 'android' ? 20 : 0,
+	icon: {
+		marginRight: 8,
+	},
+	number: {
+		fontFamily: 'InterTight-Bold',
+		fontSize: 34,
+		letterSpacing: 0.5,
+		// weird font bug here, fix with padding
+		paddingTop: Platform.OS === 'android' ? 49 : 40,
+	},
+	sign: {
+		fontSize: 16,
 	},
 });
 

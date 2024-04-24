@@ -3,8 +3,9 @@ import { StyleSheet, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
+import { Display } from '../../styles/text';
 import { useBalance } from '../../hooks/wallet';
 import useColors from '../../hooks/colors';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
@@ -12,14 +13,14 @@ import { updateSettings } from '../../store/slices/settings';
 import { widgetsSelector } from '../../store/reselect/widgets';
 import { refreshWallet } from '../../utils/wallet';
 import ActivityListShort from '../../screens/Activity/ActivityListShort';
-import EmptyWallet from '../../screens/Activity/EmptyWallet';
 import DetectSwipe from '../../components/DetectSwipe';
 import BalanceHeader from '../../components/BalanceHeader';
 import Suggestions from '../../components/Suggestions';
 import Widgets from '../../components/Widgets';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import BetaWarning from '../../components/BetaWarning';
-import Assets from '../../components/Assets';
+import WalletOnboarding from '../../components/WalletOnboarding';
+import WalletWarning from '../../components/WalletWarning';
+import Balances from '../../components/Balances';
 import Header from './Header';
 import type { WalletScreenProps } from '../../navigation/types';
 import {
@@ -134,14 +135,26 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 						<>
 							<Suggestions />
 							<View style={styles.contentPadding}>
-								<Assets />
+								<Balances />
 								{showWidgets && <Widgets />}
 								<ActivityListShort />
-								<BetaWarning />
+								<WalletWarning />
 							</View>
 						</>
 					) : (
-						<EmptyWallet />
+						<WalletOnboarding
+							style={styles.contentPadding}
+							text={
+								<Trans
+									t={t}
+									i18nKey="onboarding:empty_wallet"
+									components={{ accent: <Display color="brand" /> }}
+								/>
+							}
+							onHide={(): void => {
+								dispatch(updateSettings({ hideOnboardingMessage: true }));
+							}}
+						/>
 					)}
 				</ScrollView>
 			</DetectSwipe>

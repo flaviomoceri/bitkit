@@ -2,7 +2,7 @@ import React, { memo, ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import AmountToggle from '../../../components/AmountToggle';
 import SafeAreaInset from '../../../components/SafeAreaInset';
@@ -48,19 +48,17 @@ const Pending = ({ route }: SendScreenProps<'Pending'>): ReactElement => {
 			<View style={styles.content}>
 				{activityItem && (
 					<AmountToggle
-						sats={activityItem.value}
-						reverse={true}
-						space={12}
+						amount={activityItem.value}
 						testID="NewTxPrompt"
 						onPress={navigateToTxDetails}
 					/>
 				)}
 
-				<HourglassSpinner imageSize={200} glowColor="purple" />
-
-				<Text01S style={styles.note} color="gray1">
+				<BodyM style={styles.text} color="white50">
 					{t('send_pending_note')}
-				</Text01S>
+				</BodyM>
+
+				<HourglassSpinner />
 
 				<View style={styles.buttonContainer}>
 					<Button
@@ -71,7 +69,6 @@ const Pending = ({ route }: SendScreenProps<'Pending'>): ReactElement => {
 						text={t('send_details')}
 						onPress={navigateToTxDetails}
 					/>
-					<View style={styles.divider} />
 					<Button
 						style={styles.button}
 						size="large"
@@ -94,19 +91,17 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingHorizontal: 16,
 	},
-	note: {
-		marginBottom: 32,
+	text: {
+		marginTop: 16,
 	},
 	buttonContainer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

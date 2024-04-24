@@ -14,11 +14,10 @@ import { FadeIn } from 'react-native-reanimated';
 import { receiveIcon, sendIcon } from '../assets/icons/tabs';
 import { showBottomSheet } from '../store/utils/ui';
 import { resetSendTransaction } from '../store/actions/wallet';
-import { betaRiskAcceptedSelector } from '../store/reselect/user';
 import { viewControllersSelector } from '../store/reselect/ui';
 import useColors from '../hooks/colors';
 import { useAppSelector } from '../hooks/redux';
-import { Text02M } from '../styles/text';
+import { BodySSB } from '../styles/text';
 import { ScanIcon } from '../styles/icons';
 import { AnimatedView, Pressable } from '../styles/components';
 import BlurView from '../components/BlurView';
@@ -29,10 +28,9 @@ const TabBar = ({
 }: {
 	navigation: RootNavigationProp;
 }): ReactElement => {
-	const { white08 } = useColors();
+	const { white10 } = useColors();
 	const insets = useSafeAreaInsets();
 	const { t } = useTranslation('wallet');
-	const betaRiskAccepted = useAppSelector(betaRiskAcceptedSelector);
 	const viewControllers = useAppSelector(viewControllersSelector);
 
 	const shouldHide = useMemo(() => {
@@ -41,11 +39,7 @@ const TabBar = ({
 	}, [viewControllers]);
 
 	const onReceivePress = (): void => {
-		if (betaRiskAccepted) {
-			showBottomSheet('receiveNavigation');
-		} else {
-			navigation.navigate('BetaRisk');
-		}
+		showBottomSheet('receiveNavigation');
 	};
 
 	const onSendPress = (): void => {
@@ -64,10 +58,10 @@ const TabBar = ({
 		};
 
 		const iosStyles = {
-			borderColor: white08,
+			borderColor: white10,
 		};
 		return Platform.OS === 'android' ? androidStyles : iosStyles;
-	}, [white08]);
+	}, [white10]);
 
 	const bottom = useMemo(() => Math.max(insets.bottom, 16), [insets.bottom]);
 	const sendXml = useMemo(() => sendIcon('white'), []);
@@ -89,7 +83,7 @@ const TabBar = ({
 				onPress={onSendPress}>
 				<BlurView style={[styles.blur, styles.send]}>
 					<SvgXml xml={sendXml} width={13} height={13} />
-					<Text02M style={styles.tabText}>{t('send')}</Text02M>
+					<BodySSB style={styles.tabText}>{t('send')}</BodySSB>
 				</BlurView>
 			</TouchableOpacity>
 			<Pressable
@@ -109,7 +103,7 @@ const TabBar = ({
 				onPress={onReceivePress}>
 				<BlurView style={[styles.blur, styles.receive]}>
 					<SvgXml xml={receiveXml} width={13} height={13} />
-					<Text02M style={styles.tabText}>{t('receive')}</Text02M>
+					<BodySSB style={styles.tabText}>{t('receive')}</BodySSB>
 				</BlurView>
 			</TouchableOpacity>
 		</AnimatedView>

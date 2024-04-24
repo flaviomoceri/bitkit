@@ -16,7 +16,7 @@ import DraggableFlatList, {
 import { __DISABLE_SLASHTAGS__ } from '../constants/env';
 import { rootNavigation } from '../navigation/root/RootNavigator';
 import { TouchableOpacity, View } from '../styles/components';
-import { Caption13Up, Text, Text01M } from '../styles/text';
+import { Caption13Up, Text, BodyMSB } from '../styles/text';
 import { PlusIcon, SortAscendingIcon, Checkmark } from '../styles/icons';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { SUPPORTED_FEED_TYPES } from '../utils/widgets';
@@ -61,7 +61,7 @@ const Widgets = (): ReactElement => {
 	);
 
 	const onAdd = (): void => {
-		const screen = onboardedWidgets ? 'WidgetsSuggestions' : 'GoodbyePasswords';
+		const screen = onboardedWidgets ? 'WidgetsSuggestions' : 'HelloWidgets';
 		rootNavigation.navigate(screen);
 	};
 
@@ -149,7 +149,7 @@ const Widgets = (): ReactElement => {
 		return (
 			<>
 				<View style={styles.title}>
-					<Caption13Up color="gray1">{t('widgets')}</Caption13Up>
+					<Caption13Up color="white50">{t('widgets')}</Caption13Up>
 				</View>
 				<Text color="gray">{t('disabled')}</Text>
 			</>
@@ -157,18 +157,18 @@ const Widgets = (): ReactElement => {
 	}
 
 	return (
-		<>
+		<View style={styles.root}>
 			<View style={styles.title} testID="WidgetsTitle">
-				<Caption13Up color="gray1">{t('widgets')}</Caption13Up>
+				<Caption13Up color="white50">{t('widgets')}</Caption13Up>
 				{sortedWidgets.length > 0 && (
 					<TouchableOpacity
-						style={styles.edit}
+						hitSlop={{ top: 15, right: 15, bottom: 15, left: 15 }}
 						testID="WidgetsEdit"
 						onPress={(): void => setEditing(!editing)}>
 						{editing ? (
-							<Checkmark width={24} height={24} color="gray1" />
+							<Checkmark width={24} height={24} color="white50" />
 						) : (
-							<SortAscendingIcon color="gray1" />
+							<SortAscendingIcon color="white50" />
 						)}
 					</TouchableOpacity>
 				)}
@@ -191,29 +191,20 @@ const Widgets = (): ReactElement => {
 				<View color="green16" style={styles.iconCircle}>
 					<PlusIcon height={16} color="green" />
 				</View>
-				<Text01M>{t('widget_add')}</Text01M>
+				<BodyMSB>{t('widget_add')}</BodyMSB>
 			</TouchableOpacity>
-		</>
+		</View>
 	);
 };
 
 const styles = StyleSheet.create({
+	root: {
+		marginTop: 32,
+	},
 	title: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		paddingTop: 30,
-	},
-	edit: {
-		// increase hitbox
-		paddingTop: 10,
-		marginTop: -10,
-		paddingBottom: 10,
-		marginBottom: -10,
-		paddingRight: 16,
-		marginRight: -16,
-		paddingLeft: 16,
-		marginLeft: -16,
 	},
 	widget: {
 		marginTop: 16,

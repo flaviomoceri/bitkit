@@ -1,11 +1,10 @@
 import React, { ReactElement, memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { View as ThemedView } from '../../../styles/components';
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import NavigationHeader from '../../../components/NavigationHeader';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import type { SettingsScreenProps } from '../../../navigation/types';
 
@@ -19,12 +18,14 @@ const AddConnectionResult = ({
 			<SafeAreaInset type="top" />
 			<NavigationHeader title="Connection opened" />
 			<View style={styles.content}>
-				<Text01S color="gray1" style={styles.text}>
+				<BodyM color="white50" style={styles.text}>
 					You successfully opened a connection with ‘LNBIG Lightning Node’. It
 					might take a while for the connection to become ready for use.
-				</Text01S>
+				</BodyM>
 
-				<GlowImage image={imageSrc} imageSize={200} glowColor="green" />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
 
 				<View>
 					<Button
@@ -55,6 +56,19 @@ const styles = StyleSheet.create({
 	text: {
 		marginTop: 16,
 		marginBottom: 16,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 });
 

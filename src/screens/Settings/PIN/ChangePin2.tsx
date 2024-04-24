@@ -10,7 +10,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView, AnimatedView } from '../../../styles/components';
-import { Text01S, Text02S } from '../../../styles/text';
+import { BodyM, BodyS } from '../../../styles/text';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import NavigationHeader from '../../../components/NavigationHeader';
 import NumberPad from '../../../components/NumberPad';
@@ -81,9 +81,9 @@ const ChangePin2 = ({
 				}}
 			/>
 
-			<Text01S style={styles.text} color="gray1">
+			<BodyM style={styles.text} color="white50">
 				{t(origPIN ? 'cp_retype_text' : 'cp_setnew_text')}
-			</Text01S>
+			</BodyM>
 
 			<View style={styles.wrongPin}>
 				{wrongPin ? (
@@ -92,10 +92,10 @@ const ChangePin2 = ({
 						entering={FadeIn}
 						exiting={FadeOut}
 						testID="WrongPIN">
-						<Text02S color="brand">{t('cp_try_again')}</Text02S>
+						<BodyS color="brand">{t('cp_try_again')}</BodyS>
 					</AnimatedView>
 				) : (
-					<Text02S> </Text02S>
+					<BodyS> </BodyS>
 				)}
 			</View>
 

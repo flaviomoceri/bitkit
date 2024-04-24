@@ -153,9 +153,6 @@ d('Lightning', () => {
 
 			// send funds to LDK, 0 invoice
 			await element(by.id('Receive')).tap();
-			try {
-				await element(by.id('UnderstoodButton')).tap();
-			} catch (e) {}
 			let { label: invoice1 } = await element(by.id('QRCode')).getAttributes();
 			invoice1 = invoice1.replaceAll(/bitcoin.*=/gi, '').toLowerCase();
 			await lnd.sendPaymentSync({ paymentRequest: invoice1, amt: 50000 });
@@ -253,7 +250,7 @@ d('Lightning', () => {
 				.withTimeout(10000);
 
 			// check tx history
-			await element(by.id('AssetsTitle')).swipe('up');
+			await element(by.id('TransferButton')).swipe('up');
 			await expect(
 				element(by.text('1 000').withAncestor(by.id('ActivityShort-1'))),
 			).toBeVisible();
@@ -360,7 +357,7 @@ d('Lightning', () => {
 			await waitFor(element(by.id('SkipIntro'))).toBeVisible();
 			await element(by.id('SkipIntro')).tap();
 			await element(by.id('RestoreWallet')).tap();
-			await element(by.id('MultipleButton')).tap();
+			await element(by.id('MultipleDevices-button')).tap();
 			await element(by.id('Word-0')).replaceText(seed);
 			await element(by.id('WordIndex-4')).swipe('up');
 			await element(by.id('RestoreButton')).tap();
@@ -370,11 +367,11 @@ d('Lightning', () => {
 				.withTimeout(300000); // 5 min
 			await element(by.id('GetStartedButton')).tap();
 
-			// wait for AssetsTitle to appear and be accessible
+			// wait for SuggestionsLabel to appear and be accessible
 			for (let i = 0; i < 60; i++) {
 				await sleep(1000);
 				try {
-					await element(by.id('AssetsTitle')).tap();
+					await element(by.id('SuggestionsLabel')).tap();
 					break;
 				} catch (e) {}
 			}
@@ -387,7 +384,7 @@ d('Lightning', () => {
 				.withTimeout(10000);
 
 			// check tx history
-			await element(by.id('AssetsTitle')).swipe('up');
+			await element(by.id('TransferButton')).swipe('up');
 			await expect(
 				element(by.text('111').withAncestor(by.id('ActivityShort-2'))),
 			).toBeVisible();

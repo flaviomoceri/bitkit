@@ -5,31 +5,65 @@ type TextProps = {
 	color?: keyof IThemeColors;
 };
 
-export const Display = styled.Text<TextProps & { lineHeight?: string }>(
-	({ theme, color, lineHeight }) => ({
+export const DisplayT = styled.Text<TextProps & { lineHeight?: number }>(
+	({ theme, color, lineHeight = 48 }) => ({
 		...theme.fonts.bold,
 		fontSize: '48px',
-		lineHeight: lineHeight ?? '48px',
 		color: theme.colors[color ?? 'text'],
+		letterSpacing: 0,
+		// fix glyphs cut off at the top
+		lineHeight: `${lineHeight}px`,
+		paddingTop: lineHeight,
+		marginTop: -lineHeight,
+		// because of the negative margin, the component may overlap with other elements
+		pointerEvents: 'none',
 	}),
 );
 
-export const Headline = styled.Text<TextProps & { lineHeight?: string }>(
-	({ theme, color, lineHeight }) => ({
-		...theme.fonts.bold,
-		fontSize: '34px',
-		lineHeight: lineHeight ?? '34px',
+export const Display = styled.Text<TextProps & { lineHeight?: number }>(
+	({ theme, color, lineHeight = 44 }) => ({
+		...theme.fonts.black,
+		fontSize: '44px',
 		color: theme.colors[color ?? 'text'],
+		letterSpacing: -1,
+		textTransform: 'uppercase',
+		// fix glyphs cut off at the top
+		lineHeight: `${lineHeight}px`,
+		paddingTop: lineHeight,
+		marginTop: -lineHeight,
+		// because of the negative margin, the component may overlap with other elements
+		pointerEvents: 'none',
 	}),
 );
 
-export const Title = styled.Text<TextProps & { lineHeight?: string }>(
-	({ theme, color, lineHeight }) => ({
+export const Headline = styled.Text<TextProps & { lineHeight?: number }>(
+	({ theme, color, lineHeight = 30 }) => ({
+		...theme.fonts.black,
+		fontSize: '30px',
+		color: theme.colors[color ?? 'text'],
+		letterSpacing: -1,
+		textTransform: 'uppercase',
+		// fix glyphs cut off at the top
+		lineHeight: `${lineHeight}px`,
+		paddingTop: lineHeight,
+		marginTop: -lineHeight,
+		// because of the negative margin, the component may overlap with other elements
+		pointerEvents: 'none',
+	}),
+);
+
+export const Title = styled.Text<TextProps & { lineHeight?: number }>(
+	({ theme, color, lineHeight = 26 }) => ({
 		...theme.fonts.bold,
 		fontSize: '22px',
-		lineHeight: lineHeight ?? '26px',
 		color: theme.colors[color ?? 'text'],
 		letterSpacing: 0.4,
+		// fix glyphs cut off at the top
+		lineHeight: `${lineHeight}px`,
+		paddingTop: lineHeight,
+		marginTop: -lineHeight,
+		// because of the negative margin, the component may overlap with other elements
+		pointerEvents: 'none',
 	}),
 );
 
@@ -46,7 +80,7 @@ export const Text = styled.Text<TextProps>(({ theme, color }) => ({
 	letterSpacing: 0.4,
 }));
 
-export const Text01S = styled.Text<TextProps>(({ theme, color }) => ({
+export const BodyM = styled.Text<TextProps>(({ theme, color }) => ({
 	...theme.fonts.regular,
 	fontSize: '17px',
 	lineHeight: '22px',
@@ -54,15 +88,15 @@ export const Text01S = styled.Text<TextProps>(({ theme, color }) => ({
 	letterSpacing: 0.4,
 }));
 
-export const Text01M = styled.Text<TextProps>(({ theme, color }) => ({
-	...theme.fonts.semibold,
+export const BodyMSB = styled.Text<TextProps>(({ theme, color }) => ({
+	...theme.fonts.semiBold,
 	fontSize: '17px',
 	lineHeight: '22px',
 	color: theme.colors[color ?? 'text'],
 	letterSpacing: 0.4,
 }));
 
-export const Text01B = styled.Text<TextProps>(({ theme, color }) => ({
+export const BodyMB = styled.Text<TextProps>(({ theme, color }) => ({
 	...theme.fonts.bold,
 	fontSize: '17px',
 	lineHeight: '22px',
@@ -70,7 +104,7 @@ export const Text01B = styled.Text<TextProps>(({ theme, color }) => ({
 	letterSpacing: 0.4,
 }));
 
-export const Text02S = styled.Text<TextProps>(({ theme, color }) => ({
+export const BodyS = styled.Text<TextProps>(({ theme, color }) => ({
 	...theme.fonts.regular,
 	fontSize: '15px',
 	lineHeight: '20px',
@@ -78,26 +112,18 @@ export const Text02S = styled.Text<TextProps>(({ theme, color }) => ({
 	letterSpacing: 0.4,
 }));
 
-export const Text02M = styled.Text<TextProps>(({ theme, color }) => ({
-	...theme.fonts.semibold,
+export const BodySSB = styled.Text<TextProps>(({ theme, color }) => ({
+	...theme.fonts.semiBold,
 	fontSize: '15px',
 	lineHeight: '20px',
 	color: theme.colors[color ?? 'text'],
 	letterSpacing: 0.4,
 }));
 
-export const Text02B = styled.Text<TextProps>(({ theme, color }) => ({
+export const BodySB = styled.Text<TextProps>(({ theme, color }) => ({
 	...theme.fonts.bold,
 	fontSize: '15px',
 	lineHeight: '20px',
-	color: theme.colors[color ?? 'text'],
-	letterSpacing: 0.4,
-}));
-
-export const Text13S = styled.Text<TextProps>(({ theme, color }) => ({
-	...theme.fonts.regular,
-	fontSize: '13px',
-	lineHeight: '18px',
 	color: theme.colors[color ?? 'text'],
 	letterSpacing: 0.4,
 }));
@@ -111,7 +137,7 @@ export const Text13UP = styled.Text<TextProps>(({ theme, color }) => ({
 	letterSpacing: 0.4,
 }));
 
-export const Caption13S = styled.Text<TextProps>(({ theme, color }) => ({
+export const Caption = styled.Text<TextProps>(({ theme, color }) => ({
 	...theme.fonts.regular,
 	fontSize: '13px',
 	lineHeight: '18px',
@@ -119,8 +145,8 @@ export const Caption13S = styled.Text<TextProps>(({ theme, color }) => ({
 	letterSpacing: 0.4,
 }));
 
-export const Caption13M = styled.Text<TextProps>(({ theme, color }) => ({
-	...theme.fonts.semibold,
+export const CaptionB = styled.Text<TextProps>(({ theme, color }) => ({
+	...theme.fonts.semiBold,
 	fontSize: '13px',
 	lineHeight: '18px',
 	color: theme.colors[color ?? 'text'],

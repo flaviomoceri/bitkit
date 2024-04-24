@@ -1,12 +1,11 @@
 import React, { memo, ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { StyleSheet, View, Image } from 'react-native';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { Text01S } from '../../../styles/text';
+import { BodyM, BodyMB } from '../../../styles/text';
 import GradientView from '../../../components/GradientView';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import type { BackupScreenProps } from '../../../navigation/types';
 
@@ -24,16 +23,25 @@ const Warning = ({
 	return (
 		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader title={t('mnemonic_keep_header')} />
-			<Text01S color="gray1" style={styles.text}>
-				{t('mnemonic_keep_text')}
-			</Text01S>
-			<GlowImage image={imageSrc} imageSize={200} glowColor="yellow" />
+
+			<BodyM style={styles.text} color="white50">
+				<Trans
+					t={t}
+					i18nKey="mnemonic_keep_text"
+					components={{ accent: <BodyMB color="white" /> }}
+				/>
+			</BodyM>
+
+			<View style={styles.imageContainer}>
+				<Image style={styles.image} source={imageSrc} />
+			</View>
+
 			<View style={styles.buttonContainer}>
 				<Button
 					size="large"
 					text={t('ok')}
-					onPress={handleButtonPress}
 					testID="OK"
+					onPress={handleButtonPress}
 				/>
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
@@ -47,6 +55,19 @@ const styles = StyleSheet.create({
 	},
 	text: {
 		paddingHorizontal: 32,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',

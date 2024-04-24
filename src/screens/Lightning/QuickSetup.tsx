@@ -8,17 +8,16 @@ import React, {
 import { StyleSheet, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { AnimatedView } from '../../styles/components';
-import { Caption13Up, Display, Text01S, Text02S } from '../../styles/text';
+import { View as ThemedView, AnimatedView } from '../../styles/components';
+import { Caption13Up, Display, BodyM, BodyS } from '../../styles/text';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import GlowingBackground from '../../components/GlowingBackground';
 import NavigationHeader from '../../components/NavigationHeader';
 import Percentage from '../../components/Percentage';
 import Button from '../../components/Button';
 import FancySlider from '../../components/FancySlider';
-import NumberPadTextField from '../../components/NumberPadTextField';
+import TransferTextField from '../../components/TransferTextField';
 import NumberPadLightning from './NumberPadLightning';
 import { useAppSelector } from '../../hooks/redux';
 import { useSwitchUnit } from '../../hooks/wallet';
@@ -99,11 +98,13 @@ const QuickSetup = ({
 		return fiatWhole;
 	}, [lnSetup.limits.lsp]);
 
-	const setInitialClientBalance = useCallback(() => {
+	useEffect(() => {
+		// set to initial client balance
 		const value = lnSetup.initialClientBalance;
 		const result = getNumberPadText(value, denomination, unit);
 		setTextFieldValue(result);
-	}, [lnSetup.initialClientBalance, denomination, unit]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [lnSetup.initialClientBalance]);
 
 	const onMax = useCallback(() => {
 		const result = getNumberPadText(
@@ -113,10 +114,6 @@ const QuickSetup = ({
 		);
 		setTextFieldValue(result);
 	}, [lnSetup.slider.maxValue, denomination, unit]);
-
-	useEffect(() => {
-		setInitialClientBalance();
-	}, [setInitialClientBalance, unit]);
 
 	const onChangeUnit = (): void => {
 		const result = getNumberPadText(spendingAmount, denomination, nextUnit);
@@ -141,8 +138,17 @@ const QuickSetup = ({
 		setShowNumberPad(false);
 	}, []);
 
+	const onSwitch = (): void => {
+		navigation.replace('CustomSetup', { spending: true });
+	};
+
 	const onContinue = useCallback(async (): Promise<void> => {
-		const { clientBalance, lspBalance } = lnSetup;
+		const { clientBalance, lspBalance, isTransferringToSavings } = lnSetup;
+
+		if (isTransferringToSavings) {
+			navigation.navigate('QuickConfirm', { spendingAmount });
+			return;
+		}
 
 		setLoading(true);
 
@@ -176,25 +182,37 @@ const QuickSetup = ({
 		t,
 	]);
 
+	const title = showNumberPad
+		? 'transfer.title_numpad'
+		: 'transfer.title_slider';
+
+	const text = showNumberPad
+		? t('transfer.text_numpad')
+		: t('transfer.text_slider');
+
 	const showMaxSpendingNote = spendingAmount >= lnSetup.limits.local;
 	const showLspLimitNote = spendingAmount >= Math.round(lnSetup.limits.lsp);
 
 	return (
-		<GlowingBackground topLeft="purple">
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
-				title={t('add_instant_payments')}
+				title={t('transfer.nav_title')}
 				onClosePress={(): void => {
 					navigation.navigate('Wallet');
 				}}
 			/>
-			<View style={styles.root} testID="QuickSetup">
-				<Display color="purple">
-					{t(showNumberPad ? 'spending_money' : 'spending_balance')}
+			<View style={styles.content} testID="QuickSetup">
+				<Display>
+					<Trans
+						t={t}
+						i18nKey={title}
+						components={{ accent: <Display color="purple" /> }}
+					/>
 				</Display>
-				<Text01S color="gray1" style={styles.text}>
-					{t(showNumberPad ? 'enter_money' : 'enter_amount')}
-				</Text01S>
+				<BodyM style={styles.text} color="white50">
+					{text}
+				</BodyM>
 
 				{!showNumberPad && (
 					<>
@@ -204,14 +222,15 @@ const QuickSetup = ({
 							exiting={FadeOut}>
 							<View style={styles.row}>
 								<Caption13Up color="purple">{t('spending')}</Caption13Up>
-								<Caption13Up color="orange">{t('savings')}</Caption13Up>
+								<Caption13Up color="bitcoin">{t('savings')}</Caption13Up>
 							</View>
 							<View style={styles.sliderContainer}>
 								<FancySlider
 									value={spendingAmount}
-									startValue={lnSetup.slider.startValue}
-									endValue={lnSetup.slider.endValue}
+									startValue={0}
 									maxValue={lnSetup.slider.maxValue}
+									endValue={lnSetup.slider.endValue}
+									snapPoint={lnSetup.slider.snapPoint}
 									onValueChange={onSliderChange}
 								/>
 							</View>
@@ -230,11 +249,11 @@ const QuickSetup = ({
 								entering={FadeIn}
 								exiting={FadeOut}
 								testID="QuickSetupBlocktankNote">
-								<Text02S color="gray1">
+								<BodyS color="white50">
 									{t('note_blocktank_limit', {
 										usdValue: btSpendingLimitBalancedUsd,
 									})}
-								</Text02S>
+								</BodyS>
 							</AnimatedView>
 						)}
 
@@ -244,7 +263,7 @@ const QuickSetup = ({
 								entering={FadeIn}
 								exiting={FadeOut}
 								testID="QuickSetupReserveNote">
-								<Text02S color="gray1">{t('note_reserve_limit')}</Text02S>
+								<BodyS color="white50">{t('note_reserve_limit')}</BodyS>
 							</AnimatedView>
 						)}
 
@@ -262,23 +281,36 @@ const QuickSetup = ({
 					</>
 				)}
 
-				<View style={styles.amount}>
+				<View style={styles.amountContainer}>
 					{!showNumberPad && (
 						<Caption13Up style={styles.amountCaption} color="purple">
 							{t('spending_label')}
 						</Caption13Up>
 					)}
-					<NumberPadTextField
+					<TransferTextField
 						value={textFieldValue}
 						showPlaceholder={showNumberPad}
-						reverse={true}
+						testID="QuickSetupTextField"
 						onPress={onChangeUnit}
 					/>
 				</View>
 
 				{!showNumberPad && (
-					<AnimatedView color="transparent" entering={FadeIn} exiting={FadeOut}>
+					<AnimatedView
+						style={styles.buttonContainer}
+						color="transparent"
+						entering={FadeIn}
+						exiting={FadeOut}>
 						<Button
+							style={styles.button}
+							text={t('advanced')}
+							size="large"
+							variant="secondary"
+							testID="QuickSetupAdvanced"
+							onPress={onSwitch}
+						/>
+						<Button
+							style={styles.button}
 							loading={loading}
 							text={t('continue')}
 							size="large"
@@ -302,19 +334,22 @@ const QuickSetup = ({
 				)}
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
 	root: {
 		flex: 1,
-		marginTop: 8,
+	},
+	content: {
+		flex: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
 	text: {
 		marginTop: 4,
-		marginBottom: 42,
+		marginBottom: 32,
 	},
 	row: {
 		flexDirection: 'row',
@@ -323,8 +358,8 @@ const styles = StyleSheet.create({
 		marginVertical: 4,
 	},
 	sliderContainer: {
-		marginTop: 24,
-		marginBottom: 16,
+		marginTop: 22,
+		marginBottom: 10,
 	},
 	percentages: {
 		flexDirection: 'row',
@@ -334,19 +369,27 @@ const styles = StyleSheet.create({
 	note: {
 		marginTop: 16,
 	},
-	amount: {
+	amountContainer: {
 		marginTop: 'auto',
-		marginBottom: 32,
 	},
 	amountCaption: {
-		marginBottom: 4,
+		marginBottom: 16,
 	},
 	numberpad: {
+		marginTop: 16,
 		marginHorizontal: -16,
 	},
 	buttonCustom: {
 		marginTop: 16,
 		alignSelf: 'flex-start',
+	},
+	buttonContainer: {
+		flexDirection: 'row',
+		gap: 16,
+		marginTop: 42,
+	},
+	button: {
+		flex: 1,
 	},
 });
 

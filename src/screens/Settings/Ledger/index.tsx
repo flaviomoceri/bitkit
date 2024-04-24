@@ -12,7 +12,7 @@ import {
 	TouchableOpacity as ThemedTouchableOpacity,
 	View as ThemedView,
 } from '../../../styles/components';
-import { Caption13Up, Text01S } from '../../../styles/text';
+import { Caption13Up, BodyM } from '../../../styles/text';
 import {
 	bitkitLedger,
 	deleteLedger,
@@ -121,7 +121,7 @@ const Ledger = ({
 			<ScrollView contentContainerStyle={styles.content}>
 				{!bitkitLedger ? (
 					<>
-						<Text01S color="white">Ledger is not initialized yet</Text01S>
+						<BodyM color="white">Ledger is not initialized yet</BodyM>
 					</>
 				) : (
 					<>
@@ -148,7 +148,7 @@ const Ledger = ({
 						</Caption13Up>
 						<View style={styles.item}>
 							<View style={styles.column4}>
-								<Text01S color="gray1" />
+								<BodyM color="gray1" />
 							</View>
 							<View style={styles.column4}>
 								<Caption13Up>Actual</Caption13Up>

@@ -121,9 +121,6 @@ d('Settings Security And Privacy', () => {
 
 		// receive
 		await element(by.id('Receive')).tap();
-		try {
-			await element(by.id('UnderstoodButton')).tap();
-		} catch (e) {}
 		await sleep(100);
 		// get address from qrcode
 		await waitFor(element(by.id('QRCode'))).toBeVisible();

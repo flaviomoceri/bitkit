@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { TouchableOpacity, View as ThemedView } from '../../styles/components';
-import { Caption13M, Text01M } from '../../styles/text';
+import { CaptionB, BodyMSB } from '../../styles/text';
 import {
 	HeartbeatIcon,
 	HourglassSimpleIcon,
@@ -49,10 +49,10 @@ export const ListItem = ({
 	<>
 		{icon}
 		<View style={styles.text}>
-			<Text01M color={exists ? undefined : 'red'}>{title}</Text01M>
-			<Caption13M color={exists ? 'gray1' : 'red'}>
+			<BodyMSB color={exists ? undefined : 'red'}>{title}</BodyMSB>
+			<CaptionB color={exists ? 'white50' : 'red'}>
 				{truncate(description, 35)}
-			</Caption13M>
+			</CaptionB>
 		</View>
 
 		{amount ? (
@@ -61,15 +61,15 @@ export const ListItem = ({
 					color={exists ? undefined : 'red'}
 					sats={amount}
 					enableHide={true}
-					size="text01m"
+					size="bodyMSB"
 					sign={isSend ? '-' : '+'}
 					unitType="primary"
 				/>
 				<Money
 					sats={amount}
 					enableHide={true}
-					size="caption13M"
-					color={exists ? 'gray1' : 'red'}
+					size="captionB"
+					color={exists ? 'white50' : 'red'}
 					unitType="secondary"
 				/>
 			</View>
@@ -126,7 +126,7 @@ const OnchainListItem = ({
 
 	if (transfer) {
 		if (isTransferToSpending) {
-			title = t('activity_transfer_spending');
+			title = t('activity_transfer');
 			if (confirmed) {
 				description = t('activity_transfer_spending_done');
 			} else {
@@ -134,14 +134,14 @@ const OnchainListItem = ({
 				description = t('activity_transfer_spending_pending', { duration });
 			}
 			icon = (
-				<ThemedView style={styles.icon} color="purple16">
-					<TransferIcon color="purple" />
+				<ThemedView style={styles.icon} color="brand16">
+					<TransferIcon color="brand" />
 				</ThemedView>
 			);
 		} else {
 			const transferToSavings = transfer as TTransferToSavings;
 			const requiredConfs = 6;
-			title = t('activity_transfer_savings');
+			title = t('activity_transfer');
 			if (transferToSavings.confirmations >= requiredConfs) {
 				description = t('activity_transfer_savings_done');
 			} else {

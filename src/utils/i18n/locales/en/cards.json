@@ -1,14 +1,26 @@
 {
 	"backupSeedPhrase": {
 		"title": "Back up",
-		"description": "Store your money"
+		"description": "Store your bitcoin"
+	},
+	"discount": {
+		"title": "Discount",
+		"description": "Spending Balance"
+	},
+	"fastpay": {
+		"title": "Fastpay",
+		"description": "Scan and pay"
+	},
+	"invite": {
+		"title": "Invite",
+		"description": "Share Bitkit"
 	},
 	"lightning": {
-		"title": "Pay instantly",
-		"description": "Get on Lightning"
+		"title": "Spend",
+		"description": "Balance your funds"
 	},
 	"lightningSettingUp": {
-		"title": "Setting Up",
+		"title": "Transfer",
 		"description0": "Processing Payment",
 		"description1": "Paid",
 		"description2": "Queued",
@@ -23,7 +35,7 @@
 		"description": "Connected!"
 	},
 	"transferPending": {
-		"title": "Transferring",
+		"title": "Transfer",
 		"description": "Ready in ±{duration}m"
 	},
 	"transferClosingChannel": {
@@ -31,22 +43,24 @@
 		"description": "Keep app open"
 	},
 	"pin": {
-		"title": "Better security",
+		"title": "Secure",
 		"description": "Set up a PIN code"
 	},
 	"slashtagsProfile": {
-		"title": "Public Profile",
+		"title": "Profile",
 		"description": "Add your details"
 	},
+	"support": {
+		"title": "Support",
+		"description": "Get assistance"
+	},
 	"buyBitcoin": {
-		"title": "Get Bitcoin",
+		"title": "Buy",
 		"description": "Buy some bitcoin"
 	},
 	"btFailed": {
-		"title": "Setup Failed",
+		"title": "Failed",
 		"description": "Please try again"
 	},
-	"lightning_no_funds_title": "No Funds Yet",
-	"lightning_no_funds_desc": "Before you can set up your instant spending balance, you need to send some on-chain Bitcoin to your wallet.",
 	"suggestions": "Suggestions"
 }

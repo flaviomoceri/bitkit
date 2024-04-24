@@ -6,7 +6,7 @@
   "qr_error_network_header": "Неправильная сеть",
   "qr_error_network_text": "Настройки Bitkit в данный момент указывают на {selectedNetwork}, а данные предназначены для {dataNetwork}.",
   "qr_paste": "Вставить QR-код",
-  "buy_header": "Биткоин\n<orange>для Bitkit.</orange>",
+  "buy_header": "Биткоин\n<accent>для Bitkit.</accent>",
   "buy_button": "Купить Биткоин",
   "connection_lost_title": "Bitkit Подключение Потеряно",
   "connection_lost_message": "Пожалуйста, проверьте настройки вашего Electrum сервера.",

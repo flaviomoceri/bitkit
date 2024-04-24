@@ -126,7 +126,7 @@ const Contact = ({
 	const firstName = name.split(/\s+/)[0];
 
 	return (
-		<View style={styles.container}>
+		<View style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('contact')}
@@ -217,15 +217,14 @@ const Contact = ({
 };
 
 const styles = StyleSheet.create({
-	container: {
+	root: {
 		flex: 1,
 	},
 	content: {
 		flex: 1,
 		justifyContent: 'space-between',
-		margin: 20,
-		marginTop: 0,
-		backgroundColor: 'transparent',
+		paddingTop: 4,
+		paddingHorizontal: 16,
 	},
 	divider: {
 		height: 1,

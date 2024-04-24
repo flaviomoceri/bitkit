@@ -2,16 +2,15 @@ import React, { ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Caption13Up, Display, Text01B, Text01S } from '../../styles/text';
+import { Caption13Up, Display, BodyMB, BodyM } from '../../styles/text';
+import { View as ThemedView } from '../../styles/components';
 import { LightningIcon } from '../../styles/icons';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import GlowingBackground from '../../components/GlowingBackground';
 import NavigationHeader from '../../components/NavigationHeader';
-import AmountToggle from '../../components/AmountToggle';
 import Percentage from '../../components/Percentage';
 import SwipeToConfirm from '../../components/SwipeToConfirm';
+import Money from '../../components/Money';
 import PieChart from './PieChart';
-import { sleep } from '../../utils/helpers';
 import { useBalance } from '../../hooks/wallet';
 import { useAppSelector } from '../../hooks/redux';
 import { useCurrency, useDisplayValues } from '../../hooks/displayValues';
@@ -31,7 +30,7 @@ const QuickConfirm = ({
 	route,
 }: LightningScreenProps<'QuickConfirm'>): ReactElement => {
 	const { spendingAmount, orderId } = route.params;
-	const { onchainBalance } = useBalance();
+	const { onchainBalance, lightningBalance } = useBalance();
 	const { t } = useTranslation('lightning');
 	const orders = useAppSelector(blocktankOrdersSelector);
 	const transactionFee = useAppSelector(transactionFeeSelector);
@@ -48,6 +47,7 @@ const QuickConfirm = ({
 	const fiatTransactionFee = useDisplayValues(transactionFee);
 	const clientBalance = useDisplayValues(order?.clientBalanceSat ?? 0);
 
+	const isTransferToSavings = spendingAmount < lightningBalance;
 	const txFee = fiatTransactionFee.fiatValue;
 	const lspFee = purchaseFeeValue.fiatValue - clientBalance.fiatValue;
 
@@ -58,41 +58,57 @@ const QuickConfirm = ({
 	const savingsPercentage = Math.round((savingsAmount / onchainBalance) * 100);
 
 	const handleConfirm = async (): Promise<void> => {
-		if (!order) {
-			return;
-		}
 		setLoading(true);
-		await sleep(5);
-		const res = await confirmChannelPurchase({ order, selectedNetwork });
-		if (res.isErr()) {
+
+		if (order) {
+			// savings -> spending
+			setLoading(true);
+			const res = await confirmChannelPurchase({ order, selectedNetwork });
+			if (res.isErr()) {
+				setLoading(false);
+				return;
+			}
 			setLoading(false);
-			return;
+			navigation.navigate('SettingUp');
+		} else {
+			setLoading(false);
+			// spending -> savings
+			navigation.navigate('Availability');
 		}
-		navigation.navigate('SettingUp');
 	};
 
 	return (
-		<GlowingBackground topLeft="purple">
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
-				title={t('add_instant_payments')}
+				title={t('transfer.nav_title')}
 				onClosePress={(): void => {
 					navigation.navigate('Wallet');
 				}}
 			/>
-			<View style={styles.root} testID="QuickConfirm">
-				<Display color="purple">{t('quick_confirm_header')}</Display>
-				<Text01S style={styles.text} color="gray1">
+			<View style={styles.content} testID="Confirm">
+				<Display>
 					<Trans
 						t={t}
-						i18nKey="quick_confirm_cost"
-						components={{ highlight: <Text01B color="white" /> }}
-						values={{
-							txFee: `${fiatSymbol}${txFee.toFixed(2)}`,
-							lspFee: `${fiatSymbol}${lspFee.toFixed(2)}`,
-						}}
+						i18nKey={'quick_confirm_header'}
+						components={{ accent: <Display color="purple" /> }}
 					/>
-				</Text01S>
+				</Display>
+				<BodyM style={styles.text} color="white50">
+					{isTransferToSavings ? (
+						t('transfer_close')
+					) : (
+						<Trans
+							t={t}
+							i18nKey="quick_confirm_cost"
+							components={{ accent: <BodyMB color="white" /> }}
+							values={{
+								txFee: `${fiatSymbol}${txFee.toFixed(2)}`,
+								lspFee: `${fiatSymbol}${lspFee.toFixed(2)}`,
+							}}
+						/>
+					)}
+				</BodyM>
 
 				<View style={styles.chartContainer}>
 					<View style={styles.chart}>
@@ -116,15 +132,15 @@ const QuickConfirm = ({
 					</View>
 				</View>
 
-				<View style={styles.amount}>
+				<View style={styles.amountContainer}>
 					<Caption13Up style={styles.amountCaption} color="purple">
 						{t('spending_label')}
 					</Caption13Up>
-					<AmountToggle sats={spendingAmount} secondaryFont="text01m" />
+					<Money sats={spendingAmount} size="displayT" symbol={true} />
 				</View>
 
 				<SwipeToConfirm
-					text={t('connect_swipe')}
+					text={t('transfer.swipe')}
 					color="purple"
 					icon={<LightningIcon width={30} height={30} color="black" />}
 					loading={loading}
@@ -133,22 +149,24 @@ const QuickConfirm = ({
 				/>
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
 	root: {
 		flex: 1,
-		marginTop: 8,
+	},
+	content: {
+		flex: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
 	text: {
 		marginTop: 4,
-		marginBottom: 62,
+		marginBottom: 32,
 	},
 	chartContainer: {
-		// flex: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
 	},
@@ -162,12 +180,12 @@ const styles = StyleSheet.create({
 	percentage: {
 		marginVertical: 8,
 	},
-	amount: {
+	amountContainer: {
 		marginTop: 'auto',
-		marginBottom: 16,
+		marginBottom: 26,
 	},
 	amountCaption: {
-		marginBottom: 4,
+		marginBottom: 16,
 	},
 });
 

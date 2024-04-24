@@ -4,7 +4,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import { View as ThemedView } from '../../../styles/components';
-import { Text01S, Text01M, Text02S } from '../../../styles/text';
+import { BodyM, BodyMSB, BodyS } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
@@ -26,10 +26,10 @@ export const Word = ({
 	word: string;
 }): ReactElement => {
 	return (
-		<Text01M style={styles.word}>
-			<Text01M color="white50">{number}.</Text01M>
-			<Text01M> {word}</Text01M>
-		</Text01M>
+		<BodyMSB style={styles.word}>
+			<BodyMSB color="white50">{number}.</BodyMSB>
+			<BodyMSB> {word}</BodyMSB>
+		</BodyMSB>
 	);
 };
 
@@ -71,11 +71,11 @@ const ShowMnemonic = ({
 				displayBackButton={false}
 			/>
 
-			<Text01S color="gray1">
+			<BodyM color="white50">
 				{show
 					? t('mnemonic_write', { length: seedToShow.length })
 					: t('mnemonic_use')}
-			</Text01S>
+			</BodyM>
 
 			<View
 				style={styles.seedContainer}
@@ -107,7 +107,7 @@ const ShowMnemonic = ({
 						<Button
 							size="large"
 							text={t('mnemonic_reveal')}
-							color="black5"
+							color="black50"
 							onPress={(): void => setShow(true)}
 							testID="TapToReveal"
 						/>
@@ -115,33 +115,30 @@ const ShowMnemonic = ({
 				)}
 			</View>
 
-			<Text02S color="gray1">
+			<BodyS color="white50">
 				<Trans
 					t={t}
 					i18nKey="mnemonic_never_share"
-					components={{
-						brand: <Text02S color="brand" />,
-					}}
+					components={{ accent: <BodyS color="brand" /> }}
 				/>
-			</Text02S>
+			</BodyS>
 
 			<View style={styles.buttonContainer}>
-				{show && (
-					<Button
-						size="large"
-						text={t('continue')}
-						onPress={(): void => {
-							navigation.navigate(
-								bip39Passphrase ? 'ShowPassphrase' : 'ConfirmMnemonic',
-								{
-									seed,
-									bip39Passphrase,
-								},
-							);
-						}}
-						testID="ContinueShowMnemonic"
-					/>
-				)}
+				<Button
+					size="large"
+					text={t('continue')}
+					disabled={!show}
+					testID="ContinueShowMnemonic"
+					onPress={(): void => {
+						navigation.navigate(
+							bip39Passphrase ? 'ShowPassphrase' : 'ConfirmMnemonic',
+							{
+								seed,
+								bip39Passphrase,
+							},
+						);
+					}}
+				/>
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
 		</View>

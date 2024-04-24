@@ -1,11 +1,10 @@
 import React, { ReactElement, memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { View as ThemedView } from '../../../styles/components';
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import NavigationHeader from '../../../components/NavigationHeader';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import type { SettingsScreenProps } from '../../../navigation/types';
 
@@ -27,12 +26,14 @@ const OpenConnectionSuccess = ({
 			<SafeAreaInset type="top" />
 			<NavigationHeader title="Connection Opened" displayBackButton={false} />
 			<View style={styles.content}>
-				<Text01S color="gray1">
+				<BodyM color="white50">
 					You succesfully opened a connection with ‘{name}’. It might take a
 					while for the connection to become ready for use.
-				</Text01S>
+				</BodyM>
 
-				<GlowImage image={imageSrc} glowColor="green" />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
 
 				<View style={styles.buttons}>
 					<Button text="OK" size="large" onPress={onContinue} />
@@ -51,6 +52,19 @@ const styles = StyleSheet.create({
 		flex: 1,
 		marginTop: 8,
 		paddingHorizontal: 16,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttons: {
 		marginTop: 'auto',

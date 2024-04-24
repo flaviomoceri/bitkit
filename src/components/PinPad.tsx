@@ -9,11 +9,10 @@ import { StyleSheet, View, Pressable } from 'react-native';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 
-import { Text02S, Subtitle } from '../styles/text';
-import { AnimatedView } from '../styles/components';
+import { BodyS, Subtitle } from '../styles/text';
+import { View as ThemedView, AnimatedView } from '../styles/components';
 import { FaceIdIcon, TouchIdIcon } from '../styles/icons';
 import SafeAreaInset from './SafeAreaInset';
-import GlowingBackground from './GlowingBackground';
 import NavigationHeader from './NavigationHeader';
 import { IsSensorAvailableResult } from './Biometrics';
 import NumberPad from './NumberPad';
@@ -164,14 +163,14 @@ const PinPad = ({
 			: biometryData?.biometryType ?? t('bio');
 
 	return (
-		<GlowingBackground topLeft="brand">
+		<ThemedView style={styles.root}>
 			<View style={styles.header}>
 				<SafeAreaInset type="top" />
 				<NavigationHeader displayBackButton={showBackNavigation} />
 			</View>
 			<View style={styles.container} testID="PinPad">
 				<View style={styles.logo}>
-					{showLogoOnPIN && <BitkitLogo height={64} width={184} />}
+					{showLogoOnPIN && <BitkitLogo height={82} width={280} />}
 				</View>
 
 				<View style={styles.content}>
@@ -185,43 +184,45 @@ const PinPad = ({
 								{t('pin_enter')}
 							</Subtitle>
 
-							{attemptsRemaining !== Number(PIN_ATTEMPTS) && (
-								<AnimatedView
-									style={styles.attempts}
-									color="transparent"
-									entering={FadeIn}
-									exiting={FadeOut}>
-									{isLastAttempt ? (
-										<Text02S style={styles.attemptsRemaining} color="brand">
-											{t('pin_last_attempt')}
-										</Text02S>
-									) : (
-										<Pressable
-											onPress={(): void => {
-												showBottomSheet('forgotPIN');
-											}}>
-											<Text02S testID="AttemptsRemaining" color="brand">
-												{t('pin_attempts', { attemptsRemaining })}
-											</Text02S>
-										</Pressable>
-									)}
-								</AnimatedView>
-							)}
-
-							{allowBiometrics && (
-								<Button
-									style={styles.biometrics}
-									text={t('pin_use_biometrics', { biometricsName })}
-									icon={
-										biometryData?.biometryType === 'FaceID' ? (
-											<FaceIdIcon height={16} width={16} color="brand" />
+							<View style={styles.actions}>
+								{attemptsRemaining !== Number(PIN_ATTEMPTS) && (
+									<AnimatedView
+										style={styles.attempts}
+										color="transparent"
+										entering={FadeIn}
+										exiting={FadeOut}>
+										{isLastAttempt ? (
+											<BodyS style={styles.attemptsRemaining} color="brand">
+												{t('pin_last_attempt')}
+											</BodyS>
 										) : (
-											<TouchIdIcon height={16} width={16} color="brand" />
-										)
-									}
-									onPress={onShowBiotmetrics}
-								/>
-							)}
+											<Pressable
+												onPress={(): void => {
+													showBottomSheet('forgotPIN');
+												}}>
+												<BodyS testID="AttemptsRemaining" color="brand">
+													{t('pin_attempts', { attemptsRemaining })}
+												</BodyS>
+											</Pressable>
+										)}
+									</AnimatedView>
+								)}
+
+								{allowBiometrics && (
+									<Button
+										style={styles.biometrics}
+										text={t('pin_use_biometrics', { biometricsName })}
+										icon={
+											biometryData?.biometryType === 'FaceID' ? (
+												<FaceIdIcon height={16} width={16} color="brand" />
+											) : (
+												<TouchIdIcon height={16} width={16} color="brand" />
+											)
+										}
+										onPress={onShowBiotmetrics}
+									/>
+								)}
+							</View>
 
 							<View style={styles.dots}>
 								{Array(4)
@@ -250,11 +251,15 @@ const PinPad = ({
 					)}
 				</View>
 			</View>
-		</GlowingBackground>
+			<SafeAreaInset type="bottom" />
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
+	root: {
+		flex: 1,
+	},
 	header: {
 		position: 'absolute',
 		top: 0,
@@ -267,7 +272,7 @@ const styles = StyleSheet.create({
 	logo: {
 		flex: 1.2,
 		alignSelf: 'center',
-		justifyContent: 'center',
+		justifyContent: 'flex-end',
 	},
 	content: {
 		flex: 2,
@@ -278,14 +283,18 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		textAlign: 'center',
+		marginTop: 'auto',
 		marginBottom: 32,
+	},
+	actions: {
+		marginBottom: 16,
+		minHeight: 19,
 	},
 	attempts: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		justifyContent: 'center',
 		paddingHorizontal: 16,
-		marginBottom: 16,
 	},
 	attemptsRemaining: {
 		textAlign: 'center',
@@ -297,7 +306,7 @@ const styles = StyleSheet.create({
 	dots: {
 		flexDirection: 'row',
 		justifyContent: 'center',
-		marginBottom: 32,
+		marginBottom: 48,
 	},
 	dot: {
 		width: 20,
@@ -307,8 +316,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 	},
 	numberpad: {
-		marginTop: 'auto',
-		maxHeight: 410,
+		maxHeight: 310,
 	},
 });
 

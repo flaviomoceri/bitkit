@@ -1,14 +1,13 @@
 // TODO: screen currently unused
 
 import React, { memo, ReactElement, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import GradientView from '../../../components/GradientView';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import { useAppDispatch } from '../../../hooks/redux';
 import { closeSheet } from '../../../store/slices/ui';
 import type { SendScreenProps } from '../../../navigation/types';
@@ -44,12 +43,14 @@ const AutoRebalance = ({
 		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader title="Auto Rebalance?" />
 
-			<Text01S color="gray1" style={styles.text}>
+			<BodyM color="white50" style={styles.text}>
 				You don’t have enough instant spending balance for this transaction.
 				Would you like Bitkit to rebalance automatically?
-			</Text01S>
+			</BodyM>
 
-			<GlowImage image={imageSrc} glowColor="green" />
+			<View style={styles.imageContainer}>
+				<Image style={styles.image} source={imageSrc} />
+			</View>
 
 			<View style={buttonContainer}>
 				<Button
@@ -59,7 +60,6 @@ const AutoRebalance = ({
 					text="No, Cancel"
 					onPress={onCancel}
 				/>
-				<View style={styles.divider} />
 				<Button
 					style={styles.button2}
 					size="large"
@@ -78,19 +78,30 @@ const styles = StyleSheet.create({
 	text: {
 		paddingHorizontal: 32,
 	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
+	},
 	buttonContainer: {
 		flexDirection: 'row',
 		paddingHorizontal: 16,
 		marginTop: 'auto',
+		gap: 16,
 	},
 	button1: {
 		flex: 1,
 	},
 	button2: {
 		flex: 2,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

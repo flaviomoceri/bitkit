@@ -67,7 +67,7 @@ const Address = ({}: SendScreenProps<'Address'>): ReactElement => {
 		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader title={t('send_bitcoin')} />
 			<View style={styles.content}>
-				<Caption13Up color="gray1" style={styles.label} testID="Caption">
+				<Caption13Up color="white50" style={styles.label} testID="Caption">
 					{t('send_to')}
 				</Caption13Up>
 

@@ -27,20 +27,22 @@ interface IFont {
 }
 
 interface IFonts {
-	regular: IFont | undefined;
-	medium: IFont | undefined;
-	semibold: IFont | undefined;
-	bold: IFont | undefined;
-}
-
-export interface ITheme {
-	id: TTheme;
-	colors: IThemeColors;
-	fonts: IFonts;
+	regular: IFont;
+	medium: IFont;
+	semiBold: IFont;
+	bold: IFont;
+	extraBold: IFont;
+	black: IFont;
 }
 
 interface IDefaultThemeValues {
 	colors: IDefaultColors;
+	fonts: IFonts;
+}
+
+export interface ITheme extends IDefaultThemeValues {
+	id: TTheme;
+	colors: IThemeColors;
 }
 
 const defaultThemeValues: IDefaultThemeValues = {
@@ -51,13 +53,14 @@ const defaultThemeValues: IDefaultThemeValues = {
 		error: '#D87682',
 		transparent: 'transparent',
 	},
-};
-
-const defaultFontsValues: IFonts = {
-	regular: {},
-	medium: {},
-	semibold: {},
-	bold: {},
+	fonts: {
+		regular: { fontFamily: 'InterTight-Regular' },
+		medium: { fontFamily: 'InterTight-Medium' },
+		semiBold: { fontFamily: 'InterTight-SemiBold' },
+		bold: { fontFamily: 'InterTight-Bold' },
+		extraBold: { fontFamily: 'InterTight-ExtraBold' },
+		black: { fontFamily: 'InterTight-Black' },
+	},
 };
 
 const light: ITheme = {
@@ -67,7 +70,7 @@ const light: ITheme = {
 		...defaultThemeValues.colors,
 		text: '#121212',
 		primary: '#121212',
-		background: colors.white84,
+		background: colors.white80,
 		surface: '#E8E8E8',
 		onBackground: '#121212',
 		onSurface: '#D6D6D6',
@@ -75,7 +78,6 @@ const light: ITheme = {
 		refreshControl: '#121212',
 		tabBackground: '#f2f2f2',
 	},
-	fonts: defaultFontsValues,
 };
 
 const dark: ITheme = {
@@ -93,27 +95,10 @@ const dark: ITheme = {
 		refreshControl: '#FFFFFF',
 		tabBackground: '#101010',
 	},
-	fonts: defaultFontsValues,
 };
 
 export const getTheme = (theme: string): ITheme => {
-	return {
-		...(theme === 'dark' ? dark : light),
-		fonts: {
-			regular: {
-				fontFamily: 'InterTight-Regular',
-			},
-			medium: {
-				fontFamily: 'InterTight-Medium',
-			},
-			semibold: {
-				fontFamily: 'InterTight-SemiBold',
-			},
-			bold: {
-				fontFamily: 'InterTight-Bold',
-			},
-		},
-	};
+	return theme === 'dark' ? dark : light;
 };
 
 export default { light, dark };

@@ -1,11 +1,10 @@
 import React, { memo, ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Text01S } from '../../styles/text';
+import { BodyM } from '../../styles/text';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import GlowImage from '../../components/GlowImage';
 import Button from '../../components/Button';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import { closeSheet } from '../../store/slices/ui';
@@ -38,8 +37,12 @@ const ConnectionClosed = (): ReactElement => {
 					title={t('connection_closed.title')}
 					displayBackButton={false}
 				/>
-				<Text01S color="white50">{t('connection_closed.description')}</Text01S>
-				<GlowImage image={imageSrc} imageSize={170} glowColor="red" />
+				<BodyM color="white50">{t('connection_closed.description')}</BodyM>
+
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
+
 				<View style={styles.buttonContainer}>
 					<Button
 						style={styles.button}
@@ -58,6 +61,19 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		marginHorizontal: 32,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',

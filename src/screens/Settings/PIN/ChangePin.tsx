@@ -11,7 +11,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView, AnimatedView } from '../../../styles/components';
-import { Text01S, Text02S } from '../../../styles/text';
+import { BodyM, BodyS } from '../../../styles/text';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import NavigationHeader from '../../../components/NavigationHeader';
 import NumberPad from '../../../components/NumberPad';
@@ -91,7 +91,7 @@ const ChangePin = ({
 			/>
 
 			<View style={styles.text}>
-				<Text01S color="gray1">{t('cp_text')}</Text01S>
+				<BodyM color="white50">{t('cp_text')}</BodyM>
 			</View>
 
 			<View style={styles.wrongPin}>
@@ -101,11 +101,11 @@ const ChangePin = ({
 							onPress={(): void => {
 								showBottomSheet('forgotPIN');
 							}}>
-							<Text02S color="brand">{t('cp_forgot')}</Text02S>
+							<BodyS color="brand">{t('cp_forgot')}</BodyS>
 						</Pressable>
 					</AnimatedView>
 				) : (
-					<Text02S> </Text02S>
+					<BodyS> </BodyS>
 				)}
 			</View>
 

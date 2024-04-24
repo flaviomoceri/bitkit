@@ -59,7 +59,6 @@ const CurrenciesSettings = ({
 		<SettingsView
 			title={t('general.currency_local_title')}
 			listData={currencyListData}
-			showBackNavigation={true}
 			showSearch={true}
 			footerText={t('general.currency_footer')}
 		/>

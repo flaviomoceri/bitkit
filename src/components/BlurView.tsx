@@ -10,7 +10,7 @@ type BlurViewProps = {
 
 const BlurView = ({ style, ...props }: BlurViewProps): ReactElement => {
 	return Platform.OS === 'ios' ? (
-		<Blur {...props} style={[styles.containerIos, style]} />
+		<Blur {...props} style={[styles.containerIos, style]} blurAmount={4} />
 	) : (
 		<View {...props} style={[styles.containerAndroid, style]} />
 	);

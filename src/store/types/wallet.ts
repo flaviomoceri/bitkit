@@ -15,7 +15,6 @@ import {
 } from 'beignet';
 
 export type TKeyDerivationAccountType = 'onchain';
-export type TAssetType = 'bitcoin' | 'tether';
 
 export enum EConversionUnit {
 	satoshi = 'satoshi',

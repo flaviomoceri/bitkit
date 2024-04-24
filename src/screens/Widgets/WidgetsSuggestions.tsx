@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Caption13M, Text01M } from '../../styles/text';
+import { CaptionB, BodyMSB } from '../../styles/text';
 import { ChevronRight, QuestionMarkIcon } from '../../styles/icons';
 import { View, ScrollView, TouchableOpacity } from '../../styles/components';
 import NavigationHeader from '../../components/NavigationHeader';
@@ -80,16 +80,16 @@ const Feed = ({
 						<QuestionMarkIcon width={48} height={48} />
 					</View>
 					<View style={styles.text}>
-						<Text01M numberOfLines={1}>{url}</Text01M>
-						<Caption13M color="gray1" numberOfLines={1}>
+						<BodyMSB numberOfLines={1}>{url}</BodyMSB>
+						<CaptionB color="white50" numberOfLines={1}>
 							{failed
 								? t('widget_failed_description')
 								: t('widget_loading_description')}
-						</Caption13M>
+						</CaptionB>
 					</View>
 					<ChevronRight
 						style={styles.arrow}
-						color="gray1"
+						color="white50"
 						width={24}
 						height={24}
 					/>
@@ -113,14 +113,14 @@ const Feed = ({
 					)}
 				</View>
 				<View style={styles.text}>
-					<Text01M numberOfLines={1}>{config.name}</Text01M>
-					<Caption13M color="gray1" numberOfLines={1}>
+					<BodyMSB numberOfLines={1}>{config.name}</BodyMSB>
+					<CaptionB color="white50" numberOfLines={1}>
 						{config.description}
-					</Caption13M>
+					</CaptionB>
 				</View>
 				<ChevronRight
 					style={styles.arrow}
-					color="gray1"
+					color="white50"
 					width={24}
 					height={24}
 				/>

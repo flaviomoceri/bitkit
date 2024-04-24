@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { StyleSheet, TextInputProps, View } from 'react-native';
 import { TouchableOpacity } from '../../../styles/components';
-import { Subtitle, Text01M } from '../../../styles/text';
+import { Subtitle, BodyMSB } from '../../../styles/text';
 import { Checkmark } from '../../../styles/icons';
 import { IThemeColors } from '../../../styles/themes';
 import { IAddress } from 'beignet';
@@ -31,13 +31,13 @@ const AddressViewerListItem = (props: ListItemProps): ReactElement => {
 			onPress={onItemRowPress}>
 			<View style={styles.contentRow}>
 				<View style={styles.container}>
-					<Text01M
+					<BodyMSB
 						color="white80"
 						numberOfLines={1}
 						ellipsizeMode="middle"
 						testID={`Address-${item.index}`}>
 						{item.index}: {item.address}
-					</Text01M>
+					</BodyMSB>
 				</View>
 				{balance >= 0 && (
 					<View style={styles.balanceRow}>
@@ -49,7 +49,7 @@ const AddressViewerListItem = (props: ListItemProps): ReactElement => {
 							onPress={onCheckMarkPress}>
 							{balance > 0 && (
 								<Checkmark
-									color={isSelected ? 'brand' : 'gray4'}
+									color={isSelected ? 'brand' : 'gray3'}
 									height={30}
 									width={30}
 								/>

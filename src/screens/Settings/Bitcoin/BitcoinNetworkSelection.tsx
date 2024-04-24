@@ -55,7 +55,6 @@ const BitcoinNetworkSelection = ({
 		<SettingsView
 			title={t('adv.bitcoin_network')}
 			listData={settingsListData}
-			showBackNavigation={true}
 		/>
 	);
 };

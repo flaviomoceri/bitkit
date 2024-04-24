@@ -1,12 +1,11 @@
 import React, { memo, ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../../styles/components';
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import NavigationHeader from '../../../components/NavigationHeader';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import type { SettingsScreenProps } from '../../../navigation/types';
 
@@ -27,10 +26,12 @@ const PinChanged = ({
 			<NavigationHeader title={t('cp_changed_title')} />
 
 			<View style={styles.message}>
-				<Text01S color="gray1">{t('cp_changed_text')}</Text01S>
+				<BodyM color="white50">{t('cp_changed_text')}</BodyM>
 			</View>
 
-			<GlowImage image={imageSrc} imageSize={200} glowColor="green" />
+			<View style={styles.imageContainer}>
+				<Image style={styles.image} source={imageSrc} />
+			</View>
 
 			<View style={styles.buttonContainer}>
 				<Button
@@ -52,6 +53,17 @@ const styles = StyleSheet.create({
 	message: {
 		marginHorizontal: 16,
 		alignSelf: 'flex-start',
+	},
+	imageContainer: {
+		alignSelf: 'center',
+		alignItems: 'center',
+		marginTop: 'auto',
+		aspectRatio: 1,
+		height: 300,
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',

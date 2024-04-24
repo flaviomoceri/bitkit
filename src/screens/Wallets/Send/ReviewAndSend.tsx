@@ -12,7 +12,7 @@ import { TInvoice } from '@synonymdev/react-native-ldk';
 import { useTranslation } from 'react-i18next';
 import { validateTransaction } from 'beignet';
 
-import { Caption13Up, Text02M } from '../../../styles/text';
+import { Caption13Up, BodySSB } from '../../../styles/text';
 import {
 	Checkmark,
 	ClockIcon,
@@ -96,7 +96,7 @@ const Section = memo(
 				activeOpacity={onPress ? 0.6 : 1}
 				onPress={onPress}>
 				<View style={styles.sText}>
-					<Caption13Up color="gray1">{title}</Caption13Up>
+					<Caption13Up color="white50">{title}</Caption13Up>
 				</View>
 				<View style={styles.sValue}>{value}</View>
 			</TouchableOpacity>
@@ -567,7 +567,7 @@ const ReviewAndSend = ({
 				return (
 					<SettingsIcon
 						style={styles.icon}
-						color="gray1"
+						color="white50"
 						width={16}
 						height={16}
 					/>
@@ -586,9 +586,7 @@ const ReviewAndSend = ({
 				<View style={styles.content}>
 					<AmountToggle
 						style={styles.amountToggle}
-						sats={amount}
-						reverse={true}
-						space={12}
+						amount={amount}
 						onPress={goBackToAmount}
 					/>
 
@@ -605,11 +603,11 @@ const ReviewAndSend = ({
 								) : (
 									<>
 										{decodedInvoice ? (
-											<Text02M>{truncate(decodedInvoice.to_str, 100)}</Text02M>
+											<BodySSB>{truncate(decodedInvoice.to_str, 100)}</BodySSB>
 										) : (
-											<Text02M numberOfLines={1} ellipsizeMode="middle">
+											<BodySSB numberOfLines={1} ellipsizeMode="middle">
 												{address}
-											</Text02M>
+											</BodySSB>
 										)}
 									</>
 								)
@@ -625,11 +623,11 @@ const ReviewAndSend = ({
 								value={
 									<View style={styles.fee}>
 										{feeIcon}
-										<Text02M>
+										<BodySSB>
 											{t(`fee:${selectedFeeId}.title`)} (
 											{fiatTransactionFee.fiatSymbol}
 											{fiatTransactionFee.fiatFormatted})
-										</Text02M>
+										</BodySSB>
 										<PencileIcon height={12} width={22} />
 									</View>
 								}
@@ -640,7 +638,7 @@ const ReviewAndSend = ({
 								value={
 									<>
 										<ClockIcon style={styles.icon} color="brand" />
-										<Text02M>{feeDescription}</Text02M>
+										<BodySSB>{feeDescription}</BodySSB>
 									</>
 								}
 							/>
@@ -652,7 +650,7 @@ const ReviewAndSend = ({
 								value={
 									<>
 										<TimerIcon style={styles.icon} color="purple" />
-										<Text02M>{FeeText.instant.title} (±$0.01)</Text02M>
+										<BodySSB>{FeeText.instant.title} (±$0.01)</BodySSB>
 									</>
 								}
 							/>
@@ -662,7 +660,7 @@ const ReviewAndSend = ({
 									value={
 										<>
 											<ClockIcon style={styles.icon} color="purple" />
-											<Text02M>
+											<BodySSB>
 												{tTime('dateTime', {
 													v: invoiceExpiryTimestamp,
 													formatParams: {
@@ -674,7 +672,7 @@ const ReviewAndSend = ({
 														},
 													},
 												})}
-											</Text02M>
+											</BodySSB>
 										</>
 									}
 								/>
@@ -686,7 +684,7 @@ const ReviewAndSend = ({
 						<View style={styles.sectionContainer}>
 							<Section
 								title={t('note')}
-								value={<Text02M>{decodedInvoice?.description}</Text02M>}
+								value={<BodySSB>{decodedInvoice?.description}</BodySSB>}
 							/>
 						</View>
 					) : null}
@@ -726,10 +724,10 @@ const ReviewAndSend = ({
 					<View style={styles.buttonContainer}>
 						<SwipeToConfirm
 							text={t('send_swipe')}
-							onConfirm={onSwipeToPay}
 							icon={<Checkmark width={30} height={30} color="black" />}
 							loading={isLoading}
 							confirmed={isLoading}
+							onConfirm={onSwipeToPay}
 						/>
 					</View>
 				</View>

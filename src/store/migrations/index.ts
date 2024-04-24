@@ -561,6 +561,15 @@ const migrations = {
 			lightning: { ...state.lightning, nodes },
 		};
 	},
+	41: (state): PersistedState => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				showWidgetTitles: false,
+			},
+		};
+	},
 };
 
 export default migrations;

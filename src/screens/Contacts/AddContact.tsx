@@ -12,7 +12,7 @@ import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationH
 import LabeledInput from '../../components/LabeledInput';
 import Button from '../../components/Button';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { Text01S } from '../../styles/text';
+import { BodyM } from '../../styles/text';
 import { ClipboardTextIcon, CornersOutIcon } from '../../styles/icons';
 import type { RootStackParamList } from '../../navigation/types';
 import { useAppDispatch } from '../../hooks/redux';
@@ -99,13 +99,11 @@ const AddContact = ({
 					title={t('contact_add_capital')}
 					displayBackButton={false}
 				/>
-				<Text01S
-					testID="AddContactNote"
-					color="gray1"
-					style={styles.addContactNote}>
-					{t('contact_add_explain')}
-				</Text01S>
+
 				<View style={styles.content}>
+					<BodyM style={styles.text} color="white50" testID="AddContactNote">
+						{t('contact_add_explain')}
+					</BodyM>
 					<LabeledInput
 						bottomSheet={true}
 						label={t('contact_add')}
@@ -123,18 +121,17 @@ const AddContact = ({
 							<ClipboardTextIcon width={24} height={24} color="brand" />
 						</TouchableOpacity>
 					</LabeledInput>
-				</View>
 
-				<View style={styles.footer}>
 					<Button
+						style={styles.button}
 						size="large"
 						disabled={!url}
-						style={styles.button}
 						text={t('contact_add_button')}
-						onPress={(): void => handleAddContact()}
 						testID="AddContactButton"
+						onPress={(): void => handleAddContact()}
 					/>
 				</View>
+
 				<SafeAreaInset type="bottom" minPadding={16} />
 			</View>
 		</BottomSheetWrapper>
@@ -146,22 +143,14 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	content: {
-		paddingHorizontal: 16,
-	},
-	addContactNote: {
-		marginHorizontal: 16,
-		marginBottom: 16,
-	},
-	footer: {
-		paddingHorizontal: 16,
-		alignItems: 'flex-end',
-		justifyContent: 'flex-end',
 		flex: 1,
-		flexDirection: 'row',
+		paddingHorizontal: 16,
+	},
+	text: {
+		marginBottom: 32,
 	},
 	button: {
-		marginBottom: 16,
-		flex: 1,
+		marginTop: 'auto',
 	},
 });
 

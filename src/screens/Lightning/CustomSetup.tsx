@@ -12,11 +12,10 @@ import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useAppSelector } from '../../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { AnimatedView } from '../../styles/components';
-import { Caption13Up, Display, Text01S } from '../../styles/text';
+import { View as ThemedView, AnimatedView } from '../../styles/components';
+import { Caption13Up, Display, BodyM } from '../../styles/text';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import Barrel from './Barrel';
-import GlowingBackground from '../../components/GlowingBackground';
+import Barrel from '../../components/Barrel';
 import NavigationHeader from '../../components/NavigationHeader';
 import Button from '../../components/Button';
 import NumberPadLightning from './NumberPadLightning';
@@ -44,7 +43,7 @@ import {
 	denominationSelector,
 } from '../../store/reselect/settings';
 import { blocktankInfoSelector } from '../../store/reselect/blocktank';
-import NumberPadTextField from '../../components/NumberPadTextField';
+import TransferTextField from '../../components/TransferTextField';
 import { getNumberPadText } from '../../utils/numberpad';
 import {
 	BT_MIN_CHANNEL_SIZE_SAT_MULTIPLIER,
@@ -419,6 +418,10 @@ const CustomSetup = ({
 		setShowNumberPad(false);
 	}, []);
 
+	const onSwitch = (): void => {
+		navigation.replace('QuickSetup');
+	};
+
 	const onContinue = useCallback(async (): Promise<void> => {
 		if (spending) {
 			// go to second setup screen
@@ -471,10 +474,10 @@ const CustomSetup = ({
 	]);
 
 	return (
-		<GlowingBackground topLeft="purple">
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
-				title={t('add_instant_payments')}
+				title={t('transfer.nav_title')}
 				onClosePress={(): void => {
 					navigation.navigate('Wallet');
 				}}
@@ -482,35 +485,33 @@ const CustomSetup = ({
 
 			{/* TODO: add scrolling on small screens */}
 
-			<View style={styles.root} testID="CustomSetup">
+			<View style={styles.content} testID="CustomSetup">
 				<Display>
 					<Trans
 						t={t}
-						i18nKey={spending ? 'spending_header' : 'receiving_header'}
-						components={{
-							purple: <Display color="purple" />,
-						}}
+						i18nKey="transfer.title_numpad"
+						components={{ accent: <Display color="purple" /> }}
 					/>
 				</Display>
 				{spending && !showNumberPad && (
-					<Text01S color="gray1" style={styles.text}>
+					<BodyM color="white50" style={styles.text}>
 						{t('spending_amount_bitcoin')}
-					</Text01S>
+					</BodyM>
 				)}
 				{spending && showNumberPad && (
-					<Text01S color="gray1" style={styles.text}>
+					<BodyM color="white50" style={styles.text}>
 						{t('enter_money')}
-					</Text01S>
+					</BodyM>
 				)}
 				{!spending && !showNumberPad && (
-					<Text01S color="gray1" style={styles.text}>
+					<BodyM color="white50" style={styles.text}>
 						{t('receiving_amount_money')}
-					</Text01S>
+					</BodyM>
 				)}
 				{!spending && showNumberPad && (
-					<Text01S color="gray1" style={styles.text}>
+					<BodyM color="white50" style={styles.text}>
 						{t('receiving_amount_bitcoin')}
-					</Text01S>
+					</BodyM>
 				)}
 
 				{!showNumberPad && (
@@ -527,10 +528,10 @@ const CustomSetup = ({
 					</AnimatedView>
 				)}
 
-				<View style={styles.amount}>
+				<View style={styles.amountContainer}>
 					{!showNumberPad && (
-						<View style={styles.amountCaption}>
-							<Caption13Up style={styles.amountCaption} color="purple">
+						<View style={styles.amountLabel}>
+							<Caption13Up color="purple">
 								{t(spending ? 'spending_label' : 'receiving_label')}
 							</Caption13Up>
 							{channelOpenFee[`${spendingAmount}-${amount}`] && (
@@ -542,7 +543,7 @@ const CustomSetup = ({
 							)}
 						</View>
 					)}
-					<NumberPadTextField
+					<TransferTextField
 						value={textFieldValue}
 						showPlaceholder={showNumberPad}
 						testID="CustomSetupNumberField"
@@ -551,8 +552,21 @@ const CustomSetup = ({
 				</View>
 
 				{!showNumberPad && (
-					<AnimatedView color="transparent" entering={FadeIn} exiting={FadeOut}>
+					<AnimatedView
+						style={styles.buttonContainer}
+						color="transparent"
+						entering={FadeIn}
+						exiting={FadeOut}>
 						<Button
+							style={styles.button}
+							text={t('quick_setup')}
+							size="large"
+							variant="secondary"
+							testID="TransferAdvanced"
+							onPress={onSwitch}
+						/>
+						<Button
+							style={styles.button}
 							text={t('continue')}
 							size="large"
 							loading={loading}
@@ -575,14 +589,17 @@ const CustomSetup = ({
 				)}
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
 	root: {
 		flex: 1,
-		marginTop: 8,
+	},
+	content: {
+		flex: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
 	text: {
@@ -597,19 +614,27 @@ const styles = StyleSheet.create({
 	buttonCustom: {
 		alignSelf: 'flex-start',
 	},
-	amount: {
+	amountContainer: {
 		marginTop: 'auto',
-		marginBottom: 32,
 	},
-	amountCaption: {
+	amountLabel: {
 		flexDirection: 'row',
-		marginBottom: 4,
+		marginBottom: 16,
 	},
 	amountCaptionCost: {
 		marginLeft: 2,
 	},
 	numberpad: {
+		marginTop: 16,
 		marginHorizontal: -16,
+	},
+	buttonContainer: {
+		flexDirection: 'row',
+		gap: 16,
+		marginTop: 42,
+	},
+	button: {
+		flex: 1,
 	},
 });
 

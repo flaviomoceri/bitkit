@@ -21,7 +21,7 @@ const LightningChannel = ({
 	const { spendingAvailable, receivingAvailable, capacity } =
 		useLightningChannelBalance(channel);
 
-	let spendingColor: keyof IThemeColors = 'purple5';
+	let spendingColor: keyof IThemeColors = 'purple50';
 	let spendingAvailableColor: keyof IThemeColors = 'purple';
 	let receivingColor: keyof IThemeColors = 'white50';
 	let receivingAvailableColor: keyof IThemeColors = 'white';
@@ -49,7 +49,7 @@ const LightningChannel = ({
 					<Money
 						sats={spendingAvailable}
 						color={spendingAvailableColor}
-						size="caption13M"
+						size="captionB"
 						unit={EUnit.BTC}
 					/>
 				</View>
@@ -58,7 +58,7 @@ const LightningChannel = ({
 					<Money
 						sats={receivingAvailable}
 						color={receivingAvailableColor}
-						size="caption13M"
+						size="captionB"
 						unit={EUnit.BTC}
 					/>
 				</View>

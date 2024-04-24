@@ -5,18 +5,23 @@ import React, {
 	useEffect,
 	useCallback,
 } from 'react';
-import { Linking, Platform, Pressable, StyleSheet, View } from 'react-native';
+import {
+	Image,
+	Linking,
+	Platform,
+	Pressable,
+	StyleSheet,
+	View,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Switch } from '../../../styles/components';
-import { Text01M, Text01S } from '../../../styles/text';
+import { BodyMSB, BodyM } from '../../../styles/text';
 import { FaceIdIcon, TouchIdIcon } from '../../../styles/icons';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
-import Glow from '../../../components/Glow';
 import { IsSensorAvailableResult } from '../../../components/Biometrics';
 import { useAppDispatch } from '../../../hooks/redux';
 import rnBiometrics from '../../../utils/biometrics';
@@ -97,24 +102,25 @@ const AskForBiometrics = ({
 	]);
 
 	return (
-		<GradientView style={styles.container}>
+		<GradientView style={styles.root}>
 			<BottomSheetNavigationHeader title={biometricsName} />
 
 			<View style={styles.content}>
-				{!biometryData && <Text01S color="gray1">{t('bio_loading')}</Text01S>}
+				{!biometryData && <BodyM color="white50">{t('bio_loading')}</BodyM>}
 
 				{!biometryData?.available && (
 					<>
-						<Text01S color="gray1">{t('bio_not_available')}</Text01S>
-						<GlowImage image={imageSrc} imageSize={200} glowColor="yellow" />
+						<BodyM color="white50">{t('bio_not_available')}</BodyM>
+						<View style={styles.imageContainer}>
+							<Image style={styles.image} source={imageSrc} />
+						</View>
 					</>
 				)}
 
 				{biometryData?.biometryType && (
 					<>
-						<Text01S color="gray1">{t('bio_ask', { biometricsName })}</Text01S>
+						<BodyM color="white50">{t('bio_ask', { biometricsName })}</BodyM>
 						<View style={styles.imageContainer} pointerEvents="none">
-							<Glow style={styles.glow} size={600} color="brand" />
 							{biometryData?.biometryType === 'FaceID' ? (
 								<FaceIdIcon />
 							) : (
@@ -124,12 +130,12 @@ const AskForBiometrics = ({
 
 						<Pressable
 							style={styles.toggle}
-							onPress={handleTogglePress}
-							testID="ToggleBiometrics">
-							<Text01M>{t('bio_use', { biometricsName })}</Text01M>
+							testID="ToggleBiometrics"
+							onPress={handleTogglePress}>
+							<BodyMSB>{t('bio_use', { biometricsName })}</BodyMSB>
 							<Switch
-								onValueChange={handleTogglePress}
 								value={shouldEnableBiometrics}
+								onValueChange={handleTogglePress}
 							/>
 						</Pressable>
 					</>
@@ -148,30 +154,29 @@ const AskForBiometrics = ({
 						<>
 							<Button
 								style={styles.button}
-								size="large"
 								text={t('skip')}
+								size="large"
 								variant="secondary"
 								testID="SkipButton"
 								onPress={onSkip}
 							/>
-							<View style={styles.divider} />
 							<Button
 								style={styles.button}
-								size="large"
 								text={t('bio_phone_settings')}
+								size="large"
 								onPress={goToSettings}
 							/>
 						</>
 					)}
 				</View>
-				<SafeAreaInset type="bottom" minPadding={16} />
 			</View>
+			<SafeAreaInset type="bottom" minPadding={16} />
 		</GradientView>
 	);
 };
 
 const styles = StyleSheet.create({
-	container: {
+	root: {
 		flex: 1,
 	},
 	content: {
@@ -179,31 +184,34 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 32,
 	},
 	imageContainer: {
-		flex: 1,
-		position: 'relative',
+		flexShrink: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+		marginBottom: 'auto',
 	},
-	glow: {
-		position: 'absolute',
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	toggle: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		marginTop: 'auto',
 		marginBottom: 32,
 	},
 	buttonContainer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
-		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		paddingHorizontal: 16,
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

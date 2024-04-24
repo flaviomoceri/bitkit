@@ -3,7 +3,6 @@ import {
 	markComplete,
 	completeOnboarding,
 	launchAndWait,
-	isVisible,
 } from './helpers';
 
 const d = checkComplete(['numberpad-modern', 'numberpad-classic'])
@@ -39,7 +38,6 @@ d('NumberPad', () => {
 		}
 
 		await element(by.id('Receive')).tap();
-		await element(by.id('UnderstoodButton')).tap();
 		await element(by.id('SpecifyInvoiceButton')).tap();
 		await element(by.id('ReceiveNumberPadTextField')).tap();
 
@@ -94,9 +92,6 @@ d('NumberPad', () => {
 		await element(by.id('NavigationClose')).tap();
 
 		await element(by.id('Receive')).tap();
-		if (await isVisible('UnderstoodButton')) {
-			await element(by.id('UnderstoodButton')).tap();
-		}
 		await element(by.id('SpecifyInvoiceButton')).tap();
 		await element(by.id('ReceiveNumberPadTextField')).tap();
 

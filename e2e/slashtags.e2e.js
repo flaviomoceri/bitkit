@@ -102,7 +102,7 @@ d('Profile and Contacts', () => {
 
 			await element(by.id('ProfileSaveButton')).tap();
 			await element(by.id('OnboardingContinue')).tap();
-			await expect(element(by.text('TestName'))).toExist();
+			await expect(element(by.text('TESTNAME'))).toExist();
 			await expect(element(by.text('Testing Bitkit for sats'))).toExist();
 			await element(by.id('CopyButton')).tap();
 			const { label: slashtagsUrl } = await element(
@@ -116,13 +116,13 @@ d('Profile and Contacts', () => {
 			await element(by.id('BioInput')).tapReturnKey();
 			await element(by.id('RemoveLinkButton')).atIndex(0).tap();
 			await element(by.id('ProfileSaveButton')).tap();
-			await expect(element(by.text('NewTestName'))).toExist();
+			await expect(element(by.text('NEWTESTNAME'))).toExist();
 			await expect(element(by.text('Still testing Bitkit'))).toExist();
 			await element(by.id('NavigationClose')).tap();
 
 			// ADD CONTACTS
 			await element(by.id('HeaderContactsButton')).tap();
-			await element(by.id('ContactsOnboardingButton')).tap();
+			await element(by.id('ContactsOnboarding-button')).tap();
 
 			// self
 			await element(by.id('AddContact')).tap();
@@ -158,7 +158,7 @@ d('Profile and Contacts', () => {
 			await expect(element(by.text(hal.name1))).toExist();
 			await element(by.id('NameInput')).replaceText(hal.name2);
 			await element(by.id('SaveContactButton')).tap();
-			await expect(element(by.text(hal.name2))).toExist();
+			await expect(element(by.text(hal.name2.toUpperCase()))).toExist();
 			await element(by.id('NavigationClose')).tap();
 
 			// FILTER CONTACTS
@@ -182,7 +182,6 @@ d('Profile and Contacts', () => {
 
 			// RECEIVE MONEY AND ATTACH CONTACT TO THE TRANSACTION
 			await element(by.id('Receive')).tap();
-			await element(by.id('UnderstoodButton')).tap();
 			await sleep(1000);
 			await waitFor(element(by.id('QRCode'))).toBeVisible();
 			await sleep(100); // wait for qr code to render
@@ -195,7 +194,7 @@ d('Profile and Contacts', () => {
 				.toBeVisible()
 				.withTimeout(10000);
 			await element(by.id('NewTxPrompt')).swipe('down');
-			await element(by.id('BitcoinAsset')).tap();
+			await element(by.id('ActivitySavings')).tap();
 			await element(by.id('Activity-1')).tap();
 			await element(by.id('ActivityAssign')).tap();
 			await element(by.text(satoshi.name)).tap();
@@ -230,7 +229,7 @@ d('Profile and Contacts', () => {
 			await waitFor(element(by.id('SkipIntro'))).toBeVisible();
 			await element(by.id('SkipIntro')).tap();
 			await element(by.id('RestoreWallet')).tap();
-			await element(by.id('MultipleButton')).tap();
+			await element(by.id('MultipleDevices-button')).tap();
 			await element(by.id('Word-0')).replaceText(seed);
 			await element(by.id('WordIndex-4')).swipe('up');
 			await element(by.id('RestoreButton')).tap();
@@ -240,11 +239,11 @@ d('Profile and Contacts', () => {
 				.withTimeout(300000); // 5 min
 			await element(by.id('GetStartedButton')).tap();
 
-			// wait for AssetsTitle to appear and be accessible
+			// wait for SuggestionsLabel to appear and be accessible
 			for (let i = 0; i < 60; i++) {
 				await sleep(1000);
 				try {
-					await element(by.id('AssetsTitle')).tap();
+					await element(by.id('SuggestionsLabel')).tap();
 					break;
 				} catch (e) {}
 			}
@@ -258,7 +257,7 @@ d('Profile and Contacts', () => {
 			await expect(element(by.text(satoshi.name))).toBeVisible();
 			await element(by.id('NavigationClose')).tap();
 
-			await element(by.id('BitcoinAsset')).tap();
+			await element(by.id('ActivitySavings')).tap();
 			await element(by.id('Activity-1')).tap();
 			await expect(
 				element(by.text(satoshi.name).withAncestor(by.id('ContactSmall'))),

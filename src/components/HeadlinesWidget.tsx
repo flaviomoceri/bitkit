@@ -9,12 +9,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import Reader from '@synonymdev/slashtags-widget-news-feed/lib/reader';
 
-import { Caption13M, Title } from '../styles/text';
-import { openURL } from '../utils/helpers';
+import { BodyM, CaptionB, Title } from '../styles/text';
+import { openAppURL, timeAgo } from '../utils/helpers';
 import { showToast } from '../utils/notifications';
 import { useSlashtags2 } from '../hooks/slashtags2';
 import BaseFeedWidget from './BaseFeedWidget';
-import { TFeedWidget } from '../store/types/widgets';
 
 type Article = {
 	title: string;
@@ -34,7 +33,6 @@ type Article = {
 
 const HeadlinesWidget = ({
 	url,
-	widget,
 	isEditing = false,
 	style,
 	testID,
@@ -42,7 +40,6 @@ const HeadlinesWidget = ({
 	onPressIn,
 }: {
 	url: string;
-	widget: TFeedWidget;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
 	testID?: string;
@@ -98,7 +95,6 @@ const HeadlinesWidget = ({
 			style={style}
 			url={url}
 			name={t('widget_headlines')}
-			showTitle={widget.extras?.showTitle}
 			isLoading={isLoading}
 			isEditing={isEditing}
 			testID={testID}
@@ -106,31 +102,38 @@ const HeadlinesWidget = ({
 			onLongPress={onLongPress}
 			onPress={(): void => {
 				if (!isEditing && article?.link) {
-					openURL(article.link);
+					openAppURL(article.link);
 				}
 			}}>
 			<>
+				{article?.publishedDate && (
+					<BodyM style={styles.date} numberOfLines={1}>
+						{timeAgo(article.publishedDate)}
+					</BodyM>
+				)}
+
 				<Title numberOfLines={2}>{article?.title}</Title>
 
 				<TouchableOpacity
 					style={styles.source}
 					activeOpacity={0.9}
+					hitSlop={{ right: 15, bottom: 15, left: 15 }}
 					onPress={(): void => {
 						if (article?.comments) {
-							openURL(article.comments);
+							openAppURL(article.comments);
 						} else {
-							openURL(article!.link);
+							openAppURL(article!.link);
 						}
 					}}>
 					<View style={styles.columnLeft}>
-						<Caption13M color="gray1" numberOfLines={1}>
+						<CaptionB color="white50" numberOfLines={1}>
 							{t('widget_source')}
-						</Caption13M>
+						</CaptionB>
 					</View>
 					<View style={styles.columnRight}>
-						<Caption13M color="gray1" numberOfLines={1}>
+						<CaptionB color="white50" numberOfLines={1}>
 							{article?.publisher.title}
-						</Caption13M>
+						</CaptionB>
 					</View>
 				</TouchableOpacity>
 			</>
@@ -139,6 +142,9 @@ const HeadlinesWidget = ({
 };
 
 const styles = StyleSheet.create({
+	date: {
+		marginBottom: 16,
+	},
 	columnLeft: {
 		flex: 1,
 		flexDirection: 'row',
@@ -155,13 +161,6 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		// increase hitbox
-		paddingBottom: 10,
-		marginBottom: -10,
-		paddingLeft: 10,
-		marginLeft: -10,
-		paddingRight: 10,
-		marginRight: -10,
 	},
 });
 

@@ -43,12 +43,13 @@ import {
 } from './lightning';
 import { EAvailableNetwork } from './networks';
 import { savePeer } from '../store/utils/lightning';
-import { TWalletName } from '../store/types/wallet';
+import { EDenomination, TWalletName } from '../store/types/wallet';
 import { sendNavigation } from '../navigation/bottom-sheet/SendNavigation';
 import { rootNavigation } from '../navigation/root/RootNavigator';
 import { findlnurl, handleLnurlAuth, isLnurlAddress } from './lnurl';
 import i18n from './i18n';
 import { parseOnChainPaymentRequest, validateAddress } from 'beignet';
+import { getBitcoinDisplayValues } from './displayValues';
 
 export enum EQRDataType {
 	bitcoinAddress = 'bitcoinAddress',
@@ -675,14 +676,18 @@ export const processBitcoinTransactionData = async ({
 			if (spendingBalance >= requestedAmount) {
 				response = filteredLightningInvoice;
 			} else {
+				const amount = requestedAmount - spendingBalance;
+				const { bitcoinFormatted } = getBitcoinDisplayValues({
+					satoshis: amount,
+					denomination: EDenomination.modern,
+				});
+
 				error = {
 					type: 'warning',
 					title: i18n.t('other:pay_insufficient_spending'),
 					description: i18n.t(
 						'other:pay_insufficient_spending_amount_description',
-						{
-							amount: requestedAmount - spendingBalance,
-						},
+						{ amount: bitcoinFormatted },
 					),
 				};
 			}
@@ -709,14 +714,18 @@ export const processBitcoinTransactionData = async ({
 					response = { ...bitcoinInvoice, sats: 0 };
 
 					if (showErrors) {
+						const amount = requestedAmount - onchainBalance;
+						const { bitcoinFormatted } = getBitcoinDisplayValues({
+							satoshis: amount,
+							denomination: EDenomination.modern,
+						});
+
 						showToast({
 							type: 'warning',
 							title: i18n.t('other:pay_insufficient_savings'),
 							description: i18n.t(
 								'other:pay_insufficient_savings_amount_description',
-								{
-									amount: requestedAmount - onchainBalance,
-								},
+								{ amount: bitcoinFormatted },
 							),
 						});
 					}

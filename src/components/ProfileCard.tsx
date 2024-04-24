@@ -54,13 +54,17 @@ const ProfileCard = ({
 							autoFocus={autoFocus || !name}
 							// placeholder doesn't like the lineHeight
 							style={[
-								theme.fonts.bold,
+								theme.fonts.black,
 								styles.nameInput,
 								name ? styles.nameInputFilled : {},
 							]}
 							value={name?.slice(0, MAX_NAME_LENGTH)}
 							placeholder={t(contact ? 'contacts_name' : 'contact_your_name')}
 							multiline={true}
+							blurOnSubmit
+							returnKeyType="done"
+							maxLength={MAX_NAME_LENGTH}
+							testID="NameInput"
 							onChangeText={(value: string): void => {
 								if (value.slice(-1) === '\t') {
 									bioRef.current?.focus();
@@ -68,10 +72,6 @@ const ProfileCard = ({
 									onChange?.('name', value.replace(/\n/g, ' '));
 								}
 							}}
-							blurOnSubmit
-							returnKeyType="done"
-							maxLength={MAX_NAME_LENGTH}
-							testID="NameInput"
 						/>
 					) : (
 						<View>
@@ -80,7 +80,7 @@ const ProfileCard = ({
 									{t('contact_retrieving')}
 								</Headline>
 							) : (
-								<Headline numberOfLines={2} style={styles.name}>
+								<Headline style={styles.name} numberOfLines={2}>
 									{truncate(name, 30)}
 								</Headline>
 							)}
@@ -119,7 +119,7 @@ const ProfileCard = ({
 				<TextInputNoOutline
 					ref={bioRef}
 					style={[theme.fonts.regular, styles.bioInput]}
-					color="gray1"
+					color="white50"
 					value={bio}
 					placeholder={t('profile_bio')}
 					multiline={true}
@@ -130,7 +130,7 @@ const ProfileCard = ({
 					testID="BioInput"
 				/>
 			) : (
-				<Text color="gray1" style={[theme.fonts.regular, styles.bio]}>
+				<Text color="white50" style={[theme.fonts.regular, styles.bio]}>
 					{bio?.slice(0, MAX_BIO_LENGTH)}
 				</Text>
 			)}
@@ -154,14 +154,16 @@ const styles = StyleSheet.create({
 	},
 	nameInput: {
 		flexWrap: 'wrap',
-		fontSize: 34,
-		lineHeight: 34,
+		fontSize: 30,
+		lineHeight: 30,
+		// textTransform: 'uppercase',
 		// needed because of issues with this font on Android
 		marginTop: Platform.OS === 'android' ? 10 : 0,
 	},
 	nameInputFilled: {
-		fontSize: 34,
-		lineHeight: 34,
+		fontSize: 30,
+		lineHeight: 30,
+		// textTransform: 'uppercase',
 	},
 	url: {
 		marginTop: 8,

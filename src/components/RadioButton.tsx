@@ -8,7 +8,7 @@ import {
 	ViewStyle,
 } from 'react-native';
 
-import { Text01S, Caption13S } from '../styles/text';
+import { BodyM, Caption } from '../styles/text';
 import { Checkmark } from '../styles/icons';
 
 type RadioButtonProps = {
@@ -34,10 +34,8 @@ export const RadioButton = memo(
 				onPress={onPress}>
 				<View style={styles.leftColumn}>
 					<View>
-						<Text01S color="white">{label}</Text01S>
-						{description && (
-							<Caption13S color="gray1">{description}</Caption13S>
-						)}
+						<BodyM color="white">{label}</BodyM>
+						{description && <Caption color="white50">{description}</Caption>}
 					</View>
 				</View>
 				<View style={styles.rightColumn}>

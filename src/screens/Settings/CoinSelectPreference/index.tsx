@@ -94,11 +94,7 @@ const CoinSelectSettings = (): ReactElement => {
 	);
 
 	return (
-		<SettingsView
-			title={t('adv.coin_selection')}
-			listData={settingsListData}
-			showBackNavigation={true}
-		/>
+		<SettingsView title={t('adv.coin_selection')} listData={settingsListData} />
 	);
 };
 

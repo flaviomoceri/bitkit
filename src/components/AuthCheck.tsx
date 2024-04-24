@@ -4,7 +4,7 @@ import { useAppSelector } from '../hooks/redux';
 import { RouteProp } from '@react-navigation/native';
 import Animated, { FadeOut } from 'react-native-reanimated';
 
-import GlowingBackground from './GlowingBackground';
+import { View as ThemedView } from '../styles/components';
 import Biometrics from './Biometrics';
 import PinPad from './PinPad';
 import { biometricsSelector } from '../store/reselect/settings';
@@ -34,12 +34,12 @@ const AuthCheck = ({
 	if (requireBiometrics && !requirePin) {
 		return (
 			<Animated.View style={StyleSheet.absoluteFillObject} exiting={FadeOut}>
-				<GlowingBackground topLeft="brand">
+				<ThemedView style={styles.root}>
 					<Biometrics
 						onSuccess={(): void => onSuccess?.()}
 						onFailure={(): void => setRequireBiometrics(false)}
 					/>
-				</GlowingBackground>
+				</ThemedView>
 			</Animated.View>
 		);
 	}
@@ -56,5 +56,11 @@ const AuthCheck = ({
 		</Animated.View>
 	);
 };
+
+const styles = StyleSheet.create({
+	root: {
+		flex: 1,
+	},
+});
 
 export default memo(AuthCheck);

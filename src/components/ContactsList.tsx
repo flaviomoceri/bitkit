@@ -8,7 +8,7 @@ import ProfileImage from './ProfileImage';
 import SlashtagURL from './SlashtagURL';
 import Divider from './Divider';
 import { View as ThemedView } from '../styles/components';
-import { Caption13Up, Text01M } from '../styles/text';
+import { Caption13Up, BodyMSB } from '../styles/text';
 import { useProfile2, useSelectedSlashtag2 } from '../hooks/slashtags2';
 import { IContactRecord } from '../store/types/slashtags';
 import { truncate } from '../utils/helpers';
@@ -48,12 +48,12 @@ export const ContactItem = ({
 					size={size === 'small' ? 32 : 48}
 				/>
 				<View style={cstyles.column} pointerEvents="none">
-					<Text01M
+					<BodyMSB
 						numberOfLines={1}
 						style={size !== 'small' ? cstyles.name : undefined}>
 						{name}
-					</Text01M>
-					<SlashtagURL url={contact.url} color="gray1" size="small" />
+					</BodyMSB>
+					<SlashtagURL url={contact.url} color="white50" size="small" />
 				</View>
 			</View>
 		</TouchableOpacity>
@@ -65,7 +65,7 @@ const Empty = (): ReactElement => {
 
 	return (
 		<View style={estyles.empty}>
-			<Text01M>{t('contacts_no_found')}</Text01M>
+			<BodyMSB>{t('contacts_no_found')}</BodyMSB>
 		</View>
 	);
 };
@@ -137,7 +137,7 @@ const ContactsList = ({
 				<ThemedView
 					color={sectionBackgroundColor}
 					style={!isFirst && styles.sectionSpacing}>
-					<Caption13Up color="gray1">{title}</Caption13Up>
+					<Caption13Up color="white50">{title}</Caption13Up>
 				</ThemedView>
 			);
 		},

@@ -156,11 +156,7 @@ const SlashtagsSettings = (): ReactElement => {
 	);
 
 	return (
-		<SettingsView
-			title="Slashtags Settings"
-			listData={settingsListData}
-			showBackNavigation={true}
-		/>
+		<SettingsView title="Slashtags Settings" listData={settingsListData} />
 	);
 };
 

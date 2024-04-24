@@ -3,7 +3,7 @@ import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Reader } from '@synonymdev/slashtags-widget-bitcoin-feed';
 
-import { Caption13M, Text01M, Text02M } from '../styles/text';
+import { CaptionB, BodyMSB, BodySSB } from '../styles/text';
 import BaseFeedWidget from './BaseFeedWidget';
 import { TFeedWidget } from '../store/types/widgets';
 import { useSlashfeed } from '../hooks/widgets';
@@ -104,7 +104,6 @@ const BlocksWidget = ({
 			style={style}
 			url={url}
 			name={t('widget_blocks')}
-			showTitle={widget.extras?.showTitle}
 			isLoading={loading}
 			isEditing={isEditing}
 			testID={testID}
@@ -114,14 +113,14 @@ const BlocksWidget = ({
 				{data.map((field) => (
 					<View key={field.name} style={styles.row}>
 						<View style={styles.columnLeft}>
-							<Text02M color="gray1" numberOfLines={1}>
+							<BodySSB color="white50" numberOfLines={1}>
 								{field.name}
-							</Text02M>
+							</BodySSB>
 						</View>
 						<View style={styles.columnRight}>
-							<Text01M numberOfLines={1} ellipsizeMode="middle">
+							<BodyMSB numberOfLines={1} ellipsizeMode="middle">
 								{field.value}
-							</Text01M>
+							</BodyMSB>
 						</View>
 					</View>
 				))}
@@ -129,14 +128,14 @@ const BlocksWidget = ({
 				{widget.extras?.showSource && config?.source && (
 					<View style={styles.source}>
 						<View style={styles.columnLeft}>
-							<Caption13M color="gray1" numberOfLines={1}>
+							<CaptionB color="white50" numberOfLines={1}>
 								{t('widget_source')}
-							</Caption13M>
+							</CaptionB>
 						</View>
 						<View style={styles.columnRight}>
-							<Caption13M color="gray1" numberOfLines={1}>
+							<CaptionB color="white50" numberOfLines={1}>
 								{config.source.name}
-							</Caption13M>
+							</CaptionB>
 						</View>
 					</View>
 				)}

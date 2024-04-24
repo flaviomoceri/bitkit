@@ -4,7 +4,7 @@ import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 
 import { AnimatedView } from '../../../styles/components';
-import { Text02S } from '../../../styles/text';
+import { BodyS } from '../../../styles/text';
 import useColors from '../../../hooks/colors';
 import { vibrate } from '../../../utils/helpers';
 import { getKeychainValue } from '../../../utils/keychain';
@@ -77,7 +77,7 @@ const SendPinPad = ({ onSuccess }: { onSuccess: () => void }): ReactElement => {
 							onPress={(): void => {
 								showBottomSheet('forgotPIN');
 							}}>
-							<Text02S color="brand">{t('cp_forgot')}</Text02S>
+							<BodyS color="brand">{t('cp_forgot')}</BodyS>
 						</Pressable>
 					</AnimatedView>
 				)}

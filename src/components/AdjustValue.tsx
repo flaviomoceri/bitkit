@@ -6,7 +6,7 @@ import {
 	StyleProp,
 	ViewStyle,
 } from 'react-native';
-import { Text01M, Text02M } from '../styles/text';
+import { BodyMSB, BodySSB } from '../styles/text';
 import { MinusCircledIcon, PlusCircledIcon } from '../styles/icons';
 
 type AdjustValueProps = {
@@ -35,17 +35,17 @@ const AdjustValue = ({
 				disabled={decreaseDisabled}
 				onPress={decreaseValue}>
 				<MinusCircledIcon
-					color={decreaseDisabled ? 'gray' : 'red'}
+					color={decreaseDisabled ? 'gray2' : 'red'}
 					width={36}
 					height={36}
 				/>
 			</TouchableOpacity>
 			<View style={styles.text}>
-				<Text01M style={styles.title}>{value}</Text01M>
+				<BodyMSB style={styles.title}>{value}</BodyMSB>
 				{description && (
-					<Text02M style={styles.description} color="gray1">
+					<BodySSB style={styles.description} color="white50">
 						{description}
-					</Text02M>
+					</BodySSB>
 				)}
 			</View>
 			<TouchableOpacity
@@ -53,7 +53,7 @@ const AdjustValue = ({
 				disabled={increaseDisabled}
 				onPress={increaseValue}>
 				<PlusCircledIcon
-					color={increaseDisabled ? 'gray' : 'green'}
+					color={increaseDisabled ? 'gray2' : 'green'}
 					width={36}
 					height={36}
 				/>

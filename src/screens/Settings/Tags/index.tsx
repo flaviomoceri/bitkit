@@ -29,9 +29,11 @@ const TagsSettings = ({
 			<View style={styles.content}>
 				{lastUsedTags.length !== 0 && (
 					<>
-						<Caption13Up color="gray1" style={styles.section}>
-							{t('general.tags_previously')}
-						</Caption13Up>
+						<View style={styles.label}>
+							<Caption13Up color="white50">
+								{t('general.tags_previously')}
+							</Caption13Up>
+						</View>
 						<View style={styles.tagsContainer}>
 							{lastUsedTags.map((tag) => (
 								<Tag
@@ -64,8 +66,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingHorizontal: 16,
 	},
-	section: {
-		marginBottom: 16,
+	label: {
+		justifyContent: 'center',
+		height: 50,
 	},
 	tagsContainer: {
 		flexDirection: 'row',

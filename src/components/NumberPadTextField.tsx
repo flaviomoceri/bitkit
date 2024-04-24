@@ -10,7 +10,6 @@ import {
 
 import { Display } from '../styles/text';
 import Money from './Money';
-import MoneySymbol from './MoneySymbol';
 import { EDenomination, EUnit } from '../store/types/wallet';
 import {
 	conversionUnitSelector,
@@ -18,6 +17,7 @@ import {
 	unitSelector,
 } from '../store/reselect/settings';
 import { convertToSats } from '../utils/conversion';
+import { useCurrency } from '../hooks/displayValues';
 import {
 	getDisplayValues,
 	getFiatDisplayValuesForFiat,
@@ -38,6 +38,7 @@ const NumberPadTextField = ({
 	testID?: string;
 	onPress?: () => void;
 }): ReactElement => {
+	const { fiatSymbol } = useCurrency();
 	const unit = useAppSelector(unitSelector);
 	const conversionUnit = useAppSelector(conversionUnitSelector);
 	const denomination = useAppSelector(denominationSelector);
@@ -96,19 +97,19 @@ const NumberPadTextField = ({
 					style={styles.secondary}
 					sats={satoshis}
 					size="caption13Up"
-					color="gray1"
+					color="white50"
 					symbol={true}
 					unitType="secondary"
 				/>
 			)}
 
 			<View style={styles.primary}>
-				<MoneySymbol style={styles.symbol} unit={unit} />
-				<Display color="white" lineHeight="57px">
+				<Display style={styles.symbol} color="white50">
+					{unit === EUnit.BTC ? '₿' : fiatSymbol}
+				</Display>
+				<Display>
 					{value !== placeholder && value}
-					<Display
-						color={showPlaceholder ? 'white50' : 'white'}
-						lineHeight="57px">
+					<Display color={showPlaceholder ? 'white50' : 'white'}>
 						{placeholder}
 					</Display>
 				</Display>
@@ -117,8 +118,8 @@ const NumberPadTextField = ({
 			{reverse && (
 				<Money
 					sats={satoshis}
-					size="text01m"
-					color="gray1"
+					size="bodyMSB"
+					color="white50"
 					symbol={true}
 					unitType="secondary"
 				/>
@@ -133,10 +134,11 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	secondary: {
-		marginBottom: 9,
+		marginBottom: 16,
 	},
 	symbol: {
-		marginRight: 4,
+		fontFamily: 'InterTight-Bold',
+		marginRight: 6,
 	},
 });
 

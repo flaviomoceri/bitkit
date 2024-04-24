@@ -11,7 +11,6 @@ import {
 import RNExitApp from 'react-native-exit-app';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { Glow } from '../components/Glow';
 import SafeAreaInset from '../components/SafeAreaInset';
 import { openURL } from '../utils/helpers';
 import { createSupportLink } from '../utils/support';
@@ -44,13 +43,6 @@ const AppError = ({ error }: { error: ReactError }): ReactElement => {
 				<SafeAreaInset type="top" minPadding={16} />
 				<Text style={styles.header}>Unexpected Error</Text>
 
-				<View style={styles.background}>
-					<View style={styles.imageContainer} pointerEvents="none">
-						<Glow style={styles.glow} color="#E95164" size={600} />
-						<Image style={styles.image} source={imageSrc} />
-					</View>
-				</View>
-
 				<View style={styles.content}>
 					<Text style={styles.text}>
 						Sorry, Bitkit just crashed unexpectedly. Here is a glimpse of what
@@ -65,6 +57,10 @@ const AppError = ({ error }: { error: ReactError }): ReactElement => {
 						</Text>
 					</View>
 
+					<View style={styles.imageContainer} pointerEvents="none">
+						<Image style={styles.image} source={imageSrc} />
+					</View>
+
 					<View style={styles.buttonContainer}>
 						<TouchableOpacity
 							style={[styles.button, styles.buttonSecondary]}
@@ -72,7 +68,6 @@ const AppError = ({ error }: { error: ReactError }): ReactElement => {
 							onPress={onClose}>
 							<Text style={styles.buttonText}>Close Bitkit</Text>
 						</TouchableOpacity>
-						<View style={styles.divider} />
 						<TouchableOpacity
 							style={[styles.button, styles.buttonPrimary]}
 							testID="ErrorReport"
@@ -99,11 +94,6 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		marginTop: 17,
 		paddingBottom: 35,
-	},
-	background: {
-		...StyleSheet.absoluteFillObject,
-		alignItems: 'center',
-		justifyContent: 'center',
 	},
 	content: {
 		flex: 1,
@@ -134,22 +124,23 @@ const styles = StyleSheet.create({
 		color: '#E95164',
 	},
 	imageContainer: {
-		// flex: 1,
-		position: 'relative',
+		flexShrink: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
 	},
 	image: {
-		height: 220,
+		flex: 1,
 		resizeMode: 'contain',
-	},
-	glow: {
-		position: 'absolute',
 	},
 	buttonContainer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		borderRadius: 64,
@@ -172,9 +163,6 @@ const styles = StyleSheet.create({
 		color: 'white',
 		fontSize: 15,
 		fontWeight: 'bold',
-	},
-	divider: {
-		width: 16,
 	},
 });
 

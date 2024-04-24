@@ -78,11 +78,7 @@ const UnitSettings = (): ReactElement => {
 	}, [selectedUnit, selectedCurrency, selectedDenomination, t, dispatch]);
 
 	return (
-		<SettingsView
-			title={t('general.unit_title')}
-			listData={currencyListData}
-			showBackNavigation={true}
-		/>
+		<SettingsView title={t('general.unit_title')} listData={currencyListData} />
 	);
 };
 

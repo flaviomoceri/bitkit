@@ -1,17 +1,16 @@
 import React, { ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../styles/components';
-import { Text01S, Title } from '../styles/text';
+import { BodyM, Title } from '../styles/text';
 import SafeAreaInset from '../components/SafeAreaInset';
-import GlowImage from '../components/GlowImage';
 import Button from '../components/Button';
 import { useAppSelector } from '../hooks/redux';
 import { openURL } from '../utils/helpers';
 import { availableUpdateSelector } from '../store/reselect/ui';
 
-const imageSrc = require('../assets/illustrations/bitkit-logo.png');
+const imageSrc = require('../assets/illustrations/exclamation-mark.png');
 
 const AppUpdate = (): ReactElement => {
 	const { t } = useTranslation('other');
@@ -26,9 +25,11 @@ const AppUpdate = (): ReactElement => {
 			<SafeAreaInset type="top" />
 			<Title style={styles.header}>{t('up_title')}</Title>
 			<View style={styles.content}>
-				<Text01S color="gray1">{t('up_text')}</Text01S>
+				<BodyM color="white50">{t('up_text')}</BodyM>
 
-				<GlowImage image={imageSrc} />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
 
 				<View style={styles.buttonContainer}>
 					<Button
@@ -50,12 +51,22 @@ const styles = StyleSheet.create({
 	},
 	header: {
 		textAlign: 'center',
-		marginTop: 17,
 		paddingBottom: 35,
 	},
 	content: {
 		flex: 1,
 		paddingHorizontal: 16,
+	},
+	imageContainer: {
+		alignSelf: 'center',
+		alignItems: 'center',
+		marginTop: 'auto',
+		aspectRatio: 1,
+		height: 300,
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		flexDirection: 'row',

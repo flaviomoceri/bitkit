@@ -1,18 +1,17 @@
 import React, { ReactElement } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, ImageBackground } from 'react-native';
 import { FadeIn } from 'react-native-reanimated';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { AnimatedView } from '../../styles/components';
-import { Display, Text01S } from '../../styles/text';
-import GlowingBackground from '../../components/GlowingBackground';
+import { Display, BodyM } from '../../styles/text';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Button from '../../components/Button';
-import BitkitLogo from '../../assets/bitkit-logo.svg';
 import DetectSwipe from '../../components/DetectSwipe';
 import type { OnboardingStackScreenProps } from '../../navigation/types';
 
-const imageSrc = require('../../assets/illustrations/figures.png');
+const backgroundSrc = require('../../assets/illustrations/figures.png');
+const logoSrc = require('../../assets/logo.png');
 
 const OnboardingWelcomeScreen = ({
 	navigation,
@@ -28,90 +27,84 @@ const OnboardingWelcomeScreen = ({
 	};
 
 	const onSwipeLeft = (): void => {
-		console.log('swiped');
 		navigation.navigate('Slideshow');
 	};
 
 	return (
-		<GlowingBackground topLeft="brand">
+		<ImageBackground style={styles.root} source={backgroundSrc}>
 			<DetectSwipe onSwipeLeft={onSwipeLeft}>
 				<View style={styles.content}>
 					<AnimatedView
-						style={styles.imageContainer}
+						style={styles.logoContainer}
 						color="transparent"
 						entering={FadeIn.duration(1000)}>
-						<Image style={styles.floatIllustraion} source={imageSrc} />
+						<Image style={styles.logo} source={logoSrc} />
 					</AnimatedView>
 
 					<View style={styles.textContent}>
 						<Trans
 							t={t}
-							i18nKey="toolkit"
+							i18nKey="welcome_title"
 							parent={Display}
-							components={{
-								brand: <Display color="brand" />,
-							}}
+							components={{ accent: <Display color="brand" /> }}
 						/>
 
-						<Text01S color="gray1" style={styles.text}>
-							{t('toolkit_text')}
-						</Text01S>
+						<BodyM style={styles.text} color="white50">
+							{t('welcome_text')}
+						</BodyM>
 
 						<View style={styles.buttonsContainer}>
 							<Button
-								size="large"
-								onPress={onGetStarted}
-								text={t('get_started')}
 								style={[styles.button, styles.restoreButton]}
+								text={t('get_started')}
+								size="large"
 								testID="GetStarted"
+								onPress={onGetStarted}
 							/>
 							<Button
+								style={[styles.button, styles.skipButton]}
+								text={t('skip_intro')}
 								size="large"
 								variant="secondary"
-								onPress={onSkipIntro}
-								text={t('skip_intro')}
-								style={[styles.button, styles.skipButton]}
 								testID="SkipIntro"
+								onPress={onSkipIntro}
 							/>
-						</View>
-
-						<View style={styles.logoContainer} pointerEvents="none">
-							<BitkitLogo height={30} width={72} />
 						</View>
 						<SafeAreaInset type="bottom" minPadding={16} />
 					</View>
 				</View>
 			</DetectSwipe>
-		</GlowingBackground>
+		</ImageBackground>
 	);
 };
 
 const styles = StyleSheet.create({
+	root: {
+		flex: 1,
+	},
 	content: {
 		flex: 1,
 		paddingHorizontal: 32,
 	},
-	imageContainer: {
-		flex: 4,
-		paddingTop: 20,
+	logoContainer: {
+		flex: 1,
+		paddingBottom: 70,
 		justifyContent: 'center',
 		alignItems: 'center',
-		width: '100%',
 	},
-	floatIllustraion: {
-		position: 'absolute',
-		top: 10,
+	logo: {
+		width: 270,
+		resizeMode: 'contain',
 	},
 	textContent: {
-		flex: 3.4,
+		marginTop: 'auto',
 	},
 	text: {
-		marginTop: 8,
+		marginTop: 4,
 	},
 	buttonsContainer: {
 		flexDirection: 'row',
-		marginTop: 20,
-		marginBottom: 50,
+		marginTop: 32,
 	},
 	button: {
 		flex: 1,
@@ -122,11 +115,6 @@ const styles = StyleSheet.create({
 	},
 	skipButton: {
 		marginLeft: 6,
-	},
-	logoContainer: {
-		flexDirection: 'row',
-		justifyContent: 'center',
-		marginTop: 'auto',
 	},
 });
 

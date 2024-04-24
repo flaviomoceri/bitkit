@@ -1,4 +1,4 @@
-import React, { memo, ReactElement } from 'react';
+import React, { memo, ReactElement, useMemo } from 'react';
 import {
 	StyleSheet,
 	Text,
@@ -10,11 +10,13 @@ import Modal from 'react-native-modal';
 import { useTranslation } from 'react-i18next';
 
 import colors from '../styles/colors';
+import { IThemeColors } from '../styles/themes';
 
 type DialogProps = {
 	visible: boolean;
 	title: string;
 	description: string;
+	buttonColor?: keyof IThemeColors;
 	cancelText?: string;
 	confirmText?: string;
 	visibleTestID?: string;
@@ -27,6 +29,7 @@ const Dialog = ({
 	visible,
 	title,
 	description,
+	buttonColor,
 	cancelText,
 	confirmText,
 	visibleTestID,
@@ -42,6 +45,11 @@ const Dialog = ({
 	if (confirmText === undefined) {
 		confirmText = t('ok');
 	}
+
+	const buttonStyles = useMemo(() => {
+		const color = buttonColor ? colors[buttonColor] : colors.brand;
+		return StyleSheet.compose(styles.buttonText, { color });
+	}, [buttonColor]);
 
 	return (
 		<Modal
@@ -61,17 +69,17 @@ const Dialog = ({
 					{onCancel && (
 						<TouchableOpacity
 							style={[styles.button, styles.buttonLeft]}
-							onPress={onCancel}
-							testID="DialogCancel">
-							<Text style={styles.buttonText}>{cancelText}</Text>
+							testID="DialogCancel"
+							onPress={onCancel}>
+							<Text style={buttonStyles}>{cancelText}</Text>
 						</TouchableOpacity>
 					)}
 					{onConfirm && (
 						<TouchableOpacity
 							style={styles.button}
-							onPress={onConfirm}
-							testID="DialogConfirm">
-							<Text style={styles.buttonText}>{confirmText}</Text>
+							testID="DialogConfirm"
+							onPress={onConfirm}>
+							<Text style={[buttonStyles, {}]}>{confirmText}</Text>
 						</TouchableOpacity>
 					)}
 				</View>

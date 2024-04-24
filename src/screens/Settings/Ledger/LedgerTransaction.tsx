@@ -7,7 +7,7 @@ import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import { SettingsScreenProps } from '../../../navigation/types';
 import { ScrollView, View as ThemedView } from '../../../styles/components';
-import { Caption13M, Caption13Up } from '../../../styles/text';
+import { CaptionB, Caption13Up } from '../../../styles/text';
 import { i18nTime } from '../../../utils/i18n';
 import { bitkitLedger } from '../../../utils/ledger';
 import { showToast } from '../../../utils/notifications';
@@ -31,7 +31,7 @@ const Section = memo(
 				onPress={onPress}
 				style={styles.sectionRoot}>
 				<View style={styles.sectionName}>
-					<Caption13M>{name}</Caption13M>
+					<CaptionB>{name}</CaptionB>
 				</View>
 				<View style={styles.sectionValue} testID={testID}>
 					{value}
@@ -74,9 +74,9 @@ const LedgerTransaction = ({
 					<Section
 						name="id"
 						value={
-							<Caption13M ellipsizeMode="middle" numberOfLines={1}>
+							<CaptionB ellipsizeMode="middle" numberOfLines={1}>
 								{id}
-							</Caption13M>
+							</CaptionB>
 						}
 						onPress={(): void => {
 							Clipboard.setString(String(id));
@@ -90,7 +90,7 @@ const LedgerTransaction = ({
 					<Section
 						name="Time recorded"
 						value={
-							<Caption13M>
+							<CaptionB>
 								{tTime('dateTime', {
 									v: new Date(timestamp),
 									formatParams: {
@@ -104,24 +104,24 @@ const LedgerTransaction = ({
 										},
 									},
 								})}
-							</Caption13M>
+							</CaptionB>
 						}
 					/>
-					<Section name="Amount" value={<Caption13M>{amount}</Caption13M>} />
+					<Section name="Amount" value={<CaptionB>{amount}</CaptionB>} />
 					<Section
 						name="From"
 						value={
-							<Caption13M>
+							<CaptionB>
 								{fromAcc.wallet} / {fromAcc.account}
-							</Caption13M>
+							</CaptionB>
 						}
 					/>
 					<Section
 						name="To"
 						value={
-							<Caption13M>
+							<CaptionB>
 								{toAcc.wallet} / {toAcc.account}
-							</Caption13M>
+							</CaptionB>
 						}
 					/>
 				</View>
@@ -135,17 +135,17 @@ const LedgerTransaction = ({
 							<Section
 								name="Available"
 								value={
-									<Caption13M ellipsizeMode="middle" numberOfLines={1}>
+									<CaptionB ellipsizeMode="middle" numberOfLines={1}>
 										{balancesBefore.fromWallet.available}
-									</Caption13M>
+									</CaptionB>
 								}
 							/>
 							<Section
 								name="Hodl"
 								value={
-									<Caption13M ellipsizeMode="middle" numberOfLines={1}>
+									<CaptionB ellipsizeMode="middle" numberOfLines={1}>
 										{balancesBefore.fromWallet.hold}
-									</Caption13M>
+									</CaptionB>
 								}
 							/>
 						</View>
@@ -156,17 +156,17 @@ const LedgerTransaction = ({
 							<Section
 								name="Available"
 								value={
-									<Caption13M ellipsizeMode="middle" numberOfLines={1}>
+									<CaptionB ellipsizeMode="middle" numberOfLines={1}>
 										{balancesBefore.toWallet.available}
-									</Caption13M>
+									</CaptionB>
 								}
 							/>
 							<Section
 								name="Hodl"
 								value={
-									<Caption13M ellipsizeMode="middle" numberOfLines={1}>
+									<CaptionB ellipsizeMode="middle" numberOfLines={1}>
 										{balancesBefore.toWallet.hold}
-									</Caption13M>
+									</CaptionB>
 								}
 							/>
 						</View>
@@ -178,7 +178,7 @@ const LedgerTransaction = ({
 						<Caption13Up color="gray1">Metadata</Caption13Up>
 					</View>
 
-					<Caption13M>{`${meta}`}</Caption13M>
+					<CaptionB>{`${meta}`}</CaptionB>
 				</View>
 
 				<SafeAreaInset type="bottom" />

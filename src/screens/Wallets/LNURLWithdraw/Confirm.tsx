@@ -1,5 +1,5 @@
 import React, { ReactElement, memo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
@@ -12,10 +12,9 @@ import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from '../../../store/reselect/wallet';
-import GlowImage from '../../../components/GlowImage';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { handleLnurlWithdraw } from '../../../utils/lnurl';
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import { showToast } from '../../../utils/notifications';
 import LightningSyncing from '../../../components/LightningSyncing';
 import { closeSheet } from '../../../store/slices/ui';
@@ -61,14 +60,13 @@ const Confirm = ({ route }: LNURLWithdrawProps<'Confirm'>): ReactElement => {
 					}
 				/>
 				<View style={styles.content}>
-					<AmountToggle
-						style={styles.amountToggle}
-						sats={amount}
-						reverse={true}
-						space={12}
-					/>
-					<Text01S color="white50">{t('lnurl_w_text')}</Text01S>
-					<GlowImage image={imageSrc} imageSize={170} glowColor="brand" />
+					<AmountToggle style={styles.amountToggle} amount={amount} />
+					<BodyM color="white50">{t('lnurl_w_text')}</BodyM>
+
+					<View style={styles.imageContainer}>
+						<Image style={styles.image} source={imageSrc} />
+					</View>
+
 					<View style={styles.buttonContainer}>
 						<Button
 							size="large"
@@ -96,6 +94,19 @@ const styles = StyleSheet.create({
 	},
 	amountToggle: {
 		marginBottom: 32,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',

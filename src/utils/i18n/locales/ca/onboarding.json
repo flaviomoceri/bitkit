@@ -1,8 +1,8 @@
 {
   "tos_checkbox": "Termes d'ús",
-  "tos_checkbox_value": "<gray>Declaro que he llegit i accepto <brand>les condicions d'ús.</brand></gray>",
+  "tos_checkbox_value": "Declaro que he llegit i accepto <accent>les condicions d'ús.</accent>",
   "pp_checkbox": "Política de privadesa",
-  "pp_checkbox_value": "<gray>Declaro que he llegit i accpeto <brand>les polítiques de privacitat.</brand></gray>",
+  "pp_checkbox_value": "Declaro que he llegit i accpeto <accent>les polítiques de privacitat.</accent>",
   "toolkit_text": "Bitkit et dóna les claus del teu diners, perfil, contactes i comptes web.",
   "get_started": "Començar",
   "skip_intro": "Ometre introducció",

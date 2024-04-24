@@ -5,8 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import colors from '../styles/colors';
 import { IThemeColors } from '../styles/themes';
-import { Text01M, Text13S } from '../styles/text';
-import HorizontalGradient from '../components/HorizontalGradient';
+import { BodyMSB, Caption } from '../styles/text';
+import ToastGradient from '../components/ToastGradient';
 import BlurView from '../components/BlurView';
 
 const Toast = ({
@@ -14,48 +14,52 @@ const Toast = ({
 	text1,
 	text2,
 }: ToastConfigParams<any>): ReactElement => {
+	const insets = useSafeAreaInsets();
 	const dimensions = useWindowDimensions();
 
-	const insets = useSafeAreaInsets();
+	let color: keyof IThemeColors = 'white';
+	let gradientColor = colors.black;
+
+	if (type === 'success') {
+		color = 'green';
+		gradientColor = '#1d2f1c';
+	}
+
+	if (type === 'info') {
+		color = 'blue';
+		gradientColor = '#032e56';
+	}
+
+	if (type === 'lightning') {
+		color = 'purple';
+		gradientColor = '#2b1637';
+	}
+
+	if (type === 'warning') {
+		color = 'brand';
+		gradientColor = '#3c1001';
+	}
+
+	if (type === 'error') {
+		color = 'red';
+		gradientColor = '#491f25';
+	}
+
 	const containerStyles = useMemo(
 		() => ({
 			...styles.container,
 			// fix Toast overlapping with iPhone 14 Dynamic Island
 			...(insets.top > 47 ? { margin: 14 } : {}),
+			borderColor: colors[color],
 		}),
-		[insets.top],
+		[insets.top, color],
 	);
-
-	let titleColor: keyof IThemeColors = 'white';
-	let gradientColor = colors.black;
-
-	if (type === 'success') {
-		titleColor = 'green';
-		gradientColor = '#1d2f1c';
-	}
-
-	if (type === 'info') {
-		titleColor = 'blue';
-		gradientColor = '#00294e';
-	}
-
-	if (type === 'warning') {
-		titleColor = 'brand';
-		gradientColor = '#411a00';
-	}
-
-	if (type === 'error') {
-		titleColor = 'red';
-		gradientColor = '#2b1215';
-	}
 
 	return (
 		<BlurView style={[{ width: dimensions.width - 16 * 2 }, containerStyles]}>
-			<HorizontalGradient style={styles.gradient} color={gradientColor} />
-			<Text01M color={titleColor}>{text1}</Text01M>
-			<Text13S style={styles.description} color="gray1">
-				{text2}
-			</Text13S>
+			<ToastGradient style={styles.gradient} color={gradientColor} />
+			<BodyMSB color={color}>{text1}</BodyMSB>
+			<Caption>{text2}</Caption>
 		</BlurView>
 	);
 };
@@ -63,6 +67,7 @@ const Toast = ({
 const styles = StyleSheet.create({
 	container: {
 		borderRadius: 8,
+		borderWidth: 1,
 		padding: 16,
 		position: 'relative',
 		overflow: 'hidden',
@@ -70,14 +75,12 @@ const styles = StyleSheet.create({
 	gradient: {
 		...StyleSheet.absoluteFillObject,
 	},
-	description: {
-		marginTop: 3,
-	},
 });
 
 export const toastConfig: ToastConfig = {
 	success: (props) => <Toast {...props} />,
 	info: (props) => <Toast {...props} />,
+	lightning: (props) => <Toast {...props} />,
 	warning: (props) => <Toast {...props} />,
 	error: (props) => <Toast {...props} />,
 };

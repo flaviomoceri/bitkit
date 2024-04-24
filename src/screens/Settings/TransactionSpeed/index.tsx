@@ -1,5 +1,4 @@
 import React, { memo, ReactElement, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -10,6 +9,7 @@ import {
 } from '../../../styles/icons';
 import { EItemType, IListData } from '../../../components/List';
 import SettingsView from '../SettingsView';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { updateSettings } from '../../../store/slices/settings';
 import { transactionSpeedSelector } from '../../../store/reselect/settings';
 import { ETransactionSpeed } from '../../../store/types/settings';
@@ -50,7 +50,7 @@ const TransactionSpeedSettings = ({
 				value: ETransactionSpeed.custom,
 				description: t('fee.custom.description'),
 				Icon: SettingsIcon,
-				iconColor: 'gray1',
+				iconColor: 'white50',
 			},
 		];
 
@@ -82,7 +82,6 @@ const TransactionSpeedSettings = ({
 		<SettingsView
 			title={t('general.speed_title')}
 			listData={currencyListData}
-			showBackNavigation={true}
 		/>
 	);
 };

@@ -21,7 +21,7 @@ import {
 	TouchableOpacity,
 	View as ThemedView,
 } from '../../styles/components';
-import { Text02S } from '../../styles/text';
+import { BodyS } from '../../styles/text';
 import {
 	CopyIcon,
 	PencileIcon,
@@ -231,9 +231,9 @@ const QRView = ({
 				</View>
 			</TouchableOpacity>
 
-			<Text02S style={styles.qrViewNote}>
+			<BodyS style={styles.qrViewNote}>
 				{t('profile_scan_to_add', { name: truncate(firstName, 30) })}
-			</Text02S>
+			</BodyS>
 		</View>
 	);
 };
@@ -264,6 +264,7 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		flexGrow: 1,
+		paddingTop: 4,
 		paddingHorizontal: 16,
 	},
 	actions: {

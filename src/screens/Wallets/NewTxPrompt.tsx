@@ -4,7 +4,6 @@ import Lottie from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
 
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
-import Glow from '../../components/Glow';
 import AmountToggle from '../../components/AmountToggle';
 import { closeSheet } from '../../store/slices/ui';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
@@ -17,6 +16,7 @@ import {
 } from '../../hooks/bottomSheet';
 import { viewControllerSelector } from '../../store/reselect/ui';
 import { EActivityType } from '../../store/types/activity';
+import Button from '../../components/Button';
 
 const confettiOrangeSrc = require('../../assets/lottie/confetti-orange.json');
 const confettiPurpleSrc = require('../../assets/lottie/confetti-purple.json');
@@ -32,9 +32,13 @@ const NewTxPrompt = (): ReactElement => {
 
 	useBottomSheetBackPress('newTxPrompt');
 
-	const handlePress = (): void => {
+	const onAmountPress = (): void => {
 		dispatch(closeSheet('newTxPrompt'));
 		rootNavigation.navigate('ActivityDetail', { id: activityItem!.id });
+	};
+
+	const onButtonPress = (): void => {
+		dispatch(closeSheet('newTxPrompt'));
 	};
 
 	const isOnchainItem = activityItem?.activityType === EActivityType.onchain;
@@ -44,7 +48,7 @@ const NewTxPrompt = (): ReactElement => {
 			view="newTxPrompt"
 			snapPoints={snapPoints}
 			backdrop={true}>
-			<View style={styles.container}>
+			<View style={styles.root}>
 				<View style={styles.confetti} pointerEvents="none">
 					<Lottie
 						source={isOnchainItem ? confettiOrangeSrc : confettiPurpleSrc}
@@ -62,24 +66,33 @@ const NewTxPrompt = (): ReactElement => {
 					}
 					displayBackButton={false}
 				/>
-				{activityItem && (
-					<AmountToggle
-						sats={activityItem.value}
-						reverse={true}
-						space={12}
-						testID="NewTxPrompt"
-						onPress={handlePress}
-					/>
-				)}
 
-				<View style={styles.imageContainer} pointerEvents="none">
-					<Glow style={styles.glow} size={600} color="white32" />
-					<Image source={imageSrc} style={styles.image3} />
-					<Image source={imageSrc} style={styles.image2} />
-					<Image source={imageSrc} style={styles.image1} />
-					<Image source={imageSrc} style={styles.image4} />
+				<View style={styles.content}>
+					{activityItem && (
+						<AmountToggle
+							amount={activityItem.value}
+							testID="NewTxPrompt"
+							onPress={onAmountPress}
+						/>
+					)}
+
+					<View style={styles.imageContainer} pointerEvents="none">
+						<Image source={imageSrc} style={styles.image1} />
+						<Image source={imageSrc} style={styles.image2} />
+						<Image source={imageSrc} style={styles.image3} />
+						<Image source={imageSrc} style={styles.image4} />
+					</View>
+
+					<View style={styles.buttonContainer}>
+						<Button
+							style={styles.button}
+							text={t('awesome')}
+							size="large"
+							testID="NewTxPromptButton"
+							onPress={onButtonPress}
+						/>
+					</View>
 				</View>
-
 				<SafeAreaInset type="bottom" minPadding={16} />
 			</View>
 		</BottomSheetWrapper>
@@ -87,58 +100,67 @@ const NewTxPrompt = (): ReactElement => {
 };
 
 const styles = StyleSheet.create({
-	container: {
+	root: {
 		flex: 1,
-		paddingHorizontal: 16,
 	},
 	confetti: {
 		...StyleSheet.absoluteFillObject,
-		zIndex: 1,
+		zIndex: 0,
 	},
 	lottie: {
 		height: '100%',
 	},
+	content: {
+		flex: 1,
+		paddingHorizontal: 16,
+	},
 	imageContainer: {
 		marginTop: 'auto',
-		alignSelf: 'center',
-		position: 'relative',
-		height: 200,
-		width: 200,
 		justifyContent: 'center',
 		alignItems: 'center',
-		marginBottom: 16,
+		alignSelf: 'center',
+		height: 250,
+		width: 200,
 	},
 	image1: {
 		width: 220,
 		height: 220,
 		position: 'absolute',
-		bottom: 0,
-		transform: [{ scaleX: -1 }],
+		bottom: '14%',
+		transform: [{ scaleX: -1 }, { rotate: '-10deg' }],
+		zIndex: 1,
 	},
 	image2: {
 		width: 220,
 		height: 220,
 		position: 'absolute',
-		bottom: '7%',
-		transform: [{ scaleX: -1 }, { rotate: '165deg' }],
+		bottom: '-17%',
+		transform: [{ scaleX: -1 }],
 	},
 	image3: {
 		width: 220,
 		height: 220,
 		position: 'absolute',
-		bottom: '14%',
-		transform: [{ scaleX: -1 }, { rotate: '150deg' }],
+		bottom: '12%',
+		left: '12%',
+		transform: [{ scaleX: 1 }, { rotate: '210deg' }],
+		zIndex: 2,
 	},
 	image4: {
 		width: 220,
 		height: 220,
 		position: 'absolute',
 		bottom: '75%',
-		left: '65%',
-		transform: [{ rotate: '45deg' }],
+		left: '60%',
+		transform: [{ rotate: '30deg' }],
 	},
-	glow: {
-		position: 'absolute',
+	buttonContainer: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		zIndex: 1,
+	},
+	button: {
+		flex: 1,
 	},
 });
 

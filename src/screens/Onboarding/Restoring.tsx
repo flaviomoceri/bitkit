@@ -1,17 +1,16 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { Display, Text01S } from '../../styles/text';
+import { Display, BodyM } from '../../styles/text';
+import { View as ThemedView } from '../../styles/components';
 import { IColors } from '../../styles/colors';
 import { restoreRemoteBackups, startWalletServices } from '../../utils/startup';
 import { showToast } from '../../utils/notifications';
 import { sleep } from '../../utils/helpers';
 import { useSelectedSlashtag } from '../../hooks/slashtags';
 import { updateUser } from '../../store/slices/user';
-import GlowingBackground from '../../components/GlowingBackground';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import GlowImage from '../../components/GlowImage';
 import Button from '../../components/Button';
 import Dialog from '../../components/Dialog';
 import LoadingWalletScreen from './Loading';
@@ -19,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useProfile2, useSelectedSlashtag2 } from '../../hooks/slashtags2';
 import { setOnboardingProfileStep } from '../../store/slices/slashtags';
 import { onboardingProfileStepSelector } from '../../store/reselect/slashtags';
+import { Image } from 'react-native';
 
 const checkImageSrc = require('../../assets/illustrations/check.png');
 const crossImageSrc = require('../../assets/illustrations/cross.png');
@@ -111,10 +111,18 @@ const RestoringScreen = (): ReactElement => {
 
 		content = (
 			<View style={styles.content}>
-				<Display style={styles.title}>{title}</Display>
-				<Text01S color="white80">{subtitle}</Text01S>
+				<Display style={styles.title}>
+					<Trans
+						t={t}
+						i18nKey={title}
+						components={{ accent: <Display color={color} /> }}
+					/>
+				</Display>
+				<BodyM color="white80">{subtitle}</BodyM>
 
-				<GlowImage image={imageSrc} imageSize={200} glowColor={color} />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
 
 				<View style={styles.buttonContainer}>
 					<Button
@@ -153,17 +161,33 @@ const RestoringScreen = (): ReactElement => {
 		);
 	}
 
-	return <GlowingBackground topLeft={color}>{content}</GlowingBackground>;
+	return <ThemedView style={styles.root}>{content}</ThemedView>;
 };
 
 const styles = StyleSheet.create({
+	root: {
+		flex: 1,
+	},
 	content: {
 		flex: 1,
 		paddingHorizontal: 32,
 		paddingTop: 120,
 	},
 	title: {
-		marginBottom: 8,
+		marginBottom: 4,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',

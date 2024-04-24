@@ -36,7 +36,7 @@ import {
 	ShareIcon,
 	UnifiedIcon,
 } from '../../../styles/icons';
-import { Caption13Up, Text01S, Text02S, Title } from '../../../styles/text';
+import { Caption13Up, BodyM, BodyS, Headline } from '../../../styles/text';
 import { createLightningInvoice } from '../../../store/utils/lightning';
 import { updatePendingInvoice } from '../../../store/slices/metadata';
 import { generateNewReceiveAddress } from '../../../store/actions/wallet';
@@ -48,6 +48,7 @@ import { waitForLdk } from '../../../utils/lightning';
 import { getUnifiedUri } from '../../../utils/receive';
 import { ellipsis, sleep } from '../../../utils/helpers';
 import { getReceiveAddress } from '../../../utils/wallet';
+import GradientView from '../../../components/GradientView';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
@@ -353,7 +354,7 @@ const ReceiveQR = ({
 							{enableInstant ? (
 								<UnifiedIcon width={50} height={50} />
 							) : (
-								<BitcoinCircleIcon color="bitcoin" width={50} height={50} />
+								<BitcoinCircleIcon width={50} height={50} />
 							)}
 						</>
 					)}
@@ -399,7 +400,6 @@ const ReceiveQR = ({
 						testID="SpecifyInvoiceButton"
 						onPress={onEdit}
 					/>
-					<View style={styles.buttonSpacer} />
 					<Button
 						style={styles.actionButton}
 						color="white10"
@@ -408,7 +408,6 @@ const ReceiveQR = ({
 						testID="ReceiveCopyQR"
 						onPress={(): void => onCopy(uri, 'unified')}
 					/>
-					<View style={styles.buttonSpacer} />
 					<Button
 						style={styles.actionButton}
 						color="white10"
@@ -452,20 +451,20 @@ const ReceiveQR = ({
 			<View style={styles.slide}>
 				<ThemedView style={styles.invoices} color="white06">
 					{(!jitInvoice || !enableInstant) && (
-						<View style={styles.invoice} testID="ReceiveOnchainInvoice">
+						<View testID="ReceiveOnchainInvoice">
 							<View style={styles.invoiceLabel}>
-								<Caption13Up color="gray1">
+								<Caption13Up color="white50">
 									{t('receive_bitcoin_invoice')}
 								</Caption13Up>
 								<BitcoinSlantedIcon
 									style={styles.invoiceLabelIcon}
-									color="gray1"
+									color="white50"
 									height={14}
 									width={20}
 								/>
 							</View>
 							<View style={styles.invoiceText}>
-								<Text02S>{ellipsis(receiveAddress, 25)}</Text02S>
+								<BodyS>{ellipsis(receiveAddress, 25)}</BodyS>
 								{showTooltip.onchain && (
 									<AnimatedView
 										style={styles.tooltip}
@@ -485,7 +484,6 @@ const ReceiveQR = ({
 										onCopy(receiveAddress, 'onchain');
 									}}
 								/>
-								<View style={styles.buttonSpacer} />
 								<Button
 									style={styles.actionButton}
 									color="white10"
@@ -503,24 +501,24 @@ const ReceiveQR = ({
 					{enableInstant && lInvoice !== '' && (
 						<>
 							{!jitInvoice && <View style={styles.divider} />}
-							<View style={styles.invoice}>
+							<View>
 								<View style={styles.invoiceLabel}>
-									<Caption13Up color="gray1">
+									<Caption13Up color="white50">
 										{t('receive_lightning_invoice')}
 									</Caption13Up>
 									<LightningIcon
 										style={styles.invoiceLabelIcon}
-										color="gray1"
+										color="white50"
 										height={14}
 										width={15}
 									/>
 								</View>
 								<View style={styles.invoiceText}>
-									<Text02S
+									<BodyS
 										testID="ReceiveLightningInvoice"
 										accessibilityLabel={lInvoice}>
 										{ellipsis(lInvoice, 33)}
-									</Text02S>
+									</BodyS>
 									{showTooltip.lightning && (
 										<AnimatedView
 											style={styles.tooltip}
@@ -540,7 +538,6 @@ const ReceiveQR = ({
 											onCopy(lInvoice, 'lightning');
 										}}
 									/>
-									<View style={styles.buttonSpacer} />
 									<Button
 										style={styles.actionButton}
 										color="white10"
@@ -573,7 +570,7 @@ const ReceiveQR = ({
 	const slides = useMemo((): Slide[] => [Slide1, Slide2], [Slide1, Slide2]);
 
 	return (
-		<View style={styles.container}>
+		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader
 				title={t('receive_bitcoin')}
 				displayBackButton={false}
@@ -592,8 +589,9 @@ const ReceiveQR = ({
 						style={styles.carousel}
 						data={slides}
 						width={dimensions.width}
-						height={qrMaxHeight + 80}
+						height={qrMaxHeight + 64}
 						loop={false}
+						scrollAnimationDuration={100}
 						panGestureHandlerProps={{ activeOffsetX: [-10, 10] }}
 						testID="ReceiveSlider"
 						renderItem={({ index }): ReactElement => {
@@ -620,28 +618,27 @@ const ReceiveQR = ({
 			{displayReceiveInstantlySwitch && (
 				<View style={styles.buttonContainer}>
 					{!enableInstant && (
-						<Title style={styles.textLNfunds}>
+						<Headline>
 							<Trans
 								t={t}
 								i18nKey="receive_text_lnfunds"
-								components={{
-									purpleText: <Title color="purple" />,
-								}}
+								components={{ accent: <Headline color="purple" /> }}
 							/>
-						</Title>
+						</Headline>
 					)}
 					<SwitchRow
+						style={styles.switchRow}
 						color="purple"
 						isEnabled={enableInstant}
 						showDivider={false}
 						onPress={onToggleInstant}>
-						{!enableInstant && <ArrowLNFunds color="gray1" />}
-						<Text01S>{t('receive_instantly')}</Text01S>
+						{!enableInstant && <ArrowLNFunds color="white50" />}
+						<BodyM>{t('receive_spending')}</BodyM>
 					</SwitchRow>
 				</View>
 			)}
 			<SafeAreaInset type="bottom" minPadding={16} />
-		</View>
+		</GradientView>
 	);
 };
 
@@ -668,7 +665,7 @@ const styles = StyleSheet.create({
 		position: 'relative',
 		justifyContent: 'center',
 		alignItems: 'center',
-		marginBottom: 32,
+		marginBottom: 16,
 		overflow: 'hidden',
 	},
 	qrIconContainer: {
@@ -684,20 +681,17 @@ const styles = StyleSheet.create({
 	actions: {
 		flexDirection: 'row',
 		alignItems: 'center',
+		gap: 16,
 	},
 	actionButton: {
 		paddingHorizontal: 16,
 		minWidth: 0,
-	},
-	buttonSpacer: {
-		width: 16,
 	},
 	invoices: {
 		borderRadius: 9,
 		padding: 32,
 		width: '100%',
 	},
-	invoice: {},
 	invoiceLabel: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -734,9 +728,8 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 16,
 		marginTop: 'auto',
 	},
-	textLNfunds: {
-		marginBottom: 10,
-		width: '60%',
+	switchRow: {
+		paddingVertical: 0,
 	},
 });
 

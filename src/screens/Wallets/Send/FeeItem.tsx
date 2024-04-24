@@ -7,9 +7,8 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Text01M, Text02M } from '../../../styles/text';
+import { BodyMSB, BodySSB } from '../../../styles/text';
 import {
-	BitcoinIcon,
 	SettingsIcon,
 	SpeedFastIcon,
 	SpeedNormalIcon,
@@ -47,7 +46,7 @@ const FeeItem = ({
 			case EFeeId.slow:
 				return <SpeedSlowIcon color="brand" />;
 			case EFeeId.custom:
-				return <SettingsIcon color="gray1" width={32} height={32} />;
+				return <SettingsIcon color="white50" width={32} height={32} />;
 		}
 	}, [id]);
 
@@ -64,20 +63,21 @@ const FeeItem = ({
 
 				<View style={styles.row}>
 					<View style={styles.cell}>
-						<Text01M>{title}</Text01M>
+						<BodyMSB>{title}</BodyMSB>
 						{sats !== 0 && (
 							<View style={styles.sats}>
-								<BitcoinIcon height={14} width={16} color="gray1" />
-								<Text01M>{sats}</Text01M>
+								<BodyMSB>
+									<BodyMSB color="white50">₿</BodyMSB> {sats}
+								</BodyMSB>
 							</View>
 						)}
 					</View>
 					<View style={styles.cell}>
-						<Text02M color="gray1">{description}</Text02M>
+						<BodySSB color="white50">{description}</BodySSB>
 						{sats !== 0 && (
-							<Text02M color="gray1">
+							<BodySSB color="white50">
 								{totalFeeDisplay.fiatSymbol} {totalFeeDisplay.fiatFormatted}
-							</Text02M>
+							</BodySSB>
 						)}
 					</View>
 				</View>

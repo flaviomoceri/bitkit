@@ -6,7 +6,7 @@ import React, {
 	useState,
 } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Client } from '@synonymdev/slashtags-auth';
 import { SlashURL } from '@synonymdev/slashtags-sdk';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,7 @@ import { useProfile, useSelectedSlashtag } from '../../hooks/slashtags';
 import { ContactItem } from '../../components/ContactsList';
 import { IContactRecord } from '../../store/types/slashtags';
 import ProfileImage from '../../components/ProfileImage';
-import { Title, Text01S } from '../../styles/text';
+import { Title, BodyM } from '../../styles/text';
 import { Checkmark } from '../../styles/icons';
 import { showToast } from '../../utils/notifications';
 import { ellipsis } from '../../utils/helpers';
@@ -31,7 +31,6 @@ import { useSnapPoints } from '../../hooks/bottomSheet';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { rootNavigation } from '../../navigation/root/RootNavigator';
 import HourglassSpinner from '../../components/HourglassSpinner';
-import GlowImage from '../../components/GlowImage';
 import {
 	viewControllerIsOpenSelector,
 	viewControllerSelector,
@@ -181,9 +180,9 @@ const _SlashAuthModal = (): ReactElement => {
 				/>
 				<Title numberOfLines={1}>{serviceName}</Title>
 			</View>
-			<Text01S style={styles.text} color="gray1">
+			<BodyM style={styles.text} color="white50">
 				{text}
-			</Text01S>
+			</BodyM>
 			<Key
 				contact={rootContact}
 				active={!anonymous}
@@ -196,7 +195,13 @@ const _SlashAuthModal = (): ReactElement => {
 			/>*/}
 
 			{isLoading && <HourglassSpinner />}
-			{!isLoading && <GlowImage image={imageSrc} imageSize={240} />}
+			{!isLoading && (
+				<>
+					<View style={styles.imageContainer}>
+						<Image style={styles.image} source={imageSrc} />
+					</View>
+				</>
+			)}
 
 			<View style={styles.buttonContainer}>
 				<Button
@@ -207,16 +212,13 @@ const _SlashAuthModal = (): ReactElement => {
 					onPress={onCancel}
 				/>
 				{!isLoading && (
-					<>
-						<View style={styles.divider} />
-						<Button
-							style={styles.button}
-							size="large"
-							text={t('signin_title')}
-							disabled={isLoading}
-							onPress={onContinue}
-						/>
-					</>
+					<Button
+						style={styles.button}
+						size="large"
+						text={t('signin_title')}
+						disabled={isLoading}
+						onPress={onContinue}
+					/>
 				)}
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
@@ -256,16 +258,27 @@ const styles = StyleSheet.create({
 		marginTop: 32,
 		marginBottom: 32,
 	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
+	},
 	buttonContainer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../../styles/components';
-import { Caption13Up, Text01S } from '../../../styles/text';
+import { Caption13Up, BodyM } from '../../../styles/text';
 import { customFeeRateSelector } from '../../../store/reselect/settings';
 import { updateSettings } from '../../../store/slices/settings';
 import { ETransactionSpeed } from '../../../store/types/settings';
@@ -63,15 +63,15 @@ const FeeCustom = ({
 			<SafeAreaInset type="top" />
 			<NavigationHeader title={t('general.speed_fee_custom')} />
 			<View style={styles.container} testID="CustomFee">
-				<Caption13Up color="gray1" style={styles.title}>
+				<Caption13Up color="white50" style={styles.title}>
 					{t('sat_vbyte')}
 				</Caption13Up>
 				<Amount value={feeRate} />
 
 				{isValid && (
-					<Text01S style={styles.text} color="white50">
+					<BodyM style={styles.text} color="white50">
 						{totalFeeText}
-					</Text01S>
+					</BodyM>
 				)}
 				<NumberPad style={styles.numberPad} type="simple" onPress={onPress} />
 				<View style={styles.buttonContainer}>

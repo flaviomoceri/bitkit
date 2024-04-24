@@ -9,7 +9,7 @@ import {
 	ScrollView,
 	TouchableOpacity,
 } from '../../../styles/components';
-import { Text01S, Caption13Up } from '../../../styles/text';
+import { BodyM, Caption13Up } from '../../../styles/text';
 import { ScanIcon } from '../../../styles/icons';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { updateSettings } from '../../../store/slices/settings';
@@ -93,7 +93,7 @@ const RGSServer = ({
 	};
 
 	return (
-		<View style={styles.container}>
+		<View style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('adv.rgs_server')}
@@ -103,18 +103,16 @@ const RGSServer = ({
 			<ScrollView contentContainerStyle={styles.content} bounces={false}>
 				<TouchableOpacity activeOpacity={1} onPress={handleConnectedPress}>
 					<>
-						<Text01S color="gray1">{t('es.connected_to')}</Text01S>
-						<View style={styles.row}>
-							<View style={styles.connectedPeer} testID="Status">
-								<Text01S color="green" testID="ConnectedUrl">
-									{rapidGossipSyncUrl}
-								</Text01S>
-							</View>
+						<BodyM color="white50">{t('es.connected_to')}</BodyM>
+						<View style={styles.connectedPeer} testID="Status">
+							<BodyM color="green" testID="ConnectedUrl">
+								{rapidGossipSyncUrl}
+							</BodyM>
 						</View>
 					</>
 				</TouchableOpacity>
 
-				<Caption13Up color="gray1" style={styles.label}>
+				<Caption13Up color="white50" style={styles.label}>
 					{t('rgs.server_url')}
 				</Caption13Up>
 				<TextInput
@@ -144,7 +142,6 @@ const RGSServer = ({
 						disabled={isEqual(defaultRGSServer, rgsUrl)}
 						onPress={resetToDefault}
 					/>
-					<View style={styles.divider} />
 					<Button
 						style={styles.button}
 						text={t('rgs.button_connect')}
@@ -162,39 +159,32 @@ const RGSServer = ({
 };
 
 const styles = StyleSheet.create({
-	container: {
+	root: {
 		flex: 1,
 	},
 	content: {
 		flexGrow: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
-	row: {
-		flexDirection: 'row',
-		alignItems: 'flex-start',
-		paddingBottom: 16,
-		justifyContent: 'center',
+	connectedPeer: {
+		marginBottom: 16,
 	},
 	label: {
 		marginTop: 16,
 		marginBottom: 4,
-	},
-	connectedPeer: {
-		flex: 1.5,
 	},
 	textInput: {
 		minHeight: 52,
 		marginTop: 5,
 	},
 	buttons: {
-		marginTop: 16,
 		flexDirection: 'row',
+		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

@@ -1,7 +1,7 @@
 import React, { ReactElement, memo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Text01B } from '../../styles/text';
+import { BodyMB, Display } from '../../styles/text';
 import InfoScreen from '../../components/InfoScreen';
 import type { LightningScreenProps } from '../../navigation/types';
 
@@ -19,15 +19,20 @@ const LNURLChannelSuccess = ({
 
 	return (
 		<InfoScreen
-			accentColor="purple"
 			navTitle={t('lnurl_channel_header')}
 			displayBackButton={false}
-			title={t('lnurl_channel_connecting')}
+			title={
+				<Trans
+					t={t}
+					i18nKey="lnurl_channel_connecting"
+					components={{ accent: <Display color="purple" /> }}
+				/>
+			}
 			description={
 				<Trans
 					t={t}
 					i18nKey="lnurl_channel_connecting_text"
-					components={{ highlight: <Text01B color="white" /> }}
+					components={{ accent: <BodyMB color="white" /> }}
 				/>
 			}
 			image={imageSrc}

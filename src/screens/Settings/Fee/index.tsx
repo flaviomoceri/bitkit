@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import SettingsView from '../SettingsView';
 import { SettingsScreenProps } from '../../../navigation/types';
-import { Caption13Up, Text01S } from '../../../styles/text';
+import { Caption13Up, BodyM } from '../../../styles/text';
 import { ScrollView, View as ThemedView } from '../../../styles/components';
 import { i18nTime } from '../../../utils/i18n';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
@@ -42,7 +42,7 @@ const FeeInput = ({
 		<View style={styles.item}>
 			<View style={styles.leftColumn}>
 				<View>
-					<Text01S color="white">{capitalize(title)}</Text01S>
+					<BodyM color="white">{capitalize(title)}</BodyM>
 				</View>
 			</View>
 			{override && (
@@ -66,7 +66,7 @@ const FeeInput = ({
 				</View>
 			)}
 			<View style={styles.rightColumn}>
-				<Text01S color="gray1">{value}</Text01S>
+				<BodyM color="white50">{value}</BodyM>
 			</View>
 		</View>
 	);
@@ -160,12 +160,11 @@ const FeeSettings = ({}: SettingsScreenProps<'FeeSettings'>): ReactElement => {
 				title="Override Fees"
 				listData={settingsListData}
 				fullHeight={false}
-				showBackNavigation={true}
 			/>
 			<ScrollView
 				style={styles.override}
 				contentContainerStyle={styles.override}>
-				<Caption13Up style={styles.caption} color="gray1">
+				<Caption13Up style={styles.caption} color="white50">
 					Values
 				</Caption13Up>
 				{order.map((o) => (

@@ -136,7 +136,7 @@ const FeeRate = ({ navigation }: SendScreenProps<'FeeRate'>): ReactElement => {
 		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader title={t('send_fee_speed')} />
 			<View style={styles.content}>
-				<Caption13Up color="gray1" style={styles.title}>
+				<Caption13Up color="white50" style={styles.title}>
 					{t('send_fee_and_speed')}
 				</Caption13Up>
 

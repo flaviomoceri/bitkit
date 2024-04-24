@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import isEqual from 'lodash/isEqual';
 
 import { ScrollView, View as ThemedView } from '../../styles/components';
-import { Caption13M, Text01M, Text01S, Text02M } from '../../styles/text';
-import { Checkmark, QuestionMarkIcon } from '../../styles/icons';
+import { CaptionB, BodyM, BodySSB } from '../../styles/text';
+import { Checkmark } from '../../styles/icons';
 import { SUPPORTED_FEED_TYPES } from '../../utils/widgets';
 import { useAppDispatch } from '../../hooks/redux';
 import { useSlashfeed } from '../../hooks/widgets';
@@ -21,7 +21,6 @@ import SafeAreaInset from '../../components/SafeAreaInset';
 import Divider from '../../components/Divider';
 import Button from '../../components/Button';
 import PriceChart from '../../components/PriceChart';
-import SvgImage from '../../components/SvgImage';
 import type { RootStackScreenProps } from '../../navigation/types';
 
 export const getDefaultSettings = (config?: SlashFeedJSON): TWidgetSettings => {
@@ -29,18 +28,18 @@ export const getDefaultSettings = (config?: SlashFeedJSON): TWidgetSettings => {
 		if (config.type === SUPPORTED_FEED_TYPES.PRICE_FEED) {
 			return {
 				fields: ['BTC/USD'],
-				extras: { period: '1D', showSource: false, showTitle: true },
+				extras: { period: '1D', showSource: false },
 			};
 		}
 		if (config.type === SUPPORTED_FEED_TYPES.BLOCKS_FEED) {
 			return {
 				fields: ['Block', 'Time', 'Date'],
-				extras: { showSource: false, showTitle: true },
+				extras: { showSource: false },
 			};
 		}
-		return { fields: [config.fields[0].name], extras: { showTitle: true } };
+		return { fields: [config.fields[0].name], extras: {} };
 	}
-	return { fields: [], extras: { showTitle: true } };
+	return { fields: [], extras: {} };
 };
 
 const WidgetEdit = ({
@@ -50,7 +49,7 @@ const WidgetEdit = ({
 	const { url, initialFields } = route.params;
 	const { t } = useTranslation('slashtags');
 	const dispatch = useAppDispatch();
-	const { config, fields, loading, icon } = useSlashfeed({ url });
+	const { config, fields, loading } = useSlashfeed({ url });
 	const [settings, setSettings] = useState(initialFields);
 
 	const defaultSettings = getDefaultSettings(config);
@@ -78,60 +77,22 @@ const WidgetEdit = ({
 			) : (
 				<View style={styles.content}>
 					{config.name && (
-						<Text01S style={styles.description} color="gray1">
+						<BodyM style={styles.description} color="white50">
 							{t('widget_edit_description', { name: config.name })}
-						</Text01S>
+						</BodyM>
 					)}
 
 					<ScrollView
 						showsVerticalScrollIndicator={false}
 						testID="WidgetEditScrollView">
 						{loading && (
-							<Text01S style={styles.loading} color="gray1">
+							<BodyM style={styles.loading} color="white50">
 								{t('widget_loading_options')}
-							</Text01S>
+							</BodyM>
 						)}
 
 						{!loading && (
 							<View style={styles.fields}>
-								{config.name && (
-									<Pressable
-										testID="WidgetEditTitle"
-										onPress={(): void => {
-											setSettings((prevState) => ({
-												...prevState,
-												extras: {
-													...prevState.extras,
-													showTitle: !prevState.extras?.showTitle,
-												},
-											}));
-										}}>
-										<View style={styles.fieldContainer}>
-											<View style={styles.title}>
-												<View style={styles.icon}>
-													{icon ? (
-														<SvgImage image={icon} size={32} />
-													) : (
-														<QuestionMarkIcon width={32} height={32} />
-													)}
-												</View>
-
-												<Text01M style={styles.name} numberOfLines={1}>
-													{config.name}
-												</Text01M>
-											</View>
-
-											<Checkmark
-												style={styles.checkmark}
-												color={settings.extras?.showTitle ? 'brand' : 'gray3'}
-												height={30}
-												width={30}
-											/>
-										</View>
-										<Divider />
-									</Pressable>
-								)}
-
 								{fields.length > 0 &&
 									fields.map((field) => {
 										const isSelected = settings.fields.includes(field.name);
@@ -156,12 +117,12 @@ const WidgetEdit = ({
 												}}>
 												<View style={styles.fieldContainer}>
 													<View style={styles.fieldLeftContainer}>
-														<Text02M color="gray1">{field.name}</Text02M>
+														<BodySSB color="white50">{field.name}</BodySSB>
 													</View>
 													<View style={styles.fieldRightContainer}>
-														<Text02M numberOfLines={1} ellipsizeMode="middle">
+														<BodySSB numberOfLines={1} ellipsizeMode="middle">
 															{field.value}
-														</Text02M>
+														</BodySSB>
 													</View>
 													<Checkmark
 														style={styles.checkmark}
@@ -232,11 +193,11 @@ const WidgetEdit = ({
 											}));
 										}}>
 										<View style={styles.fieldContainer}>
-											<Caption13M color="gray1">Source</Caption13M>
+											<CaptionB color="white50">Source</CaptionB>
 											<View style={styles.fieldRightContainer}>
-												<Caption13M color="gray1">
+												<CaptionB color="white50">
 													{config.source.name}
-												</Caption13M>
+												</CaptionB>
 											</View>
 											<Checkmark
 												style={styles.checkmark}
@@ -262,7 +223,6 @@ const WidgetEdit = ({
 							testID="WidgetEditReset"
 							onPress={onReset}
 						/>
-						<View style={styles.divider} />
 						<Button
 							style={styles.button}
 							text={t('widget_preview')}
@@ -284,6 +244,7 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		flex: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
 	description: {
@@ -291,20 +252,6 @@ const styles = StyleSheet.create({
 	},
 	loading: {
 		marginTop: 16,
-	},
-	title: {
-		flexDirection: 'row',
-		alignItems: 'center',
-	},
-	icon: {
-		marginRight: 16,
-		borderRadius: 6.4,
-		overflow: 'hidden',
-		height: 32,
-		width: 32,
-	},
-	name: {
-		lineHeight: 22,
 	},
 	fields: {
 		paddingBottom: 16,
@@ -329,15 +276,13 @@ const styles = StyleSheet.create({
 		marginLeft: 16,
 	},
 	buttonsContainer: {
+		flexDirection: 'row',
 		marginTop: 'auto',
 		paddingTop: 16,
-		flexDirection: 'row',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

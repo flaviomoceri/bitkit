@@ -15,7 +15,7 @@ import ReceiveConnect from '../../screens/Wallets/Receive/ReceiveConnect';
 import { useSnapPoints } from '../../hooks/bottomSheet';
 import { NavigationContainer } from '../../styles/components';
 import { resetInvoice } from '../../store/slices/receive';
-import { viewControllerIsOpenSelector } from '../../store/reselect/ui';
+import { viewControllerSelector } from '../../store/reselect/ui';
 import { __E2E__ } from '../../constants/env';
 
 export type ReceiveNavigationProp =
@@ -34,8 +34,7 @@ export type ReceiveStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<ReceiveStackParamList>();
-
-const navOptions: NativeStackNavigationOptions = {
+const screenOptions: NativeStackNavigationOptions = {
 	headerShown: false,
 	animation: __E2E__ ? 'none' : 'default',
 };
@@ -43,9 +42,11 @@ const navOptions: NativeStackNavigationOptions = {
 const ReceiveNavigation = (): ReactElement => {
 	const snapPoints = useSnapPoints('large');
 	const dispatch = useAppDispatch();
-	const isOpen = useAppSelector((state) => {
-		return viewControllerIsOpenSelector(state, 'receiveNavigation');
+	const { isOpen, receiveScreen } = useAppSelector((state) => {
+		return viewControllerSelector(state, 'receiveNavigation');
 	});
+
+	const initialRouteName = receiveScreen ?? 'ReceiveQR';
 
 	const reset = (): void => {
 		dispatch(resetInvoice());
@@ -59,7 +60,9 @@ const ReceiveNavigation = (): ReactElement => {
 			onOpen={reset}
 			onClose={reset}>
 			<NavigationContainer key={isOpen.toString()}>
-				<Stack.Navigator screenOptions={navOptions}>
+				<Stack.Navigator
+					initialRouteName={initialRouteName}
+					screenOptions={screenOptions}>
 					<Stack.Screen name="ReceiveQR" component={ReceiveQR} />
 					<Stack.Screen name="ReceiveDetails" component={ReceiveDetails} />
 					<Stack.Screen name="Tags" component={Tags} />

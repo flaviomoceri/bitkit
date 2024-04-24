@@ -1,7 +1,7 @@
 import React, { ReactElement, memo } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { TouchableOpacity } from '../styles/components';
-import { Text02M } from '../styles/text';
+import { BodySSB } from '../styles/text';
 import { TrashIcon, XIcon } from '../styles/icons';
 
 interface ITag {
@@ -25,7 +25,7 @@ const Tag = ({
 			activeOpacity={onPress ? 0.2 : 1}
 			color="transparent"
 			onPress={onPress}>
-			<Text02M testID={`Tag-${value}`}>{value}</Text02M>
+			<BodySSB testID={`Tag-${value}`}>{value}</BodySSB>
 			{onDelete && (
 				<TouchableOpacity
 					style={styles.icon}
@@ -33,9 +33,9 @@ const Tag = ({
 					onPress={onDelete}
 					testID={`Tag-${value}-delete`}>
 					{icon === 'close' ? (
-						<XIcon color="gray1" width={16} />
+						<XIcon color="white50" width={16} />
 					) : (
-						<TrashIcon color="gray1" width={16} />
+						<TrashIcon color="white50" width={16} />
 					)}
 				</TouchableOpacity>
 			)}

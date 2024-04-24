@@ -4,7 +4,7 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../../styles/components';
-import { Text01S, Text01M, Text02S } from '../../../styles/text';
+import { BodyM, BodyMSB, BodyS } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
@@ -25,26 +25,24 @@ const ShowPassphrase = ({
 		<GradientView style={styles.gradient}>
 			<BottomSheetNavigationHeader title={t('pass_your')} />
 			<View style={styles.container}>
-				<Text01S color="gray1">{t('pass_text')}</Text01S>
+				<BodyM color="white50">{t('pass_text')}</BodyM>
 
 				<ThemedView color="white10" style={styles.passphrase}>
 					<BottomSheetScrollView>
-						<Text01M color="white50" style={styles.p}>
+						<BodyMSB color="white50" style={styles.p}>
 							{t('pass')}
-						</Text01M>
-						<Text01M>{bip39Passphrase}</Text01M>
+						</BodyMSB>
+						<BodyMSB>{bip39Passphrase}</BodyMSB>
 					</BottomSheetScrollView>
 				</ThemedView>
 
-				<Text02S color="gray1">
+				<BodyS color="white50">
 					<Trans
 						t={t}
 						i18nKey="pass_never_share"
-						components={{
-							brand: <Text02S color="brand" />,
-						}}
+						components={{ accent: <BodyS color="brand" /> }}
 					/>
-				</Text02S>
+				</BodyS>
 
 				<View style={styles.buttonContainer}>
 					<Button

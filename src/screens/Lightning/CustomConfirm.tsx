@@ -3,14 +3,13 @@ import { StyleSheet, View } from 'react-native';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { AnimatedView } from '../../styles/components';
-import { Caption13Up, Display, Text01B, Text01S } from '../../styles/text';
+import { View as ThemedView, AnimatedView } from '../../styles/components';
+import { Caption13Up, Display, BodyMB, BodyM } from '../../styles/text';
 import { LightningIcon, PencileIcon } from '../../styles/icons';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import GlowingBackground from '../../components/GlowingBackground';
 import NavigationHeader from '../../components/NavigationHeader';
 import SwipeToConfirm from '../../components/SwipeToConfirm';
-import AmountToggle from '../../components/AmountToggle';
+import Money from '../../components/Money';
 import { useAppSelector } from '../../hooks/redux';
 import { useCurrency, useDisplayValues } from '../../hooks/displayValues';
 import NumberPadWeeks from './NumberPadWeeks';
@@ -91,30 +90,30 @@ const CustomConfirm = ({
 	};
 
 	return (
-		<GlowingBackground topLeft="purple">
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
-				title={t('add_instant_payments')}
+				title={t('transfer.nav_title')}
 				onClosePress={(): void => navigation.navigate('Wallet')}
 			/>
-			<View style={styles.root} testID="CustomConfirm">
+			<View style={styles.content} testID="CustomConfirm">
 				{!showNumberPad && (
 					<AnimatedView color="transparent" entering={FadeIn} exiting={FadeOut}>
 						<Display>
 							<Trans
 								t={t}
-								i18nKey="custom_confirm_header"
-								components={{ purple: <Display color="purple" /> }}
+								i18nKey={'custom_confirm_header'}
+								components={{ accent: <Display color="purple" /> }}
 							/>
 						</Display>
-						<Text01S color="gray1" style={styles.text}>
+						<BodyM color="white50" style={styles.text}>
 							<Trans
 								t={t}
 								i18nKey="custom_confirm_cost"
 								components={{
-									highlight: <Text01B color="white" />,
-									highlightWithKeyboard: (
-										<Text01B
+									accent: <BodyMB color="white" />,
+									accentWithKeyboard: (
+										<BodyMB
 											color="white"
 											testID="CustomConfirmWeeks"
 											onPress={(): void => setShowNumberPad(true)}
@@ -128,20 +127,20 @@ const CustomConfirm = ({
 									weeks,
 								}}
 							/>
-						</Text01S>
+						</BodyM>
 
-						<View style={styles.block}>
-							<Caption13Up color="purple" style={styles.space}>
+						<View style={styles.balance}>
+							<Caption13Up style={styles.balanceLabel} color="purple">
 								{t('spending_label')}
 							</Caption13Up>
-							<AmountToggle sats={spendingAmount} secondaryFont="text01m" />
+							<Money sats={spendingAmount} size="displayT" symbol={true} />
 						</View>
 
-						<View style={styles.block}>
-							<Caption13Up color="purple" style={styles.space}>
+						<View style={styles.balance}>
+							<Caption13Up style={styles.balanceLabel} color="purple">
 								{t('receiving_label')}
 							</Caption13Up>
-							<AmountToggle sats={receivingAmount} secondaryFont="text01m" />
+							<Money sats={receivingAmount} size="displayT" symbol={true} />
 						</View>
 					</AnimatedView>
 				)}
@@ -153,7 +152,7 @@ const CustomConfirm = ({
 						entering={FadeIn}
 						exiting={FadeOut}>
 						<SwipeToConfirm
-							text={t('connect_swipe')}
+							text={t('transfer.swipe')}
 							color="purple"
 							onConfirm={handleConfirm}
 							icon={<LightningIcon width={30} height={30} color="black" />}
@@ -165,10 +164,16 @@ const CustomConfirm = ({
 
 				{showNumberPad && (
 					<AnimatedView color="transparent" entering={FadeIn} exiting={FadeOut}>
-						<Display color="purple">{t('duration_header')}</Display>
-						<Text01S style={styles.text} color="gray1">
+						<Display>
+							<Trans
+								t={t}
+								i18nKey="duration_header"
+								components={{ accent: <Display color="purple" /> }}
+							/>
+						</Display>
+						<BodyM style={styles.text} color="white50">
 							{t('duration_text')}
-						</Text01S>
+						</BodyM>
 					</AnimatedView>
 				)}
 
@@ -196,25 +201,27 @@ const CustomConfirm = ({
 				)}
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
 	root: {
 		flex: 1,
-		marginTop: 8,
+	},
+	content: {
+		flex: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
 	text: {
 		marginTop: 4,
+		marginBottom: 32,
+	},
+	balanceLabel: {
 		marginBottom: 16,
 	},
-	space: {
-		marginBottom: 8,
-		alignItems: 'center',
-	},
-	block: {
+	balance: {
 		marginBottom: 32,
 	},
 	buttonContainer: {

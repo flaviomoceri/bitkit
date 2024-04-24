@@ -1,22 +1,23 @@
-import React, { forwardRef, useMemo } from 'react';
-import { StyleSheet, View, TextInputProps } from 'react-native';
-import { TextInput } from '../styles/components';
-import { Text01S } from '../styles/text';
+import React, { forwardRef } from 'react';
+import { StyleSheet, TextInputProps } from 'react-native';
+import { View as ThemedView, TextInput } from '../styles/components';
+import { BodyMSB } from '../styles/text';
 
-type SeedInputProps = TextInputProps & { index?: number; valid?: boolean };
+type SeedInputProps = TextInputProps & { index: number; valid?: boolean };
 
 const SeedInput = forwardRef<any, SeedInputProps>(
 	({ index, valid, ...props }: SeedInputProps, ref) => {
-		const inputStyle = useMemo(
-			() => [styles.input, { paddingLeft: index !== undefined ? 45 : 16 }],
-			[index],
-		);
-
 		return (
-			<View style={styles.inputWrapper}>
+			<ThemedView style={styles.inputWrapper} color="white10">
+				<BodyMSB
+					color={valid ? 'white50' : 'red'}
+					testID={`WordIndex-${index}`}>
+					{index + 1}.
+				</BodyMSB>
 				<TextInput
 					ref={ref}
-					style={inputStyle}
+					style={styles.input}
+					backgroundColor="transparent"
 					color={valid ? 'white' : 'red'}
 					autoCapitalize="none"
 					autoCorrect={false}
@@ -24,47 +25,30 @@ const SeedInput = forwardRef<any, SeedInputProps>(
 					testID={`Word-${index}`}
 					{...props}
 				/>
-				{index !== undefined && (
-					<View style={styles.index}>
-						<Text01S
-							color={valid ? 'white50' : 'red'}
-							style={styles.indexText}
-							testID={`WordIndex-${index}`}>
-							{index + 1}.
-						</Text01S>
-					</View>
-				)}
-			</View>
+			</ThemedView>
 		);
 	},
 );
 
 const styles = StyleSheet.create({
 	inputWrapper: {
-		position: 'relative',
-		marginHorizontal: 2,
-		marginBottom: 5,
-		minWidth: 100,
-		justifyContent: 'center',
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 5,
+		borderRadius: 8,
+		marginBottom: 4,
+		paddingLeft: 16,
+		height: 47,
 	},
 	input: {
-		paddingLeft: 45,
-		paddingRight: 6,
-		borderRadius: 8,
+		flex: 1,
+		minHeight: 0,
 		fontSize: 17,
-		backgroundColor: 'rgba(255, 255, 255, 0.08)',
-	},
-	index: {
-		position: 'absolute',
-		top: 0,
-		left: 16,
-		bottom: 0,
-		width: 30,
-		justifyContent: 'center',
-	},
-	indexText: {
-		justifyContent: 'center',
-		fontWeight: 'bold',
+		fontWeight: '400',
+		letterSpacing: 0.4,
+		paddingLeft: 0,
+		paddingTop: 0,
+		paddingBottom: 0,
 	},
 });
 

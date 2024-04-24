@@ -1,7 +1,7 @@
 import React, { memo, ReactElement } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { View as ThemedView } from '../styles/components';
-import { Caption13M } from '../styles/text';
+import { CaptionB } from '../styles/text';
 
 const BOX_SIZE = 32;
 
@@ -20,7 +20,7 @@ const Tooltip = ({
 				<ThemedView color="black92" style={styles.box} />
 			</View>
 			<ThemedView color="black92" style={styles.content}>
-				<Caption13M>{text}</Caption13M>
+				<CaptionB>{text}</CaptionB>
 			</ThemedView>
 		</View>
 	);

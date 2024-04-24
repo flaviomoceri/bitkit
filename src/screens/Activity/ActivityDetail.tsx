@@ -13,24 +13,15 @@ import {
 	StyleSheet,
 	View,
 	TouchableOpacity,
-	LayoutChangeEvent,
 } from 'react-native';
-import { useSharedValue, withTiming } from 'react-native-reanimated';
-import {
-	Canvas,
-	Path,
-	RadialGradient,
-	Rect,
-	Skia,
-	vec,
-} from '@shopify/react-native-skia';
+import { Canvas, Path, Skia } from '@shopify/react-native-skia';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useTranslation } from 'react-i18next';
 import { parse } from '@synonymdev/slashtags-url';
 import { EBoostType, EPaymentType } from 'beignet';
 
 import { View as ThemedView } from '../../styles/components';
-import { Caption13Up, Text02M, Title } from '../../styles/text';
+import { Caption13Up, BodySSB, Title } from '../../styles/text';
 import {
 	CalendarIcon,
 	CheckCircleIcon,
@@ -38,12 +29,14 @@ import {
 	GitBranchIcon,
 	HourglassIcon,
 	HourglassSimpleIcon,
+	LightningHollow,
 	LightningIcon,
 	ReceiveIcon,
 	SendIcon,
 	TagIcon,
 	TimerIcon,
 	TimerIconAlt,
+	TransferIcon,
 	UserIcon,
 	UserMinusIcon,
 	UserPlusIcon,
@@ -85,6 +78,7 @@ import { showToast } from '../../utils/notifications';
 import {
 	boostedTransactionsSelector,
 	selectedNetworkSelector,
+	transferSelector,
 } from '../../store/reselect/wallet';
 import {
 	slashTagsUrlSelector,
@@ -105,33 +99,13 @@ const Section = memo(
 		return (
 			<View style={[styles.sRoot, { borderBottomColor: white10 }]}>
 				<View style={styles.sText}>
-					<Caption13Up color="gray1">{title}</Caption13Up>
+					<Caption13Up color="white50">{title}</Caption13Up>
 				</View>
 				<View style={styles.sText}>{value}</View>
 			</View>
 		);
 	},
 );
-
-const Glow = ({
-	color,
-	size,
-}: {
-	color: string;
-	size: { width: number; height: number };
-}): ReactElement => {
-	const opacity = useSharedValue(0);
-
-	useEffect(() => {
-		opacity.value = withTiming(0.3, { duration: 100 });
-	}, [opacity]);
-
-	return (
-		<Rect x={0} y={0} width={size.width} height={size.height} opacity={opacity}>
-			<RadialGradient c={vec(0, 100)} r={600} colors={[color, 'transparent']} />
-		</Rect>
-	);
-};
 
 const ZigZag = ({ color }: { color: string }): ReactElement => {
 	const step = 12;
@@ -159,6 +133,7 @@ const OnchainActivityDetail = ({
 }): ReactElement => {
 	const {
 		id,
+		txId,
 		activityType,
 		txType,
 		value,
@@ -166,6 +141,7 @@ const OnchainActivityDetail = ({
 		confirmed,
 		timestamp,
 		confirmTimestamp,
+		isTransfer,
 		isBoosted,
 		address,
 		exists,
@@ -183,6 +159,7 @@ const OnchainActivityDetail = ({
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const activityItems = useAppSelector(activityItemsSelector);
 	const boostedTransactions = useAppSelector(boostedTransactionsSelector);
+	const transfer = useAppSelector((state) => transferSelector(state, txId));
 	const [txDetails, setTxDetails] = useState<ITransaction<ITxHash>['result']>();
 	const slashTagsUrl = useAppSelector((state) => {
 		return slashTagsUrlSelector(state, id);
@@ -304,9 +281,9 @@ const OnchainActivityDetail = ({
 				const i = `${outputAddress}${n}`;
 				return (
 					<View key={i}>
-						<Text02M numberOfLines={1} ellipsizeMode="middle">
+						<BodySSB numberOfLines={1} ellipsizeMode="middle">
 							{outputAddress}
-						</Text02M>
+						</BodySSB>
 					</View>
 				);
 			});
@@ -314,10 +291,12 @@ const OnchainActivityDetail = ({
 		return <View />;
 	}, [txDetails]);
 
+	let fees = fee;
+	let paymentAmount = value;
 	let status = (
 		<View style={styles.row}>
 			<HourglassIcon style={styles.rowIcon} color="brand" width={16} />
-			<Text02M color="brand">{t('activity_confirming')}</Text02M>
+			<BodySSB color="brand">{t('activity_confirming')}</BodySSB>
 		</View>
 	);
 
@@ -325,7 +304,7 @@ const OnchainActivityDetail = ({
 		status = (
 			<View style={styles.row}>
 				<TimerIconAlt style={styles.rowIcon} color="yellow" height={14} />
-				<Text02M color="yellow">{t('activity_boosting')}</Text02M>
+				<BodySSB color="yellow">{t('activity_boosting')}</BodySSB>
 			</View>
 		);
 	}
@@ -334,7 +313,7 @@ const OnchainActivityDetail = ({
 		status = (
 			<View style={styles.row}>
 				<CheckCircleIcon style={styles.rowIcon} color="green" />
-				<Text02M color="green">{t('activity_confirmed')}</Text02M>
+				<BodySSB color="green">{t('activity_confirmed')}</BodySSB>
 			</View>
 		);
 	}
@@ -343,8 +322,40 @@ const OnchainActivityDetail = ({
 		status = (
 			<View style={styles.row}>
 				<XIcon style={styles.rowIcon} color="red" height={18} width={16} />
-				<Text02M color="red">{t('activity_removed')}</Text02M>
+				<BodySSB color="red">{t('activity_removed')}</BodySSB>
 			</View>
+		);
+	}
+
+	let icon = isSend ? (
+		<ThemedView style={styles.icon} color="brand16">
+			<SendIcon height={19} color="brand" />
+		</ThemedView>
+	) : (
+		<ThemedView style={styles.icon} color="brand16">
+			<ReceiveIcon height={19} color="brand" />
+		</ThemedView>
+	);
+
+	if (transfer) {
+		fees = value - transfer.amount + fee;
+		paymentAmount = transfer.amount;
+
+		if (!confirmed) {
+			const duration = 10;
+			status = (
+				<View style={styles.row}>
+					<HourglassIcon style={styles.rowIcon} color="brand" width={16} />
+					<BodySSB color="brand">
+						{t('activity_transfer_pending', { duration })}
+					</BodySSB>
+				</View>
+			);
+		}
+		icon = (
+			<ThemedView style={styles.icon} color="brand16">
+				<TransferIcon height={24} width={24} color="brand" />
+			</ThemedView>
 		);
 	}
 
@@ -353,7 +364,7 @@ const OnchainActivityDetail = ({
 			<Money
 				sats={total}
 				size="caption13Up"
-				color="gray1"
+				color="white50"
 				unitType="secondary"
 				symbol={true}
 			/>
@@ -362,13 +373,7 @@ const OnchainActivityDetail = ({
 					<Money sats={total} sign={isSend ? '- ' : '+ '} />
 				</View>
 
-				<ThemedView style={styles.iconContainer} color="brand16">
-					{isSend ? (
-						<SendIcon height={19} color="brand" />
-					) : (
-						<ReceiveIcon height={19} color="brand" />
-					)}
-				</ThemedView>
+				{icon}
 			</TouchableOpacity>
 
 			{!extended ? (
@@ -387,7 +392,7 @@ const OnchainActivityDetail = ({
 										color="brand"
 										width={16}
 									/>
-									<Text02M>
+									<BodySSB>
 										{tTime('dateTime', {
 											v: new Date(timestamp),
 											formatParams: {
@@ -397,7 +402,7 @@ const OnchainActivityDetail = ({
 												},
 											},
 										})}
-									</Text02M>
+									</BodySSB>
 								</View>
 							}
 						/>
@@ -406,7 +411,7 @@ const OnchainActivityDetail = ({
 							value={
 								<View style={styles.row}>
 									<ClockIcon style={styles.rowIcon} color="brand" />
-									<Text02M>
+									<BodySSB>
 										{tTime('dateTime', {
 											v: new Date(confirmed ? confirmTimestamp! : timestamp),
 											formatParams: {
@@ -417,7 +422,7 @@ const OnchainActivityDetail = ({
 												},
 											},
 										})}
-									</Text02M>
+									</BodySSB>
 								</View>
 							}
 						/>
@@ -425,30 +430,45 @@ const OnchainActivityDetail = ({
 
 					{isSend && (
 						<View style={styles.sectionContainer}>
-							<Section
-								title={t('activity_payment')}
-								value={
-									<View style={styles.row}>
-										<UserIcon
-											style={styles.rowIcon}
-											width={16}
-											height={16}
-											color="brand"
-										/>
-										<Money
-											sats={value}
-											size="text02m"
-											style={styles.moneyMargin}
-										/>
-										<Money
-											sats={value}
-											size="caption13Up"
-											color="gray1"
-											unitType="secondary"
-										/>
-									</View>
-								}
-							/>
+							{isTransfer ? (
+								<Section
+									title={t('activity_transfer_to_spending')}
+									value={
+										<View style={styles.row}>
+											<LightningHollow
+												style={styles.rowIcon}
+												width={16}
+												height={16}
+												color="brand"
+											/>
+											<Money
+												style={styles.moneyMargin}
+												sats={paymentAmount}
+												size="bodySSB"
+											/>
+										</View>
+									}
+								/>
+							) : (
+								<Section
+									title={t('activity_payment')}
+									value={
+										<View style={styles.row}>
+											<UserIcon
+												style={styles.rowIcon}
+												width={16}
+												height={16}
+												color="brand"
+											/>
+											<Money
+												style={styles.moneyMargin}
+												sats={paymentAmount}
+												size="bodySSB"
+											/>
+										</View>
+									}
+								/>
+							)}
 
 							<Section
 								title={t('activity_fee')}
@@ -456,15 +476,9 @@ const OnchainActivityDetail = ({
 									<View style={styles.row}>
 										<TimerIcon style={styles.rowIcon} color="brand" />
 										<Money
-											sats={fee}
-											size="text02m"
+											sats={fees}
+											size="bodySSB"
 											style={styles.moneyMargin}
-										/>
-										<Money
-											sats={fee}
-											size="caption13Up"
-											color="gray1"
-											unitType="secondary"
 										/>
 									</View>
 								}
@@ -511,24 +525,25 @@ const OnchainActivityDetail = ({
 									style={styles.button}
 									text={t('activity_detach')}
 									icon={<UserMinusIcon height={16} width={16} color="brand" />}
-									onPress={handleDetach}
 									testID="ActivityDetach"
+									onPress={handleDetach}
 								/>
 							) : (
 								<Button
 									style={styles.button}
 									text={t('activity_assign')}
 									icon={<UserPlusIcon height={16} width={16} color="brand" />}
-									onPress={handleAssign}
+									disabled={isTransfer}
 									testID="ActivityAssign"
+									onPress={handleAssign}
 								/>
 							)}
 							<Button
 								style={styles.button}
 								text={t('activity_tag')}
 								icon={<TagIcon height={16} width={16} color="brand" />}
-								onPress={handleAddTag}
 								testID="ActivityTag"
+								onPress={handleAddTag}
 							/>
 						</View>
 						<View style={styles.sectionContainer}>
@@ -557,7 +572,7 @@ const OnchainActivityDetail = ({
 						onPress={(): void => onCopy(id)}>
 						<Section
 							title={t('activity_tx_id')}
-							value={<Text02M>{id}</Text02M>}
+							value={<BodySSB>{id}</BodySSB>}
 						/>
 					</TouchableOpacity>
 					<TouchableOpacity
@@ -565,7 +580,7 @@ const OnchainActivityDetail = ({
 						onPress={(): void => onCopy(address)}>
 						<Section
 							title={t('activity_address')}
-							value={<Text02M>{address}</Text02M>}
+							value={<BodySSB>{address}</BodySSB>}
 						/>
 					</TouchableOpacity>
 					{txDetails ? (
@@ -577,7 +592,7 @@ const OnchainActivityDetail = ({
 										const txid = v.txid;
 										const vout = v.vout;
 										const i = txid + ':' + vout;
-										return <Text02M key={i}>{i}</Text02M>;
+										return <BodySSB key={i}>{i}</BodySSB>;
 									})}
 								/>
 							</View>
@@ -611,9 +626,9 @@ const OnchainActivityDetail = ({
 													onPress={(): void => {
 														handleBoostParentPress(parent);
 													}}>
-													<Text02M numberOfLines={1} ellipsizeMode={'middle'}>
+													<BodySSB numberOfLines={1} ellipsizeMode={'middle'}>
 														{parent}
-													</Text02M>
+													</BodySSB>
 												</TouchableOpacity>
 											}
 										/>
@@ -698,7 +713,9 @@ const LightningActivityDetail = ({
 	const total = value + (fee ?? 0);
 
 	let statusText = t('activity_successful');
-	let statusIcon = <LightningIcon style={styles.rowIcon} color="purple" />;
+	let statusIcon = (
+		<LightningIcon style={styles.rowIcon} width={12} color="purple" />
+	);
 	let icon = (
 		<>
 			{isSend ? (
@@ -733,7 +750,7 @@ const LightningActivityDetail = ({
 	const StatusRow = (
 		<View style={styles.row}>
 			{statusIcon}
-			<Text02M color="purple">{statusText}</Text02M>
+			<BodySSB color="purple">{statusText}</BodySSB>
 		</View>
 	);
 
@@ -743,7 +760,7 @@ const LightningActivityDetail = ({
 				sats={total}
 				unitType="secondary"
 				size="caption13Up"
-				color="gray1"
+				color="white50"
 				symbol={true}
 			/>
 			<TouchableOpacity style={styles.title} onPress={switchUnit}>
@@ -751,7 +768,7 @@ const LightningActivityDetail = ({
 					<Money sats={total} sign={isSend ? '- ' : '+ '} />
 				</View>
 
-				<ThemedView style={styles.iconContainer} color="purple16">
+				<ThemedView style={styles.icon} color="purple16">
 					{icon}
 				</ThemedView>
 			</TouchableOpacity>
@@ -768,7 +785,7 @@ const LightningActivityDetail = ({
 							value={
 								<View style={styles.row}>
 									<CalendarIcon style={styles.rowIcon} color="purple" />
-									<Text02M>
+									<BodySSB>
 										{tTime('dateTime', {
 											v: new Date(timestamp),
 											formatParams: {
@@ -778,7 +795,7 @@ const LightningActivityDetail = ({
 												},
 											},
 										})}
-									</Text02M>
+									</BodySSB>
 								</View>
 							}
 						/>
@@ -787,7 +804,7 @@ const LightningActivityDetail = ({
 							value={
 								<View style={styles.row}>
 									<ClockIcon style={styles.rowIcon} color="purple" />
-									<Text02M>
+									<BodySSB>
 										{tTime('dateTime', {
 											v: new Date(timestamp),
 											formatParams: {
@@ -798,7 +815,7 @@ const LightningActivityDetail = ({
 												},
 											},
 										})}
-									</Text02M>
+									</BodySSB>
 								</View>
 							}
 						/>
@@ -818,14 +835,8 @@ const LightningActivityDetail = ({
 										/>
 										<Money
 											sats={value}
-											size="text02m"
+											size="bodySSB"
 											style={styles.moneyMargin}
-										/>
-										<Money
-											sats={value}
-											size="caption13Up"
-											color="gray1"
-											unitType="secondary"
 										/>
 									</View>
 								}
@@ -839,14 +850,8 @@ const LightningActivityDetail = ({
 											<TimerIcon style={styles.rowIcon} color="purple" />
 											<Money
 												sats={fee}
-												size="text02m"
+												size="bodySSB"
 												style={styles.moneyMargin}
-											/>
-											<Money
-												sats={fee}
-												size="caption13Up"
-												color="gray1"
-												unitType="secondary"
 											/>
 										</View>
 									}
@@ -888,10 +893,10 @@ const LightningActivityDetail = ({
 
 					{message ? (
 						<View style={styles.invoiceNote}>
-							<Caption13Up style={styles.sText} color="gray1">
+							<Caption13Up style={styles.sText} color="white50">
 								{t('activity_invoice_note')}
 							</Caption13Up>
-							<ThemedView color="gray5">
+							<ThemedView color="white10">
 								<Canvas style={styles.zRoot}>
 									<ZigZag color={colors.background} />
 								</Canvas>
@@ -950,7 +955,7 @@ const LightningActivityDetail = ({
 						onPress={(): void => onCopy(id)}>
 						<Section
 							title={t('activity_payment_hash')}
-							value={<Text02M>{id}</Text02M>}
+							value={<BodySSB>{id}</BodySSB>}
 						/>
 					</TouchableOpacity>
 					{address && (
@@ -959,7 +964,7 @@ const LightningActivityDetail = ({
 							onPress={(): void => onCopy(address)}>
 							<Section
 								title={t('activity_invoice')}
-								value={<Text02M>{address}</Text02M>}
+								value={<BodySSB>{address}</BodySSB>}
 							/>
 						</TouchableOpacity>
 					)}
@@ -975,8 +980,6 @@ const ActivityDetail = ({
 }: RootStackScreenProps<'ActivityDetail'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const extended = route.params.extended ?? false;
-	const colors = useColors();
-	const [size, setSize] = useState({ width: 0, height: 0 });
 
 	const item = useAppSelector((state) => {
 		return activityItemSelector(state, route.params.id)!;
@@ -984,23 +987,19 @@ const ActivityDetail = ({
 
 	const { activityType, txType } = item;
 	const isSend = txType === EPaymentType.sent;
-
-	const handleLayout = (event: LayoutChangeEvent): void => {
-		const { height, width } = event.nativeEvent.layout;
-		setSize({ width, height });
-	};
+	const isOnchain = activityType === EActivityType.onchain;
+	const isTransfer = isOnchain && item.isTransfer;
 
 	let title = isSend
 		? t('activity_bitcoin_sent')
 		: t('activity_bitcoin_received');
-	let glowColor = colors.brand;
 
-	if (activityType === EActivityType.lightning) {
-		glowColor = colors.purple;
+	if (isTransfer) {
+		title = t('activity_transfer_spending_done');
 	}
 
 	return (
-		<ThemedView style={styles.root} onLayout={handleLayout}>
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={title}
@@ -1026,15 +1025,9 @@ const ActivityDetail = ({
 						extended={extended}
 					/>
 				)}
-				{/* {activityType === EActivityType.tether && (
-					<TetherActivityDetail item={item} />
-				)} */}
 				<SafeAreaInset type="bottom" minPadding={16} />
 			</ScrollView>
 			<ActivityTagsPrompt />
-			<Canvas style={styles.canvas}>
-				<Glow color={glowColor} size={size} />
-			</Canvas>
 		</ThemedView>
 	);
 };
@@ -1044,26 +1037,23 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	scrollContent: {
-		paddingHorizontal: 16,
 		flexGrow: 1,
+		paddingTop: 16,
+		paddingHorizontal: 16,
 		position: 'relative',
-	},
-	canvas: {
-		...StyleSheet.absoluteFillObject,
-		zIndex: -1,
 	},
 	title: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		marginTop: 14,
 		marginBottom: 24,
 	},
 	titleBlock: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		paddingTop: 3,
 	},
-	iconContainer: {
+	icon: {
 		borderRadius: 30,
 		overflow: 'hidden',
 		height: 48,
@@ -1076,7 +1066,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	rowIcon: {
-		marginRight: 9,
+		marginRight: 6,
 	},
 	sectionContainer: {
 		marginHorizontal: -8,

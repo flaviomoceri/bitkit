@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 import React, {
 	memo,
 	ReactElement,
@@ -10,73 +9,169 @@ import React, {
 } from 'react';
 import {
 	Image,
-	Platform,
+	ImageSourcePropType,
 	Pressable,
 	StyleSheet,
 	View,
 	useWindowDimensions,
+	Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
-import {
+import Animated, {
 	interpolate,
 	useAnimatedStyle,
 	useSharedValue,
 } from 'react-native-reanimated';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { AnimatedView, TouchableOpacity } from '../../styles/components';
-import { Caption13M, Display, Text01M, Text01S } from '../../styles/text';
+import { View as ThemedView } from '../../styles/components';
+import { Display, BodyMSB, BodyM } from '../../styles/text';
+import { IThemeColors } from '../../styles/themes';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import GlowingBackground from '../../components/GlowingBackground';
 import Dot from '../../components/SliderDots';
 import Button from '../../components/Button';
+import LoadingWalletScreen from './Loading';
 import { useAppDispatch } from '../../hooks/redux';
 import { createNewWallet } from '../../utils/startup';
 import { showToast } from '../../utils/notifications';
 import { sleep } from '../../utils/helpers';
-import LoadingWalletScreen from './Loading';
 import { updateUser } from '../../store/slices/user';
-import { IColors } from '../../styles/colors';
 import type { OnboardingStackScreenProps } from '../../navigation/types';
 
-const shieldImageSrc = require('../../assets/illustrations/shield-b.png');
-const lightningImageSrc = require('../../assets/illustrations/lightning.png');
-const sparkImageSrc = require('../../assets/illustrations/spark.png');
-const walletImageSrc = require('../../assets/illustrations/wallet.png');
-
 type Slide = {
-	topLeftColor: keyof IColors;
-	slide: () => ReactElement;
+	color: keyof IThemeColors;
+	image: ImageSourcePropType;
 };
 
-/**
- * Slideshow for Welcome screen
- */
+const slide1ImageSrc = require('../../assets/illustrations/keyring.png');
+const slide2ImageSrc = require('../../assets/illustrations/lightning.png');
+const slide3ImageSrc = require('../../assets/illustrations/spark.png');
+const slide4ImageSrc = require('../../assets/illustrations/shield.png');
+const slide5ImageSrc = require('../../assets/illustrations/wallet.png');
+
+const slides: Slide[] = [
+	{ color: 'blue', image: slide1ImageSrc },
+	{ color: 'purple', image: slide2ImageSrc },
+	{ color: 'yellow', image: slide3ImageSrc },
+	{ color: 'green', image: slide4ImageSrc },
+	{ color: 'brand', image: slide5ImageSrc },
+];
+
+type SlideProps = Slide & {
+	index: number;
+	onCreate: () => void;
+	onRestore: () => void;
+};
+
+const Slide = ({
+	index,
+	color,
+	image,
+	onCreate,
+	onRestore,
+}: SlideProps): ReactElement => {
+	const { t } = useTranslation('onboarding');
+	const dimensions = useWindowDimensions();
+
+	// because we can't properly scala image inside the <Swiper let's calculate with by hand
+	const imageStyles = useMemo(
+		() => ({
+			...styles.image,
+			width: dimensions.width * 0.79,
+			height: dimensions.width * 0.79,
+		}),
+		[dimensions.width],
+	);
+
+	const isLast = index === slides.length - 1;
+
+	return (
+		<View style={styles.slide} testID={`Slide${index}`}>
+			<View style={styles.imageContainer}>
+				<Image style={imageStyles} source={image} />
+			</View>
+
+			<Trans
+				t={t}
+				i18nKey={`slide${index}_header`}
+				parent={Display}
+				components={{ accent: <Display color={color} /> }}
+			/>
+			<BodyM style={styles.text} color="white50">
+				{t(`slide${index}_text`)}
+			</BodyM>
+
+			{isLast ? (
+				<View style={styles.buttonsContainer}>
+					<Button
+						style={styles.button}
+						text={t('new_wallet')}
+						size="large"
+						testID="NewWallet"
+						onPress={onCreate}
+					/>
+
+					<Button
+						style={styles.button}
+						text={t('restore')}
+						size="large"
+						variant="secondary"
+						testID="RestoreWallet"
+						onPress={onRestore}
+					/>
+				</View>
+			) : (
+				<View style={styles.dotsSpacing} />
+			)}
+
+			<SafeAreaInset type="bottom" minPadding={16} />
+		</View>
+	);
+};
+
 const Slideshow = ({
 	navigation,
 	route,
 }: OnboardingStackScreenProps<'Slideshow'>): ReactElement => {
 	const skipIntro = route.params?.skipIntro ?? false;
 	const bip39Passphrase = route.params?.bip39Passphrase;
-	const ref = useRef<ICarouselInstance | null>(null);
-	const [isCreatingWallet, setIsCreatingWallet] = useState(false);
-	const insets = useSafeAreaInsets();
-	const { t } = useTranslation('onboarding');
 	const dispatch = useAppDispatch();
-
-	// because we can't properly scala image inside the <Swiper let's calculate with by hand
 	const dimensions = useWindowDimensions();
-	const illustrationStyles = useMemo(
-		() => ({
-			...styles.illustration,
-			width: dimensions.width * 0.6,
-			height: dimensions.width * 0.6,
-		}),
-		[dimensions.width],
-	);
+	const { t } = useTranslation('onboarding');
+	const ref = useRef<ICarouselInstance>(null);
+	const progressValue = useSharedValue(0);
+	const [isCreatingWallet, setIsCreatingWallet] = useState(false);
 
-	const onNewWallet = useCallback(async (): Promise<void> => {
+	// dots and 'skip' button should not be visible on last slide
+	const startOpacity = useAnimatedStyle(() => {
+		const opacity = interpolate(
+			progressValue.value,
+			[1, slides.length - 2, slides.length - 1],
+			[1, 1, 0],
+		);
+		return { opacity };
+	}, [slides.length, progressValue]);
+
+	// 'advanced' button should be visible only on last slide
+	const endOpacity = useAnimatedStyle(() => {
+		const opacity = interpolate(
+			progressValue.value,
+			[0, slides.length - 2, slides.length - 1],
+			[0, 0, 1],
+		);
+		return { opacity };
+	}, [slides.length, progressValue]);
+
+	const onHeaderButton = (): void => {
+		const isLast = progressValue.value === slides.length - 1;
+		if (isLast) {
+			navigation.navigate('Passphrase');
+		} else {
+			ref.current?.scrollTo({ index: slides.length - 1, animated: true });
+		}
+	};
+
+	const onCreateWallet = useCallback(async (): Promise<void> => {
 		setIsCreatingWallet(true);
 		await sleep(500); // wait for animation to be started
 		const res = await createNewWallet({ bip39Passphrase });
@@ -92,193 +187,18 @@ const Slideshow = ({
 		dispatch(updateUser({ requiresRemoteRestore: false }));
 	}, [bip39Passphrase, t, dispatch]);
 
-	const slides = useMemo(
-		(): Slide[] => [
-			{
-				topLeftColor: 'brand',
-				slide: (): ReactElement => (
-					<View style={styles.slide} testID="Slide1">
-						<View style={styles.imageContainer}>
-							<Image style={illustrationStyles} source={shieldImageSrc} />
-						</View>
-						<View style={styles.textContent}>
-							<Trans
-								t={t}
-								i18nKey="slide1_header"
-								parent={Display}
-								components={{
-									brand: <Display color="brand" />,
-								}}
-							/>
-							<Text01S color="gray1" style={styles.text}>
-								{t('slide1_text')}
-							</Text01S>
-						</View>
-						<SafeAreaInset type="bottom" minPadding={16} />
-					</View>
-				),
-			},
-			{
-				topLeftColor: 'purple',
-				slide: (): ReactElement => (
-					<View style={styles.slide} testID="Slide2">
-						<View style={styles.imageContainer}>
-							<Image style={illustrationStyles} source={lightningImageSrc} />
-						</View>
-						<View style={styles.textContent}>
-							<Trans
-								t={t}
-								i18nKey="slide2_header"
-								parent={Display}
-								components={{
-									purple: <Display color="purple" />,
-								}}
-							/>
-							<Text01S color="gray1" style={styles.text}>
-								{t('slide2_text')}
-							</Text01S>
-						</View>
-						<SafeAreaInset type="bottom" minPadding={16} />
-					</View>
-				),
-			},
-			{
-				topLeftColor: 'blue',
-				slide: (): ReactElement => (
-					<View style={styles.slide} testID="Slide3">
-						<View style={styles.imageContainer}>
-							<Image style={illustrationStyles} source={sparkImageSrc} />
-						</View>
-						<View style={styles.textContent}>
-							<Trans
-								t={t}
-								i18nKey="slide3_header"
-								parent={Display}
-								components={{
-									blue: <Display color="blue" />,
-								}}
-							/>
-							<Text01S color="gray1" style={styles.text}>
-								{t('slide3_text')}
-							</Text01S>
-						</View>
-						<SafeAreaInset type="bottom" minPadding={16} />
-					</View>
-				),
-			},
-			{
-				topLeftColor: 'brand',
-				slide: (): ReactElement => (
-					<View style={styles.slide}>
-						<View style={styles.imageContainer}>
-							<Image style={illustrationStyles} source={walletImageSrc} />
-						</View>
-						<View style={styles.textContent}>
-							<Trans
-								t={t}
-								i18nKey="slide4_header"
-								parent={Display}
-								components={{
-									brand: <Display color="brand" />,
-								}}
-							/>
-
-							<Text01S color="gray1" style={styles.text}>
-								<Trans
-									t={t}
-									i18nKey="slide4_text"
-									components={{
-										brand: <Text01S color="brand" />,
-									}}
-								/>
-							</Text01S>
-
-							<View style={styles.buttonsContainer}>
-								<Button
-									size="large"
-									style={[styles.button, styles.restoreButton]}
-									onPress={onNewWallet}
-									text={t('new_wallet')}
-									testID="NewWallet"
-								/>
-
-								<Button
-									size="large"
-									variant="secondary"
-									style={[styles.button, styles.newButton]}
-									onPress={(): void => navigation.navigate('MultipleDevices')}
-									text={t('restore')}
-									testID="RestoreWallet"
-								/>
-							</View>
-						</View>
-						<SafeAreaInset type="bottom" minPadding={16} />
-					</View>
-				),
-			},
-		],
-		[illustrationStyles, navigation, onNewWallet, t],
-	);
-
-	const [index, setIndex] = useState(skipIntro ? slides.length - 1 : 0);
-	const progressValue = useSharedValue<number>(
-		skipIntro ? slides.length - 1 : 0,
-	);
-
-	// skip button should be visible on all slides, except the last one
-	const skipOpacity = useAnimatedStyle(() => {
-		const opacity = interpolate(
-			progressValue.value,
-			[0, slides.length - 2, slides.length - 1],
-			[1, 1, 0],
-		);
-		return { opacity };
-	}, [slides.length, progressValue]);
-
-	// Advanced button should be visible only on last slide
-	const advOpacity = useAnimatedStyle(() => {
-		const opacity = interpolate(
-			progressValue.value,
-			[0, slides.length - 2, slides.length - 1],
-			[0, 0, 1],
-		);
-		return { opacity };
-	}, [slides.length, progressValue]);
-
-	// Dots should not be visible on last slide
-	const dotsOpacity = useAnimatedStyle(() => {
-		const opacity = interpolate(
-			progressValue.value,
-			[1, slides.length - 2, slides.length - 1],
-			[1, 1, 0],
-		);
-		return { opacity };
-	}, [slides.length, progressValue]);
-
-	const onSkip = (): void => {
-		ref.current?.scrollTo({ index: slides.length - 1, animated: true });
+	const onRestoreWallet = (): void => {
+		navigation.navigate('MultipleDevices');
 	};
 
 	useEffect(() => {
-		if (skipIntro) {
-			progressValue.value = slides.length - 1;
-			ref.current?.scrollTo({ index: slides.length - 1, animated: false });
+		if (bip39Passphrase) {
+			onCreateWallet();
 		}
-	}, [skipIntro, slides.length, progressValue]);
-
-	useEffect(() => {
-		if (bip39Passphrase === undefined) {
-			return;
-		}
-		onNewWallet();
-	}, [bip39Passphrase, onNewWallet]);
-
-	const glowColor: keyof IColors = isCreatingWallet
-		? 'brand'
-		: slides[index]?.topLeftColor ?? 'brand';
+	}, [bip39Passphrase, onCreateWallet]);
 
 	return (
-		<GlowingBackground topLeft={glowColor}>
+		<ThemedView style={styles.root}>
 			{isCreatingWallet ? (
 				<LoadingWalletScreen />
 			) : (
@@ -287,128 +207,108 @@ const Slideshow = ({
 						ref={ref}
 						loop={false}
 						width={dimensions.width}
-						height={dimensions.height - 56 - (insets.bottom || 12)}
+						height={dimensions.height}
 						data={slides}
-						renderItem={({ index: i }): ReactElement => {
-							const Slide = slides[i].slide;
-							return <Slide key={i} />;
-						}}
-						onSnapToItem={setIndex}
+						defaultIndex={skipIntro ? slides.length - 1 : 0}
 						onProgressChange={(_, absoluteProgress): void => {
 							progressValue.value = absoluteProgress;
 						}}
+						renderItem={({ index }): ReactElement => (
+							<Slide
+								key={`slide-${index}`}
+								index={index}
+								color={slides[index].color}
+								image={slides[index].image}
+								onCreate={onCreateWallet}
+								onRestore={onRestoreWallet}
+							/>
+						)}
 					/>
 
-					<View style={styles.footer}>
-						<AnimatedView style={[styles.adv, advOpacity]}>
-							<TouchableOpacity
-								style={styles.advTouchable}
-								onPress={(): void => {
-									if (index !== slides.length - 1) {
-										return;
-									}
-									navigation.navigate('Passphrase');
-								}}
-								testID="Passphrase">
-								<Caption13M color="gray1">{t('advanced_setup')}</Caption13M>
-							</TouchableOpacity>
-						</AnimatedView>
-						<AnimatedView
-							style={[styles.dots, dotsOpacity]}
-							pointerEvents="none">
-							{slides.map((_backgroundColor, i) => (
-								<Dot
-									key={i}
-									index={i}
-									animValue={progressValue}
-									length={slides.length}
-								/>
-							))}
-						</AnimatedView>
-					</View>
-
-					<AnimatedView
-						color="transparent"
-						style={[styles.headerButtonContainer, skipOpacity]}>
-						<Pressable
-							style={styles.skipButton}
-							onPress={onSkip}
-							testID="SkipButton">
+					<Animated.View style={[styles.headerButtonContainer, startOpacity]}>
+						<Pressable testID="SkipButton" onPress={onHeaderButton}>
 							<SafeAreaInset type="top" />
-							<Text01M color="gray1">{t('skip')}</Text01M>
+							<BodyMSB color="white50">{t('skip')}</BodyMSB>
 						</Pressable>
-					</AnimatedView>
+					</Animated.View>
+
+					<Animated.View style={[styles.headerButtonContainer, endOpacity]}>
+						<Pressable testID="Passphrase" onPress={onHeaderButton}>
+							<SafeAreaInset type="top" />
+							<BodyMSB color="white50">{t('advanced_setup')}</BodyMSB>
+						</Pressable>
+					</Animated.View>
+
+					<Animated.View
+						style={[styles.dots, startOpacity]}
+						pointerEvents="none">
+						{slides.map((_, i) => (
+							<Dot
+								key={i}
+								index={i}
+								animValue={progressValue}
+								length={slides.length}
+							/>
+						))}
+					</Animated.View>
 				</>
 			)}
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
-	headerButtonContainer: {
-		flexDirection: 'row',
-		width: '100%',
-		justifyContent: 'flex-end',
-		top: 20,
-		paddingHorizontal: 28,
-		position: 'absolute',
-	},
-	skipButton: {
-		backgroundColor: 'transparent',
+	root: {
+		flex: 1,
 	},
 	slide: {
 		flex: 1,
 		paddingHorizontal: 32,
 	},
-	imageContainer: {
-		flex: 4,
-		alignItems: 'center',
-		marginBottom: 32,
+	headerButtonContainer: {
+		flexDirection: 'row',
 		justifyContent: 'flex-end',
-		position: 'relative', // for first slide background image
+		width: '100%',
+		position: 'absolute',
+		top: 20,
+		paddingHorizontal: 28,
 	},
-	illustration: {
+	imageContainer: {
+		alignItems: 'center',
+		justifyContent: 'flex-end',
+		marginBottom: 48,
+		marginTop: 'auto',
+	},
+	image: {
 		resizeMode: 'contain',
 	},
-	textContent: {
-		// line up Welcome screen content with Slideshow
-		flex: Platform.OS === 'ios' ? 3.2 : 3.5,
-	},
 	text: {
-		marginTop: 8,
+		marginTop: 4,
+		minHeight: 90,
 	},
 	buttonsContainer: {
 		flexDirection: 'row',
-		marginTop: 42,
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-		paddingHorizontal: 10,
 	},
-	restoreButton: {
-		marginRight: 6,
-	},
-	newButton: {
-		marginLeft: 6,
-	},
-	footer: {
-		position: 'relative',
-		justifyContent: 'center',
+	dotsSpacing: {
+		height: 55,
 	},
 	dots: {
-		position: 'absolute',
+		width: '100%',
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignSelf: 'center',
-	},
-	adv: {
-		backgroundColor: 'transparent',
+		justifyContent: 'center',
 		position: 'absolute',
-		alignSelf: 'center',
-	},
-	advTouchable: {
-		padding: 16,
-		backgroundColor: 'transparent',
+		...Platform.select({
+			ios: {
+				bottom: 60,
+			},
+			android: {
+				bottom: 40,
+			},
+		}),
 	},
 });
 

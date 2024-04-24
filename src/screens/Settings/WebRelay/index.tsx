@@ -5,7 +5,7 @@ import Url from 'url-parse';
 import { useTranslation } from 'react-i18next';
 
 import { View, TextInput, ScrollView } from '../../../styles/components';
-import { Caption13Up, Text01S } from '../../../styles/text';
+import { Caption13Up, BodyM } from '../../../styles/text';
 import { ScanIcon } from '../../../styles/icons';
 import { updateSettings } from '../../../store/slices/settings';
 import NavigationHeader from '../../../components/NavigationHeader';
@@ -142,19 +142,17 @@ const WebRelay = ({
 				onActionPress={navigateToScanner}
 			/>
 			<ScrollView contentContainerStyle={styles.content} bounces={false}>
-				<Text01S color="gray1">{t('es.connected_to')}</Text01S>
-				<View style={styles.row}>
-					<View style={styles.connectedPeer} testID="Status">
-						<Text01S
-							color="green"
-							testID="ConnectedUrl"
-							accessibilityLabel={webRelayUrl}>
-							{webRelayUrl}
-						</Text01S>
-					</View>
+				<BodyM color="white50">{t('es.connected_to')}</BodyM>
+				<View style={styles.connectedPeer} testID="WebRelayStatus">
+					<BodyM
+						color="green"
+						testID="ConnectedUrl"
+						accessibilityLabel={webRelayUrl}>
+						{webRelayUrl}
+					</BodyM>
 				</View>
 
-				<Caption13Up color="gray1" style={styles.label}>
+				<Caption13Up color="white50" style={styles.label}>
 					{t('es.host')}
 				</Caption13Up>
 				<TextInput
@@ -180,7 +178,6 @@ const WebRelay = ({
 						testID="ResetToDefault"
 						onPress={resetToDefault}
 					/>
-					<View style={styles.divider} />
 					<Button
 						style={styles.button}
 						text={t('es.button_connect')}
@@ -205,20 +202,15 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		flexGrow: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
-	row: {
-		flexDirection: 'row',
-		alignItems: 'flex-start',
-		paddingBottom: 16,
-		justifyContent: 'center',
+	connectedPeer: {
+		marginBottom: 16,
 	},
 	label: {
 		marginTop: 16,
 		marginBottom: 4,
-	},
-	connectedPeer: {
-		flex: 1.5,
 	},
 	textInput: {
 		minHeight: 52,
@@ -226,14 +218,12 @@ const styles = StyleSheet.create({
 		marginBottom: 16,
 	},
 	buttons: {
-		marginTop: 16,
 		flexDirection: 'row',
+		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

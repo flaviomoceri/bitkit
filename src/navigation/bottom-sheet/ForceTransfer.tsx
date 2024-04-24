@@ -3,12 +3,11 @@ import { StyleSheet, View } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
-import { Text01S } from '../../styles/text';
+import { BodyM } from '../../styles/text';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Button from '../../components/Button';
-import GlowImage from '../../components/GlowImage';
 import { closeAllChannels } from '../../utils/lightning';
 import { showToast } from '../../utils/notifications';
 import {
@@ -23,6 +22,7 @@ import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from '../../store/reselect/wallet';
+import { Image } from 'react-native';
 
 const imageSrc = require('../../assets/illustrations/exclamation-mark.png');
 
@@ -133,9 +133,11 @@ const ForceTransfer = (): ReactElement => {
 					displayBackButton={false}
 				/>
 
-				<Text01S color="gray1">{t('force_text')}</Text01S>
+				<BodyM color="white50">{t('force_text')}</BodyM>
 
-				<GlowImage image={imageSrc} imageSize={205} glowColor="yellow" />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
 
 				<View style={styles.buttonContainer}>
 					<Button
@@ -145,7 +147,6 @@ const ForceTransfer = (): ReactElement => {
 						text={t('cancel')}
 						onPress={onCancel}
 					/>
-					<View style={styles.divider} />
 					<Button
 						style={styles.button}
 						size="large"
@@ -164,15 +165,26 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingHorizontal: 32,
 	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
+	},
 	buttonContainer: {
 		flexDirection: 'row',
 		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

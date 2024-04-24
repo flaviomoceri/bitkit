@@ -1,10 +1,10 @@
 {
   "contact_your_name": "Nome público\ndo seu perfil",
   "contact_retrieving": "Recebimento\ninformações de contato...",
-  "onboarding_header": "Dinâmico\n<brand>Contatos.</brand>",
-  "onboarding_profile1_header": "Seja dono do seu\n<brand>Perfil social.</brand>",
-  "onboarding_profile2_header": "Pague seus\n<brand>Contatos.</brand>",
-  "onboarding_widgets1_header": "Adeus,\n<brand>Senhas.</brand>",
-  "onboarding_widgets2_header": "Olá,\n<brand>Widgets.</brand>",
+  "onboarding_header": "Dinâmico\n<accent>Contatos.</accent>",
+  "onboarding_profile1_header": "Seja dono do seu\n<accent>Perfil social.</accent>",
+  "onboarding_profile2_header": "Pague seus\n<accent>Contatos.</accent>",
+  "onboarding_widgets1_header": "Adeus,\n<accent>Senhas.</accent>",
+  "onboarding_widgets2_header": "Olá,\n<accent>Widgets.</accent>",
   "profile_link_label_placeholder": "Por exemplo, \"Website\"."
 }

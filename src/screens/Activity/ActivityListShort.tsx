@@ -10,7 +10,7 @@ import { useAppSelector } from '../../hooks/redux';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { Caption13Up, Text02M } from '../../styles/text';
+import { Caption13Up, BodySSB } from '../../styles/text';
 import { groupActivityItems } from '../../utils/activity';
 import { showBottomSheet } from '../../store/utils/ui';
 import { IActivityItem } from '../../store/types/activity';
@@ -69,7 +69,7 @@ const ActivityListShort = (): ReactElement => {
 
 	return (
 		<View style={styles.content}>
-			<Caption13Up color="gray1" style={styles.title}>
+			<Caption13Up color="white50" style={styles.title}>
 				{t('activity')}
 			</Caption13Up>
 
@@ -84,11 +84,11 @@ const ActivityListShort = (): ReactElement => {
 					))}
 					<Button
 						style={styles.button}
-						text={<Text02M color="white80">{t('activity_show_all')}</Text02M>}
+						text={<BodySSB color="white80">{t('activity_show_all')}</BodySSB>}
 						size="large"
 						variant="transparent"
-						onPress={navigateToActivityFiltered}
 						testID="ActivityShowAll"
+						onPress={navigateToActivityFiltered}
 					/>
 				</>
 			)}

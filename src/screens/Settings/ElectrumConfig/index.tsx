@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import isEqual from 'lodash/isEqual';
 
 import { View, TextInput, ScrollView } from '../../../styles/components';
-import { Text01S, Caption13Up } from '../../../styles/text';
+import { BodyM, Caption13Up } from '../../../styles/text';
 import { ScanIcon } from '../../../styles/icons';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { updateUi } from '../../../store/slices/ui';
@@ -258,7 +258,7 @@ const ElectrumConfig = ({
 	const hasEdited = !isEqual({ host, port, protocol }, connectedPeer);
 
 	return (
-		<View style={styles.container}>
+		<View style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('adv.electrum_server')}
@@ -266,22 +266,20 @@ const ElectrumConfig = ({
 				onActionPress={navigateToScanner}
 			/>
 			<ScrollView contentContainerStyle={styles.content} bounces={false}>
-				<Text01S color="gray1">{t('es.connected_to')}</Text01S>
-				<View style={styles.row}>
-					<View style={styles.connectedPeer} testID="Status">
-						{connectedPeer ? (
-							<Text01S color="green" testID="Connected">
-								{connectedPeer.host}:{connectedPeer.port}
-							</Text01S>
-						) : (
-							<Text01S color="red" testID="Disconnected">
-								{t('es.disconnected')}
-							</Text01S>
-						)}
-					</View>
+				<BodyM color="white50">{t('es.connected_to')}</BodyM>
+				<View style={styles.connectedPeer} testID="ElectrumStatus">
+					{connectedPeer ? (
+						<BodyM color="green" testID="Connected">
+							{connectedPeer.host}:{connectedPeer.port}
+						</BodyM>
+					) : (
+						<BodyM color="red" testID="Disconnected">
+							{t('es.disconnected')}
+						</BodyM>
+					)}
 				</View>
 
-				<Caption13Up color="gray1" style={styles.label}>
+				<Caption13Up style={styles.label} color="white50">
 					{t('es.host')}
 				</Caption13Up>
 				<TextInput
@@ -299,7 +297,7 @@ const ElectrumConfig = ({
 					testID="HostInput"
 				/>
 
-				<Caption13Up color="gray1" style={styles.label}>
+				<Caption13Up style={styles.label} color="white50">
 					{t('es.port')}
 				</Caption13Up>
 				<TextInput
@@ -320,7 +318,7 @@ const ElectrumConfig = ({
 					style={styles.protocol}
 					accessibilityLabel={protocol}
 					testID="ElectrumProtocol">
-					<Caption13Up color="gray1" style={styles.label}>
+					<Caption13Up style={styles.label} color="white50">
 						{t('es.protocol')}
 					</Caption13Up>
 					<RadioButtonGroup
@@ -348,7 +346,6 @@ const ElectrumConfig = ({
 						testID="ResetToDefault"
 						onPress={resetToDefault}
 					/>
-					<View style={styles.divider} />
 					<Button
 						style={styles.button}
 						text={t('es.button_connect')}
@@ -368,25 +365,20 @@ const ElectrumConfig = ({
 };
 
 const styles = StyleSheet.create({
-	container: {
+	root: {
 		flex: 1,
 	},
 	content: {
 		flexGrow: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
-	row: {
-		flexDirection: 'row',
-		alignItems: 'flex-start',
-		paddingBottom: 16,
-		justifyContent: 'center',
+	connectedPeer: {
+		marginBottom: 16,
 	},
 	label: {
 		marginTop: 16,
 		marginBottom: 4,
-	},
-	connectedPeer: {
-		flex: 1.5,
 	},
 	textInput: {
 		minHeight: 52,
@@ -396,14 +388,12 @@ const styles = StyleSheet.create({
 		marginTop: 11,
 	},
 	buttons: {
-		marginTop: 16,
 		flexDirection: 'row',
+		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

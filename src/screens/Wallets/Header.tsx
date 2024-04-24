@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 
 import { __DISABLE_SLASHTAGS__ } from '../../constants/env';
 import { Title } from '../../styles/text';
+import { Pressable } from '../../styles/components';
 import { ProfileIcon, SettingsIcon } from '../../styles/icons';
 import ProfileImage from '../../components/ProfileImage';
 import { truncate } from '../../utils/helpers';
 import { useProfile2, useSelectedSlashtag2 } from '../../hooks/slashtags2';
 import { RootNavigationProp } from '../../navigation/types';
 import VerticalShadow from '../../components/VerticalShadow';
-import { Pressable } from '../../styles/components';
 
 const EnabledSlashtagsProfileButton = (): ReactElement => {
 	const { t } = useTranslation('slashtags');

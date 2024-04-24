@@ -9,7 +9,7 @@
   "qr_error_no_data_text": "Bitkit no ha pogut llegir les dades proporcionades.",
   "qr_error_network_header": "Xarxa incorrecta",
   "qr_paste": "Enganxa el codi QR",
-  "buy_header": "Bitcoin\n<orange>per Bitkit.</orange>",
+  "buy_header": "Bitcoin\n<accent>per Bitkit.</accent>",
   "buy_button": "Comprar Bitcoin",
   "connection_lost_title": "Connexió perduda de Bitkit",
   "connection_lost_message": "Si us plau, verifiqueu la configuració del vostre servidor Electrum.",

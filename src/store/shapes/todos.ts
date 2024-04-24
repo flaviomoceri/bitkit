@@ -5,65 +5,92 @@ const imageLightning = require('../../assets/illustrations/lightning.png');
 const imageTransfer = require('../../assets/illustrations/transfer.png');
 const imageShield = require('../../assets/illustrations/shield.png');
 const imageCrown = require('../../assets/illustrations/crown-no-margins.png');
+const imageLightbulb = require('../../assets/illustrations/lightbulb.png');
 const imageBitcoin = require('../../assets/illustrations/b-emboss.png');
+const imageGift = require('../../assets/illustrations/gift.png');
+const imageGroup = require('../../assets/illustrations/group.png');
 
 export const backupSeedPhraseTodo: ITodo = {
 	id: 'backupSeedPhrase',
-	color: 'blue',
+	color: 'blue24',
 	image: imageSafe,
+	dismissable: true,
+};
+export const discountTodo: ITodo = {
+	id: 'discount',
+	color: 'purple24',
+	image: imageGift,
+	dismissable: true,
+};
+export const fastpayTodo: ITodo = {
+	id: 'fastpay',
+	color: 'green24',
+	image: imageLightning,
+	dismissable: true,
+};
+export const inviteTodo: ITodo = {
+	id: 'invite',
+	color: 'blue24',
+	image: imageGroup,
 	dismissable: true,
 };
 export const lightningTodo: ITodo = {
 	id: 'lightning',
-	color: 'purple',
+	color: 'purple24',
 	image: imageLightning,
 	dismissable: true,
 };
 export const lightningSettingUpTodo: ITodo = {
 	id: 'lightningSettingUp',
-	color: 'purple',
-	image: imageLightning,
+	color: 'purple24',
+	image: imageTransfer,
 	dismissable: false,
 };
 export const lightningReadyTodo: ITodo = {
 	id: 'lightningReady',
-	color: 'purple',
+	color: 'purple24',
 	image: imageLightning,
 	dismissable: false,
 };
 export const transferPendingTodo: ITodo = {
 	id: 'transferPending',
-	color: 'purple',
+	color: 'purple24',
 	image: imageTransfer,
 	dismissable: false,
 };
 export const transferClosingChannelTodo: ITodo = {
 	id: 'transferClosingChannel',
-	color: 'purple',
+	color: 'purple24',
 	image: imageTransfer,
 	dismissable: false,
 };
 export const pinTodo: ITodo = {
 	id: 'pin',
-	color: 'green',
+	color: 'green24',
 	image: imageShield,
 	dismissable: true,
 };
 export const slashtagsProfileTodo: ITodo = {
 	id: 'slashtagsProfile',
-	color: 'brand',
+	color: 'brand24',
 	image: imageCrown,
+	dismissable: true,
+};
+export const supportTodo: ITodo = {
+	id: 'support',
+	color: 'yellow24',
+	image: imageLightbulb,
 	dismissable: true,
 };
 export const buyBitcoinTodo: ITodo = {
 	id: 'buyBitcoin',
-	color: 'orange',
+	color: 'brand24',
 	image: imageBitcoin,
 	dismissable: true,
 };
 export const btFailedTodo: ITodo = {
 	id: 'btFailed',
-	color: 'gray',
+	color: 'purple24',
 	image: imageLightning,
 	dismissable: true,
 };

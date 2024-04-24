@@ -10,7 +10,7 @@ import {
 } from '@synonymdev/blocktank-lsp-http-client';
 
 import { View as ThemedView } from '../../../styles/components';
-import { Caption13Up, Caption13M } from '../../../styles/text';
+import { Caption13Up, CaptionB } from '../../../styles/text';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
 import NavigationHeader from '../../../components/NavigationHeader';
@@ -56,7 +56,7 @@ const Section = memo(
 				onPress={onPress}
 				style={styles.sectionRoot}>
 				<View style={styles.sectionName}>
-					<Caption13M>{name}</Caption13M>
+					<CaptionB>{name}</CaptionB>
 				</View>
 				<View style={styles.sectionValue} testID={testID}>
 					{value}
@@ -210,7 +210,7 @@ const ChannelDetails = ({
 
 				<View style={styles.status}>
 					<View style={styles.sectionTitle}>
-						<Caption13Up color="gray1">{t('status')}</Caption13Up>
+						<Caption13Up color="white50">{t('status')}</Caption13Up>
 					</View>
 					<ChannelStatus status={channel.status} order={blocktankOrder} />
 				</View>
@@ -218,14 +218,14 @@ const ChannelDetails = ({
 				{blocktankOrder && (
 					<View style={styles.section}>
 						<View style={styles.sectionTitle}>
-							<Caption13Up color="gray1">{t('order_details')}</Caption13Up>
+							<Caption13Up color="white50">{t('order_details')}</Caption13Up>
 						</View>
 						<Section
 							name={t('order')}
 							value={
-								<Caption13M ellipsizeMode="middle" numberOfLines={1}>
+								<CaptionB ellipsizeMode="middle" numberOfLines={1}>
 									{blocktankOrder.id}
-								</Caption13M>
+								</CaptionB>
 							}
 							onPress={(): void => {
 								Clipboard.setString(blocktankOrder.id);
@@ -239,7 +239,7 @@ const ChannelDetails = ({
 						<Section
 							name={t('created_on')}
 							value={
-								<Caption13M>
+								<CaptionB>
 									{tTime('dateTime', {
 										v: new Date(blocktankOrder.createdAt),
 										formatParams: {
@@ -253,16 +253,16 @@ const ChannelDetails = ({
 											},
 										},
 									})}
-								</Caption13M>
+								</CaptionB>
 							}
 						/>
 						{channel.funding_txid && (
 							<Section
 								name={t('transaction')}
 								value={
-									<Caption13M ellipsizeMode="middle" numberOfLines={1}>
+									<CaptionB ellipsizeMode="middle" numberOfLines={1}>
 										{channel.funding_txid}
-									</Caption13M>
+									</CaptionB>
 								}
 								onPress={(): void => {
 									if (channel.funding_txid) {
@@ -280,10 +280,10 @@ const ChannelDetails = ({
 							value={
 								<Money
 									sats={blocktankOrder.feeSat - blocktankOrder.clientBalanceSat}
-									size="caption13M"
+									size="captionB"
 									color="white"
 									symbol={true}
-									symbolColor="gray1"
+									symbolColor="white50"
 									unit={EUnit.BTC}
 								/>
 							}
@@ -293,16 +293,16 @@ const ChannelDetails = ({
 
 				<View style={styles.section}>
 					<View style={styles.sectionTitle}>
-						<Caption13Up color="gray1">{t('balance')}</Caption13Up>
+						<Caption13Up color="white50">{t('balance')}</Caption13Up>
 					</View>
 					<Section
 						name={t('receiving_label')}
 						value={
 							<Money
 								sats={receivingAvailable}
-								size="caption13M"
+								size="captionB"
 								symbol={true}
-								symbolColor="gray1"
+								symbolColor="white50"
 								color="white"
 								unit={EUnit.BTC}
 							/>
@@ -313,9 +313,9 @@ const ChannelDetails = ({
 						value={
 							<Money
 								sats={spendingAvailable}
-								size="caption13M"
+								size="captionB"
 								symbol={true}
-								symbolColor="gray1"
+								symbolColor="white50"
 								color="white"
 								unit={EUnit.BTC}
 							/>
@@ -326,9 +326,9 @@ const ChannelDetails = ({
 						value={
 							<Money
 								sats={Number(channel.unspendable_punishment_reserve)}
-								size="caption13M"
+								size="captionB"
 								symbol={true}
-								symbolColor="gray1"
+								symbolColor="white50"
 								color="white"
 								unit={EUnit.BTC}
 							/>
@@ -340,9 +340,9 @@ const ChannelDetails = ({
 						value={
 							<Money
 								sats={capacity}
-								size="caption13M"
+								size="captionB"
 								symbol={true}
-								symbolColor="gray1"
+								symbolColor="white50"
 								color="white"
 								unit={EUnit.BTC}
 							/>
@@ -353,16 +353,16 @@ const ChannelDetails = ({
 				{/* TODO: show fees */}
 				{/* <View style={styles.section}>
 					<View style={styles.sectionTitle}>
-						<Caption13Up color="gray1">Fees</Caption13Up>
+						<Caption13Up color="white50">Fees</Caption13Up>
 					</View>
 					<Section
 						name="Spending base fee"
 						value={
 							<Money
 								sats={123}
-								size="caption13M"
+								size="captionB"
 								symbol={true}
-								symbolColor="gray1"
+								symbolColor="white50"
 								color="white"
 								unit={EUnit.BTC}
 							/>
@@ -373,9 +373,9 @@ const ChannelDetails = ({
 						value={
 							<Money
 								sats={123}
-								size="caption13M"
+								size="captionB"
 								symbol={true}
-								symbolColor="gray1"
+								symbolColor="white50"
 								color="white"
 								unit={EUnit.BTC}
 							/>
@@ -385,26 +385,26 @@ const ChannelDetails = ({
 
 				<View style={styles.section}>
 					<View style={styles.sectionTitle}>
-						<Caption13Up color="gray1">{t('other')}</Caption13Up>
+						<Caption13Up color="white50">{t('other')}</Caption13Up>
 					</View>
 					{txTime && (
 						<Section
 							name={t('opened_on')}
-							value={<Caption13M>{txTime}</Caption13M>}
+							value={<CaptionB>{txTime}</CaptionB>}
 						/>
 					)}
 					{channelCloseTime && (
 						<Section
 							name={t('closed_on')}
-							value={<Caption13M>{channelCloseTime}</Caption13M>}
+							value={<CaptionB>{channelCloseTime}</CaptionB>}
 						/>
 					)}
 					<Section
 						name={t('channel_node_id')}
 						value={
-							<Caption13M ellipsizeMode="middle" numberOfLines={1}>
+							<CaptionB ellipsizeMode="middle" numberOfLines={1}>
 								{channel.counterparty_node_id}
-							</Caption13M>
+							</CaptionB>
 						}
 						onPress={(): void => {
 							Clipboard.setString(channel.counterparty_node_id);
@@ -420,31 +420,29 @@ const ChannelDetails = ({
 				{enableDevOptions && (
 					<View style={styles.section}>
 						<View style={styles.sectionTitle}>
-							<Caption13Up color="gray1">{t('debug')}</Caption13Up>
+							<Caption13Up color="white50">{t('debug')}</Caption13Up>
 						</View>
 						{blocktankOrder?.orderExpiresAt && (
 							<Section
 								name="Order Expiry"
 								value={
-									<Caption13M>
+									<CaptionB>
 										{new Date(blocktankOrder.orderExpiresAt).toLocaleString()}
-									</Caption13M>
+									</CaptionB>
 								}
 							/>
 						)}
 						<Section
 							name={t('is_usable')}
-							value={
-								<Caption13M>{t(channel.is_usable ? 'yes' : 'no')}</Caption13M>
-							}
+							value={<CaptionB>{t(channel.is_usable ? 'yes' : 'no')}</CaptionB>}
 						/>
 						<Section
 							name={t('is_ready')}
 							testID={channel.is_channel_ready ? 'IsReadyYes' : 'IsReadyNo'}
 							value={
-								<Caption13M>
+								<CaptionB>
 									{t(channel.is_channel_ready ? 'yes' : 'no')}
-								</Caption13M>
+								</CaptionB>
 							}
 						/>
 					</View>
@@ -452,18 +450,15 @@ const ChannelDetails = ({
 
 				<View style={styles.buttons}>
 					{blocktankOrder && (
-						<>
-							<Button
-								style={styles.button}
-								text={t('support')}
-								size="large"
-								variant="secondary"
-								onPress={(): void => {
-									openSupportLink(blocktankOrder);
-								}}
-							/>
-							<View style={styles.divider} />
-						</>
+						<Button
+							style={styles.button}
+							text={t('support')}
+							size="large"
+							variant="secondary"
+							onPress={(): void => {
+								openSupportLink(blocktankOrder);
+							}}
+						/>
 					)}
 					{channelIsOpen && (
 						<Button
@@ -534,14 +529,12 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		marginTop: 16,
 		paddingHorizontal: 16,
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

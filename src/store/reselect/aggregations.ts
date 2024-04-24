@@ -36,7 +36,7 @@ export type TLnSetup = {
 		startValue: number;
 		endValue: number;
 		maxValue: number;
-		snapPoint: number;
+		snapPoint?: number;
 	};
 	percentage: {
 		spendings: number;
@@ -115,6 +115,7 @@ export const lnSetupSelector = createSelector(
 		);
 
 		const initialClientBalance = lightningBalance || defaultClientBalance;
+		const snapPoint = lightningBalance === 0 ? undefined : lightningBalance;
 		const isTransferringToSavings = spendingAmount < lightningBalance;
 		const canContinue =
 			spendingAmount !== lightningBalance && spendingAmount <= spendingLimit;
@@ -124,7 +125,7 @@ export const lnSetupSelector = createSelector(
 				startValue: 0,
 				maxValue: spendingLimit,
 				endValue: totalBalance,
-				snapPoint: lightningBalance,
+				snapPoint,
 			},
 			percentage: {
 				spendings: spendingPercentage,

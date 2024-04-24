@@ -3,7 +3,6 @@ import React, {
 	ReactElement,
 	ReactNode,
 	useCallback,
-	useMemo,
 	useState,
 } from 'react';
 import { View, StyleSheet, Image, ImageSourcePropType } from 'react-native';
@@ -11,10 +10,10 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display, Text01S, Text02S } from '../../styles/text';
+import { Display, BodyM, BodyS } from '../../styles/text';
+import { View as ThemedView } from '../../styles/components';
 import NavigationHeader from '../../components/NavigationHeader';
 import Button from '../../components/Button';
-import GlowingBackground from '../../components/GlowingBackground';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import { TSlashtagsState } from '../../store/types/slashtags';
 import SwitchRow from '../../components/SwitchRow';
@@ -25,7 +24,6 @@ import type {
 	RootStackParamList,
 	RootStackScreenProps,
 } from '../../navigation/types';
-import { useScreenSize } from '../../hooks/screen';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
@@ -50,14 +48,12 @@ export const ProfileIntro = memo(
 					<Trans
 						t={t}
 						i18nKey="onboarding_profile1_header"
-						components={{
-							brand: <Display color="brand" />,
-						}}
+						components={{ accent: <Display color="brand" /> }}
 					/>
 				</Display>
-				<Text01S color="gray1" style={styles.introText}>
+				<BodyM color="white50" style={styles.introText}>
 					{t('onboarding_profile1_text')}
-				</Text01S>
+				</BodyM>
 			</Layout>
 		);
 	},
@@ -82,28 +78,28 @@ export const OfflinePayments = ({
 			navigation={navigation}
 			illustration={coinsImageSrc}
 			nextStep="Done"
-			buttonText={t('profile_save')}
+			buttonText={t('continue')}
 			header={t('profile_pay_contacts')}
 			onNext={savePaymentConfig}>
 			<Display>
 				<Trans
 					t={t}
 					i18nKey="onboarding_profile2_header"
-					components={{ brand: <Display color="brand" /> }}
+					components={{ accent: <Display color="brand" /> }}
 				/>
 			</Display>
-			<Text01S color="gray1" style={styles.introText}>
+			<BodyM color="white50" style={styles.introText}>
 				{t('onboarding_profile2_text')}
-			</Text01S>
+			</BodyM>
 
 			<View style={styles.enableOfflineRow}>
 				<SwitchRow
 					isEnabled={enableOfflinePayments}
 					showDivider={false}
 					onPress={(): void => setOfflinePayments(!enableOfflinePayments)}>
-					<Text01S>{t('offline_enable')}</Text01S>
+					<BodyM>{t('offline_enable')}</BodyM>
 				</SwitchRow>
-				<Text02S color="gray1">{t('offline_enable_explain')}</Text02S>
+				<BodyS color="white50">{t('offline_enable_explain')}</BodyS>
 			</View>
 		</Layout>
 	);
@@ -127,23 +123,14 @@ const Layout = memo(
 		children: ReactNode;
 		onNext?: () => void;
 	}): ReactElement => {
-		const { isSmallScreen } = useScreenSize();
 		const dispatch = useAppDispatch();
 
 		const onSwipeLeft = (): void => {
 			navigation.navigate('Wallet');
 		};
 
-		const imageContainerStyles = useMemo(
-			() => ({
-				...styles.imageContainer,
-				flex: isSmallScreen ? 0.7 : 1,
-			}),
-			[isSmallScreen],
-		);
-
 		return (
-			<GlowingBackground topLeft="brand">
+			<ThemedView style={styles.root}>
 				<SafeAreaInset type="top" />
 				<NavigationHeader
 					title={header}
@@ -154,45 +141,61 @@ const Layout = memo(
 				/>
 				<DetectSwipe onSwipeLeft={onSwipeLeft}>
 					<View style={styles.content}>
-						<View style={imageContainerStyles}>
+						<View style={styles.imageContainer}>
 							<Image source={illustration} style={styles.image} />
 						</View>
 						<View style={styles.middleContainer}>{children}</View>
-						<Button
-							text={buttonText}
-							size="large"
-							onPress={(): void => {
-								onNext?.();
-								dispatch(setOnboardingProfileStep(nextStep));
-							}}
-							testID="OnboardingContinue"
-						/>
+						<View style={styles.buttonContainer}>
+							<Button
+								style={styles.button}
+								text={buttonText}
+								size="large"
+								testID="OnboardingContinue"
+								onPress={(): void => {
+									onNext?.();
+									dispatch(setOnboardingProfileStep(nextStep));
+								}}
+							/>
+						</View>
 					</View>
 				</DetectSwipe>
 				<SafeAreaInset type="bottom" minPadding={16} />
-			</GlowingBackground>
+			</ThemedView>
 		);
 	},
 );
 
 const styles = StyleSheet.create({
+	root: {
+		flex: 1,
+	},
 	content: {
 		flex: 1,
 		justifyContent: 'space-between',
 		paddingHorizontal: 32,
 	},
 	imageContainer: {
-		flex: 1,
+		flexShrink: 1,
 		alignItems: 'center',
+		alignSelf: 'center',
+		aspectRatio: 1,
+		marginTop: 'auto',
 	},
 	image: {
 		flex: 1,
 		resizeMode: 'contain',
 	},
 	introText: {
-		marginTop: 8,
+		marginTop: 4,
 	},
 	middleContainer: {
+		marginTop: 'auto',
+	},
+	buttonContainer: {
+		flexDirection: 'row',
+		marginTop: 32,
+	},
+	button: {
 		flex: 1,
 	},
 	enableOfflineRow: {

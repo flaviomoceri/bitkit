@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { Text02B, Text02S } from '../../styles/text';
+import { BodySB, BodyS } from '../../styles/text';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import Button from '../../components/Button';
 import LabeledInput from '../../components/LabeledInput';
@@ -58,7 +58,7 @@ const ProfileLink = ({
 					onPress={(): void => {
 						navigation.navigate('ProfileLinkSuggestions');
 					}}>
-					<Text02B color="brand">{t('profile_link_suggestions')}</Text02B>
+					<BodySB color="brand">{t('profile_link_suggestions')}</BodySB>
 				</TouchableOpacity>
 			</LabeledInput>
 			<LabeledInput
@@ -74,9 +74,9 @@ const ProfileLink = ({
 					dispatch(updateProfileLink({ ...form, url: value }));
 				}}
 			/>
-			<Text02S style={styles.note} color="gray1">
+			<BodyS style={styles.note} color="white50">
 				{t('profile_link_public')}
-			</Text02S>
+			</BodyS>
 
 			<View style={styles.buttonContainer}>
 				<Button

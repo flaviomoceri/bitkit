@@ -11,7 +11,7 @@ import ShowMnemonic from '../../screens/Settings/Backup/ShowMnemonic';
 import ShowPassphrase from '../../screens/Settings/Backup/ShowPassphrase';
 import ConfirmMnemonic from '../../screens/Settings/Backup/ConfirmMnemonic';
 import ConfirmPassphrase from '../../screens/Settings/Backup/ConfirmPassphrase';
-import Result from '../../screens/Settings/Backup/Result';
+import Success from '../../screens/Settings/Backup/Success';
 import Warning from '../../screens/Settings/Backup/Warning';
 import MultipleDevices from '../../screens/Settings/Backup/MultipleDevices';
 import Metadata from '../../screens/Settings/Backup/Metadata';
@@ -28,7 +28,7 @@ export type BackupStackParamList = {
 	ShowPassphrase: { seed: string[]; bip39Passphrase: string };
 	ConfirmMnemonic: { seed: string[]; bip39Passphrase: string };
 	ConfirmPassphrase: { bip39Passphrase: string };
-	Result: undefined;
+	Success: undefined;
 	Warning: undefined;
 	MultipleDevices: undefined;
 	Metadata: undefined;
@@ -59,7 +59,7 @@ const BackupNavigation = (): ReactElement => {
 							name="ConfirmPassphrase"
 							component={ConfirmPassphrase}
 						/>
-						<Stack.Screen name="Result" component={Result} />
+						<Stack.Screen name="Success" component={Success} />
 						<Stack.Screen name="Warning" component={Warning} />
 						<Stack.Screen name="MultipleDevices" component={MultipleDevices} />
 						<Stack.Screen name="Metadata" component={Metadata} />

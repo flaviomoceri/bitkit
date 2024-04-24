@@ -4,7 +4,7 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTranslation } from 'react-i18next';
 
 import { ScrollView, Switch } from '../../../styles/components';
-import { Subtitle, Text01M, Text02M, Caption13Up } from '../../../styles/text';
+import { Subtitle, BodyMSB, BodySSB, Caption13Up } from '../../../styles/text';
 import GradientView from '../../../components/GradientView';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
@@ -51,16 +51,16 @@ const UtxoRow = ({
 	onPress: () => void;
 }): ReactElement => {
 	const displayValue = useDisplayValues(item.value);
-	const { gray4 } = useColors();
+	const { white10 } = useColors();
 	const tags = useAppSelector((store) => store.metadata.tags[item.tx_hash]);
 
 	return (
-		<View style={[styles.coinRoot, { borderBottomColor: gray4 }]}>
+		<View style={[styles.coinRoot, { borderBottomColor: white10 }]}>
 			<View>
-				<Text01M>{displayValue.bitcoinFormatted}</Text01M>
-				<Text02M color="gray">
+				<BodyMSB>{displayValue.bitcoinFormatted}</BodyMSB>
+				<BodySSB color="white50">
 					{displayValue.fiatSymbol} {displayValue.fiatFormatted}
-				</Text02M>
+				</BodySSB>
 			</View>
 
 			{tags && (
@@ -83,7 +83,7 @@ const CoinSelection = ({
 	navigation,
 }: SendScreenProps<'CoinSelection'>): ReactElement => {
 	const { t } = useTranslation('wallet');
-	const { gray4 } = useColors();
+	const { white10 } = useColors();
 
 	const transaction = useAppSelector(transactionSelector);
 	const utxos = useAppSelector(utxosSelector);
@@ -178,10 +178,10 @@ const CoinSelection = ({
 			<BottomSheetNavigationHeader title={t('selection_title')} />
 			<View style={styles.content}>
 				<BottomSheetScrollView style={styles.scroll}>
-					<View style={[styles.coinRoot, { borderBottomColor: gray4 }]}>
+					<View style={[styles.coinRoot, { borderBottomColor: white10 }]}>
 						<View style={styles.coinAmount}>
-							<Text01M>{t('selection_auto')}</Text01M>
-							<Text02M color="gray">{preference}</Text02M>
+							<BodyMSB>{t('selection_auto')}</BodyMSB>
+							<BodySSB color="white50">{preference}</BodySSB>
 						</View>
 						<Switch
 							value={autoSelectionEnabled}
@@ -219,15 +219,15 @@ const CoinSelection = ({
 						style={[
 							styles.totalRow,
 							styles.totalBorder,
-							{ borderBottomColor: gray4 },
+							{ borderBottomColor: white10 },
 						]}>
-						<Caption13Up color="gray1">
+						<Caption13Up color="white50">
 							{t('selection_total_required')}
 						</Caption13Up>
 						<Subtitle>{txOutputDV.bitcoinFormatted}</Subtitle>
 					</View>
 					<View style={styles.totalRow}>
-						<Caption13Up color="gray1">
+						<Caption13Up color="white50">
 							{t('selection_total_selected')}
 						</Caption13Up>
 						<Subtitle color="green">{txInputDV.bitcoinFormatted}</Subtitle>

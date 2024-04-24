@@ -36,8 +36,17 @@ const LightningNodeInfo = ({
 		})();
 	}, [selectedNetwork, t]);
 
+	const onCopy = (): void => {
+		Clipboard.setString(nodeId);
+		showToast({
+			type: 'success',
+			title: t('copied'),
+			description: nodeId,
+		});
+	};
+
 	return (
-		<ThemedView style={styles.container}>
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('node_info')}
@@ -48,19 +57,12 @@ const LightningNodeInfo = ({
 			/>
 
 			<View style={styles.content}>
+				<View style={styles.label}>
+					<Caption13Up color="white50">{t('node_id')}</Caption13Up>
+				</View>
+
 				{!error && (
-					<TouchableOpacity
-						onPress={(): void => {
-							Clipboard.setString(nodeId);
-							showToast({
-								type: 'success',
-								title: t('copied'),
-								description: nodeId,
-							});
-						}}>
-						<Caption13Up style={styles.label} color="gray1">
-							{t('node_id')}
-						</Caption13Up>
+					<TouchableOpacity onPress={onCopy}>
 						<Subtitle testID="LDKNodeID" accessibilityLabel={nodeId}>
 							{nodeId}
 						</Subtitle>
@@ -69,12 +71,7 @@ const LightningNodeInfo = ({
 
 				{!!error && (
 					<>
-						<View>
-							<Caption13Up style={styles.label} color="gray1">
-								{t('node_id')}
-							</Caption13Up>
-							<Subtitle color="red">{t('node_disconnected')}</Subtitle>
-						</View>
+						<Subtitle color="red">{t('node_disconnected')}</Subtitle>
 						<View style={styles.error}>
 							<Subtitle>{error}</Subtitle>
 						</View>
@@ -88,7 +85,7 @@ const LightningNodeInfo = ({
 };
 
 const styles = StyleSheet.create({
-	container: {
+	root: {
 		flex: 1,
 	},
 	content: {
@@ -96,7 +93,8 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 16,
 	},
 	label: {
-		marginBottom: 8,
+		justifyContent: 'center',
+		height: 40,
 	},
 	error: {
 		marginTop: 32,

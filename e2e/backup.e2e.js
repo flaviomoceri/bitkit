@@ -57,7 +57,6 @@ d('Backup', () => {
 		}
 		// recieve bitcoin
 		await element(by.id('Receive')).tap();
-		await element(by.id('UnderstoodButton')).tap();
 		await sleep(1000); // animation
 		// get address from qrcode
 		await waitFor(element(by.id('QRCode'))).toBeVisible();
@@ -77,7 +76,7 @@ d('Backup', () => {
 
 		// set tag to new tx
 		const tag = 'testtag';
-		await element(by.id('BitcoinAsset')).tap();
+		await element(by.id('ActivitySavings')).tap();
 		await element(by.id('Activity-1')).tap();
 		await element(by.id('ActivityTag')).tap();
 		await element(by.id('TagInput')).replaceText(tag);
@@ -110,7 +109,7 @@ d('Backup', () => {
 		}
 
 		await sleep(1000); // animation
-		await element(by.id('AssetsTitle')).swipe('up');
+		await element(by.id('TransferButton')).swipe('up');
 
 		// add headlines widget
 		await element(by.id('WidgetsAdd')).tap();
@@ -158,7 +157,7 @@ d('Backup', () => {
 		await waitFor(element(by.id('SkipIntro'))).toBeVisible();
 		await element(by.id('SkipIntro')).tap();
 		await element(by.id('RestoreWallet')).tap();
-		await element(by.id('MultipleButton')).tap();
+		await element(by.id('MultipleDevices-button')).tap();
 		await element(by.id('Word-0')).replaceText(seed);
 		await element(by.id('WordIndex-4')).swipe('up');
 		await element(by.id('RestoreButton')).tap();
@@ -168,11 +167,11 @@ d('Backup', () => {
 			.withTimeout(300000); // 5 min
 		await element(by.id('GetStartedButton')).tap();
 
-		// wait for AssetsTitle to appear and be accessible
+		// wait for SuggestionsLabel to appear and be accessible
 		for (let i = 0; i < 60; i++) {
 			await sleep(1000);
 			try {
-				await element(by.id('AssetsTitle')).tap();
+				await element(by.id('SuggestionsLabel')).tap();
 				break;
 			} catch (e) {}
 		}
@@ -183,7 +182,7 @@ d('Backup', () => {
 		).toHaveText('£');
 
 		// check metadata
-		await element(by.id('BitcoinAsset')).tap();
+		await element(by.id('ActivitySavings')).tap();
 		await element(by.id('Activity-1')).tap();
 		await expect(
 			element(by.id(`Tag-${tag}`).withAncestor(by.id('ActivityTags'))),

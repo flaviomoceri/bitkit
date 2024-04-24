@@ -1,6 +1,5 @@
 import React, { ReactElement, memo, useMemo, useState, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View, Keyboard } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Gesture, GestureType } from 'react-native-gesture-handler';
 import { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia';
@@ -52,7 +51,6 @@ const ActivityFiltered = ({
 	navigation,
 }: WalletScreenProps<'ActivityFiltered'>): ReactElement => {
 	const { t } = useTranslation('wallet');
-	const insets = useSafeAreaInsets();
 	const dispatch = useAppDispatch();
 	const size = useSharedValue({ width: 0, height: 0 });
 	const panGestureRef = useRef<GestureType>(Gesture.Pan());
@@ -67,12 +65,8 @@ const ActivityFiltered = ({
 	}, [currentTab, search, tags, timerange]);
 
 	const activityPadding = useMemo(() => {
-		return {
-			paddingTop: radiusContainerHeight,
-			// add space for TabBar
-			paddingBottom: insets.bottom + 100,
-		};
-	}, [radiusContainerHeight, insets.bottom]);
+		return { paddingTop: radiusContainerHeight };
+	}, [radiusContainerHeight]);
 
 	const addTag = (tag: string): void => {
 		setTags((tg) => [...tg, tag]);
@@ -144,7 +138,7 @@ const ActivityFiltered = ({
 										<TagIcon
 											height={25}
 											width={25}
-											color={tags.length === 0 ? 'gray1' : 'brand'}
+											color={tags.length === 0 ? 'white50' : 'brand'}
 										/>
 									</TouchableOpacity>
 									<TouchableOpacity
@@ -157,7 +151,7 @@ const ActivityFiltered = ({
 										<CalendarIcon
 											height={25}
 											width={25}
-											color={timerange.length === 0 ? 'gray1' : 'brand'}
+											color={timerange.length === 0 ? 'white50' : 'brand'}
 										/>
 									</TouchableOpacity>
 								</View>

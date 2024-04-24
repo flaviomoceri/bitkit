@@ -1,17 +1,14 @@
 import React, { ReactElement, memo, useState, useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import {
-	Image,
-	Platform,
-	StyleSheet,
-	View,
-	useWindowDimensions,
-} from 'react-native';
+import { Image, StyleSheet, View, useWindowDimensions } from 'react-native';
 
-import { ScrollView, TextInput } from '../../styles/components';
-import { Display, Text01S } from '../../styles/text';
+import {
+	View as ThemedView,
+	ScrollView,
+	TextInput,
+} from '../../styles/components';
+import { Display, BodyM } from '../../styles/text';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import GlowingBackground from '../../components/GlowingBackground';
 import NavigationHeader from '../../components/NavigationHeader';
 import KeyboardAvoidingView from '../../components/KeyboardAvoidingView';
 import Button from '../../components/Button';
@@ -29,18 +26,18 @@ const Passphrase = ({
 	const { isSmallScreen } = useScreenSize();
 	const [bip39Passphrase, setPassphrase] = useState<string>('');
 
-	const illustrationStyles = useMemo(
+	const imageStyles = useMemo(
 		() => ({
 			...styles.image,
-			width: dimensions.width * (isSmallScreen ? 0.6 : 0.7),
-			height: dimensions.width * (isSmallScreen ? 0.6 : 0.7),
+			width: dimensions.width * (isSmallScreen ? 0.6 : 0.79),
+			height: dimensions.width * (isSmallScreen ? 0.6 : 0.79),
 			...(isSmallScreen ? { marginTop: -30 } : {}),
 		}),
 		[dimensions.width, isSmallScreen],
 	);
 
 	return (
-		<GlowingBackground topLeft="brand">
+		<ThemedView style={styles.root}>
 			<KeyboardAvoidingView style={styles.content}>
 				<ScrollView
 					color="transparent"
@@ -53,21 +50,19 @@ const Passphrase = ({
 						<Flag text={t('advanced')} style={styles.flag} />
 					</View>
 					<View style={styles.imageContainer}>
-						<Image style={illustrationStyles} source={imageSrc} />
+						<Image style={imageStyles} source={imageSrc} />
 					</View>
 					<View style={styles.textContent}>
 						<Trans
 							t={t}
 							i18nKey="passphrase_header"
 							parent={Display}
-							components={{
-								brand: <Display color="brand" />,
-							}}
+							components={{ accent: <Display color="brand" /> }}
 						/>
 
-						<Text01S color="gray1" style={styles.text}>
+						<BodyM color="white50" style={styles.text}>
 							{t('passphrase_text')}
-						</Text01S>
+						</BodyM>
 
 						<TextInput
 							style={styles.input}
@@ -97,18 +92,20 @@ const Passphrase = ({
 				</ScrollView>
 				<SafeAreaInset type="bottom" minPadding={16} />
 			</KeyboardAvoidingView>
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
-	scrollContent: {
-		flexGrow: 1,
+	root: {
+		flex: 1,
 	},
 	content: {
+		flexGrow: 1,
+	},
+	scrollContent: {
 		flex: 1,
-		justifyContent: 'space-between',
-		alignItems: 'stretch',
+		flexGrow: 1,
 	},
 	navigationContainer: {
 		position: 'relative',
@@ -119,30 +116,27 @@ const styles = StyleSheet.create({
 		right: 0,
 	},
 	imageContainer: {
-		flex: 2.8,
 		alignItems: 'center',
-		marginBottom: 32,
 		justifyContent: 'flex-end',
+		marginTop: 'auto',
+		marginBottom: 32,
 	},
 	image: {
 		resizeMode: 'contain',
 	},
 	textContent: {
-		// line up Welcome screen content with Slideshow
-		flex: Platform.OS === 'ios' ? 3.2 : 3.5,
 		paddingHorizontal: 32,
 	},
 	text: {
-		marginTop: 8,
+		marginTop: 4,
 	},
 	input: {
-		marginTop: 24,
-		marginBottom: 16,
+		marginTop: 32,
+		marginBottom: 28,
 	},
 	buttonContainer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
-		marginTop: 'auto',
 		paddingHorizontal: 32,
 	},
 	button: {

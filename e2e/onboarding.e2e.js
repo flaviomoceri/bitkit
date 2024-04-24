@@ -22,13 +22,12 @@ d('Onboarding', () => {
 		await waitFor(element(by.id('Check1'))).toBeVisible();
 		await element(by.id('Check1')).tap();
 		await element(by.id('Check2')).tap();
-		// await element(by.id('TOS')).scrollTo('bottom'); // taking too long
 		await element(by.id('Continue')).tap();
 		await element(by.id('GetStarted')).tap();
+		await element(by.id('Slide0')).swipe('left');
 		await element(by.id('Slide1')).swipe('left');
 		await element(by.id('Slide2')).swipe('left');
 		await element(by.id('Slide3')).swipe('right');
-		await element(by.id('Slide2')).swipe('left');
 		await element(by.id('SkipButton')).tap();
 
 		// create new wallet with passphrase
@@ -38,20 +37,20 @@ d('Onboarding', () => {
 		await element(by.id('CreateNewWallet')).tap();
 
 		// wait for wallet to be created
-		await waitFor(element(by.id('ToGetStartedClose'))).toBeVisible();
+		await waitFor(element(by.id('WalletOnboardingClose'))).toBeVisible();
 		await sleep(1000); // take app some time to load
 
 		// try for 3min before fail
 		for (let i = 0; i < 180; i++) {
 			await sleep(1000);
 			try {
-				await element(by.id('ToGetStartedClose')).tap();
+				await element(by.id('WalletOnboardingClose')).tap();
 				await sleep(3000); // wait for redux-persist to save state
 				break;
 			} catch (e) {}
 
 			if (i === 179) {
-				throw new Error('Tapping "ToGetStartedClose" timeout');
+				throw new Error('Tapping "WalletOnboardingClose" timeout');
 			}
 		}
 
@@ -70,7 +69,6 @@ d('Onboarding', () => {
 
 		// get receing address
 		await element(by.id('Receive')).tap();
-		await element(by.id('UnderstoodButton')).tap();
 		await waitFor(element(by.id('QRCode')))
 			.toBeVisible()
 			.withTimeout(30000);
@@ -87,7 +85,7 @@ d('Onboarding', () => {
 		await waitFor(element(by.id('SkipIntro'))).toBeVisible();
 		await element(by.id('SkipIntro')).tap();
 		await element(by.id('RestoreWallet')).tap();
-		await element(by.id('MultipleButton')).tap();
+		await element(by.id('MultipleDevices-button')).tap();
 		await element(by.id('Word-0')).replaceText(seed);
 		await element(by.id('WordIndex-4')).swipe('up');
 		await element(by.id('AdvancedButton')).tap();
@@ -100,20 +98,17 @@ d('Onboarding', () => {
 			.withTimeout(300000); // 5 min
 		await element(by.id('GetStartedButton')).tap();
 
-		// wait for AssetsTitle to appear and be accessible
+		// wait for SuggestionsLabel to appear and be accessible
 		for (let i = 0; i < 60; i++) {
 			await sleep(1000);
 			try {
-				await element(by.id('AssetsTitle')).tap();
+				await element(by.id('SuggestionsLabel')).tap();
 				break;
 			} catch (e) {}
 		}
 
 		// get receing address
 		await element(by.id('Receive')).tap();
-		try {
-			await element(by.id('UnderstoodButton')).tap();
-		} catch (e) {}
 		await waitFor(element(by.id('QRCode')))
 			.toBeVisible()
 			.withTimeout(30000);
