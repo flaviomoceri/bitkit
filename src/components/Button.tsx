@@ -6,7 +6,7 @@ import {
 	Platform,
 } from 'react-native';
 import { IThemeColors } from '../styles/themes';
-import { Caption13M, Text02M } from '../styles/text';
+import { CaptionB, BodySSB } from '../styles/text';
 import { View, TouchableOpacity } from '../styles/components';
 import useColors from '../hooks/colors';
 
@@ -33,7 +33,7 @@ const Button = ({
 	icon,
 	...props
 }: IButton): ReactElement => {
-	const { white16, white32 } = useColors();
+	const { white16, white32, white80 } = useColors();
 
 	const buttonStyle = useMemo(() => {
 		const borderColor = variant === 'transparent' ? undefined : white16;
@@ -65,6 +65,7 @@ const Button = ({
 		return {
 			...textStyle,
 			...(text && icon && { marginLeft: 8 }),
+			...(variant === 'primary' ? {} : { color: white80 }),
 			...(disabled && !icon && { color: white32 }),
 			...Platform.select({
 				android: {
@@ -72,9 +73,9 @@ const Button = ({
 				},
 			}),
 		};
-	}, [textStyle, text, icon, disabled, white32, size]);
+	}, [textStyle, text, icon, variant, disabled, size, white32, white80]);
 
-	const Text = size === 'small' ? Caption13M : Text02M;
+	const Text = size === 'small' ? CaptionB : BodySSB;
 
 	return (
 		<TouchableOpacity

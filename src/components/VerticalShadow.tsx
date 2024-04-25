@@ -5,7 +5,11 @@ import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia';
 /**
  * This component draws vertical gradient, it has opacity animation on mount
  */
-const VerticalShadow = (): ReactElement => {
+const VerticalShadow = ({
+	direction = 'top',
+}: {
+	direction?: 'top' | 'bottom';
+}): ReactElement => {
 	const [layout, setLayout] = useState({ width: 1, height: 1 });
 	const { height, width } = layout;
 
@@ -16,6 +20,11 @@ const VerticalShadow = (): ReactElement => {
 		});
 	};
 
+	let colors = ['black', 'transparent'];
+	if (direction === 'bottom') {
+		colors = colors.reverse();
+	}
+
 	return (
 		<View style={styles.shadowCanvas} onLayout={handleLayout}>
 			<Canvas style={styles.shadowCanvas}>
@@ -23,7 +32,7 @@ const VerticalShadow = (): ReactElement => {
 					<LinearGradient
 						start={vec(0, 0)}
 						end={vec(0, height)}
-						colors={['black', 'transparent']}
+						colors={colors}
 					/>
 				</Rect>
 			</Canvas>

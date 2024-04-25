@@ -2,47 +2,18 @@ import React, { ReactElement, ReactNode } from 'react';
 import { Image, ImageSourcePropType, StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { View as ThemedView } from '../../styles/components';
+import { Display, BodyM } from '../../styles/text';
 import Button from '../../components/Button';
 import DetectSwipe from '../../components/DetectSwipe';
-import GlowingBackground from '../../components/GlowingBackground';
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { Display, Text01S } from '../../styles/text';
 import { useAppDispatch } from '../../hooks/redux';
 import { setWidgetsOnboarding } from '../../store/slices/widgets';
 import type { RootStackScreenProps } from '../../navigation/types';
 
-const padlockImageSrc = require('../../assets/illustrations/padlock.png');
 const puzzleImageSrc = require('../../assets/illustrations/puzzle.png');
-
-export const GoodbyePasswords = ({
-	navigation,
-}: RootStackScreenProps<'GoodbyePasswords'>): ReactElement => {
-	const { t } = useTranslation('slashtags');
-
-	return (
-		<Layout
-			navigation={navigation}
-			illustration={padlockImageSrc}
-			screenIndex={0}
-			onNext={(): void => {
-				navigation.navigate('HelloWidgets');
-			}}>
-			<Display>
-				<Trans
-					t={t}
-					i18nKey="onboarding_widgets1_header"
-					components={{
-						brand: <Display color="brand" />,
-					}}
-				/>
-			</Display>
-			<Text01S color="gray1" style={styles.introText}>
-				{t('onboarding_widgets1_text')}
-			</Text01S>
-		</Layout>
-	);
-};
+const padlockImageSrc = require('../../assets/illustrations/padlock.png');
 
 export const HelloWidgets = ({
 	navigation,
@@ -53,24 +24,49 @@ export const HelloWidgets = ({
 	return (
 		<Layout
 			navigation={navigation}
-			illustration={puzzleImageSrc}
-			screenIndex={1}
+			image={puzzleImageSrc}
+			screenIndex={0}
 			onNext={(): void => {
 				dispatch(setWidgetsOnboarding(true));
-				navigation.navigate('WidgetsSuggestions');
+				navigation.navigate('GoodbyePasswords');
 			}}>
 			<Display>
 				<Trans
 					t={t}
 					i18nKey="onboarding_widgets2_header"
-					components={{
-						brand: <Display color="brand" />,
-					}}
+					components={{ accent: <Display color="brand" /> }}
 				/>
 			</Display>
-			<Text01S color="gray1" style={styles.introText}>
+			<BodyM style={styles.introText} color="white50">
 				{t('onboarding_widgets2_text')}
-			</Text01S>
+			</BodyM>
+		</Layout>
+	);
+};
+
+export const GoodbyePasswords = ({
+	navigation,
+}: RootStackScreenProps<'GoodbyePasswords'>): ReactElement => {
+	const { t } = useTranslation('slashtags');
+
+	return (
+		<Layout
+			navigation={navigation}
+			image={padlockImageSrc}
+			screenIndex={1}
+			onNext={(): void => {
+				navigation.navigate('WidgetsSuggestions');
+			}}>
+			<Display>
+				<Trans
+					t={t}
+					i18nKey="onboarding_widgets1_header"
+					components={{ accent: <Display color="brand" /> }}
+				/>
+			</Display>
+			<BodyM style={styles.introText} color="white50">
+				{t('onboarding_widgets1_text')}
+			</BodyM>
 		</Layout>
 	);
 };
@@ -78,15 +74,15 @@ export const HelloWidgets = ({
 const Layout = ({
 	navigation,
 	screenIndex,
-	illustration,
+	image,
 	children,
 	onNext,
 }: {
 	navigation:
-		| RootStackScreenProps<'GoodbyePasswords'>['navigation']
-		| RootStackScreenProps<'HelloWidgets'>['navigation'];
+		| RootStackScreenProps<'HelloWidgets'>['navigation']
+		| RootStackScreenProps<'GoodbyePasswords'>['navigation'];
 	screenIndex: number;
-	illustration: ImageSourcePropType;
+	image: ImageSourcePropType;
 	children: ReactNode;
 	onNext: () => void;
 }): ReactElement => {
@@ -97,7 +93,7 @@ const Layout = ({
 	};
 
 	return (
-		<GlowingBackground topLeft="brand">
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				displayBackButton={true}
@@ -108,7 +104,7 @@ const Layout = ({
 			<DetectSwipe onSwipeRight={onSwipeRight}>
 				<View style={styles.content}>
 					<View style={styles.imageContainer}>
-						<Image source={illustration} style={styles.illustration} />
+						<Image source={image} style={styles.image} />
 					</View>
 					<View style={styles.middleContainer}>{children}</View>
 					<View style={styles.buttonContainer}>
@@ -123,39 +119,37 @@ const Layout = ({
 				</View>
 			</DetectSwipe>
 			<SafeAreaInset type="bottom" minPadding={16} />
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
+	root: {
+		flex: 1,
+	},
 	content: {
 		flex: 1,
 		justifyContent: 'space-between',
 		paddingHorizontal: 32,
 	},
 	imageContainer: {
-		alignSelf: 'center',
-		width: '100%',
-		flex: 1,
-		marginBottom: 16,
+		alignItems: 'center',
+		aspectRatio: 1,
+		marginTop: 'auto',
 	},
-	illustration: {
-		alignSelf: 'center',
-		width: '100%',
-		height: '100%',
+	image: {
+		flex: 1,
 		resizeMode: 'contain',
 	},
 	introText: {
-		marginTop: 8,
-		width: 280,
+		marginTop: 4,
 	},
 	middleContainer: {
-		flex: 1,
+		marginTop: 'auto',
 	},
 	buttonContainer: {
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-		marginTop: 'auto',
+		marginTop: 32,
 	},
 	button: {
 		flex: 1,

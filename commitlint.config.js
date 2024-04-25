@@ -7,7 +7,6 @@ module.exports = {
 			[
 				'accounts',
 				'activity',
-				'assets',
 				'backup',
 				'boost',
 				'contacts',

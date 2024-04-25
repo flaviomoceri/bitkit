@@ -114,13 +114,7 @@ const AddressTypeSettings = ({
 		hasShownMonitorNotification,
 	]);
 
-	return (
-		<SettingsView
-			title={t('adv.address_type')}
-			listData={listData}
-			showBackNavigation={true}
-		/>
-	);
+	return <SettingsView title={t('adv.address_type')} listData={listData} />;
 };
 
 export default memo(AddressTypeSettings);

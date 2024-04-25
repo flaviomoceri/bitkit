@@ -39,7 +39,7 @@ const Dot = ({
 	}, [animValue, index, length]);
 
 	return (
-		<View color="gray2" style={styles.dotRoot}>
+		<View style={styles.dotRoot} color="gray2">
 			<Animated.View style={[styles.dot, animStyle]} />
 		</View>
 	);

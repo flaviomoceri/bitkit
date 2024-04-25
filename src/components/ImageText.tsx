@@ -1,6 +1,6 @@
 import React, { memo, ReactElement } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Text01M, Text02M } from '../styles/text';
+import { BodyMSB, BodySSB } from '../styles/text';
 import { PencileIcon } from '../styles/icons';
 import Money from '../components/Money';
 
@@ -27,8 +27,8 @@ const ImageText = ({
 			<View style={styles.textColumn}>
 				{icon}
 				<View style={styles.titleContainer}>
-					<Text01M>{title}</Text01M>
-					<Text02M color="gray1">{description}</Text02M>
+					<BodyMSB>{title}</BodyMSB>
+					<BodySSB color="white50">{description}</BodySSB>
 				</View>
 			</View>
 
@@ -37,7 +37,7 @@ const ImageText = ({
 					<Money
 						style={styles.value}
 						sats={value}
-						size="text01m"
+						size="bodyMSB"
 						symbol={true}
 						enableHide={true}
 					/>
@@ -46,8 +46,8 @@ const ImageText = ({
 				<Money
 					style={styles.value}
 					sats={value}
-					size="text02m"
-					color="gray1"
+					size="bodySSB"
+					color="white50"
 					symbol={true}
 					unitType="secondary"
 					enableHide={true}

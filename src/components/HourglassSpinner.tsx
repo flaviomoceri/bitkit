@@ -1,32 +1,35 @@
 import React, { ReactElement } from 'react';
-import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import { withRepeat, withTiming } from 'react-native-reanimated';
+import { View, StyleSheet, StyleProp, ViewStyle, Image } from 'react-native';
+import { Easing, withRepeat, withTiming } from 'react-native-reanimated';
 
 import { AnimatedView } from '../styles/components';
-import GlowImage from './GlowImage';
-import { IColors } from '../styles/colors';
 import { __E2E__ } from '../constants/env';
 
 const imageSrc = require('../assets/illustrations/hourglass.png');
 
 const HourglassSpinner = ({
-	imageSize = 230,
-	glowColor,
+	imageSize = 256,
 	style,
 }: {
 	imageSize?: number;
-	glowColor?: keyof IColors;
 	style?: StyleProp<ViewStyle>;
 }): ReactElement => {
 	const entering = (): { initialValues: {}; animations: {} } => {
 		'worklet';
 		const initialValues = {
-			transform: [{ rotate: '-10deg' }],
+			transform: [{ rotate: '0deg' }],
 		};
 		const animations = {
 			transform: [
 				{
-					rotate: withRepeat(withTiming('40deg', { duration: 3000 }), -1, true),
+					rotate: withRepeat(
+						withTiming('40deg', {
+							duration: 3500,
+							easing: Easing.inOut(Easing.ease),
+						}),
+						-1,
+						true,
+					),
 				},
 			],
 		};
@@ -43,7 +46,9 @@ const HourglassSpinner = ({
 			entering={__E2E__ ? undefined : entering}
 			color="transparent"
 			testID="HourglassSpinner">
-			<GlowImage image={imageSrc} imageSize={imageSize} glowColor={glowColor} />
+			<View style={[styles.imageContainer, { width: imageSize }]}>
+				<Image style={styles.image} source={imageSrc} />
+			</View>
 		</AnimatedView>
 	);
 };
@@ -53,6 +58,16 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
+	},
+	imageContainer: {
+		flexShrink: 1,
+		alignItems: 'center',
+		aspectRatio: 1,
+		marginHorizontal: 16,
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 });
 

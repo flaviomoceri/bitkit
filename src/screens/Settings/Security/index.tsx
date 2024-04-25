@@ -222,7 +222,6 @@ const SecuritySettings = ({
 			<SettingsView
 				title={t('security.title')}
 				listData={settingsListData}
-				showBackNavigation={true}
 				fullHeight={false}
 				footerText={footerText}
 			/>

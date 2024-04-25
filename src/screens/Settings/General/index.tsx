@@ -1,32 +1,28 @@
 import React, { memo, ReactElement, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
 
 import { EItemType, IListData, ItemData } from '../../../components/List';
 import SettingsView from './../SettingsView';
+import { useAppSelector } from '../../../hooks/redux';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import { lastUsedTagsSelector } from '../../../store/reselect/metadata';
+import { EUnit } from '../../../store/types/wallet';
 import {
 	unitSelector,
 	selectedCurrencySelector,
-	showWidgetsSelector,
 	transactionSpeedSelector,
 } from '../../../store/reselect/settings';
-import { EUnit } from '../../../store/types/wallet';
-import { updateSettings } from '../../../store/slices/settings';
 
 const GeneralSettings = ({
 	navigation,
 }: SettingsScreenProps<'GeneralSettings'>): ReactElement => {
 	const { t } = useTranslation('settings');
-	const dispatch = useAppDispatch();
 	const lastUsedTags = useAppSelector(lastUsedTagsSelector);
-	const showWidgets = useAppSelector(showWidgetsSelector);
 	const selectedTransactionSpeed = useAppSelector(transactionSpeedSelector);
 	const selectedCurrency = useAppSelector(selectedCurrencySelector);
 	const selectedUnit = useAppSelector(unitSelector);
 
-	const settingsListData: IListData[] = useMemo(() => {
+	const listData: IListData[] = useMemo(() => {
 		const transactionSpeeds = {
 			slow: t('fee.slow.value'),
 			normal: t('fee.normal.value'),
@@ -60,13 +56,10 @@ const GeneralSettings = ({
 				onPress: (): void => navigation.navigate('TransactionSpeedSettings'),
 			},
 			{
-				title: t('general.widgets'),
-				type: EItemType.switch,
-				enabled: showWidgets,
+				title: t('widgets.nav_title'),
+				type: EItemType.button,
 				testID: 'WidgetsSettings',
-				onPress: (): void => {
-					dispatch(updateSettings({ showWidgets: !showWidgets }));
-				},
+				onPress: (): void => navigation.navigate('WidgetSettings'),
 			},
 		];
 
@@ -81,22 +74,14 @@ const GeneralSettings = ({
 		return [{ data }];
 	}, [
 		lastUsedTags,
-		showWidgets,
 		selectedCurrency,
 		selectedUnit,
 		selectedTransactionSpeed,
 		navigation,
-		dispatch,
 		t,
 	]);
 
-	return (
-		<SettingsView
-			title={t('general_title')}
-			listData={settingsListData}
-			showBackNavigation={true}
-		/>
-	);
+	return <SettingsView title={t('general_title')} listData={listData} />;
 };
 
 export default memo(GeneralSettings);

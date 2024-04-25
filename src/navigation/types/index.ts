@@ -14,7 +14,6 @@ import type { OnboardingStackParamList } from '../onboarding/OnboardingNavigator
 import type { RecoveryStackParamList } from '../../screens/Recovery/RecoveryNavigator';
 import type { WalletStackParamList } from '../wallet/WalletNavigator';
 import type { LightningStackParamList } from '../lightning/LightningNavigator';
-import type { TransferStackParamList } from '../transfer/TransferNavigator';
 import type { SettingsStackParamList } from '../settings/SettingsNavigator';
 import type { BackupStackParamList } from '../bottom-sheet/BackupNavigation';
 import type { PinStackParamList } from '../bottom-sheet/PINNavigation';
@@ -38,7 +37,6 @@ export type RootStackParamList = {
 	AppUpdate: undefined;
 	Scanner: { onScan: (data: string) => void } | undefined;
 	LightningRoot: NavigatorScreenParams<LightningStackParamList>;
-	Transfer: NavigatorScreenParams<TransferStackParamList>;
 	Settings: NavigatorScreenParams<SettingsStackParamList>;
 	Profile: undefined;
 	ProfileEdit: undefined;
@@ -46,7 +44,6 @@ export type RootStackParamList = {
 	ContactEdit: { url: string };
 	Contact: { url: string };
 	BuyBitcoin: undefined;
-	BetaRisk: undefined;
 	GoodbyePasswords: undefined;
 	HelloWidgets: undefined;
 	WidgetsSuggestions: undefined;
@@ -81,12 +78,6 @@ export type WalletScreenProps<T extends keyof WalletStackParamList> =
 export type LightningScreenProps<T extends keyof LightningStackParamList> =
 	CompositeScreenProps<
 		NativeStackScreenProps<LightningStackParamList, T>,
-		RootStackScreenProps<keyof RootStackParamList>
-	>;
-
-export type TransferScreenProps<T extends keyof TransferStackParamList> =
-	CompositeScreenProps<
-		NativeStackScreenProps<TransferStackParamList, T>,
 		RootStackScreenProps<keyof RootStackParamList>
 	>;
 

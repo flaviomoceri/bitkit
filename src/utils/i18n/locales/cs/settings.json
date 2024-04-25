@@ -18,7 +18,7 @@
     "legal": "Právní",
     "version": "Verze",
     "op_title": "\"Orange Pilled\"",
-    "op_text": "Koho budete <brand>\"Orange-Pill\"?</brand>",
+    "op_text": "Koho budete <accent>\"Orange-Pill\"?</accent>",
     "op_share": "Sdílet Bitkit s přítelem",
     "op_message": "Stáhněte si Bitkit, váš ultimátní bitcoinový nástroj. Předáváme vám klíče k přetvoření vašeho digitálního života. {appStoreUrl}"
   },
@@ -41,8 +41,8 @@
     "speed_title": "Rychlost transakce",
     "speed_default": "Výchozí rychlost transakce",
     "speed_fee_custom": "Nastavit vlastní poplatek",
-    "speed_fee_total": "{feeSats} bitcoinu za průměrnou transakci",
-    "speed_fee_total_fiat": "{feeSats} bitcoinů za průměrnou transakci ({fiatSymbol}{fiatFormatted} ).",
+    "speed_fee_total": "₿ {feeSats} za průměrnou transakci",
+    "speed_fee_total_fiat": "₿ {feeSats} za průměrnou transakci ({fiatSymbol}{fiatFormatted} ).",
     "tags": "Tagy",
     "tags_previously": "Dříve použité tagy",
     "widgets": "Widgety"

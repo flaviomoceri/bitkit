@@ -2,7 +2,7 @@ import React, { ReactElement, memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { View as ThemedView, ScrollView } from '../../../styles/components';
-import { Caption13Up, Caption13M, Text01M } from '../../../styles/text';
+import { Caption13Up, CaptionB, BodyMSB } from '../../../styles/text';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
 import NavigationHeader from '../../../components/NavigationHeader';
@@ -20,7 +20,7 @@ const Section = ({
 }): ReactElement => {
 	return (
 		<View style={styles.sectionRoot}>
-			<Caption13M>{name}</Caption13M>
+			<CaptionB>{name}</CaptionB>
 			{value}
 		</View>
 	);
@@ -36,27 +36,27 @@ const AddConnection = ({
 
 			<ScrollView contentContainerStyle={styles.content}>
 				<View style={styles.sectionTitle}>
-					<Caption13Up color="gray1">New connection</Caption13Up>
+					<Caption13Up color="white50">New connection</Caption13Up>
 				</View>
-				<Text01M>LNBIG Lightning Node</Text01M>
+				<BodyMSB>LNBIG Lightning Node</BodyMSB>
 				<View style={styles.channel}>
 					{/* Example channel */}
 					{/* <LightningChannel channelId="" /> */}
 				</View>
 
 				<View style={styles.sectionTitle}>
-					<Caption13Up color="gray1">CONNECTION DETAILS</Caption13Up>
+					<Caption13Up color="white50">CONNECTION DETAILS</Caption13Up>
 				</View>
 				<Section
 					name="Node ID"
-					value={<Caption13M>0296b2db..d73bf5c9</Caption13M>}
+					value={<CaptionB>0296b2db..d73bf5c9</CaptionB>}
 				/>
 				<Section
 					name="Receiving capacity"
 					value={
 						<Money
 							sats={100500}
-							size="caption13M"
+							size="captionB"
 							symbol={true}
 							color="white"
 							unit={EUnit.BTC}
@@ -68,7 +68,7 @@ const AddConnection = ({
 					value={
 						<Money
 							sats={100500}
-							size="caption13M"
+							size="captionB"
 							symbol={true}
 							color="white"
 							unit={EUnit.BTC}
@@ -80,7 +80,7 @@ const AddConnection = ({
 					value={
 						<Money
 							sats={100500}
-							size="caption13M"
+							size="captionB"
 							symbol={true}
 							color="white"
 							unit={EUnit.BTC}
@@ -92,7 +92,7 @@ const AddConnection = ({
 					value={
 						<Money
 							sats={100500}
-							size="caption13M"
+							size="captionB"
 							symbol={true}
 							color="white"
 							unit={EUnit.BTC}

@@ -7,7 +7,7 @@ import { useAppSelector } from '../../hooks/redux';
 import lm, { ldk, TLdkData } from '@synonymdev/react-native-ldk';
 import { View as ThemedView } from '../../styles/components';
 import List, { EItemType, IListData, ItemData } from '../../components/List';
-import { Text01S } from '../../styles/text';
+import { BodyM } from '../../styles/text';
 
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
@@ -237,7 +237,7 @@ const LightningWithSlashtags = ({
 				) : (
 					<>
 						{history.data.length === 0 ? (
-							<Text01S>No backups found.</Text01S>
+							<BodyM>No backups found.</BodyM>
 						) : (
 							<List data={[history]} />
 						)}

@@ -19,13 +19,13 @@ const ActionButton = memo(
 	({
 		children,
 		style,
-		onPress,
 		testID,
+		onPress,
 	}: {
 		children?: JSX.Element;
 		style?: StyleProp<ViewStyle>;
-		onPress?: (event: GestureResponderEvent) => void;
 		testID?: string;
+		onPress?: (event: GestureResponderEvent) => void;
 	}): ReactElement => {
 		return (
 			<Pressable
@@ -35,9 +35,9 @@ const ActionButton = memo(
 					pressed ? styles.pressed : styles.notPressed,
 				]}
 				color="transparent"
-				onPress={onPress}
 				hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-				testID={testID}>
+				testID={testID}
+				onPress={onPress}>
 				{children}
 			</Pressable>
 		);
@@ -48,6 +48,7 @@ const ACTION_WIDTH = 45;
 
 export type NavigationHeaderProps = {
 	title?: string;
+	icon?: ReactElement;
 	displayBackButton?: boolean;
 	navigateBack?: boolean;
 	actionIcon?: ReactElement;
@@ -60,6 +61,7 @@ export type NavigationHeaderProps = {
 
 const NavigationHeader = ({
 	title = ' ',
+	icon,
 	displayBackButton = true,
 	navigateBack = true,
 	size = 'lg',
@@ -118,16 +120,22 @@ const NavigationHeader = ({
 				{showBack && (
 					<ActionButton
 						style={styles.backButton}
-						onPress={handleBackPress}
-						testID="NavigationBack">
+						testID="NavigationBack"
+						onPress={handleBackPress}>
 						<BackIcon width={20} height={20} />
 					</ActionButton>
 				)}
 			</View>
-			<View style={styles.middleColumn} testID="NavigationTitle">
-				<Text style={styles.title} numberOfLines={1} ellipsizeMode="middle">
-					{title}
-				</Text>
+			<View style={styles.middleColumn} pointerEvents="none">
+				<View style={styles.title}>
+					{icon && <View style={styles.titleIcon}>{icon}</View>}
+					<Text
+						style={styles.titleText}
+						numberOfLines={1}
+						ellipsizeMode="middle">
+						{title}
+					</Text>
+				</View>
 			</View>
 			<View style={actionColumn}>
 				{actionIcon && (
@@ -157,7 +165,8 @@ const styles = StyleSheet.create({
 	},
 	containerLg: {
 		height: HEADER_HEIGHT,
-		marginBottom: 32,
+		// marginBottom: 32,
+		marginBottom: 16,
 	},
 	containerSm: {
 		marginTop: 2,
@@ -171,10 +180,22 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
+		pointerEvents: 'none',
 	},
 	title: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	titleIcon: {
+		height: 32,
+		width: 32,
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginRight: 16,
+	},
+	titleText: {
 		textAlign: 'center',
-		width: '100%',
 	},
 	action: {
 		flex: 1,

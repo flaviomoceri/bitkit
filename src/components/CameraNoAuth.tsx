@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { View, Linking, Platform, StyleSheet } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Text01S, Text01B } from '../styles/text';
+import { BodyM, BodyMB } from '../styles/text';
 import { ExclamationIcon } from '../styles/icons';
 import SafeAreaView from './SafeAreaView';
 import NavigationHeader from './NavigationHeader';
@@ -32,13 +32,13 @@ const CameraNoAuth = ({
 			<View style={styles.content}>
 				<View style={styles.textContent}>
 					<ExclamationIcon />
-					<Text01S style={styles.text}>
+					<BodyM style={styles.text}>
 						<Trans
 							t={t}
 							i18nKey="camera_no_text"
-							components={{ bold: <Text01B /> }}
+							components={{ bold: <BodyMB /> }}
 						/>
-					</Text01S>
+					</BodyM>
 				</View>
 				<View style={styles.buttonContainer}>
 					<Button

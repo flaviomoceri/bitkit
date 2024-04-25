@@ -1,14 +1,13 @@
 import React, { memo, ReactElement, useEffect, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { __E2E__ } from '../../constants/env';
-import { Text01S } from '../../styles/text';
+import { BodyM } from '../../styles/text';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Button from '../../components/Button';
-import GlowImage from '../../components/GlowImage';
 import { openURL } from '../../utils/helpers';
 import { objectKeys } from '../../utils/objectKeys';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
@@ -25,14 +24,14 @@ import {
 	useSnapPoints,
 } from '../../hooks/bottomSheet';
 
-const imageSrc = require('../../assets/illustrations/bitkit-logo.png');
+const imageSrc = require('../../assets/illustrations/wand.png');
 
 const ASK_INTERVAL = 1000 * 60 * 60 * 12; // 12h - how long this prompt will be hidden if user taps Later
 const CHECK_DELAY = 2500; // how long user needs to stay on Wallets screen before he will see this prompt
 
 const AppUpdatePrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 	const { t } = useTranslation('other');
-	const snapPoints = useSnapPoints('large');
+	const snapPoints = useSnapPoints('medium');
 	const dispatch = useAppDispatch();
 	const viewControllers = useAppSelector(viewControllersSelector);
 	const updateInfo = useAppSelector(availableUpdateSelector);
@@ -99,8 +98,12 @@ const AppUpdatePrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 					title={t('update_title')}
 					displayBackButton={false}
 				/>
-				<Text01S color="gray1">{t('update_text')}</Text01S>
-				<GlowImage image={imageSrc} />
+				<BodyM color="white50">{t('update_text')}</BodyM>
+
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
+
 				<View style={styles.buttonContainer}>
 					<Button
 						style={styles.button}
@@ -109,7 +112,6 @@ const AppUpdatePrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 						text={t('cancel')}
 						onPress={onCancel}
 					/>
-					<View style={styles.divider} />
 					<Button
 						style={styles.button}
 						size="large"
@@ -126,18 +128,25 @@ const AppUpdatePrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 const styles = StyleSheet.create({
 	root: {
 		flex: 1,
-		paddingHorizontal: 32,
+		paddingHorizontal: 16,
+	},
+	imageContainer: {
+		alignItems: 'center',
+		marginTop: 'auto',
+		aspectRatio: 1,
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

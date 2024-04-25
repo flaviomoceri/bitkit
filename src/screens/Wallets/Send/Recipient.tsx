@@ -1,10 +1,10 @@
 import React, { ReactElement, memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useTranslation } from 'react-i18next';
 
 import { Pressable } from '../../../styles/components';
-import { Caption13Up, Text01M } from '../../../styles/text';
+import { Caption13Up, BodyMSB } from '../../../styles/text';
 import {
 	UsersIcon,
 	PencileIcon,
@@ -15,7 +15,6 @@ import { useSlashtagsSDK } from '../../../components/SlashtagsProvider';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import ContactImage from '../../../components/ContactImage';
-import GlowImage from '../../../components/GlowImage';
 import { processInputData } from '../../../utils/scanner';
 import { showToast } from '../../../utils/notifications';
 import { useAppSelector } from '../../../hooks/redux';
@@ -49,7 +48,7 @@ const Button = ({
 		testID={testID}
 		onPress={onPress}>
 		<View style={styles.buttonIcon}>{icon}</View>
-		<Text01M color="white">{text}</Text01M>
+		<BodyMSB color="white">{text}</BodyMSB>
 		<View style={styles.buttonActions}>{actions}</View>
 	</Pressable>
 );
@@ -117,7 +116,7 @@ const Recipient = ({
 				displayBackButton={false}
 			/>
 			<View style={styles.content}>
-				<Caption13Up color="gray1" style={styles.label} testID="Caption">
+				<Caption13Up color="white50" style={styles.label} testID="Caption">
 					{t('send_to')}
 				</Caption13Up>
 
@@ -162,8 +161,8 @@ const Recipient = ({
 
 				{!isSmallScreen && (
 					<View style={styles.bottom}>
-						<View style={styles.image}>
-							<GlowImage image={imageSrc} glowColor="white30" />
+						<View style={styles.imageContainer}>
+							<Image style={styles.image} source={imageSrc} />
 						</View>
 					</View>
 				)}
@@ -193,14 +192,23 @@ const styles = StyleSheet.create({
 		marginLeft: 16,
 	},
 	bottom: {
+		// backgroundColor: 'red',
 		position: 'relative',
 		marginTop: 'auto',
 		flex: 1,
 		justifyContent: 'flex-end',
 	},
+	imageContainer: {
+		alignItems: 'center',
+		alignSelf: 'center',
+		marginTop: 'auto',
+		aspectRatio: 1,
+		width: 256,
+		zIndex: -1,
+	},
 	image: {
 		flex: 1,
-		zIndex: -1,
+		resizeMode: 'contain',
 	},
 	button: {
 		flexDirection: 'row',

@@ -1,16 +1,13 @@
 import React, { ReactElement } from 'react';
-import { ImageSourcePropType, StyleSheet, View } from 'react-native';
+import { View, Image, ImageSourcePropType, StyleSheet } from 'react-native';
 
-import { Display, Text01S } from '../styles/text';
-import GlowingBackground from './GlowingBackground';
+import { Display, BodyM } from '../styles/text';
+import { View as ThemedView } from '../styles/components';
 import SafeAreaInset from './SafeAreaInset';
 import Button from './Button';
-import { IColors } from '../styles/colors';
 import NavigationHeader from './NavigationHeader';
-import GlowImage from './GlowImage';
 
 const InfoScreen = ({
-	accentColor,
 	navTitle,
 	title,
 	description,
@@ -20,9 +17,8 @@ const InfoScreen = ({
 	testID,
 	onButtonPress,
 }: {
-	accentColor: keyof IColors;
 	navTitle: string;
-	title: string;
+	title: string | ReactElement;
 	description: string | ReactElement;
 	image: ImageSourcePropType;
 	buttonText: string;
@@ -31,19 +27,21 @@ const InfoScreen = ({
 	onButtonPress: () => void;
 }): ReactElement => {
 	return (
-		<GlowingBackground topLeft={accentColor}>
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={navTitle}
 				displayBackButton={displayBackButton}
 			/>
 			<View style={styles.content} testID={testID}>
-				<Display color={accentColor}>{title}</Display>
-				<Text01S style={styles.description} color="gray1">
+				<Display>{title}</Display>
+				<BodyM style={styles.description} color="white50">
 					{description}
-				</Text01S>
+				</BodyM>
 
-				<GlowImage image={image} glowColor="purple" />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={image} />
+				</View>
 
 				<View style={styles.buttonContainer}>
 					<Button
@@ -56,19 +54,33 @@ const InfoScreen = ({
 				</View>
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
+	root: {
+		flex: 1,
+	},
 	content: {
 		flex: 1,
-		marginTop: 8,
+		paddingTop: 16,
 		paddingHorizontal: 16,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	description: {
 		marginTop: 4,
-		marginBottom: 16,
 	},
 	buttonContainer: {
 		flexDirection: 'row',

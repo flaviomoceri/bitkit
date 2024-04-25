@@ -1,18 +1,14 @@
 import React, { ReactElement } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display, Text01S } from '../styles/text';
-import SafeAreaInset from '../components/SafeAreaInset';
-import GlowingBackground from '../components/GlowingBackground';
-import NavigationHeader from '../components/NavigationHeader';
-import Button from '../components/Button';
-import { useAppDispatch } from '../hooks/redux';
+import { Display } from '../styles/text';
+import OnboardingScreen from '../components/OnboardingScreen';
 import { openURL } from '../utils/helpers';
+import { useAppDispatch } from '../hooks/redux';
 import { hideTodo } from '../store/slices/todos';
 import type { RootStackScreenProps } from '../navigation/types';
 
-const imageSrc = require('../assets/illustrations/b-emboss.png');
+const imageSrc = require('../assets/illustrations/bitcoin-emboss.png');
 
 const BuyBitcoin = ({
 	navigation,
@@ -21,77 +17,27 @@ const BuyBitcoin = ({
 	const dispatch = useAppDispatch();
 
 	return (
-		<GlowingBackground topLeft="orange">
-			<SafeAreaInset type="top" />
-			<NavigationHeader
-				onClosePress={(): void => {
-					navigation.navigate('Wallet');
-				}}
-			/>
-			<View style={styles.content}>
-				<View style={styles.imageContainer}>
-					<Image style={styles.image} source={imageSrc} />
-				</View>
-				<View style={styles.textContent}>
-					<Display>
-						<Trans
-							t={t}
-							i18nKey="buy_header"
-							components={{
-								orange: <Display color="orange" />,
-							}}
-						/>
-					</Display>
-					<Text01S color="gray1" style={styles.text}>
-						{t('buy_text')}
-					</Text01S>
-				</View>
-
-				<View style={styles.buttonContainer}>
-					<Button
-						style={styles.button}
-						text={t('buy_button')}
-						size="large"
-						onPress={(): void => {
-							dispatch(hideTodo('buyBitcoin'));
-							openURL('https://bitcoin.org/en/exchanges');
-						}}
-					/>
-				</View>
-			</View>
-			<SafeAreaInset type="bottom" minPadding={16} />
-		</GlowingBackground>
+		<OnboardingScreen
+			title={
+				<Trans
+					t={t}
+					i18nKey="buy_header"
+					components={{ accent: <Display color="brand" /> }}
+				/>
+			}
+			description={t('buy_text')}
+			image={imageSrc}
+			buttonText={t('buy_button')}
+			testID="BuyBitcoin"
+			onClosePress={(): void => {
+				navigation.navigate('Wallet');
+			}}
+			onButtonPress={(): void => {
+				dispatch(hideTodo('buyBitcoin'));
+				openURL('https://bitcoin.org/en/exchanges');
+			}}
+		/>
 	);
 };
-
-const styles = StyleSheet.create({
-	content: {
-		flex: 1,
-		marginHorizontal: 32,
-	},
-	imageContainer: {
-		flex: 3.2,
-		alignItems: 'center',
-		paddingVertical: 50,
-	},
-	image: {
-		flex: 1,
-		resizeMode: 'contain',
-	},
-	textContent: {
-		flex: 3,
-		paddingHorizontal: 4,
-	},
-	text: {
-		marginTop: 16,
-	},
-	buttonContainer: {
-		flexDirection: 'row',
-		marginTop: 'auto',
-	},
-	button: {
-		flex: 1,
-	},
-});
 
 export default BuyBitcoin;

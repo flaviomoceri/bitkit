@@ -173,7 +173,6 @@ d('Settings', () => {
 			// open receive tags, add a tag
 			const tag = 'test123';
 			await element(by.id('Receive')).tap();
-			await element(by.id('UnderstoodButton')).tap();
 			await element(by.id('SpecifyInvoiceButton')).tap();
 			await expect(element(by.text(tag))).not.toBeVisible();
 			await element(by.id('TagsAdd')).tap();
@@ -203,16 +202,14 @@ d('Settings', () => {
 		});
 
 		d('About', () => {
-			it('Can show EasterEgg screen', async () => {
+			it('Can show About screen', async () => {
 				if (checkComplete('settings-about')) {
 					return;
 				}
 
-				// no tags, menu entry should be hidden
 				await element(by.id('Settings')).tap();
 				await element(by.id('About')).tap();
-				await element(by.id('Logo')).tap();
-				await expect(element(by.id('EasterEgg'))).toBeVisible();
+				await expect(element(by.id('AboutLogo'))).toBeVisible();
 
 				markComplete('settings-about');
 			});
@@ -310,9 +307,6 @@ d('Settings', () => {
 			// wallet be in regtest mode by default
 			// at first check if it is Native segwit by default
 			await element(by.id('Receive')).tap();
-			try {
-				await element(by.id('UnderstoodButton')).tap();
-			} catch (e) {}
 			await waitFor(element(by.id('QRCode')))
 				.toBeVisible()
 				.withTimeout(30000);
@@ -443,7 +437,7 @@ d('Settings', () => {
 			// enter wrong electrum server address
 			await element(by.id('HostInput')).replaceText('google.com');
 			await element(by.id('PortInput')).replaceText('31337');
-			await element(by.id('Status')).tap(); // close keyboard
+			await element(by.id('ElectrumStatus')).tap(); // close keyboard
 			await element(by.id('ConnectToHost')).tap();
 
 			// disconnected warning should appear
@@ -534,7 +528,7 @@ d('Settings', () => {
 
 			const alteredRelay = origRelay + '/';
 			await element(by.id('UrlInput')).replaceText(alteredRelay);
-			await element(by.id('Status')).tap(); // close keyboard
+			await element(by.id('WebRelayStatus')).tap(); // close keyboard
 			await element(by.id('ConnectToUrl')).tap();
 			await sleep(1000);
 
@@ -547,7 +541,7 @@ d('Settings', () => {
 
 			// now change it back
 			await element(by.id('UrlInput')).replaceText(origRelay);
-			await element(by.id('Status')).tap(); // close keyboard
+			await element(by.id('WebRelayStatus')).tap(); // close keyboard
 			await element(by.id('ConnectToUrl')).tap();
 
 			markComplete('settings-webrelay');

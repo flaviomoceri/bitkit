@@ -20,7 +20,7 @@ import {
 	TouchableOpacity,
 	View as ThemedView,
 } from '../../../styles/components';
-import { Subtitle, Text02S } from '../../../styles/text';
+import { Subtitle, BodyS } from '../../../styles/text';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import NavigationHeader from '../../../components/NavigationHeader';
@@ -123,7 +123,7 @@ const defaultAllAddressesData: TAddressViewerData = {
 };
 
 const Separator = memo(
-	(): ReactElement => <ThemedView color="darkGray" style={styles.separator} />,
+	(): ReactElement => <ThemedView color="gray2" style={styles.separator} />,
 );
 
 const EmptyComponent = memo(
@@ -884,33 +884,33 @@ const AddressViewer = ({
 							</TouchableOpacity>
 						</View>
 						<View>
-							<Text02S style={styles.headerText}>
+							<BodyS style={styles.headerText}>
 								{t('addr.index', { index: selectedAddress?.index })}
-							</Text02S>
-							<Text02S style={styles.headerText} testID="Path">
+							</BodyS>
+							<BodyS style={styles.headerText} testID="Path">
 								{t('addr.path', { path: selectedAddress?.path })}
-							</Text02S>
+							</BodyS>
 							<TouchableOpacity
 								style={styles.headerText}
 								onPress={onPrivateKeyPress}>
-								<Text02S>
+								<BodyS>
 									{t(privateKey ? 'addr.private_hide' : 'addr.private_view')}
-								</Text02S>
+								</BodyS>
 							</TouchableOpacity>
 							{config.selectedNetwork !== 'bitcoinRegtest' && (
 								<TouchableOpacity
 									style={styles.headerText}
 									onPress={openBlockExplorer}>
-									<Text02S>View Block Explorer</Text02S>
+									<BodyS>View Block Explorer</BodyS>
 								</TouchableOpacity>
 							)}
 						</View>
 					</View>
 				)}
 				{privateKey && (
-					<Text02S style={styles.privKeyText}>
+					<BodyS style={styles.privKeyText}>
 						{t('addr.private_key', { privateKey })}
-					</Text02S>
+					</BodyS>
 				)}
 				<SearchInput
 					style={styles.searchInput}
@@ -1041,7 +1041,6 @@ const AddressViewer = ({
 
 				<View style={styles.footer}>
 					<Button style={styles.backToTop} text="↑" onPress={scrollToTop} />
-					<View style={styles.divider} />
 					<Button
 						style={styles.footerButton}
 						text={t('addr.gen_20')}
@@ -1049,15 +1048,12 @@ const AddressViewer = ({
 						onPress={onGenerateMorePress}
 					/>
 					{!utxos && (
-						<>
-							<View style={styles.divider} />
-							<Button
-								style={styles.footerButton}
-								text={t('addr.check_balances')}
-								loading={isCheckingBalances}
-								onPress={onCheckBalance}
-							/>
-						</>
+						<Button
+							style={styles.footerButton}
+							text={t('addr.check_balances')}
+							loading={isCheckingBalances}
+							onPress={onCheckBalance}
+						/>
 					)}
 				</View>
 			</View>
@@ -1132,12 +1128,10 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		paddingTop: 2,
+		gap: 2,
 	},
 	footerButton: {
 		flex: 1,
-	},
-	divider: {
-		width: 2,
 	},
 	backToTop: {
 		minWidth: 50,

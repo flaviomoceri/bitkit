@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getNodeId, getNodeVersion } from '../../../utils/lightning';
 import { zipLogs } from '../../../utils/lightning/logs';
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import { ScrollView, View as ThemedView } from '../../../styles/components';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
@@ -70,7 +70,7 @@ const ReportIssue = ({
 				logs: logs,
 				logsFileName: logsFileName,
 			});
-			navigation.navigate('FormSuccess');
+			navigation.navigate('FormError');
 			setEmail('');
 			setMessage('');
 			setIsLoading(false);
@@ -86,7 +86,7 @@ const ReportIssue = ({
 	const isValid = validateEmail(email) && message;
 
 	return (
-		<ThemedView style={styles.fullHeight}>
+		<ThemedView style={styles.root}>
 			<KeyboardAvoidingView style={styles.content}>
 				<ScrollView
 					color="transparent"
@@ -101,9 +101,9 @@ const ReportIssue = ({
 						}}
 					/>
 					<View style={styles.form}>
-						<Text01S style={styles.text} color="gray1">
+						<BodyM style={styles.text} color="white50">
 							{t('support.report_text')}
-						</Text01S>
+						</BodyM>
 
 						<LabeledInput
 							style={styles.addressInput}
@@ -150,16 +150,16 @@ const ReportIssue = ({
 };
 
 const styles = StyleSheet.create({
-	fullHeight: {
+	root: {
 		flex: 1,
-	},
-	scrollContent: {
-		flexGrow: 1,
 	},
 	content: {
 		flex: 1,
 		justifyContent: 'space-between',
 		alignItems: 'stretch',
+	},
+	scrollContent: {
+		flexGrow: 1,
 	},
 	form: {
 		paddingHorizontal: 16,

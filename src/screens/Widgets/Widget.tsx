@@ -8,7 +8,7 @@ import {
 	View as ThemedView,
 	TouchableOpacity,
 } from '../../styles/components';
-import { Caption13Up, Headline, Text01S } from '../../styles/text';
+import { Caption13Up, Headline, BodyM } from '../../styles/text';
 import { ChevronRight, QuestionMarkIcon } from '../../styles/icons';
 import { widgetSelector } from '../../store/reselect/widgets';
 import { deleteWidget, setFeedWidget } from '../../store/slices/widgets';
@@ -111,9 +111,9 @@ const Widget = ({
 					</View>
 
 					{config.description && (
-						<Text01S style={styles.description} color="gray1">
+						<BodyM style={styles.description} color="white50">
 							{config.description}
-						</Text01S>
+						</BodyM>
 					)}
 
 					<TouchableOpacity
@@ -122,18 +122,18 @@ const Widget = ({
 						testID="WidgetEdit"
 						onPress={onEdit}>
 						<View style={styles.columnLeft}>
-							<Text01S color="white">{t('widget_edit')}</Text01S>
+							<BodyM color="white">{t('widget_edit')}</BodyM>
 						</View>
 						<View style={styles.columnRight}>
-							<Text01S style={styles.valueText} testID="Value">
+							<BodyM style={styles.valueText} testID="Value">
 								{hasEdited ? t('widget_edit_custom') : t('widget_edit_default')}
-							</Text01S>
-							<ChevronRight color="gray1" width={24} height={24} />
+							</BodyM>
+							<ChevronRight color="white50" width={24} height={24} />
 						</View>
 					</TouchableOpacity>
 
 					<View style={styles.footer}>
-						<Caption13Up style={styles.caption} color="gray1">
+						<Caption13Up style={styles.caption} color="white50">
 							{t('widget_preview')}
 						</Caption13Up>
 
@@ -196,17 +196,14 @@ const Widget = ({
 
 						<View style={styles.buttonsContainer}>
 							{savedWidget && (
-								<>
-									<Button
-										style={styles.button}
-										text={t('delete')}
-										size="large"
-										variant="secondary"
-										testID="WidgetDelete"
-										onPress={onDelete}
-									/>
-									<View style={styles.divider} />
-								</>
+								<Button
+									style={styles.button}
+									text={t('delete')}
+									size="large"
+									variant="secondary"
+									testID="WidgetDelete"
+									onPress={onDelete}
+								/>
 							)}
 							<Button
 								style={styles.button}
@@ -230,6 +227,7 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		flexGrow: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
 	header: {
@@ -263,15 +261,13 @@ const styles = StyleSheet.create({
 		minHeight: 180,
 	},
 	buttonsContainer: {
-		paddingTop: 16,
 		flexDirection: 'row',
 		justifyContent: 'space-between',
+		paddingTop: 16,
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 	description: {
 		fontWeight: 'normal',

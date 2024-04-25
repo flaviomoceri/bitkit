@@ -2,7 +2,7 @@ import React, { memo, ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Subtitle, Text02S, Text13UP } from '../../styles/text';
+import { Subtitle, BodyS, Text13UP } from '../../styles/text';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Tag from '../../components/Tag';
@@ -42,7 +42,7 @@ const TagsPrompt = ({
 			<View style={styles.root}>
 				<Subtitle style={styles.title}>{t('tags_filter_title')}</Subtitle>
 
-				<Text13UP color="gray1">{t('tags_filter')}</Text13UP>
+				<Text13UP color="white50">{t('tags_filter')}</Text13UP>
 
 				<View style={styles.suggestionsRow}>
 					{suggestions.map((tag) => (
@@ -54,7 +54,7 @@ const TagsPrompt = ({
 						/>
 					))}
 					{suggestions.length === 0 && (
-						<Text02S style={styles.noTags}>{t('tags_no')}</Text02S>
+						<BodyS style={styles.noTags}>{t('tags_no')}</BodyS>
 					)}
 				</View>
 

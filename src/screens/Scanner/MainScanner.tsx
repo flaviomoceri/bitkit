@@ -66,6 +66,7 @@ const ScannerScreen = ({
 				<NavigationHeader
 					style={styles.navigationHeader}
 					title={t('qr_scan')}
+					onClosePress={(): void => navigation.pop()}
 				/>
 			</ScannerComponent>
 		</DetectSwipe>

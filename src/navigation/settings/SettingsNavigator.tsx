@@ -21,6 +21,7 @@ import LightningNodeInfo from '../../screens/Settings/Lightning/LightningNodeInf
 import UnitSettings from '../../screens/Settings/Unit';
 import TransactionSpeedSettings from '../../screens/Settings/TransactionSpeed';
 import CustomFee from '../../screens/Settings/TransactionSpeed/CustomFee';
+import WidgetSettings from '../../screens/Settings/Widgets';
 import AuthCheck from '../../components/AuthCheck';
 import GeneralSettings from '../../screens/Settings/General';
 import SecuritySettings from '../../screens/Settings/Security';
@@ -35,7 +36,6 @@ import SupportSettings from '../../screens/Settings/SupportSettings';
 import ReportIssue from '../../screens/Settings/ReportIssue';
 import FormSuccess from '../../screens/Settings/ReportIssue/FormSuccess';
 import FormError from '../../screens/Settings/ReportIssue/FormError';
-import EasterEgg from '../../screens/Settings/EasterEgg';
 import BitcoinNetworkSelection from '../../screens/Settings/Bitcoin/BitcoinNetworkSelection';
 import Channels from '../../screens/Settings/Lightning/Channels';
 import ChannelDetails from '../../screens/Settings/Lightning/ChannelDetails';
@@ -81,7 +81,6 @@ export type SettingsStackParamList = {
 	ReportIssue: undefined;
 	FormSuccess: undefined;
 	FormError: undefined;
-	EasterEgg: undefined;
 	CurrenciesSettings: undefined;
 	UnitSettings: undefined;
 	TransactionSpeedSettings: undefined;
@@ -106,6 +105,7 @@ export type SettingsStackParamList = {
 	LightningRoot: NavigatorScreenParams<LightningStackParamList>;
 	SlashtagsSettings: undefined;
 	TagsSettings: undefined;
+	WidgetSettings: undefined;
 	AddressViewer: undefined;
 	FeeSettings: undefined;
 	WebRelay: undefined;
@@ -143,7 +143,6 @@ const SettingsNavigator = (): ReactElement => {
 			<Stack.Screen name="ReportIssue" component={ReportIssue} />
 			<Stack.Screen name="FormSuccess" component={FormSuccess} />
 			<Stack.Screen name="FormError" component={FormError} />
-			<Stack.Screen name="EasterEgg" component={EasterEgg} />
 			<Stack.Screen name="CurrenciesSettings" component={CurrenciesSettings} />
 			<Stack.Screen name="UnitSettings" component={UnitSettings} />
 			<Stack.Screen
@@ -151,6 +150,7 @@ const SettingsNavigator = (): ReactElement => {
 				component={TransactionSpeedSettings}
 			/>
 			<Stack.Screen name="CustomFee" component={CustomFee} />
+			<Stack.Screen name="WidgetSettings" component={WidgetSettings} />
 			<Stack.Screen name="ElectrumConfig" component={ElectrumConfig} />
 			<Stack.Screen name="GapLimit" component={GapLimit} />
 			<Stack.Screen name="RGSServer" component={RGSServer} />

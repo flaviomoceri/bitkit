@@ -10,7 +10,7 @@ import { BtPaymentState2 } from '@synonymdev/blocktank-lsp-http-client/dist/shar
 
 import { EChannelStatus } from '../../../store/types/lightning';
 import { View as ThemedView } from '../../../styles/components';
-import { Text01M } from '../../../styles/text';
+import { BodyMSB } from '../../../styles/text';
 import {
 	ArrowCounterClock,
 	Checkmark,
@@ -38,7 +38,7 @@ const ChannelStatus = ({
 					<ThemedView style={styles.statusIcon} color="green16">
 						<LightningIcon color="green" width={16} height={16} />
 					</ThemedView>
-					<Text01M color="green">{t('order_state.open')}</Text01M>
+					<BodyMSB color="green">{t('order_state.open')}</BodyMSB>
 				</View>
 			);
 		}
@@ -46,9 +46,9 @@ const ChannelStatus = ({
 			return (
 				<View style={styles.statusRow}>
 					<ThemedView style={styles.statusIcon} color="white10">
-						<LightningIcon color="gray1" width={16} height={16} />
+						<LightningIcon color="white50" width={16} height={16} />
 					</ThemedView>
-					<Text01M color="gray1">{t('order_state.closed')}</Text01M>
+					<BodyMSB color="white50">{t('order_state.closed')}</BodyMSB>
 				</View>
 			);
 		}
@@ -68,7 +68,7 @@ const ChannelStatus = ({
 							<ThemedView style={styles.statusIcon} color="purple16">
 								<HourglassSimpleIcon color="purple" width={16} height={16} />
 							</ThemedView>
-							<Text01M color="purple">{t('order_state.opening')}</Text01M>
+							<BodyMSB color="purple">{t('order_state.opening')}</BodyMSB>
 						</View>
 					);
 				}
@@ -82,7 +82,7 @@ const ChannelStatus = ({
 						<ThemedView style={styles.statusIcon} color="red16">
 							<TimerSpeedIcon color="red" width={16} height={16} />
 						</ThemedView>
-						<Text01M color="red">{t('order_state.expired')}</Text01M>
+						<BodyMSB color="red">{t('order_state.expired')}</BodyMSB>
 					</View>
 				);
 			}
@@ -95,7 +95,7 @@ const ChannelStatus = ({
 						<ThemedView style={styles.statusIcon} color="red16">
 							<XIcon color="red" width={16} height={16} />
 						</ThemedView>
-						<Text01M color="red">{t('order_state.payment_canceled')}</Text01M>
+						<BodyMSB color="red">{t('order_state.payment_canceled')}</BodyMSB>
 					</View>
 				);
 			}
@@ -105,9 +105,9 @@ const ChannelStatus = ({
 						<ThemedView style={styles.statusIcon} color="yellow16">
 							<ArrowCounterClock color="yellow" width={16} height={16} />
 						</ThemedView>
-						<Text01M color="yellow">
+						<BodyMSB color="yellow">
 							{t('order_state.refund_available')}
-						</Text01M>
+						</BodyMSB>
 					</View>
 				);
 			}
@@ -115,9 +115,9 @@ const ChannelStatus = ({
 				return (
 					<View style={styles.statusRow}>
 						<ThemedView style={styles.statusIcon} color="white10">
-							<ArrowCounterClock color="gray1" width={16} height={16} />
+							<ArrowCounterClock color="white50" width={16} height={16} />
 						</ThemedView>
-						<Text01M color="gray1">{t('order_state.refunded')}</Text01M>
+						<BodyMSB color="white50">{t('order_state.refunded')}</BodyMSB>
 					</View>
 				);
 			}
@@ -130,9 +130,9 @@ const ChannelStatus = ({
 						<ThemedView style={styles.statusIcon} color="purple16">
 							<ClockIcon color="purple" width={16} height={16} />
 						</ThemedView>
-						<Text01M color="purple">
+						<BodyMSB color="purple">
 							{t('order_state.awaiting_payment')}
-						</Text01M>
+						</BodyMSB>
 					</View>
 				);
 			}
@@ -142,7 +142,7 @@ const ChannelStatus = ({
 						<ThemedView style={styles.statusIcon} color="purple16">
 							<Checkmark color="purple" width={16} height={16} />
 						</ThemedView>
-						<Text01M color="purple">{t('order_state.paid')}</Text01M>
+						<BodyMSB color="purple">{t('order_state.paid')}</BodyMSB>
 					</View>
 				);
 			}
@@ -156,7 +156,7 @@ const ChannelStatus = ({
 					<ThemedView style={styles.statusIcon} color="purple16">
 						<HourglassSimpleIcon color="purple" width={16} height={16} />
 					</ThemedView>
-					<Text01M color="purple">{t('order_state.opening')}</Text01M>
+					<BodyMSB color="purple">{t('order_state.opening')}</BodyMSB>
 				</View>
 			);
 		}

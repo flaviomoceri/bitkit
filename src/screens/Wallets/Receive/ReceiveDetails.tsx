@@ -5,7 +5,7 @@ import React, {
 	useState,
 	useEffect,
 } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 
@@ -25,7 +25,6 @@ import ReceiveNumberPad from './ReceiveNumberPad';
 import UnitButton from '../UnitButton';
 import { ReceiveScreenProps } from '../../../navigation/types';
 import { receiveSelector } from '../../../store/reselect/receive';
-import GlowImage from '../../../components/GlowImage';
 import { useScreenSize } from '../../../hooks/screen';
 import { getNumberPadText } from '../../../utils/numberpad';
 import { useSwitchUnit } from '../../../hooks/wallet';
@@ -43,7 +42,7 @@ import {
 	nextUnitSelector,
 } from '../../../store/reselect/settings';
 
-const imageSrc = require('../../../assets/illustrations/coin-stack-4.png');
+const imageSrc = require('../../../assets/illustrations/coin-stack.png');
 
 // hardcoded to be above fee (1092)
 // TODO: fee is dynamic so this should be fetched from the API
@@ -172,7 +171,7 @@ const ReceiveDetails = ({
 				{!showNumberPad && (
 					<>
 						<View style={styles.inputContainer}>
-							<Caption13Up style={styles.label} color="gray1">
+							<Caption13Up style={styles.label} color="white50">
 								{t('note')}
 							</Caption13Up>
 							<View style={styles.inputWrapper}>
@@ -200,7 +199,7 @@ const ReceiveDetails = ({
 								color="transparent"
 								entering={FadeIn}
 								exiting={FadeOut}>
-								<Caption13Up style={styles.label} color="gray1">
+								<Caption13Up style={styles.label} color="white50">
 									{t('tags')}
 								</Caption13Up>
 								<View style={styles.tagsContainer}>
@@ -226,11 +225,9 @@ const ReceiveDetails = ({
 								</View>
 
 								{!isSmallScreen && (
-									<GlowImage
-										style={styles.image}
-										image={imageSrc}
-										glowColor="white30"
-									/>
+									<View style={styles.imageContainer}>
+										<Image style={styles.image} source={imageSrc} />
+									</View>
 								)}
 							</AnimatedView>
 						)}
@@ -331,12 +328,22 @@ const styles = StyleSheet.create({
 		marginRight: 8,
 		marginBottom: 8,
 	},
-	image: {
+	imageContainer: {
+		alignSelf: 'center',
+		alignItems: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
 		position: 'absolute',
-		bottom: 0,
-		left: 0,
-		right: 0,
+		// bottom: 0,
+		bottom: -30,
+		// left: 0,
+		// right: 0,
 		zIndex: -1,
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',

@@ -1,7 +1,7 @@
 import React, { Fragment, ReactElement } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { Text02M } from '../styles/text';
+import { BodySSB } from '../styles/text';
 import { Checkmark } from '../styles/icons';
 import useColors from '../hooks/colors';
 
@@ -36,9 +36,9 @@ const ProgressSteps = ({
 								{isDone ? (
 									<Checkmark color="black" height={22} width={22} />
 								) : (
-									<Text02M color={isActive ? 'purple' : 'white32'}>
+									<BodySSB color={isActive ? 'purple' : 'white32'}>
 										{index + 1}
-									</Text02M>
+									</BodySSB>
 								)}
 							</View>
 
@@ -47,7 +47,7 @@ const ProgressSteps = ({
 					);
 				})}
 			</View>
-			<Text02M color="white32">{steps[activeStepIndex].title}</Text02M>
+			<BodySSB color="white32">{steps[activeStepIndex].title}</BodySSB>
 		</View>
 	);
 };

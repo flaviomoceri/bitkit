@@ -15,10 +15,9 @@ import { hideBalanceSelector } from '../store/reselect/settings';
  */
 const BalanceHeader = (): ReactElement => {
 	const { t } = useTranslation('wallet');
-	const onSwitchUnit = useSwitchUnitAnnounced();
-	const { totalBalance, pendingPaymentsBalance, balanceInTransfer } =
-		useBalance();
 	const dispatch = useAppDispatch();
+	const onSwitchUnit = useSwitchUnitAnnounced();
+	const { totalBalance, pendingPaymentsBalance } = useBalance();
 	const hideBalance = useAppSelector(hideBalanceSelector);
 
 	const toggleHideBalance = (): void => {
@@ -27,33 +26,16 @@ const BalanceHeader = (): ReactElement => {
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.totalBalanceRow}>
-				{balanceInTransfer ? (
-					<Trans
-						t={t}
-						i18nKey="balance_total_transferring"
-						components={{
-							text: <Caption13Up color="gray1" />,
-							pending: (
-								<Money
-									color="gray1"
-									size="caption13Up"
-									sats={balanceInTransfer}
-									enableHide={true}
-									symbol={false}
-								/>
-							),
-						}}
-					/>
-				) : pendingPaymentsBalance ? (
+			<View style={styles.label}>
+				{pendingPaymentsBalance ? (
 					<Trans
 						t={t}
 						i18nKey="balance_total_pending"
 						components={{
-							text: <Caption13Up color="gray1" />,
+							text: <Caption13Up color="white50" />,
 							pending: (
 								<Money
-									color="gray1"
+									color="white50"
 									size="caption13Up"
 									sats={pendingPaymentsBalance}
 									enableHide={true}
@@ -63,18 +45,18 @@ const BalanceHeader = (): ReactElement => {
 						}}
 					/>
 				) : (
-					<Caption13Up color="gray1">{t('balance_total')}</Caption13Up>
+					<Caption13Up color="white50">{t('balance_total')}</Caption13Up>
 				)}
 			</View>
 
 			<TouchableOpacity
-				style={styles.row}
+				style={styles.balance}
 				testID="TotalBalance"
 				onPress={onSwitchUnit}>
 				<Money sats={totalBalance} enableHide={true} symbol={true} />
 				{hideBalance && (
 					<TouchableOpacity
-						style={styles.toggle}
+						hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
 						testID="ShowBalance"
 						onPress={toggleHideBalance}>
 						<EyeIcon />
@@ -89,21 +71,17 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		marginTop: 32,
-		paddingLeft: 16,
+		paddingHorizontal: 16,
 	},
-	row: {
-		marginTop: 6,
+	label: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	balance: {
+		marginTop: 16,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-	},
-	totalBalanceRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-	},
-	toggle: {
-		paddingTop: 7,
-		paddingRight: 16,
 	},
 });
 

@@ -47,7 +47,7 @@ const UnitButton = ({
 
 const styles = StyleSheet.create({
 	root: {
-		paddingVertical: 7,
+		paddingVertical: 5,
 		paddingHorizontal: 8,
 		borderRadius: 8,
 		flexDirection: 'row',

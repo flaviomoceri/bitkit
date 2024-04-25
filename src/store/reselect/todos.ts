@@ -12,9 +12,11 @@ import {
 	lightningTodo,
 	pinTodo,
 	slashtagsProfileTodo,
+	supportTodo,
 	transferPendingTodo,
 	transferClosingChannelTodo,
 	btFailedTodo,
+	inviteTodo,
 } from '../shapes/todos';
 import {
 	backupVerifiedSelector,
@@ -112,10 +114,10 @@ export const todosFullSelector = createSelector(
 		} else if (showFailedBTOrder) {
 			// failed blocktank order
 			res.push(btFailedTodo);
+		} else if (transferToSpending) {
+			res.push(lightningSettingUpTodo);
 		} else if (openChannels.length === 0 && closedChannels.length === 0) {
-			if (transferToSpending) {
-				res.push(lightningSettingUpTodo);
-			} else if (transferToSavings) {
+			if (transferToSavings) {
 				const transfer = transferToSavings as TTransferToSavings;
 				const requiredConfs = 6;
 				const duration = (requiredConfs - transfer.confirmations) * 10;
@@ -127,8 +129,6 @@ export const todosFullSelector = createSelector(
 			// some channels exist
 			if (startCoopCloseTimestamp > 0) {
 				res.push(transferClosingChannelTodo);
-			} else if (transferToSpending) {
-				res.push({ ...transferPendingTodo, duration: 10 });
 			} else if (transferToSavings) {
 				const transfer = transferToSavings as TTransferToSavings;
 				const requiredConfs = 6;
@@ -140,14 +140,24 @@ export const todosFullSelector = createSelector(
 		if (!hide.pin && !pinTodoDone) {
 			res.push(pinTodo);
 		}
-
-		if (!hide.slashtagsProfile && onboardingStep !== 'Done') {
-			res.push(slashtagsProfileTodo);
-		}
-
 		if (!hide.buyBitcoin) {
 			res.push(buyBitcoinTodo);
 		}
+		if (!hide.support) {
+			res.push(supportTodo);
+		}
+		if (!hide.invite) {
+			res.push(inviteTodo);
+		}
+		// if (!hide.fastpay) {
+		// 	res.push(fastpayTodo);
+		// }
+		if (!hide.slashtagsProfile && onboardingStep !== 'Done') {
+			res.push(slashtagsProfileTodo);
+		}
+		// if (!hide.discount) {
+		// 	res.push(discountTodo);
+		// }
 
 		return res;
 	},

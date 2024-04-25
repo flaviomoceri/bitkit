@@ -1,19 +1,21 @@
 import React, { memo, ReactElement, useEffect, useMemo } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { __E2E__ } from '../../constants/env';
-import { Caption13Up, Display, Text02S } from '../../styles/text';
+import { Caption13Up, Display, BodyM } from '../../styles/text';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import GlowImage from '../../components/GlowImage';
 import Button from '../../components/Button';
 import { ignoreHighBalance, MAX_WARNINGS } from '../../store/slices/user';
 import { viewControllersSelector } from '../../store/reselect/ui';
 import { useBalance } from '../../hooks/wallet';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { getFiatDisplayValues } from '../../utils/displayValues';
+import {
+	getFiatDisplayValues,
+	getFiatDisplayValuesForFiat,
+} from '../../utils/displayValues';
 import { openURL } from '../../utils/helpers';
 import { objectKeys } from '../../utils/objectKeys';
 import { exchangeRatesSelector } from '../../store/reselect/wallet';
@@ -30,36 +32,10 @@ import {
 
 const imageSrc = require('../../assets/illustrations/exclamation-mark.png');
 
-// TODO: change back after beta
-// BALANCE_THRESHOLD_USD = 1000
-// BALANCE_THRESHOLD_SATS = 5000000
-// high_text2_beta -> high_text2
-// and remove BETA variable
-const BETA = true;
-const BALANCE_THRESHOLD_USD = 100; // how high the balance must be to show this warning to the user (in USD)
-const BALANCE_THRESHOLD_SATS = 500000; // how high the balance must be to show this warning to the user (in Sats)
+const BALANCE_THRESHOLD_USD = 500; // how high the balance must be to show this warning to the user (in USD)
+const BALANCE_THRESHOLD_SATS = 650000; // how high the balance must be to show this warning to the user (in Sats)
 const ASK_INTERVAL = 1000 * 60 * 60 * 24; // 1 day - how long this prompt will be hidden if user taps Later
 const CHECK_DELAY = 3000; // how long user needs to stay on Wallets screen before he will see this prompt
-
-const Amount = ({ style }: { style?: StyleProp<ViewStyle> }): ReactElement => {
-	return (
-		<View style={[aStyles.root, style]}>
-			<Display style={aStyles.symbol} color="gray2">
-				$
-			</Display>
-			<Display>{BALANCE_THRESHOLD_USD}</Display>
-		</View>
-	);
-};
-
-const aStyles = StyleSheet.create({
-	root: {
-		flexDirection: 'row',
-	},
-	symbol: {
-		marginRight: 4,
-	},
-});
 
 const HighBalanceWarning = ({
 	enabled,
@@ -88,6 +64,11 @@ const HighBalanceWarning = ({
 		satoshis: totalBalance,
 		currency: 'USD',
 		exchangeRates,
+	});
+
+	const { fiatWhole, fiatSymbol } = getFiatDisplayValuesForFiat({
+		value: BALANCE_THRESHOLD_USD,
+		currency: 'USD',
 	});
 
 	// if balance over BALANCE_THRESHOLD
@@ -157,30 +138,35 @@ const HighBalanceWarning = ({
 					displayBackButton={false}
 				/>
 				<View style={styles.amountContainer}>
-					<Caption13Up color="gray1">{t('high_text1')}</Caption13Up>
-					<Amount style={styles.amount} />
+					<Caption13Up color="white50">{t('high_text1')}</Caption13Up>
+					<View style={styles.amount}>
+						<Display style={styles.symbol} color="white50">
+							{fiatSymbol}
+						</Display>
+						<Display>{fiatWhole}</Display>
+					</View>
 				</View>
-				<Text02S style={styles.text} color="gray1">
-					{t('high_text2_beta')}
-				</Text02S>
-				<GlowImage image={imageSrc} imageSize={180} glowColor="yellow" />
+
+				<BodyM style={styles.text} color="white50">
+					{t('high_text2')}
+				</BodyM>
+
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
+
 				<View style={styles.buttonContainer}>
-					{!BETA && (
-						<>
-							<Button
-								style={styles.button}
-								variant="secondary"
-								size="large"
-								text={t('high_button_more')}
-								onPress={onMore}
-							/>
-							<View style={styles.divider} />
-						</>
-					)}
 					<Button
 						style={styles.button}
+						text={t('high_button_more')}
+						variant="secondary"
 						size="large"
+						onPress={onMore}
+					/>
+					<Button
+						style={styles.button}
 						text={t('understood')}
+						size="large"
 						onPress={onDismiss}
 					/>
 				</View>
@@ -199,21 +185,36 @@ const styles = StyleSheet.create({
 		marginTop: 8,
 	},
 	amount: {
-		marginTop: 6,
+		flexDirection: 'row',
+		marginTop: 12,
+	},
+	symbol: {
+		marginRight: 8,
 	},
 	text: {
 		marginTop: 16,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

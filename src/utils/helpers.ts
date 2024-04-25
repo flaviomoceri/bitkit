@@ -328,7 +328,7 @@ export const abbreviateNumber = (
 	return { newValue: _newValue, abbreviation };
 };
 
-export const timeAgo = (timestamp: number): string => {
+export const timeAgo = (timestamp: string | number | Date): string => {
 	const date = new Date(timestamp);
 
 	const today = new Date();

@@ -79,7 +79,7 @@ const PaymentPreference = (): ReactElement => {
 	);
 
 	return (
-		<ThemedView style={styles.container}>
+		<ThemedView style={styles.root}>
 			<SettingsView
 				title={t('adv.payment_preference')}
 				listData={settingsListData}
@@ -93,7 +93,7 @@ const PaymentPreference = (): ReactElement => {
 };
 
 const styles = StyleSheet.create({
-	container: {
+	root: {
 		flex: 1,
 	},
 });

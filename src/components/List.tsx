@@ -13,17 +13,17 @@ import isEqual from 'lodash/isEqual';
 
 import { Switch } from '../styles/components';
 import {
-	Text01S,
-	Text01M,
-	Text02S,
-	Text02M,
+	BodyM,
+	BodyMSB,
+	BodyS,
+	BodySSB,
 	Caption13Up,
-	Caption13S,
+	Caption,
 } from '../styles/text';
 import { ChevronRight, Checkmark } from '../styles/icons';
 import DraggableList from '../screens/Settings/PaymentPreference/DraggableList';
 
-const _ItemHeader = memo(
+const _SectionHeader = memo(
 	({
 		title,
 		style,
@@ -36,14 +36,14 @@ const _ItemHeader = memo(
 		}
 
 		return (
-			<View style={[styles.itemHeader, style]}>
-				<Caption13Up color="gray1">{title.toUpperCase()}</Caption13Up>
+			<View style={[styles.sectionHeader, style]}>
+				<Caption13Up color="white50">{title.toUpperCase()}</Caption13Up>
 			</View>
 		);
 	},
 );
 
-const _ItemFooter = memo(
+const _SectionFooter = memo(
 	({
 		description,
 		style,
@@ -56,18 +56,18 @@ const _ItemFooter = memo(
 		}
 
 		return (
-			<View style={[styles.itemFooter, style]}>
-				<Text02S color="gray1">{description}</Text02S>
+			<View style={[styles.sectionFooter, style]}>
+				<BodyS color="white50">{description}</BodyS>
 			</View>
 		);
 	},
 );
 
-const ItemHeader = memo(_ItemHeader, (prevProps, nextProps) => {
+const SectionHeader = memo(_SectionHeader, (prevProps, nextProps) => {
 	return prevProps.title === nextProps.title;
 });
 
-const ItemFooter = memo(_ItemFooter, (prevProps, nextProps) => {
+const SectionFooter = memo(_SectionFooter, (prevProps, nextProps) => {
 	return prevProps.description === nextProps.description;
 });
 
@@ -170,7 +170,7 @@ const _Item = memo((item: ItemData): ReactElement => {
 							color={iconColor ? iconColor : 'brand'}
 						/>
 					)}
-					<Text01S color="white">{title}</Text01S>
+					<BodyM color="white">{title}</BodyM>
 				</View>
 				<View style={styles.rightColumn}>
 					<Switch onValueChange={_onPress} value={enabled} />
@@ -211,16 +211,16 @@ const _Item = memo((item: ItemData): ReactElement => {
 						/>
 					)}
 					<View>
-						<Text01S color="white">{title}</Text01S>
+						<BodyM color="white">{title}</BodyM>
 						{description && (
 							<View>
-								<Caption13S color="gray1">{description}</Caption13S>
+								<Caption color="white50">{description}</Caption>
 							</View>
 						)}
 					</View>
 				</View>
 				<View style={styles.rightColumn}>
-					<Text01S color="gray1">{value}</Text01S>
+					<BodyM color="white50">{value}</BodyM>
 				</View>
 			</TouchableOpacity>
 		);
@@ -259,12 +259,16 @@ const _Item = memo((item: ItemData): ReactElement => {
 				disabled={disabled}
 				testID={testID}
 				onPress={enabled ? _onPress : undefined}>
-				<View style={[styles.row, subtitle ? styles.rowLarge : {}]}>
+				<View
+					style={[
+						styles.row,
+						subtitle ? styles.rowLarge : {},
+						subtitle && Icon ? styles.rowXlarge : {},
+					]}>
 					<View style={styles.leftColumn}>
 						{Icon && (
 							<View style={styles.icon}>
 								<Icon
-									viewBox="0 0 32 32"
 									height={32}
 									width={32}
 									color={iconColor !== '' ? iconColor : 'brand'}
@@ -274,12 +278,12 @@ const _Item = memo((item: ItemData): ReactElement => {
 
 						{subtitle ? (
 							<View>
-								<Text01M color="white">{title}</Text01M>
-								{subtitle && <Text02M color="gray1">{subtitle}</Text02M>}
+								<BodyMSB color="white">{title}</BodyMSB>
+								{subtitle && <BodySSB color="white50">{subtitle}</BodySSB>}
 							</View>
 						) : (
 							<View>
-								<Text01S color="white">{title}</Text01S>
+								<BodyM color="white">{title}</BodyM>
 							</View>
 						)}
 					</View>
@@ -292,19 +296,19 @@ const _Item = memo((item: ItemData): ReactElement => {
 							)
 						) : (
 							<>
-								<Text01S style={styles.valueText} testID="Value">
+								<BodyM style={styles.valueText} testID="Value">
 									{value}
-								</Text01S>
-								<ChevronRight color="gray1" width={24} height={24} />
+								</BodyM>
+								<ChevronRight color="white50" width={24} height={24} />
 							</>
 						)}
 					</View>
 				</View>
 
 				{description && (
-					<Text02S style={styles.description} color="gray1">
+					<BodyS style={styles.description} color="white50">
 						{description}
-					</Text02S>
+					</BodyS>
 				)}
 			</TouchableOpacity>
 		);
@@ -350,7 +354,7 @@ const List = ({
 					const { title } = section;
 					const isFirst = title === data[0].title;
 					return (
-						<ItemHeader
+						<SectionHeader
 							title={title}
 							style={!isFirst ? styles.sectionSpacing : {}}
 						/>
@@ -360,7 +364,7 @@ const List = ({
 			)}
 			renderSectionFooter={({ section }): ReactElement => {
 				const { description } = section;
-				return <ItemFooter description={description} />;
+				return <SectionFooter description={description} />;
 			}}
 			renderItem={useCallback(
 				({ item }: { item: ItemData }): ReactElement | null => {
@@ -378,16 +382,20 @@ const List = ({
 };
 
 const styles = StyleSheet.create({
-	itemHeader: {
-		marginBottom: 10,
+	sectionHeader: {
 		justifyContent: 'center',
+		// height: 40,
+		height: 50,
 	},
-	itemFooter: {
+	sectionFooter: {
 		marginTop: 16,
 		paddingBottom: 16,
 		justifyContent: 'center',
 		borderBottomColor: 'rgba(255, 255, 255, 0.1)',
 		borderBottomWidth: 1,
+	},
+	sectionSpacing: {
+		marginTop: 16,
 	},
 	valueText: {
 		marginRight: 8,
@@ -398,9 +406,12 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		borderBottomColor: 'rgba(255, 255, 255, 0.1)',
 		borderBottomWidth: 1,
-		minHeight: 58,
+		minHeight: 52,
 	},
 	rowLarge: {
+		minHeight: 74,
+	},
+	rowXlarge: {
 		minHeight: 90,
 	},
 	leftColumn: {
@@ -413,16 +424,13 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 	},
 	icon: {
-		borderRadius: 200,
+		borderRadius: 20,
 		marginRight: 10,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
 	description: {
-		marginTop: 4,
-	},
-	sectionSpacing: {
-		marginTop: 32,
+		marginVertical: 4,
 	},
 });
 

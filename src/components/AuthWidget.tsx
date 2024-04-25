@@ -9,7 +9,7 @@ import { View, Linking, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { Client } from '@synonymdev/slashtags-auth';
 import { useTranslation } from 'react-i18next';
 
-import { Text01M } from '../styles/text';
+import { BodyMSB } from '../styles/text';
 import { TouchableOpacity } from '../styles/components';
 import { KeyIcon, ListIcon, TrashIcon } from '../styles/icons';
 import { useAppDispatch } from '../hooks/redux';
@@ -99,9 +99,9 @@ const AuthWidget = ({
 							size={32}
 						/>
 
-						<Text01M style={styles.name} numberOfLines={1}>
+						<BodyMSB style={styles.name} numberOfLines={1}>
 							{profile?.name || ' '}
-						</Text01M>
+						</BodyMSB>
 					</View>
 
 					{!isEditing && widget.magiclink && (
@@ -121,12 +121,14 @@ const AuthWidget = ({
 							<TouchableOpacity
 								style={styles.actionButton}
 								color="transparent"
+								hitSlop={{ top: 30, bottom: 30 }}
 								onPress={onDelete}>
 								<TrashIcon width={22} />
 							</TouchableOpacity>
 							<TouchableOpacity
 								style={styles.actionButton}
 								color="transparent"
+								hitSlop={{ top: 30, bottom: 30 }}
 								activeOpacity={0.9}
 								onLongPress={onLongPress}
 								onPressIn={onPressIn}>
@@ -189,12 +191,6 @@ const styles = StyleSheet.create({
 		width: 32,
 		height: 32,
 		marginLeft: 8,
-
-		// increase hitbox
-		paddingTop: 30,
-		marginTop: -30,
-		paddingBottom: 30,
-		marginBottom: -30,
 	},
 	signInButton: {
 		height: 32,

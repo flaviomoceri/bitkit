@@ -88,7 +88,7 @@ const ReceiveAmount = ({
 	return (
 		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader
-				title={t('receive_instantly')}
+				title={t('receive_bitcoin')}
 				displayBackButton={true}
 			/>
 			<View style={styles.content}>
@@ -100,12 +100,12 @@ const ReceiveAmount = ({
 				<View style={styles.numberPad} testID="ReceiveNumberPad">
 					<View style={styles.actions}>
 						<TouchableOpacity onPress={onMinimum}>
-							<Caption13Up style={styles.minimumText} color="gray1">
+							<Caption13Up style={styles.minimumText} color="white50">
 								{t('minimum')}
 							</Caption13Up>
 							<Money
 								sats={minimumAmount}
-								size="text02m"
+								size="bodySSB"
 								symbol={true}
 								shouldRoundUp={true}
 							/>

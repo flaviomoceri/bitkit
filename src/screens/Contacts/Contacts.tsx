@@ -50,7 +50,7 @@ const ContactsScreen = ({
 	};
 
 	return (
-		<ThemedView style={styles.container}>
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('contacts')}
@@ -74,11 +74,11 @@ const ContactsScreen = ({
 						style={styles.addButton}
 						color="white16"
 						activeOpacity={0.8}
+						testID="AddContact"
 						onPress={(): void => {
 							Keyboard.dismiss();
 							showBottomSheet('addContactModal');
-						}}
-						testID="AddContact">
+						}}>
 						<PlusIcon width={24} height={24} color="brand" />
 					</ThemedTouchableOpacity>
 				</View>
@@ -104,12 +104,13 @@ const ContactsScreen = ({
 };
 
 const styles = StyleSheet.create({
-	container: {
+	root: {
 		flex: 1,
 	},
 	content: {
 		flex: 1,
 		justifyContent: 'space-between',
+		paddingTop: 4,
 		paddingHorizontal: 16,
 	},
 	searchRow: {

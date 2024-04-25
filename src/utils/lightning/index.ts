@@ -481,7 +481,7 @@ export const subscribeToLightningPayments = ({
 
 				if (found) {
 					showToast({
-						type: 'success',
+						type: 'lightning',
 						title: i18n.t('wallet:toast_payment_success_title'),
 						description: i18n.t('wallet:toast_payment_success_description'),
 					});
@@ -535,7 +535,7 @@ export const subscribeToLightningPayments = ({
 				// If this is the first channel opened, show a toast
 				if (openChannels.length === 1 && closedChannels.length === 0) {
 					showToast({
-						type: 'success',
+						type: 'lightning',
 						title: i18n.t('lightning:channel_opened_title'),
 						description: i18n.t('lightning:channel_opened_msg'),
 					});

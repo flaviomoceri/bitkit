@@ -9,7 +9,7 @@ import { StyleSheet, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { Text01S, Text02S } from '../../../styles/text';
+import { BodyM, BodyS } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import GradientView from '../../../components/GradientView';
 import NumberPad from '../../../components/NumberPad';
@@ -82,17 +82,17 @@ const ChoosePIN = ({
 				title={t(origPIN ? 'pin_retype_header' : 'pin_choose_header')}
 			/>
 
-			<Text01S style={styles.text} color="gray1">
+			<BodyM style={styles.text} color="white50">
 				{t(origPIN ? 'pin_retype_text' : 'pin_choose_text')}
-			</Text01S>
+			</BodyM>
 
 			<View style={styles.tryAgain}>
 				{tryAgain ? (
-					<Text02S color="brand" testID="WrongPIN">
+					<BodyS color="brand" testID="WrongPIN">
 						{t('pin_not_match')}
-					</Text02S>
+					</BodyS>
 				) : (
-					<Text02S> </Text02S>
+					<BodyS> </BodyS>
 				)}
 			</View>
 

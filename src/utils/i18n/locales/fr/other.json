@@ -10,7 +10,7 @@
   "qr_error_network_header": "Réseau incorrect",
   "qr_error_network_text": "Bitkit est actuellement réglé sur {selectedNetwork} mais les données sont pour {dataNetwork}.",
   "qr_paste": "Collez le QR code ",
-  "buy_header": "Bitcoin\n<orange>pour Bitkit.</orange>",
+  "buy_header": "Bitcoin\n<accent>pour Bitkit.</accent>",
   "buy_button": "Acheter du bitcoin",
   "connection_lost_title": "Connexion Bitkit perdue",
   "connection_lost_message": "Veuillez vérifier les paramètres de votre serveur Electrum.",

@@ -4,7 +4,7 @@ import Share, { ShareOptions } from 'react-native-share';
 import { useTranslation } from 'react-i18next';
 
 import { TextInput, View } from '../../../styles/components';
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import NavigationHeader from '../../../components/NavigationHeader';
 import KeyboardAvoidingView from '../../../components/KeyboardAvoidingView';
 import SafeAreaInset from '../../../components/SafeAreaInset';
@@ -89,7 +89,7 @@ const ExportToPhone = ({
 				}}
 			/>
 			<KeyboardAvoidingView style={styles.content}>
-				<Text01S color="gray1">{t('export_text')}</Text01S>
+				<BodyM color="white50">{t('export_text')}</BodyM>
 				<TextInput
 					style={styles.textField}
 					placeholder={t('export_password')}

@@ -11,29 +11,56 @@ import {
 	NativeSyntheticEvent,
 	StyleProp,
 	StyleSheet,
+	View,
 	ViewStyle,
-} from 'react-native';
-import { useAppSelector } from '../../hooks/redux';
-import { useNavigation } from '@react-navigation/native';
-import {
-	FlatList,
 	RefreshControl,
-	GestureType,
-} from 'react-native-gesture-handler';
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { FlatList, GestureType } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
-import { Caption13Up, Text01S } from '../../styles/text';
+import { Caption13Up, BodyM, BodySSB } from '../../styles/text';
+import Button from '../../components/Button';
+import ListItem from './ListItem';
+import useColors from '../../hooks/colors';
+import { useAppSelector } from '../../hooks/redux';
 import { refreshWallet } from '../../utils/wallet';
 import {
 	groupActivityItems,
 	filterActivityItems,
 	TActivityFilter,
 } from '../../utils/activity';
-import ListItem from './ListItem';
 import { RootNavigationProp } from '../../navigation/types';
 import { activityItemsSelector } from '../../store/reselect/activity';
 import { tagsSelector } from '../../store/reselect/metadata';
 import { IActivityItem } from '../../store/types/activity';
+
+const ListFooter = ({ showButton }: { showButton?: boolean }): ReactElement => {
+	const { t } = useTranslation('wallet');
+	const navigation = useNavigation<RootNavigationProp>();
+
+	const onPress = (): void => {
+		navigation.navigate('Wallet', { screen: 'ActivityFiltered' });
+	};
+
+	if (showButton) {
+		return (
+			<>
+				<Button
+					style={styles.button}
+					text={<BodySSB color="white80">{t('activity_show_all')}</BodySSB>}
+					size="large"
+					variant="transparent"
+					testID="ActivityShowAll"
+					onPress={onPress}
+				/>
+				<View style={styles.bottomSpacer} />
+			</>
+		);
+	}
+
+	return <View style={styles.bottomSpacer} />;
+};
 
 const ActivityList = ({
 	style,
@@ -41,6 +68,7 @@ const ActivityList = ({
 	contentContainerStyle,
 	progressViewOffset,
 	filter = {},
+	showFooterButton,
 	onScroll,
 }: {
 	style?: StyleProp<ViewStyle>;
@@ -48,8 +76,10 @@ const ActivityList = ({
 	contentContainerStyle?: StyleProp<ViewStyle>;
 	progressViewOffset?: number;
 	filter?: TActivityFilter;
+	showFooterButton?: boolean;
 	onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 }): ReactElement => {
+	const colors = useColors();
 	const { t } = useTranslation('wallet');
 	const navigation = useNavigation<RootNavigationProp>();
 	const items = useAppSelector(activityItemsSelector);
@@ -76,7 +106,7 @@ const ActivityList = ({
 		}): ReactElement => {
 			if (typeof item === 'string') {
 				return (
-					<Caption13Up color="gray1" style={styles.category} key={item}>
+					<Caption13Up color="white50" style={styles.category} key={item}>
 						{item}
 					</Caption13Up>
 				);
@@ -107,23 +137,25 @@ const ActivityList = ({
 	return (
 		<FlatList
 			style={[styles.content, style]}
-			simultaneousHandlers={simultaneousHandlers}
 			contentContainerStyle={contentContainerStyle}
-			showsVerticalScrollIndicator={false}
 			data={groupedItems}
+			simultaneousHandlers={simultaneousHandlers}
+			showsVerticalScrollIndicator={false}
 			renderItem={renderItem}
-			onScroll={onScroll}
 			keyExtractor={(item): string => {
 				return typeof item === 'string' ? item : item.id;
 			}}
 			refreshControl={
 				<RefreshControl
 					refreshing={refreshing}
-					onRefresh={onRefresh}
 					progressViewOffset={progressViewOffset}
+					tintColor={colors.refreshControl}
+					onRefresh={onRefresh}
 				/>
 			}
-			ListEmptyComponent={<Text01S color="gray1">{t('activity_no')}</Text01S>}
+			ListEmptyComponent={<BodyM color="white50">{t('activity_no')}</BodyM>}
+			ListFooterComponent={<ListFooter showButton={showFooterButton} />}
+			onScroll={onScroll}
 		/>
 	);
 };
@@ -131,10 +163,16 @@ const ActivityList = ({
 const styles = StyleSheet.create({
 	content: {
 		paddingTop: 20,
-		paddingBottom: 100,
 	},
 	category: {
 		marginBottom: 16,
+	},
+	button: {
+		marginTop: -24,
+		marginBottom: 16,
+	},
+	bottomSpacer: {
+		height: 120,
 	},
 });
 

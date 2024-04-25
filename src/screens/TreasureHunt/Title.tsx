@@ -24,7 +24,7 @@ export const Title = ({
 		fontSize,
 	);
 
-	const gradient = ['#FF6600', '#FFD200'];
+	const gradient = ['#FF4400', '#FFD200'];
 	const words = text.split(' ');
 	const firstWords = words.slice(0, words.length - 1).join(' ');
 	const lastWord = words.pop()!;

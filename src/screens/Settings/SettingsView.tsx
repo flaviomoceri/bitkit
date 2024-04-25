@@ -3,7 +3,7 @@ import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { View as ThemedView } from '../../styles/components';
-import { Text01S, Text02S } from '../../styles/text';
+import { BodyM, BodyS } from '../../styles/text';
 import SearchInput from '../../components/SearchInput';
 import List, { IListData } from '../../components/List';
 import NavigationHeader from '../../components/NavigationHeader';
@@ -77,7 +77,7 @@ const SettingsView = ({
 
 			{headerText && (
 				<View style={styles.headerText}>
-					<Text01S color="gray1">{headerText}</Text01S>
+					<BodyM color="white50">{headerText}</BodyM>
 				</View>
 			)}
 
@@ -101,7 +101,7 @@ const SettingsView = ({
 
 			{footerText && (
 				<View style={styles.footerText}>
-					<Text02S color="gray1">{footerText}</Text02S>
+					<BodyS color="white50">{footerText}</BodyS>
 				</View>
 			)}
 
@@ -109,19 +109,19 @@ const SettingsView = ({
 				<View style={styles.childrenContent}>{children}</View>
 			)}
 
-			<SafeAreaInset type="bottom" minPadding={16} />
+			{fullHeight && <SafeAreaInset type="bottom" minPadding={16} />}
 		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
 	searchInput: {
+		marginVertical: 16,
 		marginHorizontal: 16,
-		marginBottom: 16,
 	},
 	headerText: {
+		marginVertical: 16,
 		marginHorizontal: 16,
-		marginBottom: 27,
 	},
 	footerText: {
 		marginVertical: 16,

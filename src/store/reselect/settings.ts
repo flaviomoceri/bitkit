@@ -106,6 +106,10 @@ export const showWidgetsSelector = createSelector(
 	[settingsState],
 	(settings): boolean => settings.showWidgets,
 );
+export const showWidgetTitlesSelector = createSelector(
+	[settingsState],
+	(settings): boolean => settings.showWidgetTitles,
+);
 export const receivePreferenceSelector = createSelector(
 	[settingsState],
 	(settings): TReceiveOption[] => settings.receivePreference,

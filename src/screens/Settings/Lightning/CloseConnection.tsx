@@ -1,12 +1,11 @@
 import React, { ReactElement, memo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../../styles/components';
-import { Text01B, Text01S } from '../../../styles/text';
+import { BodyMB, BodyM } from '../../../styles/text';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import NavigationHeader from '../../../components/NavigationHeader';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import { useAppSelector } from '../../../hooks/redux';
 import { showToast } from '../../../utils/notifications';
@@ -72,17 +71,17 @@ const CloseConnection = ({
 				onClosePress={(): void => navigation.navigate('Wallet')}
 			/>
 			<View style={styles.content}>
-				<Text01S color="gray1">
+				<BodyM color="white50">
 					<Trans
 						t={t}
 						i18nKey="close_text"
-						components={{
-							white: <Text01B color="white" />,
-						}}
+						components={{ accent: <BodyMB color="white" /> }}
 					/>
-				</Text01S>
+				</BodyM>
 
-				<GlowImage image={imageSrc} imageSize={200} glowColor="yellow" />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
 
 				<View style={styles.buttonContainer}>
 					<Button
@@ -92,7 +91,6 @@ const CloseConnection = ({
 						variant="secondary"
 						onPress={navigation.goBack}
 					/>
-					<View style={styles.divider} />
 					<Button
 						style={styles.button}
 						text={t('close_button')}
@@ -114,19 +112,30 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		flex: 1,
-		marginTop: 8,
+		paddingTop: 16,
 		paddingHorizontal: 16,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',
 		flexDirection: 'row',
 		alignItems: 'center',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

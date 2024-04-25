@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { BottomSheetTextInput } from '../../../styles/components';
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
@@ -26,7 +26,7 @@ const ConfirmPassphrase = ({
 		<GradientView style={styles.gradient}>
 			<BottomSheetNavigationHeader title={t('pass_confirm')} />
 			<View style={styles.container}>
-				<Text01S color="gray1">{t('pass_confirm_text')}</Text01S>
+				<BodyM color="white50">{t('pass_confirm_text')}</BodyM>
 
 				<View style={styles.input}>
 					<BottomSheetTextInput
@@ -46,7 +46,7 @@ const ConfirmPassphrase = ({
 						disabled={bip39Passphrase !== origPass}
 						size="large"
 						text={t('continue')}
-						onPress={(): void => navigation.navigate('Result')}
+						onPress={(): void => navigation.navigate('Success')}
 					/>
 				</View>
 			</View>

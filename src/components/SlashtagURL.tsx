@@ -4,7 +4,7 @@ import { parse } from '@synonymdev/slashtags-url';
 import { TouchableOpacity } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
-import { Caption13S, Text01M, Text02M } from '../styles/text';
+import { Caption, BodyMSB, BodySSB } from '../styles/text';
 import { IThemeColors } from '../styles/themes';
 import { ellipsis } from '../utils/helpers';
 
@@ -28,11 +28,11 @@ const SlashtagURL = ({
 	const Text = useMemo(() => {
 		switch (size) {
 			case 'large':
-				return Text01M;
+				return BodyMSB;
 			case 'medium':
-				return Text02M;
+				return BodySSB;
 			case 'small':
-				return Caption13S;
+				return Caption;
 		}
 	}, [size]);
 

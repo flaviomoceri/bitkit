@@ -5,7 +5,7 @@
   "qr_scan": "Escanear código QR",
   "qr_error_network_header": "Red incorrecta",
   "qr_paste": "Pegar código QR",
-  "buy_header": "Bitcoin\n<orange>para Bitkit.</orange>",
+  "buy_header": "Bitcoin\n<accent>para Bitkit.</accent>",
   "buy_button": "Comprar Bitcoin",
   "connection_lost_title": "Conexión a Bitkit perdida",
   "connection_lost_message": "Por favor, verifique la configuración de servidor Electrum.",

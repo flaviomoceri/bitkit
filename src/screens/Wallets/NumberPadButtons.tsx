@@ -9,7 +9,6 @@ import { IColors } from '../../styles/colors';
 
 type NumberPadButtons = {
 	color?: keyof IColors;
-	isMaxAmount?: boolean;
 	onMax?: () => void;
 	onChangeUnit?: () => void;
 	onDone?: () => void;
@@ -17,7 +16,6 @@ type NumberPadButtons = {
 
 const NumberPadButtons = ({
 	color = 'brand',
-	isMaxAmount = false,
 	onMax,
 	onChangeUnit,
 	onDone,
@@ -33,9 +31,7 @@ const NumberPadButtons = ({
 						color="white10"
 						testID="NumberPadButtonsMax"
 						onPressIn={onMax}>
-						<Caption13Up color={isMaxAmount ? 'orange' : color}>
-							{t('send_max')}
-						</Caption13Up>
+						<Caption13Up color={color}>{t('send_max')}</Caption13Up>
 					</Pressable>
 				)}
 			</View>
@@ -78,7 +74,7 @@ const styles = StyleSheet.create({
 		minHeight: 28,
 	},
 	button: {
-		paddingVertical: 7,
+		paddingVertical: 5,
 		paddingHorizontal: 8,
 		borderRadius: 8,
 		flexDirection: 'row',

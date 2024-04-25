@@ -261,15 +261,15 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 			/>
 			<View style={styles.content}>
 				<NumberPadTextField
-					onPress={onChangeUnit}
 					value={text}
 					testID="SendNumberField"
+					onPress={onChangeUnit}
 				/>
 
 				<View style={styles.numberPad} testID="SendAmountNumberPad">
 					<View style={styles.actions}>
 						<View>
-							<Caption13Up style={styles.availableAmountText} color="gray1">
+							<Caption13Up style={styles.availableAmountText} color="white50">
 								{t(
 									transaction.lightningInvoice
 										? 'send_availabe_spending'
@@ -278,7 +278,7 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 							</Caption13Up>
 							<Money
 								sats={availableAmount}
-								size="text02m"
+								size="bodySSB"
 								testID="AvailableAmount"
 								symbol={true}
 								{...availableAmountProps}
@@ -291,14 +291,7 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 									color="white10"
 									testID="SendNumberPadMax"
 									onPress={onMaxAmount}>
-									<Caption13Up
-										color={
-											isMaxSendAmount || transaction?.lightningInvoice
-												? 'orange'
-												: 'brand'
-										}>
-										{t('send_max')}
-									</Caption13Up>
+									<Caption13Up color="brand">{t('send_max')}</Caption13Up>
 								</TouchableOpacity>
 							</View>
 
@@ -371,7 +364,7 @@ const styles = StyleSheet.create({
 	},
 	actionButton: {
 		marginLeft: 16,
-		paddingVertical: 7,
+		paddingVertical: 5,
 		paddingHorizontal: 8,
 		borderRadius: 8,
 		flexDirection: 'row',

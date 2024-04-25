@@ -2,8 +2,8 @@ import React, { ReactElement } from 'react';
 import { Image, ImageSourcePropType, StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display, Text01S } from '../styles/text';
-import GlowingBackground from './GlowingBackground';
+import { Display, BodyM } from '../styles/text';
+import { View as ThemedView } from '../styles/components';
 import SafeAreaInset from './SafeAreaInset';
 import Button from './Button';
 import { IColors } from '../styles/colors';
@@ -28,7 +28,7 @@ const IntroScreen = ({
 	const { t } = useTranslation();
 
 	return (
-		<GlowingBackground topLeft={accentColor}>
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<View style={styles.content} testID={testID}>
 				<View style={styles.imageContainer}>
@@ -39,12 +39,12 @@ const IntroScreen = ({
 						<Trans
 							t={t}
 							i18nKey={title}
-							components={{ highlight: <Display color={accentColor} /> }}
+							components={{ accent: <Display color={accentColor} /> }}
 						/>
 					</Display>
-					<Text01S style={styles.description} color="gray1">
+					<BodyM style={styles.description} color="white50">
 						{description}
-					</Text01S>
+					</BodyM>
 				</View>
 
 				<View style={styles.buttonContainer}>
@@ -58,11 +58,14 @@ const IntroScreen = ({
 				</View>
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
+	root: {
+		flex: 1,
+	},
 	content: {
 		flex: 1,
 		marginHorizontal: 32,

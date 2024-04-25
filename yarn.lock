@@ -4041,11 +4041,6 @@
     colors "~1.2.1"
     string-argv "~0.3.1"
 
-"@sayem314/react-native-keep-awake@1.2.3":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@sayem314/react-native-keep-awake/-/react-native-keep-awake-1.2.3.tgz#e212bbd8be95296c37a75cde02c081f0e2602e46"
-  integrity sha512-Vk/1cYfEiZpKUKDH1c4NzRwSROcIRGjH/QY0/AnDoYTY01LJiqn9h7xKmLl7VtZlvgTkhcWwISpFSPYDU5TfwA==
-
 "@scure/base@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@scure/base/-/base-1.1.1.tgz#ebb651ee52ff84f420097055f4bf46cfba403938"

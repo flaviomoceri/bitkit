@@ -14,11 +14,12 @@ import {
 	rrect,
 	rect,
 	RoundedRect,
+	LinearGradient,
 } from '@shopify/react-native-skia';
 
-import { Pressable } from '../styles/components';
-import { Caption13M, Text01M } from '../styles/text';
 import { XIcon } from '../styles/icons';
+import { Pressable } from '../styles/components';
+import { BodyMSB, CaptionB } from '../styles/text';
 import { ITodo, TTodoType } from '../store/types/todos';
 import useColors from '../hooks/colors';
 import Card from './Card';
@@ -28,21 +29,25 @@ const CARD_SIZE = 152;
 const CARD_BORDER_RADIUS = 16;
 const GLOW_OFFSET = 25;
 
-const Glow = memo(({ color }: { color: string }): ReactElement => {
+const Shade = memo((): ReactElement => {
 	return (
 		<RoundedRect
 			x={GLOW_OFFSET}
 			y={GLOW_OFFSET}
 			width={CARD_SIZE}
 			height={CARD_SIZE}
-			r={CARD_BORDER_RADIUS}
-			opacity={0.3}>
-			<RadialGradient c={vec(0, 0)} r={250} colors={[color, 'black']} />
+			r={CARD_BORDER_RADIUS}>
+			<LinearGradient
+				start={vec(0, 0)}
+				end={vec(0, CARD_SIZE)}
+				positions={[0.4, 1]}
+				colors={['transparent', 'black']}
+			/>
 		</RoundedRect>
 	);
 });
 
-const IntenseGlow = memo((): ReactElement => {
+const Glow = memo((): ReactElement => {
 	const shadowBlur = 15;
 	const shadowSpread = 5;
 	const borderSpread = 1;
@@ -113,21 +118,22 @@ const SuggestionCard = ({
 	}, [glowOpacity]);
 
 	return (
-		<Card style={containerStyle} testID={`Suggestion-${id}`}>
+		<Card style={containerStyle} color={color} testID={`Suggestion-${id}`}>
 			{dismissable ? (
-				<View style={styles.glowWrapper}>
+				<View style={styles.canvasWrapper}>
 					<Canvas style={styles.canvas}>
-						<Glow color={colors[color]} />
+						<Shade />
 					</Canvas>
 				</View>
 			) : (
 				<>
-					<Animated.View style={[styles.glowWrapper, { opacity: glowOpacity }]}>
+					<Animated.View
+						style={[styles.canvasWrapper, { opacity: glowOpacity }]}>
 						<Canvas style={styles.canvas}>
-							<IntenseGlow />
+							<Glow />
 						</Canvas>
 					</Animated.View>
-					<View style={styles.glowWrapper}>
+					<View style={styles.canvasWrapper}>
 						<Canvas style={styles.canvas}>
 							<RoundedRect
 								x={GLOW_OFFSET}
@@ -154,12 +160,12 @@ const SuggestionCard = ({
 					<Image style={styles.image} resizeMode="contain" source={image} />
 				</View>
 				<View>
-					<Text01M>{title}</Text01M>
-					<Caption13M
-						color={dismissable ? 'lightGray' : 'purple'}
+					<BodyMSB style={styles.title}>{title}</BodyMSB>
+					<CaptionB
+						color={dismissable ? 'white50' : 'purple'}
 						numberOfLines={1}>
 						{description}
-					</Caption13M>
+					</CaptionB>
 				</View>
 			</Pressable>
 
@@ -169,7 +175,7 @@ const SuggestionCard = ({
 					style={styles.dismiss}
 					onPress={(): void => onClose(id)}
 					testID="SuggestionDismiss">
-					<XIcon width={18} height={18} color="gray1" />
+					<XIcon width={18} height={18} color="white50" />
 				</Pressable>
 			)}
 		</Card>
@@ -201,7 +207,7 @@ const styles = StyleSheet.create({
 		height: 80,
 		width: 80,
 	},
-	glowWrapper: {
+	canvasWrapper: {
 		width: 200,
 		height: 200,
 		position: 'absolute',
@@ -210,6 +216,13 @@ const styles = StyleSheet.create({
 	},
 	canvas: {
 		flex: 1,
+	},
+	title: {
+		fontFamily: 'InterTight-Black',
+		fontSize: 20,
+		lineHeight: 20,
+		letterSpacing: -0.5,
+		textTransform: 'uppercase',
 	},
 });
 

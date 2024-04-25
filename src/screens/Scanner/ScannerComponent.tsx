@@ -13,7 +13,7 @@ import RNQRGenerator from 'rn-qr-generator';
 import { useTranslation } from 'react-i18next';
 
 import { AnimatedView } from '../../styles/components';
-import { Text02M } from '../../styles/text';
+import { BodySSB } from '../../styles/text';
 import {
 	ClipboardTextIcon,
 	PictureIcon,
@@ -182,9 +182,9 @@ const ScannerComponent = ({
 								color="transparent"
 								entering={FadeIn}
 								exiting={FadeOut}>
-								<Text02M style={styles.error} color="brand">
+								<BodySSB style={styles.error} color="brand">
 									{error}
-								</Text02M>
+								</BodySSB>
 							</AnimatedView>
 						)}
 					</Background>

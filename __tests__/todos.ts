@@ -17,6 +17,10 @@ import {
 	slashtagsProfileTodo,
 	transferPendingTodo,
 	transferClosingChannelTodo,
+	supportTodo,
+	inviteTodo,
+	// fastpayTodo,
+	// discountTodo,
 } from '../src/store/shapes/todos';
 import { createNewWallet } from '../src/utils/startup';
 import { EAvailableNetwork } from '../src/utils/networks';
@@ -40,8 +44,12 @@ describe('Todos selector', () => {
 			backupSeedPhraseTodo,
 			lightningTodo,
 			pinTodo,
-			slashtagsProfileTodo,
 			buyBitcoinTodo,
+			supportTodo,
+			inviteTodo,
+			// fastpayTodo,
+			slashtagsProfileTodo,
+			// discountTodo,
 		]);
 	});
 
@@ -90,9 +98,11 @@ describe('Todos selector', () => {
 			backupSeedPhrase: +new Date(),
 			btFailed: +new Date(),
 			buyBitcoin: +new Date(),
+			invite: +new Date(),
 			lightning: +new Date(),
 			pin: +new Date(),
 			slashtagsProfile: +new Date(),
+			support: +new Date(),
 		};
 
 		assert.deepEqual(todosFullSelector(state), []);
@@ -128,7 +138,7 @@ describe('Todos selector', () => {
 		);
 	});
 
-	it('should return transferPendingTodo for addtional pending transfers to spending', () => {
+	it('should return lightningSettingUpTodo for addtional pending transfers to spending', () => {
 		const state = cloneDeep(s);
 		const channel1 = {
 			channel_id: 'channel1',
@@ -144,7 +154,7 @@ describe('Todos selector', () => {
 			orderId: 'order1',
 		});
 		expect(todosFullSelector(state)).toEqual(
-			expect.arrayContaining([{ ...transferPendingTodo, duration: 10 }]),
+			expect.arrayContaining([lightningSettingUpTodo]),
 		);
 	});
 

@@ -1,11 +1,10 @@
 import React, { memo, ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { Image, StyleSheet, View } from 'react-native';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { Text01S } from '../../../styles/text';
+import { BodyM, Display } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';
@@ -38,29 +37,31 @@ const PINPrompt = ({
 				title={t('pin_security_header')}
 				displayBackButton={false}
 			/>
-			<Text01S color="white50">{t('pin_security_text')}</Text01S>
-
-			<GlowImage image={imageSrc} imageSize={150} glowColor="green" />
-
+			<Image style={styles.image} source={imageSrc} />
+			<Display>
+				<Trans
+					t={t}
+					i18nKey="pin_security_title"
+					components={{ accent: <Display color="green" /> }}
+				/>
+			</Display>
+			<BodyM color="white50">{t('pin_security_text')}</BodyM>
 			<View style={styles.buttonContainer}>
 				{showLaterButton && (
-					<>
-						<Button
-							style={styles.button}
-							size="large"
-							variant="secondary"
-							text={t('later')}
-							onPress={onDismiss}
-						/>
-						<View style={styles.divider} />
-					</>
+					<Button
+						style={styles.button}
+						size="large"
+						variant="secondary"
+						text={t('later')}
+						onPress={onDismiss}
+					/>
 				)}
 				<Button
 					style={styles.button}
 					size="large"
 					text={t('pin_security_button')}
-					onPress={onContinue}
 					testID="SecureWallet"
+					onPress={onContinue}
 				/>
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
@@ -71,19 +72,24 @@ const PINPrompt = ({
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		alignItems: 'center',
-		paddingHorizontal: 32,
+		marginHorizontal: 32,
+	},
+	image: {
+		flex: 1,
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		resizeMode: 'contain',
+		marginTop: 'auto',
 	},
 	buttonContainer: {
-		marginTop: 'auto',
 		flexDirection: 'row',
 		justifyContent: 'center',
+		marginTop: 32,
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

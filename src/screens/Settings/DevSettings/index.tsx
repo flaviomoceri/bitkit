@@ -403,12 +403,7 @@ const DevSettings = ({
 
 	return (
 		<>
-			<SettingsView
-				title="Dev Settings"
-				listData={settingsListData}
-				showBackNavigation={true}
-			/>
-
+			<SettingsView title="Dev Settings" listData={settingsListData} />
 			<Dialog
 				visible={showDialog}
 				title="Export sensitive logs?"

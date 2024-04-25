@@ -26,7 +26,7 @@ import {
 	TransferIcon,
 	UsersIcon,
 } from '../../../styles/icons';
-import { Caption13M, Caption13Up, Text01M } from '../../../styles/text';
+import { CaptionB, Caption13Up, BodyMSB } from '../../../styles/text';
 import { IThemeColors } from '../../../styles/themes';
 import { i18nTime } from '../../../utils/i18n';
 import SettingsView from '../SettingsView';
@@ -109,8 +109,8 @@ const Status = ({
 				</ThemedView>
 			</View>
 			<View style={styles.desc}>
-				<Text01M>{title}</Text01M>
-				<Caption13M color="gray1">{subtitle}</Caption13M>
+				<BodyMSB>{title}</BodyMSB>
+				<CaptionB color="white50">{subtitle}</CaptionB>
 			</View>
 			{!disableRetry && showRetry && (
 				<TouchableOpacity onPress={retry} color="white16" style={styles.button}>
@@ -261,10 +261,9 @@ const BackupSettings = ({
 				title={t('backup.title')}
 				listData={settingsListData}
 				fullHeight={false}
-				showBackNavigation={true}
 			/>
 			<ScrollView style={styles.statusRoot}>
-				<Caption13Up style={styles.caption} color="gray1">
+				<Caption13Up style={styles.caption} color="white50">
 					{t('backup.latest')}
 				</Caption13Up>
 				{categories.map((c) => (
@@ -285,6 +284,7 @@ const styles = StyleSheet.create({
 	},
 	statusRoot: {
 		flex: 1,
+		marginTop: 28,
 	},
 	status: {
 		marginHorizontal: 16,

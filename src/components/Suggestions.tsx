@@ -7,11 +7,12 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import Carousel from 'react-native-reanimated-carousel';
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { StyleSheet, useWindowDimensions, Share } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { Caption13Up } from '../styles/text';
 import { View as ThemedView } from '../styles/components';
+import SuggestionCard from './SuggestionCard';
 import { ITodo, TTodoType } from '../store/types/todos';
 import { channelsNotificationsShown, hideTodo } from '../store/slices/todos';
 import { showBottomSheet } from '../store/utils/ui';
@@ -21,24 +22,20 @@ import {
 } from '../store/reselect/todos';
 import { lightningSettingUpStepSelector } from '../store/reselect/user';
 import { pinSelector } from '../store/reselect/settings';
-import type { RootNavigationProp } from '../navigation/types';
-import { useBalance } from '../hooks/wallet';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
-import Dialog from './Dialog';
-import SuggestionCard from './SuggestionCard';
+import type { RootNavigationProp } from '../navigation/types';
+import { appName, shareText } from '../constants/app';
 
 const Suggestions = (): ReactElement => {
 	const { t } = useTranslation('cards');
 	const navigation = useNavigation<RootNavigationProp>();
 	const { width } = useWindowDimensions();
-	const { onchainBalance } = useBalance();
 	const dispatch = useAppDispatch();
 	const pinTodoDone = useAppSelector(pinSelector);
 	const suggestions = useAppSelector(todosFullSelector);
 	const lightningSettingUpStep = useAppSelector(lightningSettingUpStepSelector);
 	const newChannels = useAppSelector(newChannelsNotificationsSelector);
 	const [index, setIndex] = useState(0);
-	const [showDialog, setShowDialog] = useState(false);
 
 	// this code is needed in order to avoid flashing wrong balance on channel open
 	// TODO: try to move/remove this
@@ -63,6 +60,11 @@ const Suggestions = (): ReactElement => {
 	// reset index on focus
 	useFocusEffect(useCallback(() => setIndex(0), []));
 
+	const onShare = useCallback(async (): Promise<void> => {
+		await Share.share({ title: appName, message: shareText });
+		dispatch(hideTodo('invite'));
+	}, [dispatch]);
+
 	const handleOnPress = useCallback(
 		(id: TTodoType): void => {
 			if (id === 'backupSeedPhrase') {
@@ -70,11 +72,7 @@ const Suggestions = (): ReactElement => {
 			}
 
 			if (id === 'lightning') {
-				if (onchainBalance > 0) {
-					navigation.navigate('LightningRoot', { screen: 'Introduction' });
-				} else {
-					setShowDialog(true);
-				}
+				navigation.navigate('LightningRoot', { screen: 'Introduction' });
 			}
 
 			if (id === 'lightningSettingUp') {
@@ -97,6 +95,14 @@ const Suggestions = (): ReactElement => {
 				navigation.navigate('BuyBitcoin');
 			}
 
+			if (id === 'invite') {
+				onShare();
+			}
+
+			if (id === 'support') {
+				navigation.navigate('Settings', { screen: 'SupportSettings' });
+			}
+
 			if (id === 'btFailed') {
 				navigation.navigate('Settings', {
 					screen: 'Channels',
@@ -104,7 +110,7 @@ const Suggestions = (): ReactElement => {
 				});
 			}
 		},
-		[onchainBalance, navigation, pinTodoDone],
+		[navigation, pinTodoDone, onShare],
 	);
 
 	const handleRenderItem = useCallback(
@@ -146,7 +152,10 @@ const Suggestions = (): ReactElement => {
 
 	return (
 		<>
-			<Caption13Up style={styles.title} color="gray1">
+			<Caption13Up
+				style={styles.title}
+				color="white50"
+				testID="SuggestionsLabel">
 				{t('suggestions')}
 			</Caption13Up>
 			<ThemedView style={styles.container} testID="Suggestions">
@@ -162,15 +171,6 @@ const Suggestions = (): ReactElement => {
 					renderItem={handleRenderItem}
 				/>
 			</ThemedView>
-			<Dialog
-				visible={showDialog}
-				title={t('lightning_no_funds_title')}
-				description={t('lightning_no_funds_desc')}
-				confirmText={t('ok')}
-				onConfirm={(): void => {
-					setShowDialog(false);
-				}}
-			/>
 		</>
 	);
 };

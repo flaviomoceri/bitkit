@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { View, TextInput, ScrollView } from '../../../styles/components';
-import { Text01S, Caption13Up } from '../../../styles/text';
+import { BodyM, Caption13Up } from '../../../styles/text';
 import { useAppSelector } from '../../../hooks/redux';
 import { gapLimitOptionsSelector } from '../../../store/reselect/wallet';
 import NavigationHeader from '../../../components/NavigationHeader';
@@ -76,7 +76,7 @@ const GapLimit = ({}: SettingsScreenProps<'GapLimit'>): ReactElement => {
 			<SafeAreaInset type="top" />
 			<NavigationHeader title={t('adv.gap_limit')} />
 			<ScrollView contentContainerStyle={styles.content} bounces={false}>
-				<Text01S color="gray1">Look Behind</Text01S>
+				<BodyM color="white50">Look Behind</BodyM>
 				<TextInput
 					style={styles.textInput}
 					value={lookBehind}
@@ -94,7 +94,7 @@ const GapLimit = ({}: SettingsScreenProps<'GapLimit'>): ReactElement => {
 					testID="LookBehind"
 				/>
 
-				<Caption13Up color="gray1" style={styles.label}>
+				<Caption13Up color="white50" style={styles.label}>
 					{'Look Ahead'}
 				</Caption13Up>
 				<TextInput
@@ -123,7 +123,6 @@ const GapLimit = ({}: SettingsScreenProps<'GapLimit'>): ReactElement => {
 						onPress={clearChanges}
 						disabled={!hasEdited}
 					/>
-					<View style={styles.divider} />
 					<Button
 						style={styles.button}
 						text={t('gap.save')}
@@ -157,14 +156,12 @@ const styles = StyleSheet.create({
 		marginTop: 5,
 	},
 	buttons: {
-		marginTop: 16,
 		flexDirection: 'row',
+		marginTop: 16,
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

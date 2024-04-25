@@ -27,7 +27,7 @@ import {
 	GlobeSimpleIcon,
 	LightningHollow,
 } from '../../../styles/icons';
-import { Caption13M, Text01M } from '../../../styles/text';
+import { CaptionB, BodyMSB } from '../../../styles/text';
 import { FAILED_BACKUP_CHECK_TIME } from '../../../utils/backup/backups-subscriber';
 import { i18nTime } from '../../../utils/i18n';
 import SettingsView from '../SettingsView';
@@ -76,8 +76,8 @@ const Status = ({
 				</ThemedView>
 			</View>
 			<View style={styles.desc}>
-				<Text01M>{t(`status.${item}.title`)}</Text01M>
-				<Caption13M color="gray1">{subtitle}</Caption13M>
+				<BodyMSB>{t(`status.${item}.title`)}</BodyMSB>
+				<CaptionB color="white50">{subtitle}</CaptionB>
 			</View>
 		</View>
 	);
@@ -198,10 +198,7 @@ const AppStatus = ({}: SettingsScreenProps<'AppStatus'>): ReactElement => {
 	];
 
 	return (
-		<SettingsView
-			title={t('status.title')}
-			fullHeight={true}
-			showBackNavigation={true}>
+		<SettingsView title={t('status.title')} fullHeight={true}>
 			<ScrollView style={styles.statusRoot}>
 				{items.map((it) => (
 					<Status key={it.item} {...it} />

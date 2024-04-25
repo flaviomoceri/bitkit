@@ -27,7 +27,7 @@ const SearchInput = ({
 		<ThemedView style={[styles.root, style]} color="white10">
 			<MagnifyingGlassIcon
 				style={styles.icon}
-				color={props.value ? 'brand' : 'gray1'}
+				color={props.value ? 'brand' : 'white50'}
 			/>
 			<TextInput style={styles.input} placeholder={t('search')} {...props} />
 			{children && <View style={styles.tags}>{children}</View>}

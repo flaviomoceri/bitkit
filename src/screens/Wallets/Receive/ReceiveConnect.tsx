@@ -1,17 +1,15 @@
 import React, { memo, ReactElement, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Caption13Up, Text01B, Text01S } from '../../../styles/text';
+import { Caption13Up, BodyMB, BodyM } from '../../../styles/text';
 import GradientView from '../../../components/GradientView';
 import AmountToggle from '../../../components/AmountToggle';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
-import GlowImage from '../../../components/GlowImage';
 import Money from '../../../components/Money';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { useScreenSize } from '../../../hooks/screen';
 import { useCurrency, useDisplayValues } from '../../../hooks/displayValues';
 import { useLightningBalance } from '../../../hooks/lightning';
 import { receiveSelector } from '../../../store/reselect/receive';
@@ -28,7 +26,7 @@ const ReceiveConnect = ({
 	navigation,
 }: ReceiveScreenProps<'ReceiveConnect'>): ReactElement => {
 	const { t } = useTranslation('wallet');
-	const { isSmallScreen } = useScreenSize();
+	// const { isSmallScreen } = useScreenSize();
 	const { fiatSymbol } = useCurrency();
 	const lightningBalance = useLightningBalance(true);
 	const [feeEstimate, setFeeEstimate] = useState(0);
@@ -79,15 +77,15 @@ const ReceiveConnect = ({
 	};
 
 	const isInitial = lightningBalance.localBalance === 0;
-	const imageSize = isSmallScreen ? 130 : 192;
+	// const imageSize = isSmallScreen ? 130 : 192;
 
 	return (
 		<GradientView style={styles.container}>
-			<BottomSheetNavigationHeader title={t('receive_instantly')} />
+			<BottomSheetNavigationHeader title={t('receive_bitcoin')} />
 			<View style={styles.content}>
-				<AmountToggle sats={amount} reverse={true} space={12} />
+				<AmountToggle amount={amount} />
 
-				<Text01S style={styles.text} color="gray1">
+				<BodyM style={styles.text} color="white50">
 					<Trans
 						t={t}
 						i18nKey={
@@ -95,13 +93,13 @@ const ReceiveConnect = ({
 								? 'receive_connect_initial'
 								: 'receive_connect_additional'
 						}
-						components={{ highlight: <Text01B color="white" /> }}
+						components={{ accent: <BodyMB color="white" /> }}
 						values={{ lspFee: `${fiatSymbol}${displayFee.fiatFormatted}` }}
 					/>
-				</Text01S>
+				</BodyM>
 
 				<View style={styles.payAmount}>
-					<Caption13Up style={styles.payAmountText} color="gray1">
+					<Caption13Up style={styles.payAmountText} color="white50">
 						{t('receive_will')}
 					</Caption13Up>
 					<Money
@@ -112,7 +110,9 @@ const ReceiveConnect = ({
 					/>
 				</View>
 
-				<GlowImage image={imageSrc} glowColor="purple" imageSize={imageSize} />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
 
 				<View style={styles.buttonContainer}>
 					<Button
@@ -145,6 +145,18 @@ const styles = StyleSheet.create({
 	},
 	payAmountText: {
 		marginBottom: 5,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		alignSelf: 'center',
+		alignItems: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',

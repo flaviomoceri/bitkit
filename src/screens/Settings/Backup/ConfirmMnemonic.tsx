@@ -2,7 +2,7 @@ import React, { memo, ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Text01S, Text01M } from '../../../styles/text';
+import { BodyM, BodyMSB } from '../../../styles/text';
 import { shuffleArray } from '../../../utils/helpers';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
@@ -20,10 +20,10 @@ const Word = ({
 	correct: boolean;
 }): ReactElement => {
 	return (
-		<Text01M style={styles.word}>
-			<Text01M color="white50">{number}. </Text01M>
-			<Text01M color={correct ? 'green' : 'red'}> {word}</Text01M>
-		</Text01M>
+		<BodyMSB style={styles.word}>
+			<BodyMSB color="white50">{number}. </BodyMSB>
+			<BodyMSB color={correct ? 'green' : 'red'}> {word}</BodyMSB>
+		</BodyMSB>
 	);
 };
 
@@ -75,15 +75,15 @@ const ConfirmMnemonic = ({
 		});
 	};
 
-	const showButton = seed.some((v, i) => origSeed[i] !== v);
+	const isDisabled = seed.some((v, i) => origSeed[i] !== v);
 
 	return (
 		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader title={t('mnemonic_confirm')} />
 
-			<Text01S color="gray1" style={styles.text}>
+			<BodyM color="white50" style={styles.text}>
 				{t('mnemonic_confirm_tap')}
-			</Text01S>
+			</BodyM>
 
 			<View style={styles.buttons}>
 				{shuffled.map((w, i) => {
@@ -119,20 +119,19 @@ const ConfirmMnemonic = ({
 			</View>
 
 			<View style={styles.buttonContainer}>
-				{!showButton && (
-					<Button
-						size="large"
-						text={t('continue')}
-						onPress={(): void => {
-							if (bip39Passphrase) {
-								navigation.navigate('ConfirmPassphrase', { bip39Passphrase });
-							} else {
-								navigation.navigate('Result');
-							}
-						}}
-						testID="ContinueConfirmMnemonic"
-					/>
-				)}
+				<Button
+					size="large"
+					text={t('continue')}
+					disabled={isDisabled}
+					testID="ContinueConfirmMnemonic"
+					onPress={(): void => {
+						if (bip39Passphrase) {
+							navigation.navigate('ConfirmPassphrase', { bip39Passphrase });
+						} else {
+							navigation.navigate('Success');
+						}
+					}}
+				/>
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
 		</GradientView>

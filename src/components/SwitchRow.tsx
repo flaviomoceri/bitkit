@@ -1,5 +1,11 @@
 import React, { memo, ReactElement, ReactNode } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+	View,
+	TouchableOpacity,
+	StyleSheet,
+	StyleProp,
+	ViewStyle,
+} from 'react-native';
 import { Switch } from '../styles/components';
 import { IThemeColors } from '../styles/themes';
 import Divider from './Divider';
@@ -9,20 +15,22 @@ const SwitchRow = ({
 	color,
 	isEnabled,
 	showDivider = true,
+	style,
 	onPress,
 }: {
 	children: ReactNode;
 	color?: keyof IThemeColors;
 	isEnabled: boolean;
 	showDivider?: boolean;
+	style?: StyleProp<ViewStyle>;
 	onPress: () => void;
 }): ReactElement => {
 	return (
 		<>
 			<TouchableOpacity
-				onPress={onPress}
+				style={[styles.container, style]}
 				activeOpacity={1}
-				style={styles.container}>
+				onPress={onPress}>
 				<View style={styles.leftColumn}>{children}</View>
 				<View style={styles.rightColumn}>
 					<Switch value={isEnabled} color={color} onValueChange={onPress} />

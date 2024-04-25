@@ -26,7 +26,7 @@ export const GradientText = ({
 		return <></>;
 	}
 
-	const gradient = ['#FF6600', '#FFD200'];
+	const gradient = ['#FF4400', '#FFD200'];
 	const textWidth = font.getTextWidth(text);
 
 	return (

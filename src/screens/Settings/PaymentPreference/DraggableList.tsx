@@ -12,7 +12,7 @@ import DraggableFlatList, {
 	ScaleDecorator,
 } from 'react-native-draggable-flatlist';
 
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import { ListIcon } from '../../../styles/icons';
 
 type Item = {
@@ -46,7 +46,7 @@ const DraggableList = ({
 					disabled={isActive}
 					onPressIn={drag}
 					onLongPress={drag}>
-					<Text01S color="white">{item.title}</Text01S>
+					<BodyM color="white">{item.title}</BodyM>
 					<View>
 						<ListIcon height={24} width={24} />
 					</View>

@@ -1,5 +1,6 @@
 import { LNURLWithdrawParams, LNURLPayParams } from 'js-lnurl';
 import { EActivityType, TOnchainActivityItem } from './activity';
+import { ReceiveStackParamList } from '../../navigation/bottom-sheet/ReceiveNavigation';
 import { SendStackParamList } from '../../navigation/bottom-sheet/SendNavigation';
 
 export type ViewControllerParamList = {
@@ -18,7 +19,7 @@ export type ViewControllerParamList = {
 	};
 	PINNavigation: { showLaterButton: boolean };
 	profileAddDataForm: undefined;
-	receiveNavigation: undefined;
+	receiveNavigation: { receiveScreen: keyof ReceiveStackParamList } | undefined;
 	sendNavigation: { screen: keyof SendStackParamList } | undefined;
 	slashauthModal: { url: string };
 	timeRangePrompt: undefined;
@@ -44,6 +45,7 @@ export type IViewControllerData = {
 	onchainActivityItem?: TOnchainActivityItem;
 	id?: string;
 	screen?: keyof SendStackParamList;
+	receiveScreen?: keyof ReceiveStackParamList;
 	showLaterButton?: boolean;
 	txId?: string;
 	url?: string;

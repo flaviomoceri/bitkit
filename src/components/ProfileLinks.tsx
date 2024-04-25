@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Caption13Up, Text02M, Text02S } from '../styles/text';
+import { Caption13Up, BodySSB, BodyS } from '../styles/text';
 import { TrashIcon } from '../styles/icons';
 import { LocalLink } from '../store/types/slashtags';
 import { useAppDispatch } from '../hooks/redux';
@@ -60,7 +60,7 @@ const ProfileLinks = ({
 		<View style={style}>
 			{!editable && links?.length === 0 && linksText ? (
 				<>
-					<Text02S color="gray1">{t('contact_no_links')}</Text02S>
+					<BodyS color="white50">{t('contact_no_links')}</BodyS>
 					<Divider />
 				</>
 			) : (
@@ -88,10 +88,10 @@ const ProfileLinks = ({
 							onPress={(): void => {
 								openAppURL(link.url);
 							}}>
-							<Caption13Up style={styles.label} color="gray1">
+							<Caption13Up style={styles.label} color="white50">
 								{link.title}
 							</Caption13Up>
-							<Text02M numberOfLines={1}>{trimmedUrl}</Text02M>
+							<BodySSB numberOfLines={1}>{trimmedUrl}</BodySSB>
 							<Divider />
 						</TouchableOpacity>
 					);

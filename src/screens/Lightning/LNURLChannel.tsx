@@ -1,11 +1,11 @@
 import React, { ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useAppSelector } from '../../hooks/redux';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
-import { Caption13M, Caption13Up, Display, Text01S } from '../../styles/text';
+import { CaptionB, Caption13Up, Display, BodyM } from '../../styles/text';
+import { View as ThemedView } from '../../styles/components';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import GlowingBackground from '../../components/GlowingBackground';
 import NavigationHeader from '../../components/NavigationHeader';
 import { ellipsis } from '../../utils/helpers';
 import type { LightningScreenProps } from '../../navigation/types';
@@ -54,34 +54,38 @@ const LNURLChannel = ({
 	};
 
 	return (
-		<GlowingBackground topLeft="purple">
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('lnurl_channel_header')}
 				onClosePress={handleCancel}
 				displayBackButton={false}
 			/>
-			<View style={styles.root}>
-				<Display color="purple" style={styles.title}>
-					{t('lnurl_channel_title')}
+			<View style={styles.content}>
+				<Display style={styles.title}>
+					<Trans
+						t={t}
+						i18nKey="lnurl_channel_title"
+						components={{ accent: <Display color="purple" /> }}
+					/>
 				</Display>
-				<Text01S color="gray1">{t('lnurl_channel_message')}</Text01S>
-				<Caption13Up color="gray1" style={styles.lsp}>
+				<BodyM color="white50">{t('lnurl_channel_message')}</BodyM>
+				<Caption13Up color="white50" style={styles.lsp}>
 					{t('lnurl_channel_lsp')}
 				</Caption13Up>
 				<View style={styles.row}>
-					<Caption13M>{t('lnurl_channel_node')}</Caption13M>
-					<Caption13M>{ellipsis(node, 32)}</Caption13M>
+					<CaptionB>{t('lnurl_channel_node')}</CaptionB>
+					<CaptionB>{ellipsis(node, 32)}</CaptionB>
 				</View>
 				<Divider />
 				<View style={styles.row}>
-					<Caption13M>{t('lnurl_channel_host')}</Caption13M>
-					<Caption13M>{host}</Caption13M>
+					<CaptionB>{t('lnurl_channel_host')}</CaptionB>
+					<CaptionB>{host}</CaptionB>
 				</View>
 				<Divider />
 				<View style={styles.row}>
-					<Caption13M>{t('lnurl_channel_port')}</Caption13M>
-					<Caption13M>{port}</Caption13M>
+					<CaptionB>{t('lnurl_channel_port')}</CaptionB>
+					<CaptionB>{port}</CaptionB>
 				</View>
 				<Divider />
 			</View>
@@ -94,7 +98,6 @@ const LNURLChannel = ({
 					text={t('cancel')}
 					onPress={handleCancel}
 				/>
-				<View style={styles.divider} />
 				<Button
 					style={styles.button}
 					size="large"
@@ -105,14 +108,17 @@ const LNURLChannel = ({
 				/>
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
-		</GlowingBackground>
+		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
 	root: {
 		flex: 1,
-		marginTop: 8,
+	},
+	content: {
+		flex: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
 	title: {
@@ -132,12 +138,10 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		marginTop: 'auto',
 		paddingHorizontal: 16,
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

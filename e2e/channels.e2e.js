@@ -68,7 +68,6 @@ d('LN Channel Onboarding', () => {
 
 			// receive BTC
 			await element(by.id('Receive')).tap();
-			await element(by.id('UnderstoodButton')).tap();
 			// get address from qrcode
 			await waitFor(element(by.id('QRCode'))).toBeVisible();
 			await sleep(100); // wait for qr code to render
@@ -85,7 +84,8 @@ d('LN Channel Onboarding', () => {
 			await element(by.id('NewTxPrompt')).swipe('down'); // close Receive screen
 
 			await element(by.id('Suggestion-lightning')).tap();
-			await element(by.id('QuickSetupButton')).tap();
+			await element(by.id('LnIntroduction-button')).tap();
+			await element(by.id('FundTransfer')).tap();
 			// set spending balance to zero
 			await element(by.id('SliderHandle')).swipe('left');
 			const button = element(by.id('QuickSetupContinue'));
@@ -142,9 +142,8 @@ d('LN Channel Onboarding', () => {
 			await waitFor(element(by.id('Suggestion-lightningSettingUp')))
 				.toBeVisible()
 				.withTimeout(10000);
-			await element(by.id('BitcoinAsset')).tap();
 			await element(by.id('TransferButton')).tap();
-			await element(by.id('CustomSetupButton')).tap();
+			await element(by.id('QuickSetupAdvanced')).tap();
 
 			// NumberPad
 			await element(by.id('CustomSetupCustomAmount')).tap();

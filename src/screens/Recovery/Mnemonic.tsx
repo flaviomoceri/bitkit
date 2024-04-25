@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../styles/components';
-import { Text01M, Text01S } from '../../styles/text';
+import { BodyMSB, BodyM } from '../../styles/text';
 import { showToast } from '../../utils/notifications';
 import { getBip39Passphrase, getMnemonicPhrase } from '../../utils/wallet';
 import NavigationHeader from '../../components/NavigationHeader';
@@ -48,11 +48,11 @@ const Mnemonic = ({
 			<SafeAreaInset type="top" />
 			<NavigationHeader title={t('mnemonic_phrase')} />
 			<View style={styles.content}>
-				<Text01S style={styles.text} color="gray1">
+				<BodyM style={styles.text} color="white50">
 					{t('mnemonic_write', { length: seed.length })}
-				</Text01S>
+				</BodyM>
 
-				<ThemedView color="gray324" style={styles.seed}>
+				<ThemedView style={styles.seed} color="white10">
 					<View style={styles.col}>
 						{seed.slice(0, seed.length / 2).map((w, i) => (
 							<Word key={i} word={w} number={i + 1} />
@@ -67,19 +67,17 @@ const Mnemonic = ({
 
 				{passphrase !== '' && (
 					<View style={styles.passphrase}>
-						<Text01S style={styles.passphrase} color="gray1">
+						<BodyM style={styles.passphrase} color="white50">
 							{t('pass_text')}
-						</Text01S>
-						<Text01M>
+						</BodyM>
+						<BodyMSB>
 							<Trans
 								t={t}
 								i18nKey="pass_recovery"
-								components={{
-									gray: <Text01M color="gray1" />,
-								}}
+								components={{ accent: <BodyMSB color="white50" /> }}
 								values={{ passphrase }}
 							/>
-						</Text01M>
+						</BodyMSB>
 					</View>
 				)}
 
@@ -103,6 +101,7 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		flex: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
 	text: {

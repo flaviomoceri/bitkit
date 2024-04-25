@@ -61,11 +61,6 @@ d('Onchain', () => {
 
 			for (let i = 0; i < 2; i++) {
 				await element(by.id('Receive')).tap();
-				if (i === 0) {
-					try {
-						await element(by.id('UnderstoodButton')).tap();
-					} catch (e) {}
-				}
 				await sleep(1000); // animation
 				// get address from qrcode
 				let { label: wAddress } = await element(
@@ -149,7 +144,7 @@ d('Onchain', () => {
 			).toHaveText('0');
 
 			// check Activity
-			await element(by.id('AssetsTitle')).swipe('up');
+			await element(by.id('TransferButton')).swipe('up');
 			await expect(element(by.id('ActivityShort-1'))).toBeVisible();
 			await expect(element(by.id('ActivityShort-2'))).toBeVisible();
 			await expect(element(by.id('ActivityShort-3'))).toBeVisible();
@@ -235,9 +230,6 @@ d('Onchain', () => {
 			}
 
 			await element(by.id('Receive')).tap();
-			try {
-				await element(by.id('UnderstoodButton')).tap();
-			} catch (e) {}
 			await sleep(1000); // animation
 			// get address from qrcode
 			await waitFor(element(by.id('QRCode'))).toBeVisible();
@@ -318,7 +310,7 @@ d('Onchain', () => {
 			).toHaveText('0');
 
 			// check number of outputs for send tx
-			await element(by.id('AssetsTitle')).swipe('up');
+			await element(by.id('TransferButton')).swipe('up');
 			await expect(element(by.id('ActivityShort-1'))).toBeVisible();
 			await expect(element(by.id('ActivityShort-2'))).toBeVisible();
 			await element(by.id('ActivityShowAll')).tap();

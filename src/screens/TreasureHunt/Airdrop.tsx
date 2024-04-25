@@ -9,7 +9,7 @@ import { StyleSheet, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { ldk } from '@synonymdev/react-native-ldk';
 
-import { Caption13M, Text01M } from '../../styles/text';
+import { CaptionB, BodyMSB } from '../../styles/text';
 import GradientView from '../../components/GradientView';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Title from './Title';
@@ -36,7 +36,7 @@ const lightningIcon = `
 			x2="8.46631"
 			y2="37.3364"
 			gradient-units="userSpaceOnUse">
-			<stop offset="0" stop-color="#FF6600" />
+			<stop offset="0" stop-color="#FF4400" />
 			<stop offset="0.4" stop-color="#FFD200" />
       	</linearGradient>
     </defs>
@@ -229,28 +229,28 @@ const Airdrop = ({
 						/>
 					</View>
 				</View>
-				<Text01M style={styles.description} color="yellow">
+				<BodyMSB style={styles.description} color="yellow">
 					{prize.description}
-				</Text01M>
+				</BodyMSB>
 				<View style={styles.note}>
 					{prize.winType === 'empty' && (
-						<Caption13M style={styles.noteText} color="yellow">
+						<CaptionB style={styles.noteText} color="yellow">
 							{prize.note}
-						</Caption13M>
+						</CaptionB>
 					)}
 					{prize.winType === 'winning' && (
-						<Caption13M style={styles.noteText} color="yellow">
+						<CaptionB style={styles.noteText} color="yellow">
 							{isPaid ? (
-								<Caption13M color="brand">
+								<CaptionB color="brand">
 									You have already received your payout.{' '}
-								</Caption13M>
+								</CaptionB>
 							) : (
-								<Caption13M color="yellow">
+								<CaptionB color="yellow">
 									The payout may take about a minute.{' '}
-								</Caption13M>
+								</CaptionB>
 							)}
 							{prize.note}
-						</Caption13M>
+						</CaptionB>
 					)}
 				</View>
 			</View>

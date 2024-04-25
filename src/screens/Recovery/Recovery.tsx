@@ -11,7 +11,7 @@ import { zipLogs } from '../../utils/lightning/logs';
 import { createSupportLink } from '../../utils/support';
 import { showToast } from '../../utils/notifications';
 import { View as ThemedView } from '../../styles/components';
-import { Text01S } from '../../styles/text';
+import { BodyM } from '../../styles/text';
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Button from '../../components/Button';
@@ -120,7 +120,7 @@ const Recovery = ({
 			<SafeAreaInset type="top" />
 			<NavigationHeader title={t('recovery')} displayBackButton={false} />
 			<View style={styles.content}>
-				<Text01S color="gray1">{t('recovery_text')}</Text01S>
+				<BodyM color="white50">{t('recovery_text')}</BodyM>
 
 				<View style={styles.buttons}>
 					<Button

@@ -2,7 +2,7 @@ import React, { ReactElement, memo, useCallback } from 'react';
 import { StyleSheet, Platform, View, TouchableOpacity } from 'react-native';
 import { useAppSelector } from '../../hooks/redux';
 
-import { Subtitle, Text02M } from '../../styles/text';
+import { Subtitle, BodySSB } from '../../styles/text';
 import GradientView from '../../components/GradientView';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import BlurView from '../../components/BlurView';
@@ -83,7 +83,7 @@ const Chest = ({
 						activeOpacity={0.8}
 						onPress={onOpen}>
 						<BlurView style={styles.buttonBlur}>
-							<Text02M style={styles.buttonText}>Try To Open</Text02M>
+							<BodySSB style={styles.buttonText}>Try To Open</BodySSB>
 						</BlurView>
 					</TouchableOpacity>
 				</View>
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
 	chestName: {
 		backgroundColor: 'black',
 		borderWidth: 4,
-		borderColor: '#FF6600',
+		borderColor: '#FF4400',
 		borderRadius: 48,
 		height: 48,
 		width: 48,

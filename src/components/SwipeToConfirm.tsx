@@ -3,7 +3,7 @@ import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../styles/components';
-import { Text02M } from '../styles/text';
+import { BodySSB } from '../styles/text';
 import { RightArrow } from '../styles/icons';
 import { IThemeColors } from '../styles/themes';
 import useColors from '../hooks/colors';
@@ -27,26 +27,27 @@ const PADDING = 8;
 interface ISwipeToConfirm {
 	text?: string;
 	color?: keyof IThemeColors;
-	onConfirm?: () => void;
 	icon?: ReactElement;
 	loading?: boolean;
 	confirmed: boolean;
 	style?: StyleProp<ViewStyle>;
+	onConfirm: () => void;
 }
 
 const SwipeToConfirm = ({
 	text,
 	color,
-	onConfirm,
 	icon,
 	loading,
 	confirmed,
 	style,
+	onConfirm,
 }: ISwipeToConfirm): ReactElement => {
 	const { t } = useTranslation('other');
 	text = text ?? t('swipe');
 	const colors = useColors();
-	const circleColor = color ? colors[color] : colors.green ?? colors.green;
+	const trailColor = color ? `${colors[color]}24` : colors.green24;
+	const circleColor = color ? colors[color] : colors.green;
 	const [containerWidth, setContainerWidth] = useState(0);
 	const endPosition = containerWidth === 0 ? 1 : containerWidth - CIRCLE_SIZE;
 
@@ -55,7 +56,6 @@ const SwipeToConfirm = ({
 
 	const panGestureHandler = useAnimatedGestureHandler({
 		onStart: (_, ctx) => {
-			// @ts-ignore
 			ctx.offsetX = panX.value;
 		},
 		onActive: (event, ctx) => {
@@ -67,13 +67,17 @@ const SwipeToConfirm = ({
 			panX.value = withSpring(finished ? endPosition : 0);
 
 			if (finished) {
-				// @ts-ignore
 				runOnJS(onConfirm)?.();
 			}
 		},
 	});
 
 	// Animated styles
+	const trailStyle = useAnimatedStyle(() => {
+		const width = panX.value + CIRCLE_SIZE;
+		return { width };
+	});
+
 	const circleTranslateXStyle = useAnimatedStyle(() => {
 		const translateX = panX.value;
 		return { transform: [{ translateX }] };
@@ -118,8 +122,11 @@ const SwipeToConfirm = ({
 					const ww = e.nativeEvent.layout.width;
 					setContainerWidth((w) => (w === 0 ? ww : w));
 				}}>
+				<Animated.View
+					style={[styles.trail, { backgroundColor: trailColor }, trailStyle]}
+				/>
 				<Animated.View style={textOpacityStyle}>
-					<Text02M>{text}</Text02M>
+					<BodySSB>{text}</BodySSB>
 				</Animated.View>
 				<PanGestureHandler onGestureEvent={panGestureHandler}>
 					<Animated.View
@@ -164,6 +171,14 @@ const styles = StyleSheet.create({
 		position: 'relative',
 		alignItems: 'center',
 		justifyContent: 'center',
+	},
+	trail: {
+		borderRadius: CIRCLE_SIZE,
+		position: 'absolute',
+		left: 0,
+		top: 0,
+		bottom: 0,
+		width: '100%',
 	},
 	grab: {
 		position: 'absolute',

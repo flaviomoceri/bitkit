@@ -2,16 +2,15 @@ import React, { ReactElement, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display, Text01B, Text01S, Text02B } from '../../styles/text';
-import GlowingBackground from '../../components/GlowingBackground';
+import { Display, BodyM, BodyMSB, BodySSB } from '../../styles/text';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Button from '../../components/Button';
 import CheckButton from '../../components/CheckButton';
+import VerticalShadow from '../../components/VerticalShadow';
 import { openURL } from '../../utils/helpers';
-import type { OnboardingStackScreenProps } from '../../navigation/types';
-
-import termsOfUseText from '../../assets/tos';
 import { wipeApp } from '../../store/utils/settings';
+import termsOfUseText from '../../assets/tos';
+import type { OnboardingStackScreenProps } from '../../navigation/types';
 
 const TermsOfUse = ({
 	navigation,
@@ -20,6 +19,14 @@ const TermsOfUse = ({
 	const [privacyPolicy, setPrivacyPolicy] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const { t } = useTranslation('onboarding');
+
+	const onTerms = (): void => {
+		openURL('https://bitkit.to/terms-of-use');
+	};
+
+	const onPrivacy = (): void => {
+		openURL('https://bitkit.to/privacy-policy');
+	};
 
 	const onPress = async (): Promise<void> => {
 		setLoading(true);
@@ -39,70 +46,62 @@ const TermsOfUse = ({
 	const isValid = termsOfUse && privacyPolicy && !loading;
 
 	return (
-		<GlowingBackground topLeft="brand">
+		<>
 			<SafeAreaInset type="top" />
 			<View style={styles.content}>
-				<ScrollView style={styles.tos} testID="TOS">
-					<Trans
-						t={t}
-						i18nKey="tos_header"
-						parent={Display}
-						components={{
-							brand: <Display color="brand" />,
-						}}
-					/>
+				<View style={styles.scrollViewContainer}>
+					<ScrollView style={styles.scrollView} testID="TOS">
+						<Trans
+							t={t}
+							i18nKey="tos_header"
+							parent={Display}
+							components={{ accent: <Display color="brand" /> }}
+						/>
 
-					<Text01S color="gray1" style={styles.text}>
-						{termsOfUseText}
-					</Text01S>
-				</ScrollView>
+						<BodyM color="white50" style={styles.text}>
+							{termsOfUseText}
+						</BodyM>
+					</ScrollView>
+
+					<View style={styles.shadowContainer}>
+						<VerticalShadow direction="bottom" />
+					</View>
+				</View>
 
 				<View style={styles.checkboxes}>
 					<CheckButton
-						label={<Text01B>{t('tos_checkbox')}</Text01B>}
+						label={<BodyMSB>{t('tos_checkbox')}</BodyMSB>}
 						description={
-							<Trans
-								t={t}
-								i18nKey="tos_checkbox_value"
-								components={{
-									gray: <Text02B color="gray1" />,
-									brand: (
-										<Text02B
-											color="brand"
-											onPress={(): void => {
-												openURL('https://bitkit.to/terms-of-use');
-											}}
-										/>
-									),
-								}}
-							/>
+							<BodySSB color="white50">
+								<Trans
+									t={t}
+									i18nKey="tos_checkbox_value"
+									components={{
+										accent: <BodySSB color="brand" onPress={onTerms} />,
+									}}
+								/>
+							</BodySSB>
 						}
 						checked={termsOfUse}
-						onPress={(): void => setTermsOfUse((prevState) => !prevState)}
 						testID="Check1"
+						onPress={(): void => setTermsOfUse((prevState) => !prevState)}
 					/>
 					<CheckButton
-						label={<Text01B>{t('pp_checkbox')}</Text01B>}
+						label={<BodyMSB>{t('pp_checkbox')}</BodyMSB>}
 						description={
-							<Trans
-								t={t}
-								i18nKey="pp_checkbox_value"
-								components={{
-									gray: <Text02B color="gray1" />,
-									brand: (
-										<Text02B
-											color="brand"
-											onPress={(): void => {
-												openURL('https://bitkit.to/privacy-policy');
-											}}
-										/>
-									),
-								}}
-							/>
+							<BodySSB color="white50">
+								<Trans
+									t={t}
+									i18nKey="pp_checkbox_value"
+									components={{
+										accent: <BodySSB color="brand" onPress={onPrivacy} />,
+									}}
+								/>
+							</BodySSB>
 						}
 						checked={privacyPolicy}
-						onPress={(): void => setPrivacyPolicy((prevState) => !prevState)}
 						testID="Check2"
+						onPress={(): void => setPrivacyPolicy((prevState) => !prevState)}
 					/>
 				</View>
 
@@ -117,7 +116,7 @@ const TermsOfUse = ({
 				</View>
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />
-		</GlowingBackground>
+		</>
 	);
 };
 
@@ -126,15 +125,27 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingHorizontal: 32,
 	},
-	tos: {
+	scrollViewContainer: {
+		flex: 1,
+		position: 'relative',
+	},
+	scrollView: {
 		flex: 1,
 		paddingTop: 48,
+		textTransform: 'uppercase',
+	},
+	shadowContainer: {
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		right: 0,
+		height: 70,
+		pointerEvents: 'none',
 	},
 	text: {
 		marginTop: 8,
 	},
 	checkboxes: {
-		paddingTop: 16,
 		marginTop: 'auto',
 	},
 	buttonContainer: {

@@ -2,7 +2,7 @@ import React, { ReactElement, memo, useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { ldk } from '@synonymdev/react-native-ldk';
 
-import { Subtitle, Text02M } from '../../styles/text';
+import { Subtitle, BodySSB } from '../../styles/text';
 import GradientView from '../../components/GradientView';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Title from './Title';
@@ -104,7 +104,7 @@ const Loading = ({
 				<View style={styles.footer}>
 					<ActivityIndicator color="white" />
 					<View style={styles.loadingText}>
-						<Text02M color="yellow">Trying To Open...</Text02M>
+						<BodySSB color="yellow">Trying To Open...</BodySSB>
 					</View>
 				</View>
 			</View>
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
 	chestName: {
 		backgroundColor: 'black',
 		borderWidth: 4,
-		borderColor: '#FF6600',
+		borderColor: '#FF4400',
 		borderRadius: 48,
 		height: 48,
 		width: 48,

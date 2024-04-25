@@ -4,7 +4,6 @@ export const MAX_WARNINGS = 3; // how many times to show high balance warning
 
 export type TUser = {
 	backupVerified: boolean;
-	betaRiskAccepted: boolean;
 	ignoreAppUpdateTimestamp: number;
 	ignoreBackupTimestamp: number;
 	ignoreHighBalanceCount: number;
@@ -19,7 +18,6 @@ export type TUser = {
 
 export const initialUserState: TUser = {
 	backupVerified: false,
-	betaRiskAccepted: false,
 	ignoreAppUpdateTimestamp: 0,
 	ignoreBackupTimestamp: 0,
 	ignoreHighBalanceCount: 0,
@@ -62,9 +60,6 @@ export const userSlice = createSlice({
 		verifyBackup: (state) => {
 			state.backupVerified = true;
 		},
-		acceptBetaRisk: (state) => {
-			state.betaRiskAccepted = true;
-		},
 		ignoreHideBalanceToast: (state) => {
 			state.ignoresHideBalanceToast = true;
 		},
@@ -86,7 +81,6 @@ export const {
 	startCoopCloseTimer,
 	clearCoopCloseTimer,
 	verifyBackup,
-	acceptBetaRisk,
 	ignoreHideBalanceToast,
 	ignoreSwitchUnitToast,
 	resetUserState,

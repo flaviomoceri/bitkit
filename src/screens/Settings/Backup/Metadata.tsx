@@ -1,12 +1,11 @@
 import React, { memo, ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Text01S, Text02B, Text02S } from '../../../styles/text';
+import { BodyM, BodySB, BodyS } from '../../../styles/text';
 import GradientView from '../../../components/GradientView';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { closeSheet } from '../../../store/slices/ui';
@@ -14,7 +13,7 @@ import { backupSelector } from '../../../store/reselect/backup';
 import { i18nTime } from '../../../utils/i18n';
 import { EBackupCategories } from '../../../store/utils/backup';
 
-const imageSrc = require('../../../assets/illustrations/tag.png');
+const imageSrc = require('../../../assets/illustrations/card.png');
 
 const Metadata = (): ReactElement => {
 	const { t } = useTranslation('security');
@@ -36,21 +35,21 @@ const Metadata = (): ReactElement => {
 		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader title={t('mnemonic_data_header')} />
 
-			<Text01S color="gray1" style={styles.text}>
+			<BodyM color="white50" style={styles.text}>
 				{t('mnemonic_data_text')}
-			</Text01S>
+			</BodyM>
 
-			<GlowImage image={imageSrc} imageSize={200} />
+			<View style={styles.imageContainer}>
+				<Image style={styles.image} source={imageSrc} />
+			</View>
 
 			<View style={styles.buttonContainer}>
 				{max && (
-					<Text02S style={styles.last}>
+					<BodyS style={styles.last}>
 						<Trans
 							t={t}
 							i18nKey="mnemonic_latest_backup"
-							components={{
-								bold: <Text02B />,
-							}}
+							components={{ bold: <BodySB /> }}
 							values={{
 								time: tTime('dateTime', {
 									v: new Date(max),
@@ -66,7 +65,7 @@ const Metadata = (): ReactElement => {
 								}),
 							}}
 						/>
-					</Text02S>
+					</BodyS>
 				)}
 				<Button
 					size="large"
@@ -86,6 +85,19 @@ const styles = StyleSheet.create({
 	},
 	text: {
 		paddingHorizontal: 32,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	last: {
 		marginBottom: 16,

@@ -3,16 +3,20 @@ import { IColors } from '../../styles/colors';
 
 export type TTodoType =
 	| 'backupSeedPhrase'
-	| 'pin'
+	| 'btFailed'
+	| 'buyBitcoin'
+	| 'discount'
+	| 'fastpay'
+	| 'invite'
 	| 'lightning'
 	| 'lightningSettingUp'
 	| 'lightningConnecting'
 	| 'lightningReady'
+	| 'slashtagsProfile'
+	| 'support'
 	| 'transferPending'
 	| 'transferClosingChannel'
-	| 'slashtagsProfile'
-	| 'buyBitcoin'
-	| 'btFailed';
+	| 'pin';
 
 export interface ITodo {
 	id: TTodoType;

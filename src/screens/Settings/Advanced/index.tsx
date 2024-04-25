@@ -150,12 +150,7 @@ const AdvancedSettings = ({
 
 	return (
 		<>
-			<SettingsView
-				title={t('advanced_title')}
-				listData={SettingsListData}
-				showBackNavigation={true}
-			/>
-
+			<SettingsView title={t('advanced_title')} listData={SettingsListData} />
 			<Dialog
 				visible={showDialog}
 				title={t('adv.reset_title')}

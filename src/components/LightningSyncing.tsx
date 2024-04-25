@@ -1,26 +1,29 @@
 import React, { ReactElement, useEffect, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { Image, StyleSheet, View, ViewStyle } from 'react-native';
 import Animated, {
 	Easing,
 	cancelAnimation,
 	runOnJS,
 	useSharedValue,
+	withDelay,
 	withRepeat,
+	withSequence,
 	withTiming,
 } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../hooks/redux';
 
-import { Text01S, Text02M } from '../styles/text';
+import { BodyM, BodySSB } from '../styles/text';
 import { AnimatedView } from '../styles/components';
 import SafeAreaInset from './SafeAreaInset';
 import BottomSheetNavigationHeader from './BottomSheetNavigationHeader';
-import GlowImage from './GlowImage';
 import GradientView from './GradientView';
+import { useAppSelector } from '../hooks/redux';
 import { isLDKReadySelector } from '../store/reselect/ui';
 import { __E2E__ } from '../constants/env';
 
 const imageSrc = require('../assets/illustrations/lightning.png');
+const imageSyncSmall = require('../assets/illustrations/ln-sync-small.png');
+const imageSyncLarge = require('../assets/illustrations/ln-sync-large.png');
 
 const LightningSyncing = ({
 	style,
@@ -36,12 +39,12 @@ const LightningSyncing = ({
 	const [hidden, setHidden] = useState(isLDKReady);
 
 	useEffect(() => {
-		// ldk is ready and LightningSyncing is already hidden, do nothing
+		// LDK is ready and LightningSyncing is already hidden, do nothing
 		if (isLDKReady && hidden) {
 			return;
 		}
 
-		// ldk is ready, but LightningSyncing is not yet hidden, let's hide it
+		// LDK is ready, but LightningSyncing is not yet hidden, let's hide it
 		if (isLDKReady && !hidden) {
 			rootOpacity.value = withTiming(0, { duration: 200 }, () => {
 				cancelAnimation(glowOpacity);
@@ -66,26 +69,90 @@ const LightningSyncing = ({
 		return <></>;
 	}
 
+	const animationLarge = (): { initialValues: {}; animations: {} } => {
+		'worklet';
+		const initialValues = { transform: [{ rotate: '0deg' }] };
+		const animations = {
+			transform: [
+				{
+					rotate: withRepeat(
+						withSequence(
+							withTiming('-180deg', {
+								duration: 1500,
+								easing: Easing.inOut(Easing.ease),
+							}),
+							withDelay(
+								100,
+								withTiming('-360deg', {
+									duration: 1500,
+									easing: Easing.inOut(Easing.ease),
+								}),
+							),
+						),
+						-1,
+					),
+				},
+			],
+		};
+		return { initialValues, animations };
+	};
+
+	const animationSmall = (): { initialValues: {}; animations: {} } => {
+		'worklet';
+		const initialValues = { transform: [{ rotate: '0deg' }] };
+		const animations = {
+			transform: [
+				{
+					rotate: withRepeat(
+						withSequence(
+							withTiming('180deg', {
+								duration: 1500,
+								easing: Easing.inOut(Easing.ease),
+							}),
+							withDelay(
+								100,
+								withTiming('360deg', {
+									duration: 1500,
+									easing: Easing.inOut(Easing.ease),
+								}),
+							),
+						),
+						-1,
+					),
+				},
+			],
+		};
+		return { initialValues, animations };
+	};
+
 	return (
 		<AnimatedView
-			testID="LightningSyncing"
-			style={[style, { opacity: rootOpacity }]}>
-			<GradientView style={styles.gradient}>
+			style={[style, { opacity: rootOpacity }]}
+			testID="LightningSyncing">
+			<GradientView style={styles.root}>
 				<BottomSheetNavigationHeader title={title} />
 				<View style={styles.content}>
-					<Text01S style={styles.description} color="gray1">
-						{t('wait_text_top')}
-					</Text01S>
+					<BodyM color="white50">{t('wait_text_top')}</BodyM>
 
-					<Animated.View style={[styles.glow, { opacity: glowOpacity }]}>
-						<GlowImage image={imageSrc} glowColor="purple" />
-					</Animated.View>
-
-					<View style={styles.bottomContainer}>
-						<Text02M style={styles.bottom} color="white32">
-							{t('wait_text_bottom')}
-						</Text02M>
+					<View style={styles.imageContainer}>
+						<View style={styles.animation}>
+							<Animated.Image
+								style={styles.circleSmall}
+								source={imageSyncSmall}
+								entering={__E2E__ ? undefined : animationSmall}
+							/>
+							<Animated.Image
+								style={styles.circleLarge}
+								source={imageSyncLarge}
+								entering={__E2E__ ? undefined : animationLarge}
+							/>
+						</View>
+						<Image style={styles.image} source={imageSrc} />
 					</View>
+
+					<BodySSB style={styles.bottom} color="white32">
+						{t('wait_text_bottom')}
+					</BodySSB>
 				</View>
 				<SafeAreaInset type="bottom" minPadding={16} />
 			</GradientView>
@@ -94,27 +161,53 @@ const LightningSyncing = ({
 };
 
 const styles = StyleSheet.create({
-	glow: {
-		flex: 1,
-	},
-	gradient: {
+	root: {
 		flex: 1,
 	},
 	content: {
 		flex: 1,
-		marginTop: 8,
 		paddingHorizontal: 16,
 	},
-	description: {
-		marginTop: 16,
-		marginBottom: 16,
-	},
-	bottomContainer: {
-		flexDirection: 'row',
+	imageContainer: {
+		flexShrink: 1,
 		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+		position: 'relative',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
+	},
+	animation: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		position: 'absolute',
+		width: 311,
+		aspectRatio: 1,
+	},
+	circleSmall: {
+		flex: 1,
+		position: 'absolute',
+		resizeMode: 'contain',
+		width: 207,
+		aspectRatio: 1,
+	},
+	circleLarge: {
+		flex: 1,
+		position: 'absolute',
+		resizeMode: 'contain',
+		width: 311,
+		aspectRatio: 1,
 	},
 	bottom: {
-		marginVertical: 18,
+		textAlign: 'center',
+		marginTop: 'auto',
+		marginBottom: 16,
 	},
 });
 

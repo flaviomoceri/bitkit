@@ -18,7 +18,7 @@ import {
 	View as ThemedView,
 	TextInput,
 } from '../../../styles/components';
-import { Caption13Up, Text01M } from '../../../styles/text';
+import { Caption13Up, BodyMSB } from '../../../styles/text';
 import {
 	ChevronRight,
 	DownArrow,
@@ -167,17 +167,17 @@ const Channel = memo(
 		return (
 			<TouchableOpacity
 				style={styles.nRoot}
-				onPress={(): void => onPress(channel)}
-				testID="Channel">
+				testID="Channel"
+				onPress={(): void => onPress(channel)}>
 				<View style={styles.nTitle}>
-					<Text01M
+					<BodyMSB
 						style={styles.nName}
-						color={closed ? 'gray1' : 'white'}
+						color={closed ? 'white50' : 'white'}
 						numberOfLines={1}
 						ellipsizeMode="middle">
 						{channelName}
-					</Text01M>
-					<ChevronRight color="gray1" height={24} />
+					</BodyMSB>
+					<ChevronRight color="white50" height={24} />
 				</View>
 				<LightningChannel channel={channel} status={getChannelStatus()} />
 			</TouchableOpacity>
@@ -391,7 +391,7 @@ const Channels = ({
 				}>
 				<View style={styles.balances}>
 					<View style={styles.balance}>
-						<Caption13Up color="gray1">{t('spending_label')}</Caption13Up>
+						<Caption13Up color="white50">{t('spending_label')}</Caption13Up>
 						<View style={styles.row}>
 							<UpArrow color="purple" width={22} height={22} />
 							<Money
@@ -403,7 +403,7 @@ const Channels = ({
 						</View>
 					</View>
 					<View style={styles.balance}>
-						<Caption13Up color="gray1">{t('receiving_label')}</Caption13Up>
+						<Caption13Up color="white50">{t('receiving_label')}</Caption13Up>
 						<View style={styles.row}>
 							<DownArrow color="white" width={22} height={22} />
 							<Money
@@ -418,7 +418,7 @@ const Channels = ({
 
 				{pendingConnections.length > 0 && (
 					<>
-						<Caption13Up color="gray1" style={styles.sectionTitle}>
+						<Caption13Up color="white50" style={styles.sectionTitle}>
 							{t('conn_pending')}
 						</Caption13Up>
 						<ChannelList
@@ -431,7 +431,7 @@ const Channels = ({
 
 				{openChannels.length > 0 && (
 					<>
-						<Caption13Up color="gray1" style={styles.sectionTitle}>
+						<Caption13Up color="white50" style={styles.sectionTitle}>
 							{t('conn_open')}
 						</Caption13Up>
 						<ChannelList
@@ -445,7 +445,7 @@ const Channels = ({
 					<AnimatedView entering={FadeIn} exiting={FadeOut}>
 						{closedChannels.length > 0 && (
 							<>
-								<Caption13Up color="gray1" style={styles.sectionTitle}>
+								<Caption13Up color="white50" style={styles.sectionTitle}>
 									{t('conn_closed')}
 								</Caption13Up>
 								<ChannelList
@@ -457,7 +457,7 @@ const Channels = ({
 						)}
 						{failedOrders.length > 0 && (
 							<>
-								<Caption13Up color="gray1" style={styles.sectionTitle}>
+								<Caption13Up color="white50" style={styles.sectionTitle}>
 									{t('conn_failed')}
 								</Caption13Up>
 								<ChannelList
@@ -482,11 +482,10 @@ const Channels = ({
 
 				{enableDevOptions && (
 					<>
-						<Caption13Up color="gray1" style={styles.sectionTitle}>
+						<Caption13Up color="white50" style={styles.sectionTitle}>
 							Dev Options
 						</Caption13Up>
 						<TextInput
-							selectionColor="orange"
 							autoCapitalize="none"
 							autoComplete="off"
 							autoCorrect={false}
@@ -673,7 +672,6 @@ const Channels = ({
 						variant="secondary"
 						onPress={handleExportLogs}
 					/>
-					<View style={styles.divider} />
 					<Button
 						style={styles.button}
 						text={t('conn_button_add')}
@@ -693,8 +691,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	content: {
-		paddingHorizontal: 16,
 		flexGrow: 1,
+		paddingTop: 16,
+		paddingHorizontal: 16,
 	},
 	balances: {
 		flexDirection: 'row',
@@ -747,12 +746,10 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

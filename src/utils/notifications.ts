@@ -2,7 +2,7 @@ import Toast from 'react-native-toast-message';
 import { __E2E__ } from '../constants/env';
 
 export type ToastOptions = {
-	type: 'success' | 'info' | 'warning' | 'error';
+	type: 'success' | 'info' | 'lightning' | 'warning' | 'error';
 	title: string;
 	description: string;
 	autoHide?: boolean;

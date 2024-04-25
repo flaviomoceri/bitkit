@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Reader } from '@synonymdev/slashtags-widget-price-feed';
 import { Pair } from '@synonymdev/slashtags-widget-price-feed/types/lib/reader';
 
-import { Caption13M, Text02M } from '../styles/text';
+import { CaptionB, BodySSB } from '../styles/text';
 import { useSlashfeed } from '../hooks/widgets';
 import { TFeedWidget } from '../store/types/widgets';
 import BaseFeedWidget from './BaseFeedWidget';
@@ -141,7 +141,6 @@ const PriceWidget = ({
 			style={style}
 			url={url}
 			name={t('widget_price')}
-			showTitle={widget.extras?.showTitle}
 			isLoading={loading}
 			isEditing={isEditing}
 			testID={testID}
@@ -155,15 +154,15 @@ const PriceWidget = ({
 							style={styles.row}
 							testID={`PriceWidgetRow-${field.name}`}>
 							<View style={styles.columnLeft}>
-								<Text02M color="gray1" numberOfLines={1}>
+								<BodySSB color="white50" numberOfLines={1}>
 									{field.name}
-								</Text02M>
+								</BodySSB>
 							</View>
 							<View style={styles.columnRight}>
-								<Text02M style={styles.change} color={field.change.color}>
+								<BodySSB style={styles.change} color={field.change.color}>
 									{field.change.formatted}
-								</Text02M>
-								<Text02M numberOfLines={1}>{field.price}</Text02M>
+								</BodySSB>
+								<BodySSB numberOfLines={1}>{field.price}</BodySSB>
 							</View>
 						</View>
 					);
@@ -172,9 +171,9 @@ const PriceWidget = ({
 				{(data.length === 0 || !data[0].pastValues || error) && (
 					<View style={styles.row}>
 						<View style={styles.columnLeft}>
-							<Caption13M color="gray1" numberOfLines={1}>
+							<CaptionB color="white50" numberOfLines={1}>
 								No historical data
-							</Caption13M>
+							</CaptionB>
 						</View>
 					</View>
 				)}
@@ -191,14 +190,14 @@ const PriceWidget = ({
 				{widget.extras?.showSource && config?.source && (
 					<View style={styles.source} testID="PriceWidgetSource">
 						<View style={styles.columnLeft}>
-							<Caption13M color="gray1" numberOfLines={1}>
+							<CaptionB color="white50" numberOfLines={1}>
 								{t('widget_source')}
-							</Caption13M>
+							</CaptionB>
 						</View>
 						<View style={styles.columnRight}>
-							<Caption13M color="gray1" numberOfLines={1}>
+							<CaptionB color="white50" numberOfLines={1}>
 								{config.source.name}
-							</Caption13M>
+							</CaptionB>
 						</View>
 					</View>
 				)}

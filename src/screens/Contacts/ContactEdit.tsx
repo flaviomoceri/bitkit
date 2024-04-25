@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { parse } from '@synonymdev/slashtags-url';
 
-import { Text02S } from '../../styles/text';
+import { BodyS } from '../../styles/text';
 import { View as ThemedView } from '../../styles/components';
 import Button from '../../components/Button';
 import Divider from '../../components/Divider';
@@ -99,7 +99,7 @@ const ContactEdit = ({
 
 				{myProfile && (
 					<View style={styles.error} testID="ContactError">
-						<Text02S color="brand">{t('contact_error_yourself')}</Text02S>
+						<BodyS color="brand">{t('contact_error_yourself')}</BodyS>
 					</View>
 				)}
 
@@ -111,7 +111,6 @@ const ContactEdit = ({
 						variant="secondary"
 						onPress={onDiscard}
 					/>
-					<View style={styles.divider} />
 					<Button
 						style={styles.button}
 						text={t('save')}
@@ -139,12 +138,10 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 	error: {
 		justifyContent: 'center',

@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Caption13M } from '../styles/text';
+import { CaptionB } from '../styles/text';
 import { TActivityFilter } from '../utils/activity';
 
 export type TTab = {
@@ -38,7 +38,7 @@ const Tab = ({
 		activeOpacity={0.8}
 		testID={testID}
 		onPress={onPress}>
-		<Caption13M color={active ? 'white' : 'gray1'}>{text}</Caption13M>
+		<CaptionB color={active ? 'white' : 'white50'}>{text}</CaptionB>
 	</TouchableOpacity>
 );
 
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 10,
 	},
 	activeTab: {
-		backgroundColor: '#ff6600',
+		backgroundColor: '#FF4400',
 		height: 2,
 		position: 'absolute',
 		top: '95%',

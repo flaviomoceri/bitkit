@@ -34,11 +34,9 @@ import WalletNavigator from '../wallet/WalletNavigator';
 import ActivityDetail from '../../screens/Activity/ActivityDetail';
 import ActivityAssignContact from '../../screens/Activity/ActivityAssignContact';
 import BuyBitcoin from '../../screens/BuyBitcoin';
-import BetaRisk from '../../screens/BetaRisk';
 import ScannerScreen from '../../screens/Scanner/MainScanner';
 import SettingsNavigator from '../settings/SettingsNavigator';
 import LightningNavigator from '../lightning/LightningNavigator';
-import TransferNavigator from '../transfer/TransferNavigator';
 import ForgotPIN from '../../screens/Settings/PIN/ForgotPIN';
 import BoostPrompt from '../../screens/Wallets/BoostPrompt';
 import NewTxPrompt from '../../screens/Wallets/NewTxPrompt';
@@ -62,8 +60,8 @@ import LNURLPayNavigation from '../bottom-sheet/LNURLPayNavigation';
 import TreasureHuntNavigation from '../bottom-sheet/TreasureHuntNavigation';
 import WidgetsSuggestions from '../../screens/Widgets/WidgetsSuggestions';
 import {
-	GoodbyePasswords,
 	HelloWidgets,
+	GoodbyePasswords,
 } from '../../screens/Widgets/WidgetsOnboarding';
 import { __E2E__ } from '../../constants/env';
 import type { RootStackParamList } from '../types';
@@ -208,7 +206,6 @@ const RootNavigator = (): ReactElement => {
 				/>
 				<Stack.Screen name="Scanner" component={ScannerScreen} />
 				<Stack.Screen name="LightningRoot" component={LightningNavigator} />
-				<Stack.Screen name="Transfer" component={TransferNavigator} />
 				<Stack.Screen name="Settings" component={SettingsNavigator} />
 				<Stack.Screen
 					name="Profile"
@@ -220,9 +217,8 @@ const RootNavigator = (): ReactElement => {
 				<Stack.Screen name="ContactEdit" component={ContactEdit} />
 				<Stack.Screen name="Contact" component={Contact} />
 				<Stack.Screen name="BuyBitcoin" component={BuyBitcoin} />
-				<Stack.Screen name="BetaRisk" component={BetaRisk} />
-				<Stack.Screen name="GoodbyePasswords" component={GoodbyePasswords} />
 				<Stack.Screen name="HelloWidgets" component={HelloWidgets} />
+				<Stack.Screen name="GoodbyePasswords" component={GoodbyePasswords} />
 				<Stack.Screen
 					name="WidgetsSuggestions"
 					component={WidgetsSuggestions}

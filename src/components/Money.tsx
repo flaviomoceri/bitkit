@@ -2,15 +2,15 @@ import React, { memo, ReactElement, useMemo } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import {
-	Caption13M,
+	CaptionB,
 	Caption13Up,
 	Display,
-	Text01M,
-	Text02M,
+	BodyMSB,
+	BodySSB,
 	Title,
+	DisplayT,
 } from '../styles/text';
 import { IColors } from '../styles/colors';
-import { BitcoinIcon } from '../styles/icons';
 import { useAppSelector } from '../hooks/redux';
 import { useDisplayValues } from '../hooks/displayValues';
 import { abbreviateNumber } from '../utils/helpers';
@@ -21,6 +21,15 @@ import {
 	denominationSelector,
 	nextUnitSelector,
 } from '../store/reselect/settings';
+
+type TSize =
+	| 'display'
+	| 'displayT'
+	| 'title'
+	| 'bodyMSB'
+	| 'bodySSB'
+	| 'captionB'
+	| 'caption13Up';
 
 type MoneyProps = {
 	sats: number;
@@ -35,13 +44,7 @@ type MoneyProps = {
 	shouldRoundUp?: boolean;
 	style?: StyleProp<ViewStyle>;
 	testID?: string;
-	size?:
-		| 'display'
-		| 'text01m'
-		| 'text02m'
-		| 'caption13M'
-		| 'caption13Up'
-		| 'title';
+	size?: TSize;
 };
 
 const Money = (props: MoneyProps): ReactElement => {
@@ -65,58 +68,41 @@ const Money = (props: MoneyProps): ReactElement => {
 
 	const dv = useDisplayValues(sats, shouldRoundUp);
 
-	const [Text, lineHeight, iconHeight, iconWidth, iconMargin] = useMemo(() => {
+	const [Text, iconMargin] = useMemo(() => {
 		switch (size) {
-			case 'caption13M':
-				return [Caption13Up, undefined, 16, 8, 3];
+			case 'captionB':
+				return [Caption13Up, 3];
 			case 'caption13Up':
-				return [Caption13M, undefined, 16, 8, 4];
-			case 'text01m':
-				return [Text01M, undefined, 16, 10, 4];
-			case 'text02m':
-				return [Text02M, undefined, 18, 9, 4];
+				return [CaptionB, 4];
+			case 'bodyMSB':
+				return [BodyMSB, 4];
+			case 'bodySSB':
+				return [BodySSB, 4];
 			case 'title':
-				return [Title, undefined, 26, 12, 6];
+				return [Title, 6];
+			case 'displayT':
+				return [DisplayT, 8];
 			default:
-				// Override lineHeight for Display font
-				return [Display, '57px', 43, 27, 10];
+				return [Display, 10];
 		}
 	}, [size]);
 
 	const symbol = useMemo(() => {
-		switch (unit) {
-			case EUnit.fiat:
-				return (
-					<Text
-						style={{ marginRight: iconMargin }}
-						lineHeight={lineHeight}
-						color={symbolColor ?? color ?? 'white50'}
-						testID="MoneyFiatSymbol">
-						{dv.fiatSymbol}
-					</Text>
-				);
-			default:
-				return (
-					<BitcoinIcon
-						style={{ marginRight: iconMargin }}
-						color={symbolColor ?? color ?? 'white50'}
-						height={iconHeight}
-						width={iconWidth}
-						testID="MoneyBitcoinSymbol"
-					/>
-				);
-		}
-	}, [
-		unit,
-		Text,
-		lineHeight,
-		color,
-		symbolColor,
-		dv.fiatSymbol,
-		iconHeight,
-		iconWidth,
-		iconMargin,
-	]);
+		const style = {
+			marginRight: iconMargin,
+			// cap symbol font weight to ExtraBold for display size
+			...(size === 'display' ? { fontFamily: 'InterTight-ExtraBold' } : {}),
+		};
+
+		return (
+			<Text
+				style={style}
+				color={symbolColor ?? color ?? 'white50'}
+				testID="MoneyFiatSymbol">
+				{unit === EUnit.BTC ? '₿' : dv.fiatSymbol}
+			</Text>
+		);
+	}, [Text, size, unit, color, symbolColor, dv.fiatSymbol, iconMargin]);
 
 	let text = useMemo(() => {
 		switch (unit) {
@@ -153,16 +139,12 @@ const Money = (props: MoneyProps): ReactElement => {
 	return (
 		<View style={[styles.root, props.style]} testID={testID}>
 			{sign && (
-				<Text
-					style={styles.sign}
-					lineHeight={lineHeight}
-					color={color ?? 'white50'}
-					testID="MoneySign">
+				<Text style={styles.sign} color={color ?? 'white50'} testID="MoneySign">
 					{sign}
 				</Text>
 			)}
 			{showSymbol && symbol}
-			<Text lineHeight={lineHeight} color={color} testID="MoneyText">
+			<Text color={color} testID="MoneyText">
 				{text}
 			</Text>
 		</View>

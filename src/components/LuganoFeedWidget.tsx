@@ -8,7 +8,7 @@ import {
 	TouchableOpacity,
 } from 'react-native';
 
-import { Caption13M, Text01M, Text02M } from '../styles/text';
+import { CaptionB, BodyMSB, BodySSB } from '../styles/text';
 import BaseFeedWidget from './BaseFeedWidget';
 import { openURL } from '../utils/helpers';
 
@@ -16,7 +16,6 @@ import { useSlashfeed } from '../hooks/widgets';
 import Button from './Button';
 import { CalendarIcon, MapPinLineIcon, MapTrifoldIcon } from '../styles/icons';
 import { useAppSelector } from '../hooks/redux';
-import { TFeedWidget } from '../store/types/widgets';
 
 const cache = {
 	banner: '',
@@ -26,7 +25,6 @@ const cache = {
 
 const LuganoWidget = ({
 	url,
-	widget,
 	isEditing = false,
 	style,
 	testID,
@@ -34,7 +32,6 @@ const LuganoWidget = ({
 	onPressIn,
 }: {
 	url: string;
-	widget: TFeedWidget;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
 	testID?: string;
@@ -121,7 +118,6 @@ const LuganoWidget = ({
 			url={url}
 			style={style}
 			name="Plan ₿ Forum"
-			showTitle={widget.extras?.showTitle}
 			isLoading={false}
 			isEditing={isEditing}
 			testID={testID}
@@ -131,15 +127,15 @@ const LuganoWidget = ({
 				{schedule.map((event) => (
 					<View key={event.name} style={styles.row}>
 						<View style={styles.columnLeft}>
-							<Text02M color="gray1" style={styles.time}>
+							<BodySSB color="white50" style={styles.time}>
 								{event.time}
-							</Text02M>
-							<Text02M color="gray1" numberOfLines={1}>
+							</BodySSB>
+							<BodySSB color="white50" numberOfLines={1}>
 								{event.location}
-							</Text02M>
+							</BodySSB>
 						</View>
 						<View style={styles.columnRight}>
-							<Text01M numberOfLines={1}>{event.name}</Text01M>
+							<BodyMSB numberOfLines={1}>{event.name}</BodyMSB>
 						</View>
 					</View>
 				))}
@@ -180,9 +176,9 @@ const LuganoWidget = ({
 				)}
 				<View style={styles.source}>
 					<View style={styles.sourceColumnLeft}>
-						<Caption13M color="gray1" numberOfLines={1}>
+						<CaptionB color="white50" numberOfLines={1}>
 							Treasure Chests Found: {numberOfChests} of 6
-						</Caption13M>
+						</CaptionB>
 					</View>
 					<View style={styles.columnRight}>
 						<TouchableOpacity
@@ -190,9 +186,9 @@ const LuganoWidget = ({
 							onPress={(): void => {
 								openURL('https://bitkit.to/treasure-hunt');
 							}}>
-							<Caption13M color="gray1" numberOfLines={1}>
+							<CaptionB color="white50" numberOfLines={1}>
 								bitkit.to
-							</Caption13M>
+							</CaptionB>
 						</TouchableOpacity>
 					</View>
 				</View>

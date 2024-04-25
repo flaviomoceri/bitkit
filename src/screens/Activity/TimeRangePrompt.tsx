@@ -2,7 +2,7 @@ import React, { memo, ReactElement, useMemo, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Subtitle, Text01M, Caption13Up } from '../../styles/text';
+import { Subtitle, BodyMSB, Caption13Up } from '../../styles/text';
 import { View as ThemedView } from '../../styles/components';
 import { LeftSign, RightSign } from '../../styles/icons';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
@@ -82,9 +82,9 @@ const Day = ({
 			style={styles.day}
 			testID={day ? `Day-${day}` : undefined}>
 			{back}
-			<Text01M color={textColor} testID={today ? 'Today' : undefined}>
+			<BodyMSB color={textColor} testID={today ? 'Today' : undefined}>
 				{day}
-			</Text01M>
+			</BodyMSB>
 		</TouchableOpacity>
 	);
 };
@@ -160,12 +160,12 @@ const Calendar = ({
 		<View style={styles.calendar}>
 			<View style={styles.selector}>
 				<View style={styles.current}>
-					<Text01M>
+					<BodyMSB>
 						{tTime('dateTime', {
 							v: monthDate,
 							formatParams: { v: { month: 'long', year: 'numeric', timeZone } },
 						})}
-					</Text01M>
+					</BodyMSB>
 				</View>
 				<TouchableOpacity
 					onPress={prevMonth}
@@ -184,7 +184,7 @@ const Calendar = ({
 			<View style={styles.weekCaption}>
 				{weekDays.map((day) => (
 					<View key={day} style={styles.weekDay}>
-						<Caption13Up color="gray1">{day}</Caption13Up>
+						<Caption13Up color="white50">{day}</Caption13Up>
 					</View>
 				))}
 			</View>
@@ -232,17 +232,17 @@ const Calendar = ({
 
 			<View style={styles.range}>
 				{range.length === 1 && (
-					<Text01M>
+					<BodyMSB>
 						{tTime('dateTime', {
 							v: range[0],
 							formatParams: {
 								v: { day: 'numeric', month: 'long', year: 'numeric', timeZone },
 							},
 						})}
-					</Text01M>
+					</BodyMSB>
 				)}
 				{range.length === 2 && (
-					<Text01M>
+					<BodyMSB>
 						{tTime('dateTime', {
 							v: range[0],
 							formatParams: {
@@ -256,7 +256,7 @@ const Calendar = ({
 								v: { day: 'numeric', month: 'long', year: 'numeric', timeZone },
 							},
 						})}
-					</Text01M>
+					</BodyMSB>
 				)}
 			</View>
 
@@ -270,7 +270,6 @@ const Calendar = ({
 					disabled={range.length === 0}
 					testID="CalendarClearButton"
 				/>
-				<View style={styles.divider} />
 				<Button
 					style={styles.button}
 					size="large"
@@ -393,12 +392,10 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'center',
 		marginHorizontal: 16,
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 	range: {
 		marginTop: 'auto',

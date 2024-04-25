@@ -2,7 +2,7 @@ import React, { memo, ReactElement, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Text01M, Text02M, Text02S } from '../../styles/text';
+import { BodyMSB, BodySSB, BodyS } from '../../styles/text';
 import { TimerIconAlt } from '../../styles/icons';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import SwipeToConfirm from '../../components/SwipeToConfirm';
@@ -199,8 +199,8 @@ const BoostForm = ({
 
 	const Title = (
 		<View style={styles.adjustValueRow}>
-			<Money sats={transaction.satsPerByte} size="text01m" symbol={true} />
-			<Text01M> {t('sat_vbyte_compact')}</Text01M>
+			<Money sats={transaction.satsPerByte} size="bodyMSB" symbol={true} />
+			<BodyMSB> {t('sat_vbyte_compact')}</BodyMSB>
 		</View>
 	);
 
@@ -208,20 +208,20 @@ const BoostForm = ({
 		<View style={styles.adjustValueRow}>
 			<Money
 				sats={boostFee}
-				size="text02m"
-				color="gray1"
+				size="bodySSB"
+				color="white50"
 				symbol={true}
 				unitType="secondary"
 			/>
-			<Text02M color="gray1"> {duration}</Text02M>
+			<BodySSB color="white50"> {duration}</BodySSB>
 		</View>
 	);
 
 	return (
 		<>
-			<Text02S color="gray1">
+			<BodyS color="white50">
 				{t(showCustom ? 'boost_fee_custom' : 'boost_fee_recomended')}
-			</Text02S>
+			</BodyS>
 
 			<View style={styles.boostForm}>
 				{showCustom ? (
@@ -255,10 +255,10 @@ const BoostForm = ({
 					<SwipeToConfirm
 						text={t('boost_swipe')}
 						color="yellow"
-						onConfirm={handleBoost}
 						icon={<TimerIconAlt width={30} height={30} color="black" />}
 						loading={loading}
 						confirmed={loading}
+						onConfirm={handleBoost}
 					/>
 				</View>
 			</View>

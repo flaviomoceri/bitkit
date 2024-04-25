@@ -1,12 +1,11 @@
 import React, { memo, ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import BottomSheetWrapper from '../../../components/BottomSheetWrapper';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import { closeSheet } from '../../../store/slices/ui';
 import { wipeApp } from '../../../store/utils/settings';
@@ -40,9 +39,11 @@ const ForgotPIN = (): ReactElement => {
 					title={t('pin_forgot_title')}
 					displayBackButton={false}
 				/>
-				<Text01S color="white50">{t('pin_forgot_text')}</Text01S>
+				<BodyM color="white50">{t('pin_forgot_text')}</BodyM>
 
-				<GlowImage image={imageSrc} imageSize={192} />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
 
 				<View style={styles.buttonContainer}>
 					<Button
@@ -62,7 +63,17 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		alignItems: 'center',
-		paddingHorizontal: 32,
+		paddingHorizontal: 16,
+	},
+	imageContainer: {
+		alignItems: 'center',
+		marginTop: 'auto',
+		aspectRatio: 1,
+		width: 256,
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',

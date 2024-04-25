@@ -1,13 +1,12 @@
 import React, { memo, ReactElement, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { View } from '../../../styles/components';
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Dialog from '../../../components/Dialog';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import { wipeApp } from '../../../store/utils/settings';
 import { showBottomSheet } from '../../../store/utils/ui';
@@ -29,9 +28,11 @@ const ResetAndRestore = ({
 				onClosePress={(): void => navigation.navigate('Wallet')}
 			/>
 			<View style={styles.container}>
-				<Text01S color="gray1">{t('reset_text')}</Text01S>
+				<BodyM color="white50">{t('reset_text')}</BodyM>
 
-				<GlowImage image={imageSrc} imageSize={230} />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
 
 				<View style={styles.buttonContainer}>
 					<Button
@@ -43,7 +44,6 @@ const ResetAndRestore = ({
 							showBottomSheet('backupNavigation');
 						}}
 					/>
-					<View style={styles.divider} />
 					<Button
 						size="large"
 						style={styles.button}
@@ -58,6 +58,7 @@ const ResetAndRestore = ({
 				visible={showDialog}
 				title={t('reset_dialog_title')}
 				description={t('reset_dialog_desc')}
+				confirmText={t('reset_confirm')}
 				onCancel={(): void => setShowDialog(false)}
 				onConfirm={async (): Promise<void> => {
 					await wipeApp();
@@ -74,18 +75,29 @@ const styles = StyleSheet.create({
 	},
 	container: {
 		flex: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		alignItems: 'center',
+		alignSelf: 'center',
+		aspectRatio: 1,
+		marginTop: 'auto',
+		width: 256,
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',
 		flexDirection: 'row',
 		justifyContent: 'center',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

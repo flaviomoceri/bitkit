@@ -1,13 +1,12 @@
 import React, { memo, ReactElement, useState } from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Image } from 'react-native';
 import Lottie from 'lottie-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Subtitle, Text01S } from '../../../styles/text';
+import { Subtitle, BodyM } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import { rootNavigation } from '../../../navigation/root/RootNavigator';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
@@ -50,7 +49,6 @@ const Result = ({
 
 	let imageSrc;
 	let title;
-	let glowColor;
 	let retryText;
 	let error;
 
@@ -59,12 +57,10 @@ const Result = ({
 	if (success) {
 		imageSrc = require('../../../assets/illustrations/check.png');
 		title = t('send_sent');
-		glowColor = 'green';
 		error = <></>;
 	} else if (transaction.lightningInvoice && transaction.slashTagsUrl) {
 		imageSrc = require('../../../assets/illustrations/exclamation-mark.png');
 		title = t('send_instant_failed');
-		glowColor = 'yellow';
 		retryText = loading ? (
 			<>
 				<ActivityIndicator />
@@ -73,11 +69,10 @@ const Result = ({
 		) : (
 			t('send_regular')
 		);
-		error = <Text01S color="gray1">{t('send_error_slash_ln')}</Text01S>;
+		error = <BodyM color="white50">{t('send_error_slash_ln')}</BodyM>;
 	} else {
 		imageSrc = require('../../../assets/illustrations/cross.png');
 		title = t('send_error_tx_failed');
-		glowColor = 'red';
 		retryText = t('try_again');
 		error = (
 			<>
@@ -86,7 +81,7 @@ const Result = ({
 						{errorTitle}
 					</Subtitle>
 				)}
-				{errorMessage && <Text01S color="red">{errorMessage}</Text01S>}
+				{errorMessage && <BodyM color="red">{errorMessage}</BodyM>}
 			</>
 		);
 	}
@@ -146,16 +141,16 @@ const Result = ({
 	};
 
 	return (
-		<GradientView style={styles.container}>
+		<GradientView style={styles.root}>
 			<>
 				{success && (
 					<View
-						testID="SendSuccess"
 						style={styles.confetti}
-						pointerEvents="none">
+						pointerEvents="none"
+						testID="SendSuccess">
 						<Lottie
-							source={confettiSrc}
 							style={styles.lottie}
+							source={confettiSrc}
 							resizeMode="cover"
 							autoPlay
 							loop
@@ -169,9 +164,7 @@ const Result = ({
 			<View style={styles.content}>
 				{activityItem && (
 					<AmountToggle
-						sats={activityItem.value}
-						reverse={true}
-						space={12}
+						amount={activityItem.value}
 						testID="NewTxPrompt"
 						onPress={navigateToTxDetails}
 					/>
@@ -179,7 +172,9 @@ const Result = ({
 
 				{error}
 
-				<GlowImage image={imageSrc} imageSize={200} glowColor={glowColor} />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
 
 				<View style={styles.buttonContainer}>
 					{success ? (
@@ -192,7 +187,6 @@ const Result = ({
 								text={t('send_details')}
 								onPress={navigateToTxDetails}
 							/>
-							<View style={styles.divider} />
 							<Button
 								style={styles.button}
 								size="large"
@@ -204,17 +198,14 @@ const Result = ({
 					) : (
 						<>
 							{isSlashpay && (
-								<>
-									<Button
-										style={styles.button}
-										variant="secondary"
-										size="large"
-										text={t('cancel')}
-										testID="Close"
-										onPress={handleClose}
-									/>
-									<View style={styles.divider} />
-								</>
+								<Button
+									style={styles.button}
+									variant="secondary"
+									size="large"
+									text={t('cancel')}
+									testID="Close"
+									onPress={handleClose}
+								/>
 							)}
 							<Button
 								style={styles.button}
@@ -234,12 +225,12 @@ const Result = ({
 };
 
 const styles = StyleSheet.create({
-	container: {
+	root: {
 		flex: 1,
 	},
 	confetti: {
 		...StyleSheet.absoluteFillObject,
-		zIndex: 1,
+		zIndex: 0,
 	},
 	lottie: {
 		height: '100%',
@@ -251,16 +242,27 @@ const styles = StyleSheet.create({
 	errorTitle: {
 		marginBottom: 8,
 	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
+	},
 	buttonContainer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
 		marginTop: 'auto',
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

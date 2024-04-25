@@ -2,7 +2,7 @@ import React, { ReactElement, memo, useMemo, useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Caption13Up, Text01S } from '../../../styles/text';
+import { Caption13Up, BodyM } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
@@ -90,15 +90,15 @@ const FeeCustom = ({
 		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader title={t('send_fee_custom')} />
 			<View style={styles.content}>
-				<Caption13Up color="gray1" style={styles.title}>
+				<Caption13Up color="white50" style={styles.title}>
 					{t('sat_vbyte')}
 				</Caption13Up>
 				<Amount value={feeRate} />
 
 				{isValid && (
-					<Text01S style={styles.text} color="white50">
+					<BodyM style={styles.text} color="white50">
 						{totalFeeText}
-					</Text01S>
+					</BodyM>
 				)}
 
 				<NumberPad style={styles.numberPad} type="simple" onPress={onPress} />

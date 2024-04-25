@@ -1,12 +1,11 @@
 import React, { memo, ReactElement, useMemo, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { Image, StyleSheet, View } from 'react-native';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { __E2E__ } from '../../../constants/env';
-import { Text01S } from '../../../styles/text';
+import { BodyM, Display } from '../../../styles/text';
 import BottomSheetWrapper from '../../../components/BottomSheetWrapper';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import GlowImage from '../../../components/GlowImage';
 import Button from '../../../components/Button';
 import { closeSheet } from '../../../store/slices/ui';
 import { ignoreBackup } from '../../../store/slices/user';
@@ -113,8 +112,15 @@ const BackupPrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 					title={t('backup_wallet')}
 					displayBackButton={false}
 				/>
-				<Text01S color="white50">{text}</Text01S>
-				<GlowImage image={imageSrc} imageSize={170} glowColor="blue" />
+				<Image style={styles.image} source={imageSrc} />
+				<Display>
+					<Trans
+						t={t}
+						i18nKey="backup_title"
+						components={{ accent: <Display color="blue" /> }}
+					/>
+				</Display>
+				<BodyM color="white50">{text}</BodyM>
 				<View style={styles.buttonContainer}>
 					<Button
 						style={styles.button}
@@ -123,7 +129,6 @@ const BackupPrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 						text={t('later')}
 						onPress={handleLater}
 					/>
-					<View style={styles.divider} />
 					<Button
 						style={styles.button}
 						size="large"
@@ -142,16 +147,22 @@ const styles = StyleSheet.create({
 		flex: 1,
 		marginHorizontal: 32,
 	},
-	buttonContainer: {
+	image: {
+		flex: 1,
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		resizeMode: 'contain',
 		marginTop: 'auto',
+	},
+	buttonContainer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
+		marginTop: 32,
+		gap: 16,
 	},
 	button: {
 		flex: 1,
-	},
-	divider: {
-		width: 16,
 	},
 });
 

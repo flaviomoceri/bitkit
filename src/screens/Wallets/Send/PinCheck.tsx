@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import GradientView from '../../../components/GradientView';
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import PinPad from './SendPinPad';
 import type { SendScreenProps } from '../../../navigation/types';
 
@@ -16,9 +16,9 @@ const PinCheck = ({ route }: SendScreenProps<'PinCheck'>): ReactElement => {
 		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader title="Enter PIN Code" />
 			<View style={styles.content}>
-				<Text01S style={styles.text} color="white50">
+				<BodyM style={styles.text} color="white50">
 					{t('pin_send')}
-				</Text01S>
+				</BodyM>
 
 				<PinPad onSuccess={(): void => onSuccess()} />
 			</View>

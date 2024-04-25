@@ -44,7 +44,6 @@ d('Receive', () => {
 		}
 
 		await element(by.id('Receive')).tap();
-		await element(by.id('UnderstoodButton')).tap();
 		await sleep(1000); // animation
 		// await element(by.id('ReceiveCopyQR')).tap();
 		// await waitFor(element(by.id('ReceiveTooltip1')))

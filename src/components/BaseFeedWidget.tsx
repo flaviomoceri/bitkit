@@ -4,17 +4,18 @@ import { useTranslation } from 'react-i18next';
 
 import { rootNavigation } from '../navigation/root/RootNavigator';
 import { TouchableOpacity } from '../styles/components';
-import { Text01M } from '../styles/text';
+import { BodyMSB } from '../styles/text';
 import {
 	SettingsIcon,
 	ListIcon,
 	TrashIcon,
 	QuestionMarkIcon,
 } from '../styles/icons';
-import { useAppDispatch } from '../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { useSlashfeed } from '../hooks/widgets';
 import { truncate } from '../utils/helpers';
 import { deleteWidget } from '../store/slices/widgets';
+import { showWidgetTitlesSelector } from '../store/reselect/settings';
 import Dialog from './Dialog';
 import SvgImage from './SvgImage';
 import LoadingView from './LoadingView';
@@ -23,31 +24,30 @@ const BaseFeedWidget = ({
 	url,
 	name,
 	children,
-	showTitle,
 	isLoading,
 	isEditing,
 	style,
+	testID,
 	onPress,
 	onPressIn,
 	onLongPress,
-	testID,
 }: {
 	url: string;
 	name?: string;
 	children: ReactElement;
-	showTitle?: boolean;
 	isLoading?: boolean;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
+	testID?: string;
 	onPress?: () => void;
 	onPressIn?: () => void;
 	onLongPress?: () => void;
-	testID?: string;
 }): ReactElement => {
 	const { t } = useTranslation('slashtags');
 	const dispatch = useAppDispatch();
 	const { config, icon } = useSlashfeed({ url });
 	const [showDialog, setShowDialog] = useState(false);
+	const showTitle = useAppSelector(showWidgetTitlesSelector);
 
 	const widgetName = name ?? config?.name ?? url;
 
@@ -80,9 +80,9 @@ const BaseFeedWidget = ({
 								)}
 							</View>
 
-							<Text01M style={styles.name} numberOfLines={1}>
+							<BodyMSB style={styles.name} numberOfLines={1}>
 								{truncate(widgetName, 18)}
-							</Text01M>
+							</BodyMSB>
 						</View>
 
 						{isEditing && (
@@ -90,6 +90,7 @@ const BaseFeedWidget = ({
 								<TouchableOpacity
 									style={styles.actionButton}
 									color="transparent"
+									hitSlop={{ top: 15, bottom: 15 }}
 									testID="WidgetActionDelete"
 									onPress={onDelete}>
 									<TrashIcon width={22} />
@@ -97,6 +98,7 @@ const BaseFeedWidget = ({
 								<TouchableOpacity
 									style={styles.actionButton}
 									color="transparent"
+									hitSlop={{ top: 15, bottom: 15 }}
 									testID="WidgetActionEdit"
 									onPress={onEdit}>
 									<SettingsIcon width={22} />
@@ -104,6 +106,7 @@ const BaseFeedWidget = ({
 								<TouchableOpacity
 									style={styles.actionButton}
 									color="transparent"
+									hitSlop={{ top: 15, bottom: 15 }}
 									activeOpacity={0.9}
 									testID="WidgetActionDrag"
 									onLongPress={onLongPress}
@@ -179,12 +182,6 @@ const styles = StyleSheet.create({
 		width: 32,
 		height: 32,
 		marginLeft: 8,
-
-		// increase hitbox
-		paddingTop: 30,
-		marginTop: -30,
-		paddingBottom: 30,
-		marginBottom: -30,
 	},
 	spacer: {
 		height: 16,

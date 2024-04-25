@@ -74,20 +74,20 @@ export const completeOnboarding = async () => {
 	await element(by.id('NewWallet')).tap();
 
 	// wait for wallet to be created
-	await waitFor(element(by.id('ToGetStartedClose'))).toBeVisible();
+	await waitFor(element(by.id('WalletOnboardingClose'))).toBeVisible();
 	await sleep(1000); // take app some time to load
 
 	// try for 3min before fail
 	for (let i = 0; i < 180; i++) {
 		await sleep(1000);
 		try {
-			await element(by.id('ToGetStartedClose')).tap();
+			await element(by.id('WalletOnboardingClose')).tap();
 			await sleep(3000); // wait for redux-persist to save state
 			return;
 		} catch (e) {}
 	}
 
-	throw new Error('Tapping "ToGetStartedClose" timeout');
+	throw new Error('Tapping "WalletOnboardingClose" timeout');
 };
 
 export const launchAndWait = async () => {
@@ -97,13 +97,13 @@ export const launchAndWait = async () => {
 		permissions: { faceid: 'YES', camera: 'YES' },
 	});
 
-	// wait for AssetsTitle to appear and be accessible
-	await waitFor(element(by.id('AssetsTitle')))
+	// wait for SuggestionsLabel to appear and be accessible
+	await waitFor(element(by.id('SuggestionsLabel')))
 		.toBeVisible()
 		.withTimeout(300000); // 5 min
 	for (let i = 0; i < 60; i++) {
 		try {
-			await element(by.id('AssetsTitle')).tap();
+			await element(by.id('SuggestionsLabel')).tap();
 			await sleep(1000);
 			break;
 		} catch (e) {

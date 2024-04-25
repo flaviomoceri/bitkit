@@ -105,7 +105,7 @@ export const Pressable = styled(RNPressable)<PressableProps & ColorProps>(
 		backgroundColor: props.color
 			? props.theme.colors[props.color]
 			: props.theme.colors.background,
-		opacity: props.disabled ? 0.4 : 1,
+		opacity: props.disabled ? 0.5 : 1,
 	}),
 );
 
@@ -128,9 +128,9 @@ export const TextInput = styled(RNTextInput).attrs<TextInputProps>((props) => ({
 	selectionColor: colors.brand,
 	placeholderTextColor: props.placeholderTextColor
 		? props.placeholderTextColor
-		: props.theme.colors.gray1,
+		: props.theme.colors.white50,
 }))<TextInputProps>((props) => ({
-	...props.theme.fonts.semibold,
+	...props.theme.fonts.semiBold,
 	backgroundColor: props.backgroundColor
 		? props.theme.colors[props.backgroundColor]
 		: props.theme.colors.white10,
@@ -153,10 +153,10 @@ export const TextInputNoOutline = styled(RNTextInput).attrs<TextInputProps>(
 		selectionColor: colors.brand,
 		placeholderTextColor: props.placeholderTextColor
 			? props.placeholderTextColor
-			: props.theme.colors.gray1,
+			: props.theme.colors.white50,
 	}),
 )<TextInputProps>((props) => ({
-	...props.theme.fonts.semibold,
+	...props.theme.fonts.semiBold,
 	fontSize: '15px',
 	color: props.color
 		? props.theme.colors[props.color]
@@ -173,7 +173,7 @@ export const BottomSheetTextInput = styled(
 		? props.placeholderTextColor
 		: props.theme.colors.white50,
 }))<TextInputProps>((props) => ({
-	...props.theme.fonts.semibold,
+	...props.theme.fonts.semiBold,
 	backgroundColor: props.backgroundColor
 		? props.theme.colors[props.backgroundColor]
 		: props.theme.colors.white06,

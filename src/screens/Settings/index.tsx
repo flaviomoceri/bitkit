@@ -1,11 +1,11 @@
 import React, { memo, ReactElement, useMemo, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../styles/components';
 import { EItemType, IListData, ItemData } from '../../components/List';
+import SafeAreaInset from '../../components/SafeAreaInset';
 import SettingsView from './SettingsView';
-import GlowImage from '../../components/GlowImage';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { updateSettings } from '../../store/slices/settings';
 import { showToast } from '../../utils/notifications';
@@ -48,35 +48,35 @@ const MainSettings = ({
 		}
 	};
 
-	const settingsListData: IListData[] = useMemo(() => {
+	const listData: IListData[] = useMemo(() => {
 		const data: ItemData[] = [
 			{
 				title: t('general_title'),
 				type: EItemType.button,
 				Icon: GeneralSettingsIcon,
-				onPress: (): void => navigation.navigate('GeneralSettings'),
 				testID: 'GeneralSettings',
+				onPress: (): void => navigation.navigate('GeneralSettings'),
 			},
 			{
 				title: t('security_title'),
 				type: EItemType.button,
 				Icon: SecurityIcon,
-				onPress: (): void => navigation.navigate('SecuritySettings'),
 				testID: 'SecuritySettings',
+				onPress: (): void => navigation.navigate('SecuritySettings'),
 			},
 			{
 				title: t('backup_title'),
 				type: EItemType.button,
 				Icon: BackupIcon,
-				onPress: (): void => navigation.navigate('BackupSettings'),
 				testID: 'BackupSettings',
+				onPress: (): void => navigation.navigate('BackupSettings'),
 			},
 			{
 				title: t('advanced_title'),
 				type: EItemType.button,
 				Icon: AdvancedIcon,
-				onPress: (): void => navigation.navigate('AdvancedSettings'),
 				testID: 'AdvancedSettings',
+				onPress: (): void => navigation.navigate('AdvancedSettings'),
 			},
 			{
 				title: t('support_title'),
@@ -106,32 +106,40 @@ const MainSettings = ({
 	}, [enableDevOptions, navigation, t]);
 
 	return (
-		<ThemedView style={styles.container}>
+		<ThemedView style={styles.root}>
 			<SettingsView
 				title={t('settings')}
-				listData={settingsListData}
-				showBackNavigation={true}
+				listData={listData}
 				fullHeight={false}
 			/>
 			<TouchableOpacity
 				style={styles.imageContainer}
 				activeOpacity={1}
-				onPress={updateDevOptions}
-				testID="DevOptions">
-				<GlowImage image={imageSrc} imageSize={200} />
+				testID="DevOptions"
+				onPress={updateDevOptions}>
+				<Image style={styles.image} source={imageSrc} />
 			</TouchableOpacity>
+			<SafeAreaInset type="bottom" minPadding={16} />
 		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
-	container: {
+	root: {
 		flex: 1,
 	},
 	imageContainer: {
+		flexShrink: 1,
 		alignItems: 'center',
-		justifyContent: 'center',
-		flexGrow: 1,
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+		marginBottom: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 });
 

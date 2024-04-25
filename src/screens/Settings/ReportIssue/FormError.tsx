@@ -1,14 +1,13 @@
 import React, { memo, ReactElement } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Text01S } from '../../../styles/text';
+import { BodyM } from '../../../styles/text';
 import { View as ThemedView } from '../../../styles/components';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import type { SettingsScreenProps } from '../../../navigation/types';
 import Button from '../../../components/Button';
-import GlowImage from '../../../components/GlowImage';
+import type { SettingsScreenProps } from '../../../navigation/types';
 
 const imageSrc = require('../../../assets/illustrations/cross.png');
 
@@ -22,7 +21,7 @@ const FormError = ({
 	};
 
 	return (
-		<ThemedView style={styles.fullHeight}>
+		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('support.title_unsuccess')}
@@ -31,11 +30,13 @@ const FormError = ({
 				}}
 			/>
 			<View style={styles.content}>
-				<Text01S style={styles.text} color="gray1">
+				<BodyM style={styles.text} color="white50">
 					{t('support.text_unsuccess')}
-				</Text01S>
+				</BodyM>
 
-				<GlowImage image={imageSrc} imageSize={192} glowColor={'red'} />
+				<View style={styles.imageContainer}>
+					<Image style={styles.image} source={imageSrc} />
+				</View>
 
 				<View style={styles.buttonContainer}>
 					<Button
@@ -46,22 +47,36 @@ const FormError = ({
 						onPress={onTryAgain}
 					/>
 				</View>
-				<SafeAreaInset type="bottom" minPadding={16} />
 			</View>
+			<SafeAreaInset type="bottom" minPadding={16} />
 		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
-	fullHeight: {
+	root: {
 		flex: 1,
 	},
 	content: {
 		flexGrow: 1,
+		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
 	text: {
 		paddingBottom: 32,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',
