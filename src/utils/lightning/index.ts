@@ -91,7 +91,7 @@ import {
 	TChannel,
 	EChannelStatus,
 } from '../../store/types/lightning';
-import { getBlocktankInfo, isGeoBlocked } from '../blocktank';
+import { getBlocktankInfo, isGeoBlocked, logToBlocktank } from '../blocktank';
 import { refreshOnchainFeeEstimates } from '../../store/utils/fees';
 import { reportLdkChannelMigrations } from '../checks';
 import {
@@ -346,6 +346,9 @@ export const setupLdk = async ({
 			trustedZeroConfPeers: __TRUSTED_ZERO_CONF_PEERS__,
 			rapidGossipSyncUrl,
 			skipParamCheck: true, //Switch off for debugging LDK networking issues
+			lspLogEvent: async (payload) => {
+				await logToBlocktank(payload.nodeId, JSON.stringify(payload.body));
+			},
 		});
 
 		if (lmStart.isErr()) {

@@ -141,13 +141,13 @@ export const createCJitEntry = async ({
 	invoiceAmount,
 	invoiceDescription,
 	channelExpiryWeeks = DEFAULT_CHANNEL_DURATION,
-	couponCode = 'bitkit',
+	source = 'bitkit',
 }: {
 	channelSize: number;
 	invoiceAmount: number;
 	invoiceDescription: string;
 	channelExpiryWeeks?: number;
-	couponCode?: string;
+	source?: string;
 }): Promise<Result<ICJitEntry>> => {
 	try {
 		const nodeIdResult = await getNodeId();
@@ -168,7 +168,7 @@ export const createCJitEntry = async ({
 			invoiceDescription,
 			nodeId,
 			channelExpiryWeeks,
-			couponCode,
+			{ source },
 		);
 
 		return ok(createRes);
@@ -358,6 +358,13 @@ export const isGeoBlocked = async (fromStorage = false): Promise<boolean> => {
 	} catch {
 		return false;
 	}
+};
+
+export const logToBlocktank = async (
+	nodeId: string,
+	message: string,
+): Promise<void> => {
+	return bt.bitkitLog(nodeId, message);
 };
 
 /**
