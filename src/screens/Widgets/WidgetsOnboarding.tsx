@@ -106,7 +106,7 @@ const Layout = ({
 					<View style={styles.imageContainer}>
 						<Image source={image} style={styles.image} />
 					</View>
-					<View style={styles.middleContainer}>{children}</View>
+					{children}
 					<View style={styles.buttonContainer}>
 						<Button
 							style={styles.button}
@@ -133,9 +133,13 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 32,
 	},
 	imageContainer: {
+		flexShrink: 1,
 		alignItems: 'center',
+		alignSelf: 'center',
+		width: '100%',
 		aspectRatio: 1,
 		marginTop: 'auto',
+		marginBottom: 48,
 	},
 	image: {
 		flex: 1,
@@ -143,9 +147,6 @@ const styles = StyleSheet.create({
 	},
 	introText: {
 		marginTop: 4,
-	},
-	middleContainer: {
-		marginTop: 'auto',
 	},
 	buttonContainer: {
 		flexDirection: 'row',

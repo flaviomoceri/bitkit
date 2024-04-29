@@ -67,6 +67,7 @@ const SecuritySettings = ({
 								updateSettings({
 									enableSwipeToHideBalance: !enableSwipeToHideBalance,
 									hideBalance: false,
+									hideBalanceOnOpen: false,
 								}),
 							);
 						},
