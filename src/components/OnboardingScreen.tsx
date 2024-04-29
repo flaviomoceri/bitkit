@@ -42,6 +42,7 @@ const OnboardingScreen = ({
 				<View
 					style={[
 						styles.imageContainer,
+						// eslint-disable-next-line react-native/no-inline-styles
 						{ marginBottom: imagePosition === 'center' ? 'auto' : 48 },
 					]}>
 					<Image style={styles.image} source={image} />
