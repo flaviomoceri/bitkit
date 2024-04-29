@@ -27,6 +27,7 @@ const BuyBitcoin = ({
 			}
 			description={t('buy_text')}
 			image={imageSrc}
+			imagePosition="center"
 			buttonText={t('buy_button')}
 			testID="BuyBitcoin"
 			onClosePress={(): void => {

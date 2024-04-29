@@ -12,6 +12,7 @@ const OnboardingScreen = ({
 	title,
 	description,
 	image,
+	imagePosition,
 	buttonText,
 	displayBackButton = true,
 	testID,
@@ -22,6 +23,7 @@ const OnboardingScreen = ({
 	title: string | ReactElement;
 	description: string | ReactElement;
 	image: ImageSourcePropType;
+	imagePosition?: 'center' | 'bottom';
 	buttonText: string;
 	displayBackButton?: boolean;
 	testID?: string;
@@ -37,16 +39,18 @@ const OnboardingScreen = ({
 				onClosePress={onClosePress}
 			/>
 			<View style={styles.content} testID={testID}>
-				<View style={styles.imageContainer}>
+				<View
+					style={[
+						styles.imageContainer,
+						{ marginBottom: imagePosition === 'center' ? 'auto' : 48 },
+					]}>
 					<Image style={styles.image} source={image} />
 				</View>
 
-				<View style={styles.textContainer}>
-					<Display>{title}</Display>
-					<BodyM style={styles.description} color="white50">
-						{description}
-					</BodyM>
-				</View>
+				<Display>{title}</Display>
+				<BodyM style={styles.description} color="white50">
+					{description}
+				</BodyM>
 
 				<View style={styles.buttonContainer}>
 					<Button
@@ -76,15 +80,13 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		alignItems: 'center',
 		alignSelf: 'center',
+		width: '100%',
 		aspectRatio: 1,
 		marginTop: 'auto',
 	},
 	image: {
 		flex: 1,
 		resizeMode: 'contain',
-	},
-	textContainer: {
-		marginTop: 'auto',
 	},
 	description: {
 		marginTop: 4,

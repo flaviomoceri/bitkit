@@ -142,7 +142,7 @@ const Layout = memo(
 				<DetectSwipe onSwipeLeft={onSwipeLeft}>
 					<View style={styles.content}>
 						<View style={styles.imageContainer}>
-							<Image source={illustration} style={styles.image} />
+							<Image style={styles.image} source={illustration} />
 						</View>
 						<View style={styles.middleContainer}>{children}</View>
 						<View style={styles.buttonContainer}>
@@ -171,13 +171,13 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		flex: 1,
-		justifyContent: 'space-between',
 		paddingHorizontal: 32,
 	},
 	imageContainer: {
 		flexShrink: 1,
 		alignItems: 'center',
 		alignSelf: 'center',
+		width: '100%',
 		aspectRatio: 1,
 		marginTop: 'auto',
 	},
@@ -185,11 +185,11 @@ const styles = StyleSheet.create({
 		flex: 1,
 		resizeMode: 'contain',
 	},
+	middleContainer: {
+		marginTop: 48,
+	},
 	introText: {
 		marginTop: 4,
-	},
-	middleContainer: {
-		marginTop: 'auto',
 	},
 	buttonContainer: {
 		flexDirection: 'row',
