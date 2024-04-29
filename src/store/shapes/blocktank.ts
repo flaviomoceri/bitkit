@@ -32,7 +32,6 @@ export const defaultBlocktankInfoShape: IBtInfo = {
 			fast: 0,
 			mid: 0,
 			slow: 0,
-			isHigh: false,
 		},
 	},
 };
