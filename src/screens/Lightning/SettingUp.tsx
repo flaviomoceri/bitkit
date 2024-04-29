@@ -1,4 +1,4 @@
-import React, { ReactElement, memo } from 'react';
+import React, { ReactElement, memo, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -25,6 +25,14 @@ const SettingUp = ({
 		{ title: t('setting_up_step3') },
 		{ title: t('setting_up_step4') },
 	];
+
+	useEffect(() => {
+		if (lightningSettingUpStep === 3) {
+			setTimeout(() => {
+				navigation.navigate('Success', { type: 'spending' });
+			}, 1000);
+		}
+	}, [lightningSettingUpStep, navigation]);
 
 	const onClose = (): void => {
 		navigation.navigate('Wallet');
