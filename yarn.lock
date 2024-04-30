@@ -3567,10 +3567,10 @@
     cross-fetch "^3.1.4"
     node-fetch "3.1.1"
 
-"@synonymdev/blocktank-lsp-http-client@1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@synonymdev/blocktank-lsp-http-client/-/blocktank-lsp-http-client-1.1.1.tgz#a2b126df7144502f82f82a2f2a9f7eab6e731e17"
-  integrity sha512-/7OZeB446wdaJrBsjUUjCggwg8MYkVrTEiIIO4Rd0RBKY531SKYs1MoiOXdP/FKB4cTwvoKadxCilCipSYo89A==
+"@synonymdev/blocktank-lsp-http-client@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@synonymdev/blocktank-lsp-http-client/-/blocktank-lsp-http-client-1.1.2.tgz#17a4caa4f1ef4b19307aed7f1343c32c89569dc2"
+  integrity sha512-IRKDtKvHZBkoBMTRXrjh3jYFW5dSU4e/HZqG2dc+FfslSyofBGFCTQQTTNUU6qTKslD2jv+H1vNo5w8QNt1Duw==
   dependencies:
     axios "^1.4.0"
 
