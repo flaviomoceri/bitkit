@@ -48,7 +48,7 @@
     "@reduxjs/toolkit": "2.2.3",
     "@shopify/react-native-skia": "1.2.1",
     "@synonymdev/blocktank-client": "0.0.50",
-    "@synonymdev/blocktank-lsp-http-client": "0.13.1",
+    "@synonymdev/blocktank-lsp-http-client": "1.1.2",
     "@synonymdev/feeds": "2.1.1",
     "@synonymdev/ledger": "0.0.3",
     "@synonymdev/react-native-ldk": "0.0.138",
