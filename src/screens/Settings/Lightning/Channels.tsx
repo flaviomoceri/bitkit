@@ -243,7 +243,7 @@ const Channels = ({
 	const closedChannels = useAppSelector(closedChannelsSelector);
 	const isGeoBlocked = useAppSelector(isGeoBlockedSelector);
 	const blocktankNodeKey = useAppSelector((state) => {
-		return state.blocktank.info.nodes[0].pubkey;
+		return state.blocktank.info.nodes[0]?.pubkey;
 	});
 
 	const { pendingOrders, failedOrders } = getPendingBlocktankChannels(
