@@ -11,7 +11,6 @@ import { TWalletName } from '../types/wallet';
 import {
 	EChannelStatus,
 	TChannels,
-	TLdkAccountVersion,
 	TLightningNodeVersion,
 	TPendingPayment,
 } from '../types/lightning';
@@ -137,12 +136,6 @@ export const lightningSlice = createSlice({
 			const { backup, selectedWallet, selectedNetwork } = action.payload;
 			state.nodes[selectedWallet].backup[selectedNetwork] = backup;
 		},
-		updateLdkAccountVersion: (
-			state,
-			action: PayloadAction<TLdkAccountVersion>,
-		) => {
-			state.accountVersion = action.payload;
-		},
 		addPendingPayment: (state, action: PayloadAction<TPendingPayment>) => {
 			state.pendingPayments.push(action.payload);
 		},
@@ -166,7 +159,6 @@ export const {
 	removeLightningPeer,
 	updateClaimableBalances,
 	updateBackupState,
-	updateLdkAccountVersion,
 	addPendingPayment,
 	removePendingPayment,
 	resetLightningState,
