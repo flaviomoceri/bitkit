@@ -11,7 +11,7 @@ export const defaultLightningShape: TNode = {
 };
 
 export const initialLightningState: TLightningState = {
-	accountVersion: 1,
+	accountVersion: 3,
 	version: {
 		ldk: '',
 		c_bindings: '',

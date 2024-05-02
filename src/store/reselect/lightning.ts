@@ -19,11 +19,6 @@ export const lightningState = (state: RootState): TLightningState => {
 };
 export const nodesState = (state: RootState): TNodes => state.lightning.nodes;
 
-export const accountVersionSelector = createSelector(
-	lightningState,
-	(lightning) => lightning.accountVersion,
-);
-
 export const pendingPaymentsSelector = createSelector(
 	lightningState,
 	(lightning) => lightning.pendingPayments,
