@@ -1006,6 +1006,7 @@ export const isLdkRunning = async (): Promise<boolean> => {
 export const waitForLdk = async (): Promise<void> => {
 	await tryNTimes({
 		toTry: getNodeId,
+		times: 30,
 		interval: 500,
 	});
 };
