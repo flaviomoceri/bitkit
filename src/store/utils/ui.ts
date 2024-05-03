@@ -3,8 +3,9 @@ import { getBuildNumber } from 'react-native-device-info';
 
 import { getActivityStore, dispatch } from '../helpers';
 import { closeSheet, setAppUpdateInfo, showSheet } from '../slices/ui';
-import { TAvailableUpdate, ViewControllerParamList } from '../types/ui';
+import { vibrate } from '../../utils/helpers';
 import { EActivityType } from '../types/activity';
+import { TAvailableUpdate, ViewControllerParamList } from '../types/ui';
 
 const releaseUrl =
 	'https://github.com/synonymdev/bitkit/releases/download/updater/release.json';
@@ -25,6 +26,7 @@ export const showNewOnchainTxPrompt = ({
 	id: string;
 	value: number;
 }): void => {
+	vibrate({ type: 'default' });
 	showBottomSheet('newTxPrompt', {
 		activityItem: {
 			id,
@@ -40,6 +42,7 @@ export const showNewTxPrompt = (txId: string): void => {
 	const activityItem = getActivityStore().items.find(({ id }) => id === txId);
 
 	if (activityItem) {
+		vibrate({ type: 'default' });
 		showBottomSheet('newTxPrompt', { activityItem });
 		dispatch(closeSheet('receiveNavigation'));
 	}

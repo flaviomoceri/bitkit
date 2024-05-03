@@ -1,8 +1,10 @@
 import { ok, Result } from '@synonymdev/result';
 import { TChannel } from '@synonymdev/react-native-ldk';
+import { EPaymentType } from 'beignet';
 
 import { EActivityType, TLightningActivityItem } from '../types/activity';
 import { getBlocktankStore, dispatch } from '../helpers';
+import { vibrate } from '../../utils/helpers';
 import { getCurrentWallet } from '../../utils/wallet';
 import { getChannels } from '../../utils/lightning';
 import { formatBoostedActivityItems } from '../../utils/boost';
@@ -12,7 +14,6 @@ import { updateSettings } from '../slices/settings';
 import { closeSheet } from '../slices/ui';
 import { addActivityItem, updateActivityItems } from '../slices/activity';
 import { showBottomSheet } from './ui';
-import { EPaymentType } from 'beignet';
 
 /**
  * Attempts to determine if a given channel open was in response to
@@ -57,6 +58,7 @@ export const addCJitActivityItem = async (channelId: string): Promise<void> => {
 	dispatch(addActivityItem(activityItem));
 	dispatch(updateSettings({ hideOnboardingMessage: true }));
 	dispatch(closeSheet('receiveNavigation'));
+	vibrate({ type: 'default' });
 	showBottomSheet('newTxPrompt', { activityItem });
 };
 

@@ -67,7 +67,13 @@ import {
 	updateLightningNodeIdThunk,
 	updateLightningNodeVersionThunk,
 } from '../../store/utils/lightning';
-import { promiseTimeout, reduceValue, sleep, tryNTimes } from '../helpers';
+import {
+	promiseTimeout,
+	reduceValue,
+	sleep,
+	tryNTimes,
+	vibrate,
+} from '../helpers';
 import {
 	EActivityType,
 	TLightningActivityItem,
@@ -428,6 +434,7 @@ export const handleLightningPaymentSubscription = async ({
 	};
 
 	dispatch(addActivityItem(activityItem));
+	vibrate({ type: 'default' });
 	showBottomSheet('newTxPrompt', { activityItem });
 	dispatch(closeSheet('receiveNavigation'));
 
