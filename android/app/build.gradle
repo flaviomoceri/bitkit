@@ -77,7 +77,7 @@ android {
 
     namespace "com.bitkit"
     defaultConfig {
-        applicationId "to.synonym.bitkit.wallet"
+        applicationId "to.bitkit"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 111
