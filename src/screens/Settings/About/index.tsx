@@ -22,8 +22,6 @@ const imageSrc = require('../../../assets/logo.png');
 
 const About = (): ReactElement => {
 	const { t } = useTranslation('settings');
-	// TODO: uncomment links after full launch
-
 	// const [isReviewing, setIsReviewing] = useState(false);
 
 	// const onReview = useCallback((): void => {
