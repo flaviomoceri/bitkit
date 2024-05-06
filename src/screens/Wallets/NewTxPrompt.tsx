@@ -49,15 +49,17 @@ const NewTxPrompt = (): ReactElement => {
 			snapPoints={snapPoints}
 			backdrop={true}>
 			<View style={styles.root}>
-				<View style={styles.confetti} pointerEvents="none">
-					<Lottie
-						source={isOnchainItem ? confettiOrangeSrc : confettiPurpleSrc}
-						style={styles.lottie}
-						resizeMode="cover"
-						autoPlay
-						loop
-					/>
-				</View>
+				{activityItem && (
+					<View style={styles.confetti} pointerEvents="none">
+						<Lottie
+							source={isOnchainItem ? confettiOrangeSrc : confettiPurpleSrc}
+							style={styles.lottie}
+							resizeMode="cover"
+							autoPlay
+							loop
+						/>
+					</View>
+				)}
 				<BottomSheetNavigationHeader
 					title={
 						isOnchainItem

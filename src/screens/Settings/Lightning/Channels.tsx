@@ -54,7 +54,6 @@ import {
 	createLightningInvoice,
 	savePeer,
 } from '../../../store/utils/lightning';
-import { useBalance } from '../../../hooks/wallet';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
@@ -65,7 +64,6 @@ import {
 	pendingChannelsSelector,
 } from '../../../store/reselect/lightning';
 import { enableDevOptionsSelector } from '../../../store/reselect/settings';
-import { TRANSACTION_DEFAULTS } from '../../../utils/wallet/constants';
 import { zipLogs } from '../../../utils/lightning/logs';
 import { SettingsScreenProps } from '../../../navigation/types';
 import {
@@ -75,7 +73,6 @@ import {
 import { TPaidBlocktankOrders } from '../../../store/types/blocktank';
 import { EUnit } from '../../../store/types/wallet';
 import { EChannelStatus, TChannel } from '../../../store/types/lightning';
-import { isGeoBlockedSelector } from '../../../store/reselect/user';
 
 /**
  * Convert pending (non-channel) blocktank orders to (fake) channels.
@@ -228,7 +225,6 @@ const Channels = ({
 	const [spendingStuckOutputs, setSpendingStuckOutputs] = useState(false);
 
 	const colors = useColors();
-	const { onchainBalance } = useBalance();
 	const { localBalance, remoteBalance } = useLightningBalance();
 	const selectedWallet = useAppSelector(selectedWalletSelector);
 	const selectedNetwork = useAppSelector(selectedNetworkSelector);
@@ -239,7 +235,6 @@ const Channels = ({
 	const openChannels = useAppSelector(openChannelsSelector);
 	const pendingChannels = useAppSelector(pendingChannelsSelector);
 	const closedChannels = useAppSelector(closedChannelsSelector);
-	const isGeoBlocked = useAppSelector(isGeoBlockedSelector);
 	const blocktankNodeKey = useAppSelector((state) => {
 		return state.blocktank.info.nodes[0]?.pubkey;
 	});
@@ -252,10 +247,7 @@ const Channels = ({
 	const pendingConnections = [...pendingOrders, ...pendingChannels];
 
 	const handleAdd = useCallback((): void => {
-		navigation.navigate('LightningRoot', {
-			screen: 'CustomSetup',
-			params: { spending: true },
-		});
+		navigation.navigate('LightningRoot', { screen: 'Funding' });
 
 		// TODO: Update this view once we enable creating channels with nodes other than Blocktank.
 		// navigation.navigate('LightningAddConnection');
@@ -355,20 +347,13 @@ const Channels = ({
 		});
 	}, [peer, selectedNetwork, selectedWallet, t]);
 
-	const addConnectionIsDisabled =
-		onchainBalance <= TRANSACTION_DEFAULTS.recommendedBaseFee || isGeoBlocked;
-
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('connections')}
-				onActionPress={addConnectionIsDisabled ? undefined : handleAdd}
-				actionIcon={
-					addConnectionIsDisabled ? undefined : (
-						<PlusIcon width={24} height={24} />
-					)
-				}
+				actionIcon={<PlusIcon width={24} height={24} />}
+				onActionPress={handleAdd}
 			/>
 			<ScrollView
 				contentContainerStyle={styles.content}
@@ -666,7 +651,6 @@ const Channels = ({
 						style={styles.button}
 						text={t('conn_button_add')}
 						size="large"
-						disabled={addConnectionIsDisabled}
 						onPress={handleAdd}
 					/>
 				</View>

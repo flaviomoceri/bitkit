@@ -76,6 +76,10 @@ const AppUpdatePrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 		};
 	}, [shouldShowBottomSheet]);
 
+	const onClose = (): void => {
+		dispatch(ignoreAppUpdate());
+	};
+
 	const onCancel = (): void => {
 		dispatch(ignoreAppUpdate());
 		dispatch(closeSheet('appUpdatePrompt'));
@@ -92,7 +96,7 @@ const AppUpdatePrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 			view="appUpdatePrompt"
 			snapPoints={snapPoints}
 			backdrop={true}
-			onClose={ignoreAppUpdate}>
+			onClose={onClose}>
 			<View style={styles.root}>
 				<BottomSheetNavigationHeader
 					title={t('update_title')}
