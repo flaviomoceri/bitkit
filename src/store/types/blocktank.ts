@@ -16,8 +16,6 @@ export type TPaidBlocktankOrders = {
 	[orderId: string]: string;
 };
 
-export type TGeoBlockResponse = { error?: 'GEO_BLOCKED'; accept?: boolean };
-
 export interface ICreateOrderRequest {
 	lspBalance: number;
 	channelExpiryWeeks?: number;
