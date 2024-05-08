@@ -19,10 +19,7 @@ import {
 import { sleep } from '../helpers';
 import { DEFAULT_CHANNEL_DURATION } from '../../utils/wallet/constants';
 import { dispatch, getBlocktankStore, getUserStore } from '../../store/helpers';
-import {
-	ICreateOrderRequest,
-	TGeoBlockResponse,
-} from '../../store/types/blocktank';
+import { ICreateOrderRequest } from '../../store/types/blocktank';
 import { updateUser } from '../../store/slices/user';
 import { setGeoBlock } from '../../store/utils/user';
 import { refreshWallet } from '../wallet';
@@ -41,7 +38,7 @@ export const setupBlocktank = async (
 	switch (selectedNetwork) {
 		case EAvailableNetwork.bitcoin:
 			isGeoBlocked = await setGeoBlock();
-			bt.baseUrl = 'https://blocktank.synonym.to/api/v2';
+			bt.baseUrl = __BLOCKTANK_HOST__;
 			break;
 		case EAvailableNetwork.bitcoinRegtest:
 			dispatch(updateUser({ isGeoBlocked: false }));
@@ -350,12 +347,22 @@ export const isGeoBlocked = async (fromStorage = false): Promise<boolean> => {
 				return geoBlocked;
 			}
 		}
-		const response = await fetch(
-			`${__BLOCKTANK_HOST__}/api/v2/channel/geocheck`,
-		);
-		const data: TGeoBlockResponse = await response.json();
-		return !!data?.error;
-	} catch {
+
+		const response = await fetch(`${__BLOCKTANK_HOST__}/geocheck`);
+
+		if (response.status === 403) {
+			return true;
+		}
+
+		if (response.status === 200) {
+			return false;
+		}
+
+		console.error(`Geo-block status check failed. [${response.status}]`);
+
+		return false;
+	} catch (error) {
+		console.error(`Failed to check geo-block status. ${error}`);
 		return false;
 	}
 };
