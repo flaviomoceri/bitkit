@@ -11268,10 +11268,6 @@ rn-electrum-client@0.0.16:
   resolved "https://registry.yarnpkg.com/rn-electrum-client/-/rn-electrum-client-0.0.16.tgz#2fd2b0db8dd7e8e8dd14c60666d4d7fd232ec8da"
   integrity sha512-qzkJlAjJBLPMGHe/N8IG35hv+j34JPBR5Ml2McCFY18xpjbshycPfOWylm7YZQjXxLeYEKYqbZ/2Gxp8o2mWgQ==
 
-"rn-electrum-client@github:synonymdev/react-native-electrum-client#a32a292d4e4918a04d280137e24e5961c74c543f":
-  version "0.0.8"
-  resolved "https://codeload.github.com/synonymdev/react-native-electrum-client/tar.gz/a32a292d4e4918a04d280137e24e5961c74c543f"
-
 rn-qr-generator@1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/rn-qr-generator/-/rn-qr-generator-1.4.0.tgz#57ea7109df809d70103ee5ee0569f7bd4fb07a79"
@@ -12880,4 +12876,3 @@ z32@^1.0.0:
   integrity sha512-p3DhBJckAZj5XwYMJYeLlkgJJ+aEyCoOjTpK17I/MofVs70eR+WQPXQpk1LEmMweB2JbUx0naFXPPI2EGaVX6w==
   dependencies:
     b4a "^1.5.3"
-
