@@ -4,7 +4,7 @@ import validate, { getAddressInfo } from 'bitcoin-address-validation';
 import { __E2E__ } from '../../constants/env';
 import { EAvailableNetwork } from '../networks';
 import { reduceValue } from '../helpers';
-import { btcToSats, satsToBtc } from '../conversion';
+import { btcToSats } from '../conversion';
 import { TWalletName } from '../../store/types/wallet';
 import {
 	getBalance,
@@ -1103,7 +1103,7 @@ export const broadcastBoost = async ({
 		const updatedActivityItemData: Partial<TOnchainActivityItem> = {
 			txId: newTxId,
 			address: transaction.changeAddress,
-			fee: oldFee + satsToBtc(transaction.fee),
+			fee: oldFee + transaction.fee,
 			isBoosted: true,
 			timestamp: new Date().getTime(),
 		};
