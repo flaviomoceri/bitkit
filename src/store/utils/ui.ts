@@ -2,7 +2,12 @@ import { Platform } from 'react-native';
 import { getBuildNumber } from 'react-native-device-info';
 
 import { getActivityStore, dispatch } from '../helpers';
-import { closeSheet, setAppUpdateInfo, showSheet } from '../slices/ui';
+import {
+	closeSheet,
+	setAppUpdateInfo,
+	showSheet,
+	toggleSheet,
+} from '../slices/ui';
 import { vibrate } from '../../utils/helpers';
 import { EActivityType } from '../types/activity';
 import { TAvailableUpdate, ViewControllerParamList } from '../types/ui';
@@ -17,6 +22,15 @@ export const showBottomSheet = <View extends keyof ViewControllerParamList>(
 ): void => {
 	const [view, params] = args;
 	dispatch(showSheet({ view, params }));
+};
+
+export const toggleBottomSheet = <View extends keyof ViewControllerParamList>(
+	...args: undefined extends ViewControllerParamList[View]
+		? [view: View] | [view: View, params: ViewControllerParamList[View]]
+		: [view: View, params: ViewControllerParamList[View]]
+): void => {
+	const [view, params] = args;
+	dispatch(toggleSheet({ view, params }));
 };
 
 export const showNewOnchainTxPrompt = ({
