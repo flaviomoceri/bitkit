@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { FadeIn } from 'react-native-reanimated';
 
 import { receiveIcon, sendIcon } from '../assets/icons/tabs';
-import { showBottomSheet } from '../store/utils/ui';
+import { toggleBottomSheet } from '../store/utils/ui';
 import { resetSendTransaction } from '../store/actions/wallet';
 import { viewControllersSelector } from '../store/reselect/ui';
 import useColors from '../hooks/colors';
@@ -39,13 +39,13 @@ const TabBar = ({
 	}, [viewControllers]);
 
 	const onReceivePress = (): void => {
-		showBottomSheet('receiveNavigation');
+		toggleBottomSheet('receiveNavigation');
 	};
 
 	const onSendPress = (): void => {
 		// make sure we start with a clean transaction state
 		resetSendTransaction();
-		showBottomSheet('sendNavigation');
+		toggleBottomSheet('sendNavigation');
 	};
 
 	const onScanPress = (): void => navigation.navigate('Scanner');

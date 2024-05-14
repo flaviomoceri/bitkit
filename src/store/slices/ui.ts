@@ -19,6 +19,18 @@ export const uiSlice = createSlice({
 		setAppUpdateInfo: (state, action: PayloadAction<TAvailableUpdate>) => {
 			state.availableUpdate = action.payload;
 		},
+		toggleSheet: (
+			state,
+			action: PayloadAction<{
+				view: keyof ViewControllerParamList;
+				params: any;
+			}>,
+		) => {
+			state.viewControllers[action.payload.view] = {
+				...action.payload.params,
+				isOpen: !state.viewControllers[action.payload.view].isOpen,
+			};
+		},
 		showSheet: (
 			state,
 			action: PayloadAction<{
@@ -50,6 +62,7 @@ export const {
 	updateUi,
 	setAppUpdateInfo,
 	showSheet,
+	toggleSheet,
 	closeSheet,
 	updateProfileLink,
 	resetUiState,
