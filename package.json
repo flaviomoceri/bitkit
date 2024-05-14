@@ -130,7 +130,6 @@
     "redux-persist": "6.0.0",
     "redux-thunk": "3.1.0",
     "rn-android-keyboard-adjust": "2.1.2",
-    "rn-electrum-client": "github:synonymdev/react-native-electrum-client#a32a292d4e4918a04d280137e24e5961c74c543f",
     "rn-qr-generator": "1.4.0",
     "secp256k1": "4.0.3",
     "sodium-react-native-direct": "0.4.2",
