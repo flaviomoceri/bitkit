@@ -350,38 +350,36 @@ export const decodeQRData = async (
 		return err('No data provided.');
 	}
 
-	if (__DEV__ || selectedNetwork === EAvailableNetwork.bitcoin) {
-		// Orange Ticket
-		if (data.startsWith('ticket-')) {
-			const [_, ...rest] = data.split('-');
-			const ticketId = rest.join('-');
-			if (ticketId) {
-				return ok([{ qrDataType: EQRDataType.orangeTicket, ticketId }]);
-			}
+	// Orange Ticket
+	if (data.startsWith('ticket-')) {
+		const [_, ...rest] = data.split('-');
+		const ticketId = rest.join('-');
+		if (ticketId) {
+			return ok([{ qrDataType: EQRDataType.orangeTicket, ticketId }]);
 		}
+	}
 
-		// Treasure hunt
-		// Airdrop
-		if (data.includes('cutt.ly/VwQFzhJJ') || data.includes('bitkit.to/drone')) {
-			const chestId = '2gZxrqhc';
+	// Treasure hunt
+	// Airdrop
+	if (data.includes('cutt.ly/VwQFzhJJ') || data.includes('bitkit.to/drone')) {
+		const chestId = '2gZxrqhc';
+		return ok([{ qrDataType: EQRDataType.treasureHunt, chestId }]);
+	}
+	// Universal links
+	if (data.includes('bitkit.to/treasure-hunt')) {
+		const url = new URLParse(data, true);
+		const chestId = url.query.chest!;
+
+		if (chestId) {
 			return ok([{ qrDataType: EQRDataType.treasureHunt, chestId }]);
 		}
-		// Universal links
-		if (data.includes('bitkit.to/treasure-hunt')) {
-			const url = new URLParse(data, true);
-			const chestId = url.query.chest!;
+	}
+	// Deeplinks (fallback)
+	if (data.includes('bitkit:chest')) {
+		const chestId = data.split('-')[1];
 
-			if (chestId) {
-				return ok([{ qrDataType: EQRDataType.treasureHunt, chestId }]);
-			}
-		}
-		// Deeplinks (fallback)
-		if (data.includes('bitkit:chest')) {
-			const chestId = data.split('-')[1];
-
-			if (chestId) {
-				return ok([{ qrDataType: EQRDataType.treasureHunt, chestId }]);
-			}
+		if (chestId) {
+			return ok([{ qrDataType: EQRDataType.treasureHunt, chestId }]);
 		}
 	}
 
