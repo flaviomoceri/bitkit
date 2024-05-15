@@ -64,6 +64,7 @@ export type SettingsStackParamList = {
 	AuthCheck: {
 		requirePin?: boolean;
 		onSuccess: () => void;
+		requireBiometrics?: boolean;
 	};
 	MainSettings: undefined;
 	GeneralSettings: undefined;
