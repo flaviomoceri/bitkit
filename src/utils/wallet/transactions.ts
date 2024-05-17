@@ -962,6 +962,20 @@ export const setupCpfp = async ({
 	satsPerByte?: number;
 }): Promise<Result<ISendTransaction>> => {
 	const transaction = getOnChainWalletTransaction();
+	// Set fastest fee-rate, if able. Otherwise, set the highest fee-rate.
+	if (!satsPerByte) {
+		const fees = getFeesStore().onchain;
+		satsPerByte = fees[ETransactionSpeed.fast];
+		const wallet = getOnChainWallet();
+		const feeInfo = wallet.getFeeInfo();
+		if (feeInfo.isErr()) {
+			return err(feeInfo.error.message);
+		}
+		const { maxSatPerByte } = feeInfo.value;
+		if (!satsPerByte || satsPerByte > maxSatPerByte) {
+			satsPerByte = maxSatPerByte;
+		}
+	}
 	return await transaction.setupCpfp({ txid, satsPerByte });
 };
 
