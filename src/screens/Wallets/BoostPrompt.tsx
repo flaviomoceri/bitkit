@@ -38,6 +38,7 @@ import {
 	transactionSelector,
 } from '../../store/reselect/wallet';
 import { validateTransaction } from 'beignet';
+import { EUnit } from '../../store/types/wallet.ts';
 
 const BoostForm = ({
 	activityItem,
@@ -198,7 +199,12 @@ const BoostForm = ({
 
 	const Title = (
 		<View style={styles.adjustValueRow}>
-			<Money sats={transaction.satsPerByte} size="bodyMSB" symbol={true} />
+			<Money
+				sats={transaction.satsPerByte}
+				unit={EUnit.BTC}
+				size="bodyMSB"
+				symbol={true}
+			/>
 			<BodyMSB> {t('sat_vbyte_compact')}</BodyMSB>
 		</View>
 	);
