@@ -659,25 +659,28 @@ export const refreshLdk = async ({
 
 		// Calls that don't require sequential execution.
 		const promises: Promise<Result<any>>[] = [
-			lm.syncLdk(),
 			lm.setFees(),
 			addPeers({ selectedNetwork, selectedWallet }),
 		];
 		const results = await Promise.all(promises);
 		// Handle & Return syncLdk errors.
-		if (results[0].isErr()) {
-			showToast({
-				type: 'error',
-				title: i18n.t('wallet:ldk_sync_error_title'),
-				description: results[0].error.message,
-			});
-			return handleRefreshError(results[0].error.message);
-		}
 		for (const result of results) {
 			if (result.isErr()) {
 				//setFees & addPeers can fail, but we should still continue and make UI ready so payments can be attempted
-				console.error(result.error.message);
+				console.error(
+					`refreshLdk setFees/addPeers error: ${result.error.message}`,
+				);
 			}
+		}
+
+		const syncResult = await lm.syncLdk();
+		if (syncResult.isErr()) {
+			showToast({
+				type: 'error',
+				title: i18n.t('wallet:ldk_sync_error_title'),
+				description: syncResult.error.message,
+			});
+			return handleRefreshError(syncResult.error.message);
 		}
 
 		await Promise.all([
