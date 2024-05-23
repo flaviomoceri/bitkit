@@ -569,10 +569,10 @@ const OnchainActivityDetail = ({
 				<>
 					<TouchableOpacity
 						style={styles.sectionContainer}
-						onPress={(): void => onCopy(id)}>
+						onPress={(): void => onCopy(txId)}>
 						<Section
 							title={t('activity_tx_id')}
-							value={<BodySSB>{id}</BodySSB>}
+							value={<BodySSB>{txId}</BodySSB>}
 						/>
 					</TouchableOpacity>
 					<TouchableOpacity
