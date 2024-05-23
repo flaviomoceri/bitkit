@@ -5,12 +5,11 @@ import React, {
 	useEffect,
 	useState,
 } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { Caption13Up } from '../../../styles/text';
-import { TouchableOpacity } from '../../../styles/components';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import NumberPadTextField from '../../../components/NumberPadTextField';
 import SafeAreaInset from '../../../components/SafeAreaInset';
