@@ -16,7 +16,7 @@ import { BodyM } from '../../styles/text';
 import { ClipboardTextIcon, CornersOutIcon } from '../../styles/icons';
 import type { RootStackParamList } from '../../navigation/types';
 import { useAppDispatch } from '../../hooks/redux';
-import { useSelectedSlashtag2 } from '../../hooks/slashtags2';
+import { useSlashtags } from '../../hooks/slashtags';
 import {
 	useBottomSheetBackPress,
 	useSnapPoints,
@@ -32,7 +32,7 @@ const AddContact = ({
 	const dispatch = useAppDispatch();
 	const [url, setUrl] = useState('');
 	const [error, setError] = useState<undefined | string>();
-	const { url: myProfileURL } = useSelectedSlashtag2();
+	const { url: myProfileURL } = useSlashtags();
 
 	useBottomSheetBackPress('addContactModal');
 

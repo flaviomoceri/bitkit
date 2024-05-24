@@ -12,15 +12,11 @@ import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/Button';
 import { showToast } from '../../../utils/notifications';
-import { saveProfile2, updateSlashPayConfig2 } from '../../../utils/slashtags2';
+import { saveProfile, updateSlashPayConfig } from '../../../utils/slashtags';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import { __WEB_RELAY__ } from '../../../constants/env';
 import { useAppDispatch } from '../../../hooks/redux';
-import {
-	useProfile2,
-	useSelectedSlashtag2,
-	useSlashtags2,
-} from '../../../hooks/slashtags2';
+import { useProfile, useSlashtags } from '../../../hooks/slashtags';
 
 const validateInput = (
 	url: string,
@@ -48,10 +44,10 @@ const WebRelay = ({
 	const {
 		webRelayClient,
 		webRelayUrl,
+		url: myProfileUrl,
 		profile: slashtagsProfile,
-	} = useSlashtags2();
-	const { url: myProfileUrl } = useSelectedSlashtag2();
-	const { profile } = useProfile2(myProfileUrl);
+	} = useSlashtags();
+	const { profile } = useProfile(myProfileUrl);
 
 	const [loading, setLoading] = useState(false);
 	const [url, setUrl] = useState(webRelayUrl);
@@ -106,7 +102,7 @@ const WebRelay = ({
 			return;
 		}
 
-		saveProfile2(myProfileUrl, profile, slashtagsProfile).then((res) => {
+		saveProfile(myProfileUrl, profile, slashtagsProfile).then((res) => {
 			if (res.isOk()) {
 				return;
 			}
@@ -117,7 +113,7 @@ const WebRelay = ({
 			});
 		});
 
-		updateSlashPayConfig2({});
+		updateSlashPayConfig();
 
 		// ignore "profile" here
 		// eslint-disable-next-line react-hooks/exhaustive-deps

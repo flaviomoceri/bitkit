@@ -14,7 +14,7 @@ import { handleSlashtagURL } from '../../utils/slashtags';
 import { useSlashfeed } from '../../hooks/widgets';
 import type { RootStackScreenProps } from '../../navigation/types';
 
-const PriceFeedURL =
+export const PriceFeedURL =
 	'slashfeed:9ckhj7ea31ugskdewy9eiod5trhtbgcu9juza8aypjyugsp5f4oo/Bitcoin Price';
 const NewsFeedURL =
 	'slashfeed:tdm8gwcuh6nfw4w8remadpzid9cff4tpoyazeokzbrfnjrxyf9ho/Bitcoin Headlines';

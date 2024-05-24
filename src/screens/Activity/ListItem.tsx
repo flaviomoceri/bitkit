@@ -22,7 +22,7 @@ import {
 	TOnchainActivityItem,
 } from '../../store/types/activity';
 import { useAppSelector } from '../../hooks/redux';
-import { useProfile2 } from '../../hooks/slashtags2';
+import { useProfile } from '../../hooks/slashtags';
 import { useFeeText } from '../../hooks/fees';
 import {
 	ETransferStatus,
@@ -245,7 +245,7 @@ export const EmptyItem = ({
 };
 
 const Avatar = ({ url }: { url: string }): ReactElement => {
-	const { profile } = useProfile2(url);
+	const { profile } = useProfile(url);
 	return (
 		<ProfileImage
 			style={styles.icon}
