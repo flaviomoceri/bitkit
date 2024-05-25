@@ -27,6 +27,7 @@ d('Widgets', () => {
 		}
 
 		// add price widget
+		await element(by.id('WalletsScrollView')).scroll(300, 'down', NaN, 0.85);
 		await element(by.id('WidgetsAdd')).tap();
 		await element(by.id('WidgetsOnboarding-button')).tap();
 		await element(by.id('PriceWidget')).tap();
