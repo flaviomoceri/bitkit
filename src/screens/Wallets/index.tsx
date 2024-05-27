@@ -8,10 +8,12 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Display } from '../../styles/text';
 import { useBalance } from '../../hooks/wallet';
 import useColors from '../../hooks/colors';
+import { useSlashfeed } from '../../hooks/widgets';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { updateSettings } from '../../store/slices/settings';
 import { widgetsSelector } from '../../store/reselect/widgets';
 import { refreshWallet } from '../../utils/wallet';
+import { SUPPORTED_FEED_TYPES } from '../../utils/widgets';
 import ActivityListShort from '../../screens/Activity/ActivityListShort';
 import DetectSwipe from '../../components/DetectSwipe';
 import BalanceHeader from '../../components/BalanceHeader';
@@ -21,6 +23,7 @@ import SafeAreaInset from '../../components/SafeAreaInset';
 import WalletOnboarding from '../../components/WalletOnboarding';
 import Balances from '../../components/Balances';
 import Header from './Header';
+import { PriceFeedURL } from '../Widgets/WidgetsSuggestions';
 import type { WalletScreenProps } from '../../navigation/types';
 import {
 	enableSwipeToHideBalanceSelector,
@@ -31,6 +34,7 @@ import {
 import { showToast } from '../../utils/notifications';
 import { ignoresHideBalanceToastSelector } from '../../store/reselect/user';
 import { ignoreHideBalanceToast } from '../../store/slices/user';
+import { setFeedWidget } from '../../store/slices/widgets';
 
 const HEADER_HEIGHT = 46;
 
@@ -55,6 +59,7 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 	const widgets = useAppSelector(widgetsSelector);
 	const insets = useSafeAreaInsets();
 	const { t } = useTranslation('wallet');
+	const { config } = useSlashfeed({ url: PriceFeedURL });
 
 	// tell WalletNavigator that this screen is focused
 	useFocusEffect(
@@ -90,6 +95,22 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 		setRefreshing(true);
 		await refreshWallet();
 		setRefreshing(false);
+	};
+
+	const onHideOnboarding = (): void => {
+		// add default widgets
+		if (config) {
+			dispatch(
+				setFeedWidget({
+					url: PriceFeedURL,
+					type: SUPPORTED_FEED_TYPES.PRICE_FEED,
+					fields: config.fields.filter((f) => f.name === 'BTC/USD'),
+					extras: { period: '1D', showSource: false },
+				}),
+			);
+		}
+
+		dispatch(updateSettings({ hideOnboardingMessage: true }));
 	};
 
 	const hideOnboarding =
@@ -150,9 +171,7 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 									components={{ accent: <Display color="brand" /> }}
 								/>
 							}
-							onHide={(): void => {
-								dispatch(updateSettings({ hideOnboardingMessage: true }));
-							}}
+							onHide={onHideOnboarding}
 						/>
 					)}
 				</ScrollView>

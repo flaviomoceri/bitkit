@@ -28,7 +28,7 @@ import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from '../../store/reselect/wallet';
-import { updateSlashPayConfig2 } from '../../utils/slashtags2';
+import { updateSlashPayConfig } from '../../utils/slashtags';
 
 const crownImageSrc = require('../../assets/illustrations/crown.png');
 const coinsImageSrc = require('../../assets/illustrations/coins.png');
@@ -70,7 +70,7 @@ export const OfflinePayments = ({
 
 	const savePaymentConfig = useCallback((): void => {
 		dispatch(updateSettings({ enableOfflinePayments }));
-		updateSlashPayConfig2({ selectedWallet, selectedNetwork });
+		updateSlashPayConfig({ selectedWallet, selectedNetwork });
 	}, [enableOfflinePayments, selectedNetwork, selectedWallet, dispatch]);
 
 	return (

@@ -10,7 +10,7 @@ import { TFeedWidget } from '../store/types/widgets';
 import BaseFeedWidget from './BaseFeedWidget';
 import { Change, Chart, getChange } from './PriceChart';
 import { decodeWidgetFieldValue, SUPPORTED_FEED_TYPES } from '../utils/widgets';
-import { useSlashtags2 } from '../hooks/slashtags2';
+import { useSlashtags } from '../hooks/slashtags';
 import { __E2E__ } from '../constants/env';
 
 type TField = {
@@ -39,7 +39,7 @@ const PriceWidget = ({
 	onPressIn?: () => void;
 }): ReactElement => {
 	const { t } = useTranslation('slashtags');
-	const { webRelayClient, webRelayUrl } = useSlashtags2();
+	const { webRelayClient, webRelayUrl } = useSlashtags();
 	const [data, setData] = useState<TField[]>([]);
 	const [error, setError] = useState(false);
 	const { config, loading } = useSlashfeed({
