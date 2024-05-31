@@ -435,15 +435,12 @@ const CustomSetup = ({
 		setLoading(false);
 		if (purchaseResponse.isErr()) {
 			let msg = purchaseResponse.error.message;
-			if (msg.includes('Local channel balance is too small')) {
-				t('error_channel_receiving', {
-					usdValue: maxChannelSizeSat,
-				});
-			}
 			showToast({
 				type: 'warning',
 				title: t('error_channel_purchase'),
-				description: msg,
+				description: msg.includes('Local channel balance is too small')
+					? t('error_channel_receiving', { usdValue: maxChannelSizeSat })
+					: t('error_channel_setup_msg', { raw: msg }),
 			});
 		}
 		if (purchaseResponse.isOk()) {

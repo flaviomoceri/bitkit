@@ -661,7 +661,7 @@ export const refreshLdk = async ({
 			showToast({
 				type: 'error',
 				title: i18n.t('wallet:ldk_sync_error_title'),
-				description: syncResult.error.message,
+				description: i18n.t('other:try_again'),
 			});
 			return handleRefreshError(syncResult.error.message);
 		}
@@ -1034,11 +1034,11 @@ export const parseUri = (
 	const uri = str.split('@');
 	const publicKey = uri[0];
 	if (uri.length !== 2) {
-		return err('The URI appears to be invalid.');
+		return err(i18n.t('lightning:error_add_uri'));
 	}
 	const parsed = uri[1].split(':');
 	if (parsed.length < 2) {
-		return err('The URI appears to be invalid.');
+		return err(i18n.t('lightning:error_add_uri'));
 	}
 	const ip = parsed[0];
 	const port = Number(parsed[1]);
@@ -1065,12 +1065,21 @@ export const addPeer = async ({
 	if (parsedUri.isErr()) {
 		return err(parsedUri.error.message);
 	}
-	return await lm.addPeer({
+
+	const res = await lm.addPeer({
 		pubKey: parsedUri.value.publicKey,
 		address: parsedUri.value.ip,
 		port: parsedUri.value.port,
 		timeout,
 	});
+
+	if (res.isErr()) {
+		res.error.message = i18n.t('lightning:error_add_msg', {
+			raw: res.error.message,
+		});
+	}
+
+	return res;
 };
 
 /**
