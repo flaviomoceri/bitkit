@@ -4546,10 +4546,10 @@ bech32@^1.1.2, bech32@^1.1.4:
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.4.tgz#e38c9f37bf179b8eb16ae3a772b40c356d4832e9"
   integrity sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==
 
-beignet@0.0.37:
-  version "0.0.37"
-  resolved "https://registry.yarnpkg.com/beignet/-/beignet-0.0.37.tgz#bd2ff2c2d1803bf308cb9c03ca493d54d35e6e34"
-  integrity sha512-Snn3l4irPUJIDbtLKLb6A2LZ8Qu+AJBsdTXpNxtegnmVg+r8SVPIWWwvFvbzTcFU7ZO1KyhK/CXNxk3ts3KlvQ==
+beignet@0.0.39:
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/beignet/-/beignet-0.0.39.tgz#d1f868168e01a3b57dee456ec9e5f36dbdf13bbd"
+  integrity sha512-NPzyvyfyx7TBtOPHxLwlC5d0aOTJLjZFUbRlx1Wr/EOgZ8//G2yrnLOCBG3PQGs9mbMcz6L/Z8jzHnuH2S+NTg==
   dependencies:
     "@bitcoinerlab/secp256k1" "1.0.5"
     bech32 "2.0.0"
@@ -4562,7 +4562,7 @@ beignet@0.0.37:
     ecpair "2.1.0"
     lodash.clonedeep "4.5.0"
     net "1.0.2"
-    rn-electrum-client "0.0.16"
+    rn-electrum-client "0.0.17"
 
 big.js@^5.2.2:
   version "5.2.2"
@@ -10757,10 +10757,10 @@ rn-android-keyboard-adjust@2.1.2:
   resolved "https://registry.yarnpkg.com/rn-android-keyboard-adjust/-/rn-android-keyboard-adjust-2.1.2.tgz#f2b792628700dcb026215420192317ce43fd954f"
   integrity sha512-pUYiMT7aucw5YnV4geGdalyl6o6rEwRYhDnw2oPQwDym1BZHtmKsxFLupky1Kj2ZNkNKadpEyoyHOElLo+f3sA==
 
-rn-electrum-client@0.0.16:
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/rn-electrum-client/-/rn-electrum-client-0.0.16.tgz#2fd2b0db8dd7e8e8dd14c60666d4d7fd232ec8da"
-  integrity sha512-qzkJlAjJBLPMGHe/N8IG35hv+j34JPBR5Ml2McCFY18xpjbshycPfOWylm7YZQjXxLeYEKYqbZ/2Gxp8o2mWgQ==
+rn-electrum-client@0.0.17:
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/rn-electrum-client/-/rn-electrum-client-0.0.17.tgz#e054e6c089aa1dfb745fba51616115130d9aef8f"
+  integrity sha512-HeCcVqw7dB6THrFZNVUlc2hzFL6WHyKWBbkeTgDYam8DOUGwS72GPgn9OMH1nz7qTWMx0FaIN9H0ny4kFUuJgg==
 
 rn-qr-generator@1.4.0:
   version "1.4.0"
