@@ -100,7 +100,6 @@
   "error_invoice": "Vytvoření faktury se nezdařilo",
   "error_add_title": "Nelze přidat Lightning Peer",
   "error_add": "Bitkit se nepodařilo přidat Lightning peer.",
-  "error_add_raw": "Při přidávání protistrany lightning došlo k chybě: {raw}",
   "error_add_uri": "URI se zdá být neplatná.",
   "error_add_tor": "Bitkit nemůže přidat uzly tor.",
   "error_save_title": "Nelze uložit Lightning Peer",

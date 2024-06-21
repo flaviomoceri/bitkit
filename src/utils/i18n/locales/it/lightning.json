@@ -96,7 +96,6 @@
   "error_invoice": "Crazione Invoice Fallita",
   "error_add_title": "Impossibile aggiungere il peer Lightning",
   "error_add": "Bitkit non è riuscito ad aggiungere il peer Lightning.",
-  "error_add_raw": "Si è verificato un errore durante l'aggiunta del peer Lightning: {raw}",
   "error_add_uri": "L'URI sembra non essere valido.",
   "error_add_tor": "Bitkit non può aggiungere nodi Tor.",
   "error_save_title": "Impossibile salvare il peer Lightning",

@@ -96,7 +96,6 @@
   "error_invoice": "Falha ao Gerar a Fatura",
   "error_add_title": "Não foi possível adicionar o par Lightning.",
   "error_add": "Bitkit não foi capaz de adicionar o par Lightning.",
-  "error_add_raw": "Ocorreu um erro ao adicionar com a rede Lightning: {raw}",
   "error_add_uri": "O URI parece ser inválido.",
   "error_add_tor": "Bitkit não pode adicionar pares que usam a rede TOR.",
   "error_save_title": "Não foi possível salvar o par Lightning",

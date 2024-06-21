@@ -94,7 +94,6 @@
   "error_invoice": "Rechnungserstellung fehlgeschlagen",
   "error_add_title": "Lightning-Peer konnte nicht hinzugefügt werden",
   "error_add": "Bitkit konnte den Lightning-Peer nicht hinzufügen.",
-  "error_add_raw": "Ein Fehler trat auf, während wir den Lightning-Peer hinzufügten: {raw}",
   "error_add_uri": "Die URI scheint ungültig zu sein.",
   "error_add_tor": "Bitkit kann keine Tor-Nodes hinzufügen.",
   "error_save_title": "Lightning-Peer konnte nicht gespeichert werden",

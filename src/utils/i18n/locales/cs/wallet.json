@@ -101,7 +101,7 @@
   "receive_connect_initial": "Chcete-li nastavit svůj disponibilní zůstatek, bude odečten poplatek <accent>{lspFee}</accent> pro poskytovatele služeb.",
   "receive_connect_additional": "Chcete-li získat více okamžitých bitcoinů, musí Bitkit zvýšit vaši likviditu. Bude odečten poplatek <accent>{lspFee}</accent> z vámi zadané částky pro poskytovatele služeb.",
   "receive_cjit_error": "Chyba CJIT",
-  "receive_cjit_error_msg": "Nepodařilo se odeslat prostředky na váš disponibilní účet. {raw}",
+  "receive_cjit_error_msg": "Nepodařilo se odeslat prostředky na váš disponibilní účet.",
   "receive_will": "Obdržíte",
   "minimum": "MINIMUM",
   "activity": "Aktivita",
