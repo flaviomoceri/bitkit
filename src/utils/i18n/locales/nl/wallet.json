@@ -101,7 +101,7 @@
   "receive_connect_initial": "Voor het opzetten van uw bestedingssaldo wordt <accent>{lspFee}</accent> aan servicekosten ingehouden.",
   "receive_connect_additional": "Om meer Bitcoin op uw bestedingssaldo te ontvangen, moet Bitkit uw liquiditeit verhogen. Er wordt <accent>{lspFee}</accent> aan servicekosten ingehouden.",
   "receive_cjit_error": "CJIT Fout",
-  "receive_cjit_error_msg": "Het is niet gelukt om ₿ naar uw bestedingssaldo te verplaatsen. {raw}",
+  "receive_cjit_error_msg": "Het is niet gelukt om ₿ naar uw bestedingssaldo te verplaatsen.",
   "receive_will": "U ontvangt",
   "minimum": "MINIMUM",
   "activity": "Activiteit",

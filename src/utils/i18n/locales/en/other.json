@@ -14,7 +14,7 @@
 	"buy_text": "Don’t have any Bitcoin or need more?",
 	"buy_button": "Choose Exchange",
 	"error_keychain": "Data Connection Issue",
-	"error_keychain_msg": "An error occured: Could not load primaryKey.",
+	"error_keychain_msg": "Could not load primary key from keychain.",
 	"connection_restored_title": "Electrum Connection Restored",
 	"connection_restored_message": "Bitkit successfully reconnected to Electrum.",
 	"connection_issue": "Internet Connectivity Issues",

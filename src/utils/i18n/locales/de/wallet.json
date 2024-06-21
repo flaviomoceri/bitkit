@@ -101,7 +101,7 @@
   "receive_connect_initial": "Um dein Ausgabenkonto einzurichten, wird eine <accent>{lspFee}</accent> Dienstleistergebühr abgezogen.",
   "receive_connect_additional": "Um mehr sofortigen Bitcoin zu empfangen, muss Bitkit deine Liquidität erhöhen. Eine <accent>{lspFee}</accent> Dienstleistergebühr wird von dem angegebenen Betrag abgezogen.",
   "receive_cjit_error": "CJIT Fehler",
-  "receive_cjit_error_msg": "Fehler beim Senden der Gelder auf dein Ausgabenkonto. {raw}",
+  "receive_cjit_error_msg": "Fehler beim Senden der Gelder auf dein Ausgabenkonto.",
   "receive_will": "Du wirst empfangen",
   "minimum": "MINIMUM",
   "activity": "Aktivität",

@@ -101,7 +101,7 @@
   "receive_connect_initial": "Para configurar seu saldo de gastos, uma taxa de <accent>{lspFee}</accent> será deduzida.",
   "receive_connect_additional": "Para continuar recebendo instantaneamente, você precisa aumentar o limite de recebimento instantâneo. Para isso, a taxa de <accent>{lspFee}</accent> do provedor de serviços será deduzida.",
   "receive_cjit_error": "Erro CJIT",
-  "receive_cjit_error_msg": "Falha ao enviar fundos para seu saldo de gastos. {raw}",
+  "receive_cjit_error_msg": "Falha ao enviar fundos para seu saldo de gastos.",
   "receive_will": "Você receberá",
   "minimum": "MÍNIMO",
   "activity": "Atividade",

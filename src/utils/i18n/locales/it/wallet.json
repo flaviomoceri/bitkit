@@ -101,7 +101,7 @@
   "receive_connect_initial": "Per impostare il tuo saldo spendibile, <accent>{lspFee}</accent> verrà detratta una commissione del fornitore di servizi.",
   "receive_connect_additional": "Per ricevere più Bitcoin istantanei, Bitkit deve aumentare la tua liquidità. Una <accent>{lspFee}</accent> commissione del fornitore di servizi verrà detratta dall'importo specificato.",
   "receive_cjit_error": "Errore CJIT",
-  "receive_cjit_error_msg": "Impossibile inviare fondi al tuo conto di spesa. {raw}",
+  "receive_cjit_error_msg": "Impossibile inviare fondi al tuo conto di spesa.",
   "receive_will": "Riceverai",
   "minimum": "MINIMO",
   "activity": "Attività",

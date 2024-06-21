@@ -101,7 +101,7 @@
   "receive_connect_initial": "Чтобы настроить баланс для расходов, будет вычтена плата за услуги <accent>{lspFee}</accent>.",
   "receive_connect_additional": "Чтобы получить больше мгновенных биткоинов, Bitkit должен увеличить вашу ликвидность. Плата за услуги <accent>{lspFee}</accent> будет вычтена из указанной суммы.",
   "receive_cjit_error": "Ошибка CJIT",
-  "receive_cjit_error_msg": "Не удалось отправить средства на ваш расходный счет. {raw}",
+  "receive_cjit_error_msg": "Не удалось отправить средства на ваш расходный счет.",
   "receive_will": "Вы получите",
   "minimum": "МИНИМУМ",
   "activity": "Транзакции",

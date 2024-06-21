@@ -100,7 +100,6 @@
 	"error_invoice": "Failed to Create Invoice",
 	"error_add_title": "Unable To Add Lightning Peer",
 	"error_add": "Bitkit could not add the Lightning peer.",
-	"error_add_raw": "An error occured while we added lightning peer: {raw}",
 	"error_add_uri": "The URI appears to be invalid.",
 	"error_add_tor": "Bitkit cannot add tor nodes.",
 	"error_save_title": "Unable To Save Lightning Peer",

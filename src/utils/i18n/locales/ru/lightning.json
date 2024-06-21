@@ -97,7 +97,6 @@
   "error_invoice": "Ошибка Создания Инвойса",
   "error_add_title": "Не Удалось Добавить Узел Lightning",
   "error_add": "Bitkit не удалось добавить узел Lightning.",
-  "error_add_raw": "Произошла ошибка при добавлении узла Lightning: {raw}",
   "error_add_uri": "URI кажется невалидным.",
   "error_add_tor": "Bitkit не может добавлять узлы Tor.",
   "error_save_title": "Не Удалось Сохранить Узел Lightning",

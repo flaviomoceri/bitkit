@@ -172,7 +172,7 @@ export const createCJitEntry = async ({
 		return ok(createRes);
 	} catch (e) {
 		console.log(e);
-		return err(i18n.t('wallet:receive_cjit_error_msg', { raw: e }));
+		return err(i18n.t('wallet:receive_cjit_error_msg'));
 	}
 };
 
