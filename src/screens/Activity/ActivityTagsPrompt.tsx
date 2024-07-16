@@ -54,7 +54,6 @@ const ActivityTagsPrompt = (): ReactElement => {
 		<BottomSheetWrapper
 			view="activityTagsPrompt"
 			snapPoints={snapPoints}
-			backdrop={true}
 			onClose={closeBottomSheet}>
 			<View style={styles.root}>
 				<Subtitle style={styles.title}>{t('tags_add')}</Subtitle>

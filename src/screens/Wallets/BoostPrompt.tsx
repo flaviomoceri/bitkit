@@ -281,10 +281,7 @@ const BoostPrompt = (): ReactElement => {
 	useBottomSheetBackPress('boostPrompt');
 
 	return (
-		<BottomSheetWrapper
-			view="boostPrompt"
-			snapPoints={snapPoints}
-			backdrop={true}>
+		<BottomSheetWrapper view="boostPrompt" snapPoints={snapPoints}>
 			<View style={styles.root}>
 				<BottomSheetNavigationHeader
 					title={t('boost_title')}

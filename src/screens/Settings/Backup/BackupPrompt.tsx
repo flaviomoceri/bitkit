@@ -100,7 +100,6 @@ const BackupPrompt = ({ enabled }: { enabled: boolean }): ReactElement => {
 		<BottomSheetWrapper
 			view="backupPrompt"
 			snapPoints={snapPoints}
-			backdrop={true}
 			onClose={(): void => {
 				dispatch(ignoreBackup());
 			}}>

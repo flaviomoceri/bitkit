@@ -44,10 +44,7 @@ const NewTxPrompt = (): ReactElement => {
 	const isOnchainItem = activityItem?.activityType === EActivityType.onchain;
 
 	return (
-		<BottomSheetWrapper
-			view="newTxPrompt"
-			snapPoints={snapPoints}
-			backdrop={true}>
+		<BottomSheetWrapper view="newTxPrompt" snapPoints={snapPoints}>
 			<View style={styles.root}>
 				{activityItem && (
 					<View style={styles.confetti} pointerEvents="none">

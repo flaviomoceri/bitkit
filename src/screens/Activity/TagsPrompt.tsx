@@ -37,7 +37,6 @@ const TagsPrompt = ({
 		<BottomSheetWrapper
 			view="tagsPrompt"
 			snapPoints={snapPoints}
-			backdrop={true}
 			onClose={handleClose}>
 			<View style={styles.root}>
 				<Subtitle style={styles.title}>{t('tags_filter_title')}</Subtitle>

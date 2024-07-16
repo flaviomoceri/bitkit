@@ -159,8 +159,8 @@ const Widgets = (): ReactElement => {
 			<TouchableOpacity
 				style={styles.add}
 				color="white10"
-				onPress={onAdd}
-				testID="WidgetsAdd">
+				testID="WidgetsAdd"
+				onPress={onAdd}>
 				<View color="green16" style={styles.iconCircle}>
 					<PlusIcon height={16} color="green" />
 				</View>

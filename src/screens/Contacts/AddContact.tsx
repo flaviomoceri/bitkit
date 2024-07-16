@@ -91,10 +91,7 @@ const AddContact = ({
 	};
 
 	return (
-		<BottomSheetWrapper
-			view="addContactModal"
-			snapPoints={snapPoints}
-			backdrop={true}>
+		<BottomSheetWrapper view="addContactModal" snapPoints={snapPoints}>
 			<View style={styles.container}>
 				<BottomSheetNavigationHeader
 					title={t('contact_add_capital')}

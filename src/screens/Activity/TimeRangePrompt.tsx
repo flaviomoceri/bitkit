@@ -302,7 +302,6 @@ const TimeRangePrompt = ({
 		<BottomSheetWrapper
 			view="timeRangePrompt"
 			snapPoints={snapPoints}
-			backdrop={true}
 			onClose={handleClose}>
 			<View style={styles.root}>
 				<Subtitle style={styles.title}>{t('filter_title')}</Subtitle>

@@ -30,10 +30,7 @@ const ForgotPIN = (): ReactElement => {
 	};
 
 	return (
-		<BottomSheetWrapper
-			view="forgotPIN"
-			snapPoints={snapPoints}
-			backdrop={true}>
+		<BottomSheetWrapper view="forgotPIN" snapPoints={snapPoints}>
 			<View style={styles.container}>
 				<BottomSheetNavigationHeader
 					title={t('pin_forgot_title')}
