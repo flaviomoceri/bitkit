@@ -6,7 +6,7 @@ import { BodyMB, BodyM } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { useAppDispatch } from '../../../hooks/redux';
 import { verifyBackup } from '../../../store/slices/user';
 import { BackupScreenProps } from '../../../navigation/types';

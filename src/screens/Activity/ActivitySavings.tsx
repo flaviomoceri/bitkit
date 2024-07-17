@@ -8,7 +8,7 @@ import { View as ThemedView } from '../../styles/components';
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import ActivityHeader from '../../components/ActivityHeader';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import WalletOnboarding from '../../components/WalletOnboarding';
 import Money from '../../components/Money';
 import ActivityList from './ActivityList';

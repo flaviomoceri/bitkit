@@ -2,7 +2,7 @@ import React, { memo, ReactElement } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { useAppSelector } from '../../hooks/redux';
 
-import { TouchableOpacity } from '../../styles/components';
+import { TouchableHighlight } from '../../styles/components';
 import { Caption13Up } from '../../styles/text';
 import { SwitchIcon } from '../../styles/icons';
 import { useCurrency } from '../../hooks/displayValues';
@@ -32,16 +32,18 @@ const UnitButton = ({
 	};
 
 	return (
-		<TouchableOpacity
+		<TouchableHighlight
 			style={[styles.root, style]}
 			color="white10"
 			testID={testID}
-			onPress={onSwitchUnit}>
-			<SwitchIcon color={color} width={16.44} height={13.22} />
-			<Caption13Up style={styles.text} color={color}>
-				{unit === EUnit.BTC ? 'BTC' : fiatTicker}
-			</Caption13Up>
-		</TouchableOpacity>
+			onPressIn={onSwitchUnit}>
+			<>
+				<SwitchIcon color={color} width={16.44} height={13.22} />
+				<Caption13Up style={styles.text} color={color}>
+					{unit === EUnit.BTC ? 'BTC' : fiatTicker}
+				</Caption13Up>
+			</>
+		</TouchableHighlight>
 	);
 };
 

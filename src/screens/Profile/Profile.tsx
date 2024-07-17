@@ -37,7 +37,7 @@ import SafeAreaInset from '../../components/SafeAreaInset';
 import ProfileCard from '../../components/ProfileCard';
 import Tooltip from '../../components/Tooltip';
 import Divider from '../../components/Divider';
-import IconButton from '../../components/IconButton';
+import IconButton from '../../components/buttons/IconButton';
 import ProfileImage from '../../components/ProfileImage';
 import ProfileLinks from '../../components/ProfileLinks';
 import ProfileEdit from './ProfileEdit';

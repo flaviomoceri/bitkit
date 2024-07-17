@@ -1,7 +1,9 @@
 import React, { memo, ReactElement, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { validateTransaction } from 'beignet';
 
+import colors from '../../styles/colors';
 import { BodyMSB, BodySSB, BodyS } from '../../styles/text';
 import { TimerIconAlt } from '../../styles/icons';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
@@ -25,7 +27,7 @@ import {
 	useSnapPoints,
 } from '../../hooks/bottomSheet';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import ImageText from '../../components/ImageText';
 import Money from '../../components/Money';
 import { useFeeText } from '../../hooks/fees';
@@ -37,8 +39,7 @@ import {
 	selectedWalletSelector,
 	transactionSelector,
 } from '../../store/reselect/wallet';
-import { validateTransaction } from 'beignet';
-import { EUnit } from '../../store/types/wallet.ts';
+import { EUnit } from '../../store/types/wallet';
 
 const BoostForm = ({
 	activityItem,
@@ -281,10 +282,7 @@ const BoostPrompt = (): ReactElement => {
 	useBottomSheetBackPress('boostPrompt');
 
 	return (
-		<BottomSheetWrapper
-			view="boostPrompt"
-			snapPoints={snapPoints}
-			backdrop={true}>
+		<BottomSheetWrapper view="boostPrompt" snapPoints={snapPoints}>
 			<View style={styles.root}>
 				<BottomSheetNavigationHeader
 					title={t('boost_title')}
@@ -329,7 +327,7 @@ const styles = StyleSheet.create({
 		marginBottom: 16,
 	},
 	buttonText: {
-		color: '#8E8E93',
+		color: colors.white64,
 	},
 });
 

@@ -2,6 +2,9 @@ import React, { ReactElement, ReactNode, memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { IThemeColors } from '../../../styles/themes';
+import { CaptionB, Caption13Up, BodyMSB } from '../../../styles/text';
+import { ScrollView, View as ThemedView } from '../../../styles/components';
 import { EItemType, IListData } from '../../../components/List';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { SettingsScreenProps } from '../../../navigation/types';
@@ -12,11 +15,6 @@ import { TBackupItem } from '../../../store/types/backup';
 import { EBackupCategories } from '../../../store/utils/backup';
 import { toggleBottomSheet } from '../../../store/utils/ui';
 import {
-	ScrollView,
-	View as ThemedView,
-	TouchableOpacity,
-} from '../../../styles/components';
-import {
 	ArrowClockwise,
 	LightningHollow,
 	NoteIcon,
@@ -26,10 +24,9 @@ import {
 	TransferIcon,
 	UsersIcon,
 } from '../../../styles/icons';
-import { CaptionB, Caption13Up, BodyMSB } from '../../../styles/text';
-import { IThemeColors } from '../../../styles/themes';
 import { i18nTime } from '../../../utils/i18n';
 import SettingsView from '../SettingsView';
+import Button from '../../../components/buttons/Button';
 
 const Status = ({
 	Icon,
@@ -113,9 +110,12 @@ const Status = ({
 				<CaptionB color="secondary">{subtitle}</CaptionB>
 			</View>
 			{!disableRetry && showRetry && (
-				<TouchableOpacity onPress={retry} color="white16" style={styles.button}>
-					<ArrowClockwise color="brand" width={16} height={16} />
-				</TouchableOpacity>
+				<Button
+					style={styles.button}
+					icon={<ArrowClockwise color="brand" width={16} height={16} />}
+					disabled={disableRetry}
+					onPress={retry}
+				/>
 			)}
 		</View>
 	);
@@ -309,11 +309,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	button: {
-		alignItems: 'center',
-		justifyContent: 'center',
 		width: 40,
 		height: 40,
-		borderRadius: 20,
 		marginLeft: 12,
 	},
 });

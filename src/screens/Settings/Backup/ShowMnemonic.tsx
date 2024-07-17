@@ -7,7 +7,7 @@ import { View as ThemedView } from '../../../styles/components';
 import { BodyM, BodyMSB, BodyS } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import BlurView from '../../../components/BlurView';
 import { getMnemonicPhrase, getBip39Passphrase } from '../../../utils/wallet';
 import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';

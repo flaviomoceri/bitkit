@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { BodyM } from '../../styles/text';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import { closeSheet } from '../../store/slices/ui';
 import { useAppDispatch } from '../../hooks/redux';
@@ -28,10 +28,7 @@ const ConnectionClosed = (): ReactElement => {
 	};
 
 	return (
-		<BottomSheetWrapper
-			view="connectionClosed"
-			snapPoints={snapPoints}
-			backdrop={true}>
+		<BottomSheetWrapper view="connectionClosed" snapPoints={snapPoints}>
 			<View style={styles.container}>
 				<BottomSheetNavigationHeader
 					title={t('connection_closed.title')}

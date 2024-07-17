@@ -7,7 +7,7 @@ import { Caption13Up } from '../../../styles/text';
 import GradientView from '../../../components/GradientView';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import Tag from '../../../components/Tag';
 import { Keyboard } from '../../../hooks/keyboard';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';

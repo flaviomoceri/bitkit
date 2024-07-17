@@ -14,7 +14,7 @@ import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigati
 import NumberPadTextField from '../../../components/NumberPadTextField';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Money from '../../../components/Money';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import GradientView from '../../../components/GradientView';
 import ReceiveNumberPad from './ReceiveNumberPad';
 import UnitButton from '../UnitButton';
@@ -106,7 +106,7 @@ const ReceiveAmount = ({
 
 				<View style={styles.numberPad} testID="ReceiveNumberPad">
 					<View style={styles.actions}>
-						<TouchableOpacity onPress={onMinimum}>
+						<TouchableOpacity activeOpacity={0.7} onPress={onMinimum}>
 							<Caption13Up style={styles.minimumText} color="secondary">
 								{t('minimum')}
 							</Caption13Up>

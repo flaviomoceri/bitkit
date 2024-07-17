@@ -13,7 +13,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Display, BodyM, BodyS } from '../../styles/text';
 import { View as ThemedView } from '../../styles/components';
 import NavigationHeader from '../../components/NavigationHeader';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import { TSlashtagsState } from '../../store/types/slashtags';
 import SwitchRow from '../../components/SwitchRow';

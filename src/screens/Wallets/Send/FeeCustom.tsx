@@ -6,7 +6,7 @@ import { Caption13Up, BodyM } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import Amount from '../../../components/Amount';
 import NumberPad from '../../../components/NumberPad';
 import { getTotalFee, updateFee } from '../../../utils/wallet/transactions';

@@ -69,6 +69,7 @@
     "bitcoin-address-validation": "2.2.3",
     "bitcoin-units": "0.3.0",
     "bitcoinjs-lib": "6.1.5",
+    "color": "4.2.3",
     "events": "3.3.0",
     "fuzzysort": "1.9.0",
     "i18next": "23.11.2",

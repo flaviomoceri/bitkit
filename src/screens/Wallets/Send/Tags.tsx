@@ -8,7 +8,7 @@ import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigati
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
 import Tag from '../../../components/Tag';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { showToast } from '../../../utils/notifications';
 import { Keyboard } from '../../../hooks/keyboard';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';

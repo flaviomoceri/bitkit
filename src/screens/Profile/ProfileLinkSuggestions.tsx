@@ -2,7 +2,7 @@ import React, { memo, ReactElement } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import GradientView from '../../components/GradientView';
 import { useAppDispatch } from '../../hooks/redux';

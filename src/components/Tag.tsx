@@ -29,9 +29,10 @@ const Tag = ({
 			{onDelete && (
 				<TouchableOpacity
 					style={styles.icon}
+					activeOpacity={0.7}
 					color="transparent"
-					onPress={onDelete}
-					testID={`Tag-${value}-delete`}>
+					testID={`Tag-${value}-delete`}
+					onPress={onDelete}>
 					{icon === 'close' ? (
 						<XIcon color="secondary" width={16} />
 					) : (

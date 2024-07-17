@@ -8,7 +8,7 @@ import { BodyM } from '../../../styles/text';
 import NavigationHeader from '../../../components/NavigationHeader';
 import KeyboardAvoidingView from '../../../components/KeyboardAvoidingView';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { showToast } from '../../../utils/notifications';
 import {
 	cleanupBackupFiles,

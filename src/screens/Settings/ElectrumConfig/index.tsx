@@ -19,8 +19,8 @@ import { defaultElectrumPeer } from '../../../store/shapes/settings';
 import { connectToElectrum } from '../../../utils/wallet/electrum';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import { RadioButtonGroup } from '../../../components/RadioButton';
-import Button from '../../../components/Button';
+import { RadioButtonGroup } from '../../../components/buttons/RadioButton';
+import Button from '../../../components/buttons/Button';
 import {
 	defaultElectrumPorts,
 	getDefaultPort,

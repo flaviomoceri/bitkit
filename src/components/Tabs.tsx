@@ -36,7 +36,7 @@ const Tab = ({
 }): ReactElement => (
 	<TouchableOpacity
 		style={styles.tab}
-		activeOpacity={0.8}
+		activeOpacity={0.7}
 		testID={testID}
 		onPress={onPress}>
 		<CaptionB color={active ? 'white' : 'secondary'}>{text}</CaptionB>

@@ -36,7 +36,7 @@ export const ContactItem = ({
 
 	return (
 		<TouchableOpacity
-			activeOpacity={0.8}
+			activeOpacity={0.7}
 			onPress={(): void => {
 				onPress?.(contact);
 			}}>

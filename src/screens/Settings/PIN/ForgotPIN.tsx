@@ -6,7 +6,7 @@ import { BodyM } from '../../../styles/text';
 import BottomSheetWrapper from '../../../components/BottomSheetWrapper';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { closeSheet } from '../../../store/slices/ui';
 import { wipeApp } from '../../../store/utils/settings';
 import { useAppDispatch } from '../../../hooks/redux';
@@ -30,10 +30,7 @@ const ForgotPIN = (): ReactElement => {
 	};
 
 	return (
-		<BottomSheetWrapper
-			view="forgotPIN"
-			snapPoints={snapPoints}
-			backdrop={true}>
+		<BottomSheetWrapper view="forgotPIN" snapPoints={snapPoints}>
 			<View style={styles.container}>
 				<BottomSheetNavigationHeader
 					title={t('pin_forgot_title')}

@@ -157,7 +157,7 @@ const _Item = memo((item: ItemData): ReactElement => {
 		return (
 			<TouchableOpacity
 				style={styles.row}
-				activeOpacity={0.6}
+				activeOpacity={0.7}
 				onPress={_onPress}
 				testID={testID}>
 				<View style={styles.leftColumn}>
@@ -197,7 +197,7 @@ const _Item = memo((item: ItemData): ReactElement => {
 			<TouchableOpacity
 				disabled={!enabled}
 				style={styles.row}
-				activeOpacity={0.6}
+				activeOpacity={0.7}
 				onPress={_onPress}
 				testID={testID}>
 				<View style={styles.leftColumn}>
@@ -255,7 +255,7 @@ const _Item = memo((item: ItemData): ReactElement => {
 					// eslint-disable-next-line react-native/no-inline-styles
 					{ opacity: enabled ? 1 : 0.5 }
 				}
-				activeOpacity={0.6}
+				activeOpacity={0.7}
 				disabled={disabled}
 				testID={testID}
 				onPress={enabled ? _onPress : undefined}>

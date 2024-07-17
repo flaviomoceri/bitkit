@@ -19,14 +19,14 @@ import {
 } from 'react-native';
 import { FlatList, GestureType } from 'react-native-gesture-handler';
 
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import useColors from '../../hooks/colors';
 import { useAppSelector } from '../../hooks/redux';
 import { RootNavigationProp } from '../../navigation/types';
 import { activityItemsSelector } from '../../store/reselect/activity';
 import { tagsSelector } from '../../store/reselect/metadata';
 import { IActivityItem } from '../../store/types/activity';
-import { BodyM, BodySSB, Caption13Up } from '../../styles/text';
+import { BodyM, Caption13Up } from '../../styles/text';
 import {
 	TActivityFilter,
 	filterActivityItems,
@@ -48,9 +48,9 @@ const ListFooter = ({ showButton }: { showButton?: boolean }): ReactElement => {
 			<>
 				<Button
 					style={styles.button}
-					text={<BodySSB color="white80">{t('activity_show_all')}</BodySSB>}
+					text={t('activity_show_all')}
 					size="large"
-					variant="transparent"
+					variant="tertiary"
 					testID="ActivityShowAll"
 					onPress={onPress}
 				/>

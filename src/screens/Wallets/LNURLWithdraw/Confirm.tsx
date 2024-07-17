@@ -7,7 +7,7 @@ import GradientView from '../../../components/GradientView';
 import AmountToggle from '../../../components/AmountToggle';
 import type { LNURLWithdrawProps } from '../../../navigation/types';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,

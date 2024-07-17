@@ -69,6 +69,7 @@ const Dialog = ({
 					{onCancel && (
 						<TouchableOpacity
 							style={[styles.button, styles.buttonLeft]}
+							activeOpacity={0.7}
 							testID="DialogCancel"
 							onPress={onCancel}>
 							<Text style={buttonStyles}>{cancelText}</Text>
@@ -77,6 +78,7 @@ const Dialog = ({
 					{onConfirm && (
 						<TouchableOpacity
 							style={styles.button}
+							activeOpacity={0.7}
 							testID="DialogConfirm"
 							onPress={onConfirm}>
 							<Text style={[buttonStyles, {}]}>{confirmText}</Text>

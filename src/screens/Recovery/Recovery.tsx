@@ -14,7 +14,7 @@ import { View as ThemedView } from '../../styles/components';
 import { BodyM } from '../../styles/text';
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import Dialog from '../../components/Dialog';
 import { RecoveryStackScreenProps } from '../../navigation/types';
 import { walletExistsSelector } from '../../store/reselect/wallet';

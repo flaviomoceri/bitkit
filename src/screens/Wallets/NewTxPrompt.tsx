@@ -16,7 +16,7 @@ import {
 } from '../../hooks/bottomSheet';
 import { viewControllerSelector } from '../../store/reselect/ui';
 import { EActivityType } from '../../store/types/activity';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 
 const confettiOrangeSrc = require('../../assets/lottie/confetti-orange.json');
 const confettiPurpleSrc = require('../../assets/lottie/confetti-purple.json');
@@ -44,10 +44,7 @@ const NewTxPrompt = (): ReactElement => {
 	const isOnchainItem = activityItem?.activityType === EActivityType.onchain;
 
 	return (
-		<BottomSheetWrapper
-			view="newTxPrompt"
-			snapPoints={snapPoints}
-			backdrop={true}>
+		<BottomSheetWrapper view="newTxPrompt" snapPoints={snapPoints}>
 			<View style={styles.root}>
 				{activityItem && (
 					<View style={styles.confetti} pointerEvents="none">

@@ -18,7 +18,7 @@ import {
 } from '../../../store/slices/fees';
 import { refreshOnchainFeeEstimates } from '../../../store/utils/fees';
 import { EItemType, IListData } from '../../../components/List';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import { capitalize } from '../../../utils/helpers';
 import { refreshLdk } from '../../../utils/lightning';

@@ -10,7 +10,6 @@ import React, {
 import {
 	Image,
 	ImageSourcePropType,
-	Pressable,
 	StyleSheet,
 	View,
 	useWindowDimensions,
@@ -25,11 +24,12 @@ import Animated, {
 import { Trans, useTranslation } from 'react-i18next';
 
 import { View as ThemedView } from '../../styles/components';
-import { Display, BodyMSB, BodyM, BodyMB } from '../../styles/text';
+import { Display, BodyM, BodyMB } from '../../styles/text';
 import { IThemeColors } from '../../styles/themes';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Dot from '../../components/SliderDots';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
+import ButtonTertiary from '../../components/buttons/ButtonTertiary';
 import LoadingWalletScreen from './Loading';
 import { useAppDispatch } from '../../hooks/redux';
 import { createNewWallet } from '../../utils/startup';
@@ -146,6 +146,7 @@ const Slideshow = ({
 	const ref = useRef<ICarouselInstance>(null);
 	const progressValue = useSharedValue(0);
 	const [isCreatingWallet, setIsCreatingWallet] = useState(false);
+	const [isLastSlide, setIsLastSlide] = useState(false);
 
 	// dots and 'skip' button should not be visible on last slide
 	const startOpacity = useAnimatedStyle(() => {
@@ -168,8 +169,7 @@ const Slideshow = ({
 	}, [slides.length, progressValue]);
 
 	const onHeaderButton = (): void => {
-		const isLast = progressValue.value === slides.length - 1;
-		if (isLast) {
+		if (isLastSlide) {
 			navigation.navigate('Passphrase');
 		} else {
 			ref.current?.scrollTo({ index: slides.length - 1, animated: true });
@@ -216,6 +216,7 @@ const Slideshow = ({
 						defaultIndex={skipIntro ? slides.length - 1 : 0}
 						onProgressChange={(_, absoluteProgress): void => {
 							progressValue.value = absoluteProgress;
+							setIsLastSlide(absoluteProgress === slides.length - 1);
 						}}
 						renderItem={({ index }): ReactElement => (
 							<Slide
@@ -229,19 +230,25 @@ const Slideshow = ({
 						)}
 					/>
 
-					<Animated.View style={[styles.headerButtonContainer, startOpacity]}>
-						<Pressable testID="SkipButton" onPress={onHeaderButton}>
-							<SafeAreaInset type="top" />
-							<BodyMSB color="secondary">{t('skip')}</BodyMSB>
-						</Pressable>
-					</Animated.View>
-
-					<Animated.View style={[styles.headerButtonContainer, endOpacity]}>
-						<Pressable testID="Passphrase" onPress={onHeaderButton}>
-							<SafeAreaInset type="top" />
-							<BodyMSB color="secondary">{t('advanced_setup')}</BodyMSB>
-						</Pressable>
-					</Animated.View>
+					<View style={styles.headerButtons}>
+						<SafeAreaInset type="top" />
+						<Animated.View style={[styles.headerButton, startOpacity]}>
+							<ButtonTertiary
+								text={t('skip')}
+								testID="SkipButton"
+								onPress={onHeaderButton}
+							/>
+						</Animated.View>
+						<Animated.View
+							style={[styles.headerButton, endOpacity]}
+							pointerEvents={isLastSlide ? 'auto' : 'none'}>
+							<ButtonTertiary
+								text={t('advanced_setup')}
+								testID="Passphrase"
+								onPress={onHeaderButton}
+							/>
+						</Animated.View>
+					</View>
 
 					<Animated.View
 						style={[styles.dots, startOpacity]}
@@ -269,13 +276,15 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingHorizontal: 32,
 	},
-	headerButtonContainer: {
-		flexDirection: 'row',
-		justifyContent: 'flex-end',
-		width: '100%',
+	headerButtons: {
 		position: 'absolute',
-		top: 20,
-		paddingHorizontal: 28,
+		alignItems: 'flex-end',
+		width: '100%',
+	},
+	headerButton: {
+		position: 'absolute',
+		bottom: -35,
+		paddingHorizontal: 26,
 	},
 	imageContainer: {
 		alignItems: 'center',

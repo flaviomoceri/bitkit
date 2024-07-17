@@ -4,8 +4,8 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { Display, BodyMSB, BodySSB } from '../../styles/text';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import Button from '../../components/Button';
-import CheckButton from '../../components/CheckButton';
+import Button from '../../components/buttons/Button';
+import CheckButton from '../../components/buttons/CheckButton';
 import VerticalShadow from '../../components/VerticalShadow';
 import { openURL } from '../../utils/helpers';
 import { wipeApp } from '../../store/utils/settings';

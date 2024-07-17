@@ -18,11 +18,10 @@ import {
 } from '@shopify/react-native-skia';
 
 import { XIcon } from '../styles/icons';
-import { Pressable } from '../styles/components';
+import { View as ThemeedView, Pressable } from '../styles/components';
 import { BodyMSB, CaptionB } from '../styles/text';
 import { ITodo, TTodoType } from '../store/types/todos';
 import useColors from '../hooks/colors';
-import Card from './Card';
 import { __E2E__ } from '../constants/env';
 
 const CARD_SIZE = 152;
@@ -118,7 +117,10 @@ const SuggestionCard = ({
 	}, [glowOpacity]);
 
 	return (
-		<Card style={containerStyle} color={color} testID={`Suggestion-${id}`}>
+		<ThemeedView
+			style={containerStyle}
+			color={color}
+			testID={`Suggestion-${id}`}>
 			{dismissable ? (
 				<View style={styles.canvasWrapper}>
 					<Canvas style={styles.canvas}>
@@ -178,7 +180,7 @@ const SuggestionCard = ({
 					<XIcon width={18} height={18} color="secondary" />
 				</Pressable>
 			)}
-		</Card>
+		</ThemeedView>
 	);
 };
 
@@ -186,9 +188,11 @@ const styles = StyleSheet.create({
 	container: {
 		width: CARD_SIZE,
 		height: CARD_SIZE,
+		alignSelf: 'center',
 		borderRadius: CARD_BORDER_RADIUS,
+		marginVertical: 10,
 		paddingHorizontal: 15,
-		paddingBottom: 14,
+		paddingVertical: 10,
 	},
 	pressable: {
 		flex: 1,

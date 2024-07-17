@@ -17,7 +17,7 @@ import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigati
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Money from '../../../components/Money';
 import NumberPadTextField from '../../../components/NumberPadTextField';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import UnitButton from '../UnitButton';
 import SendNumberPad from '../Send/SendNumberPad';
 import {

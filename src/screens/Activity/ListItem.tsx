@@ -237,7 +237,10 @@ export const EmptyItem = ({
 
 	return (
 		<View style={styles.empty}>
-			<TouchableOpacity style={styles.pressable} onPress={onPress}>
+			<TouchableOpacity
+				style={styles.pressable}
+				activeOpacity={0.7}
+				onPress={onPress}>
 				<ListItem title={title} description={description} icon={icon} />
 			</TouchableOpacity>
 		</View>
@@ -286,8 +289,9 @@ const ActivityListItem = ({
 		<View style={styles.root}>
 			<TouchableOpacity
 				style={styles.pressable}
-				onPress={onPress}
-				testID={testID}>
+				activeOpacity={0.7}
+				testID={testID}
+				onPress={onPress}>
 				{activityType === EActivityType.onchain && (
 					<OnchainListItem item={item} icon={icon} />
 				)}

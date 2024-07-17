@@ -5,7 +5,7 @@ import React, {
 	useMemo,
 	useState,
 } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import DraggableFlatList, {
@@ -14,8 +14,9 @@ import DraggableFlatList, {
 } from 'react-native-draggable-flatlist';
 
 import { rootNavigation } from '../navigation/root/RootNavigator';
-import { TouchableOpacity, View } from '../styles/components';
+import colors from '../styles/colors';
 import { Caption13Up, BodyMSB } from '../styles/text';
+import { Pressable, TouchableOpacity, View } from '../styles/components';
 import { PlusIcon, SortAscendingIcon, Checkmark } from '../styles/icons';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { SUPPORTED_FEED_TYPES } from '../utils/widgets';
@@ -135,6 +136,7 @@ const Widgets = (): ReactElement => {
 				<Caption13Up color="secondary">{t('widgets')}</Caption13Up>
 				{sortedWidgets.length > 0 && (
 					<TouchableOpacity
+						activeOpacity={0.7}
 						hitSlop={{ top: 15, right: 15, bottom: 15, left: 15 }}
 						testID="WidgetsEdit"
 						onPress={(): void => setEditing(!editing)}>
@@ -156,16 +158,20 @@ const Widgets = (): ReactElement => {
 				onDragEnd={onDragEnd}
 			/>
 
-			<TouchableOpacity
-				style={styles.add}
+			<Pressable
+				style={({ pressed }) => [
+					styles.button,
+					pressed && styles.buttonPressed,
+				]}
 				color="white10"
-				onPress={onAdd}
-				testID="WidgetsAdd">
-				<View color="green16" style={styles.iconCircle}>
+				android_ripple={{ color: colors.white16 }}
+				testID="WidgetsAdd"
+				onPress={onAdd}>
+				<View style={styles.buttonIcon} color="green16">
 					<PlusIcon height={16} color="green" />
 				</View>
 				<BodyMSB>{t('widget_add')}</BodyMSB>
-			</TouchableOpacity>
+			</Pressable>
 		</View>
 	);
 };
@@ -182,14 +188,19 @@ const styles = StyleSheet.create({
 	widget: {
 		marginTop: 16,
 	},
-	add: {
+	button: {
 		marginTop: 16,
 		borderRadius: 16,
 		padding: 16,
 		flexDirection: 'row',
 		alignItems: 'center',
 	},
-	iconCircle: {
+	buttonPressed: {
+		...Platform.select({
+			ios: { backgroundColor: colors.white16 },
+		}),
+	},
+	buttonIcon: {
 		borderRadius: 20,
 		width: 32,
 		height: 32,

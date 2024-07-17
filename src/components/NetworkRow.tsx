@@ -24,7 +24,11 @@ const NetworkRow = ({
 	const { t } = useTranslation('wallet');
 
 	return (
-		<TouchableOpacity style={styles.root} testID={testID} onPress={onPress}>
+		<TouchableOpacity
+			style={styles.root}
+			activeOpacity={0.7}
+			testID={testID}
+			onPress={onPress}>
 			<View style={styles.icon}>{icon}</View>
 			<View style={styles.text}>
 				<BodyMSB>{title}</BodyMSB>

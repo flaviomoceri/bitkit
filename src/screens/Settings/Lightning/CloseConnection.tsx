@@ -6,7 +6,7 @@ import { View as ThemedView } from '../../../styles/components';
 import { BodyMB, BodyM } from '../../../styles/text';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import NavigationHeader from '../../../components/NavigationHeader';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { useAppSelector } from '../../../hooks/redux';
 import { showToast } from '../../../utils/notifications';
 import { closeChannel, refreshLdk } from '../../../utils/lightning';

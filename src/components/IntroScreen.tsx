@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Display, BodyM } from '../styles/text';
 import { View as ThemedView } from '../styles/components';
 import SafeAreaInset from './SafeAreaInset';
-import Button from './Button';
+import Button from './buttons/Button';
 import { IColors } from '../styles/colors';
 
 const IntroScreen = ({

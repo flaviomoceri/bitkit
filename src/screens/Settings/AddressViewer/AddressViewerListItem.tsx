@@ -27,6 +27,7 @@ const AddressViewerListItem = (props: ListItemProps): ReactElement => {
 	return (
 		<TouchableOpacity
 			style={styles.listContent}
+			activeOpacity={0.7}
 			color={backgroundColor}
 			onPress={onItemRowPress}>
 			<View style={styles.contentRow}>
@@ -46,6 +47,7 @@ const AddressViewerListItem = (props: ListItemProps): ReactElement => {
 						</Subtitle>
 						<TouchableOpacity
 							style={styles.checkmark}
+							activeOpacity={0.7}
 							onPress={onCheckMarkPress}>
 							{balance > 0 && (
 								<Checkmark

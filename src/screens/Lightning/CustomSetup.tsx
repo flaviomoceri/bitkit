@@ -17,7 +17,7 @@ import SafeAreaInset from '../../components/SafeAreaInset';
 import Barrel from '../../components/Barrel';
 import NavigationHeader from '../../components/NavigationHeader';
 import TransferTextField from '../../components/TransferTextField';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import NumberPadLightning from './NumberPadLightning';
 import type { LightningScreenProps } from '../../navigation/types';
 import { useAppSelector } from '../../hooks/redux';

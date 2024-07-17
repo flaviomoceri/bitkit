@@ -15,7 +15,7 @@ import { TagIcon } from '../../../styles/icons';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import NumberPadTextField from '../../../components/NumberPadTextField';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import Tag from '../../../components/Tag';
 import { updateInvoice, removeInvoiceTag } from '../../../store/slices/receive';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';

@@ -10,7 +10,7 @@ import {
 import { BodyM, Display } from '../styles/text';
 import BottomSheetNavigationHeader from '../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../components/SafeAreaInset';
-import Button from '../components/Button';
+import Button from './buttons/Button';
 
 const BottomSheetScreen = ({
 	navTitle,

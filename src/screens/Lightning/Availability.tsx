@@ -6,7 +6,7 @@ import { Display, BodyMB, BodyM } from '../../styles/text';
 import { View as ThemedView } from '../../styles/components';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import NavigationHeader from '../../components/NavigationHeader';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import { useAppDispatch } from '../../hooks/redux';
 import { refreshWallet } from '../../utils/wallet';
 import { closeAllChannels } from '../../utils/lightning';

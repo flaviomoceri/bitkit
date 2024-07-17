@@ -6393,6 +6393,7 @@ __metadata:
     bitcoin-json-rpc: ^1.3.3
     bitcoin-units: 0.3.0
     bitcoinjs-lib: 6.1.5
+    color: 4.2.3
     detox: 20.20.2
     electrum-client: "BlueWallet/rn-electrum-client#47acb51149e97fab249c3f8a314f708dbee4fb6e"
     eslint: ^8.57.0
@@ -7296,7 +7297,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color@npm:^4.2.3":
+"color@npm:4.2.3, color@npm:^4.2.3":
   version: 4.2.3
   resolution: "color@npm:4.2.3"
   dependencies:

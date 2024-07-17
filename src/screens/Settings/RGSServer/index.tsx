@@ -21,7 +21,7 @@ import { rapidGossipSyncUrlSelector } from '../../../store/reselect/settings';
 import { initialSettingsState } from '../../../store/shapes/settings';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import { setupLdk } from '../../../utils/lightning';
 import { showToast } from '../../../utils/notifications';

@@ -77,6 +77,7 @@ const ProfileLinks = ({
 								onChange({ ...link, url: value });
 							}}>
 							<TouchableOpacity
+								activeOpacity={0.7}
 								testID="RemoveLinkButton"
 								onPress={(): void => onRemove(link.id)}>
 								<TrashIcon color="brand" width={16} />
@@ -85,6 +86,7 @@ const ProfileLinks = ({
 					) : (
 						<TouchableOpacity
 							key={link.id}
+							activeOpacity={0.7}
 							onPress={(): void => {
 								openAppURL(link.url);
 							}}>

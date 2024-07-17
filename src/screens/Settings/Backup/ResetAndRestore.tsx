@@ -7,7 +7,7 @@ import { BodyM } from '../../../styles/text';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Dialog from '../../../components/Dialog';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { wipeApp } from '../../../store/utils/settings';
 import { showBottomSheet } from '../../../store/utils/ui';
 import type { SettingsScreenProps } from '../../../navigation/types';

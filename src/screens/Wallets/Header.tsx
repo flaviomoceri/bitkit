@@ -1,4 +1,4 @@
-import React, { memo, ReactElement, useCallback } from 'react';
+import React, { memo, ReactElement } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -7,60 +7,52 @@ import { Title } from '../../styles/text';
 import { Pressable } from '../../styles/components';
 import { ProfileIcon, SettingsIcon } from '../../styles/icons';
 import ProfileImage from '../../components/ProfileImage';
+import VerticalShadow from '../../components/VerticalShadow';
 import { truncate } from '../../utils/helpers';
 import { useProfile, useSlashtags } from '../../hooks/slashtags';
 import { RootNavigationProp } from '../../navigation/types';
-import VerticalShadow from '../../components/VerticalShadow';
-
-const EnabledSlashtagsProfileButton = (): ReactElement => {
-	const { t } = useTranslation('slashtags');
-	const navigation = useNavigation<RootNavigationProp>();
-	const { url } = useSlashtags();
-	const { profile } = useProfile(url);
-
-	const openProfile = useCallback(() => {
-		navigation.navigate('Profile');
-	}, [navigation]);
-
-	return (
-		<Pressable
-			style={[styles.leftColumn, styles.pressed]}
-			color="transparent"
-			onPressIn={openProfile}
-			hitSlop={{ top: 15, bottom: 15, left: 5, right: 5 }}
-			testID="Header">
-			<ProfileImage
-				size={32}
-				url={url}
-				image={profile.image}
-				style={styles.profileImage}
-			/>
-			{profile.name ? (
-				<Title>{truncate(profile?.name, 20)}</Title>
-			) : (
-				<Title>{t('your_name_capital')}</Title>
-			)}
-		</Pressable>
-	);
-};
 
 const Header = (): ReactElement => {
 	const navigation = useNavigation<RootNavigationProp>();
+	const { t } = useTranslation('slashtags');
+	const { url } = useSlashtags();
+	const { profile } = useProfile(url);
 
-	const openContacts = useCallback(() => {
+	const openProfile = (): void => {
+		navigation.navigate('Profile');
+	};
+
+	const openContacts = (): void => {
 		navigation.navigate('Contacts');
-	}, [navigation]);
-	const openSettings = useCallback(
-		() => navigation.navigate('Settings'),
-		[navigation],
-	);
+	};
+
+	const openSettings = (): void => {
+		navigation.navigate('Settings');
+	};
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.shadowContainer}>
 				<VerticalShadow />
 			</View>
-			<EnabledSlashtagsProfileButton />
+			<Pressable
+				style={[styles.leftColumn, styles.pressed]}
+				color="transparent"
+				onPressIn={openProfile}
+				hitSlop={{ top: 15, bottom: 15, left: 5, right: 5 }}
+				testID="Header">
+				<ProfileImage
+					size={32}
+					url={url}
+					image={profile.image}
+					style={styles.profileImage}
+				/>
+				{profile.name ? (
+					<Title>{truncate(profile?.name, 20)}</Title>
+				) : (
+					<Title>{t('your_name_capital')}</Title>
+				)}
+			</Pressable>
 			<View style={styles.middleColumn} />
 			<View style={styles.rightColumn}>
 				<Pressable

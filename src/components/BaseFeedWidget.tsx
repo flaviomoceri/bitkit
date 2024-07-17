@@ -89,6 +89,7 @@ const BaseFeedWidget = ({
 							<View style={styles.actions}>
 								<TouchableOpacity
 									style={styles.actionButton}
+									activeOpacity={0.7}
 									color="transparent"
 									hitSlop={{ top: 15, bottom: 15 }}
 									testID="WidgetActionDelete"
@@ -97,6 +98,7 @@ const BaseFeedWidget = ({
 								</TouchableOpacity>
 								<TouchableOpacity
 									style={styles.actionButton}
+									activeOpacity={0.7}
 									color="transparent"
 									hitSlop={{ top: 15, bottom: 15 }}
 									testID="WidgetActionEdit"
@@ -105,9 +107,9 @@ const BaseFeedWidget = ({
 								</TouchableOpacity>
 								<TouchableOpacity
 									style={styles.actionButton}
+									activeOpacity={0.7}
 									color="transparent"
 									hitSlop={{ top: 15, bottom: 15 }}
-									activeOpacity={0.9}
 									testID="WidgetActionDrag"
 									onLongPress={onLongPress}
 									onPressIn={onPressIn}>

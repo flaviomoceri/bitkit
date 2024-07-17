@@ -27,7 +27,7 @@ import {
 } from '../../../styles/icons';
 import useBreakpoints from '../../../styles/breakpoints';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import NavigationHeader from '../../../components/NavigationHeader';
 import LightningChannel, {
 	TStatus,
@@ -163,6 +163,7 @@ const Channel = memo(
 		return (
 			<TouchableOpacity
 				style={styles.nRoot}
+				activeOpacity={0.7}
 				testID="Channel"
 				onPress={(): void => onPress(channel)}>
 				<View style={styles.nTitle}>
@@ -456,9 +457,8 @@ const Channels = ({
 				{(closedChannels.length > 0 || failedOrders.length > 0) && (
 					<Button
 						text={t(showClosed ? 'conn_closed_hide' : 'conn_closed_show')}
-						textStyle={{ color: colors.white80 }}
 						size="large"
-						variant="transparent"
+						variant="tertiary"
 						onPress={(): void => setShowClosed((prevState) => !prevState)}
 					/>
 				)}

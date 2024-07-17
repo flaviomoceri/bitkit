@@ -13,7 +13,7 @@ import BaseFeedWidget from './BaseFeedWidget';
 import { openURL } from '../utils/helpers';
 
 import { useSlashfeed } from '../hooks/widgets';
-import Button from './Button';
+import Button from './buttons/Button';
 import { CalendarIcon, MapPinLineIcon, MapTrifoldIcon } from '../styles/icons';
 import { useAppSelector } from '../hooks/redux';
 
@@ -182,7 +182,7 @@ const LuganoWidget = ({
 					</View>
 					<View style={styles.columnRight}>
 						<TouchableOpacity
-							activeOpacity={0.9}
+							activeOpacity={0.7}
 							onPress={(): void => {
 								openURL('https://bitkit.to/treasure-hunt');
 							}}>

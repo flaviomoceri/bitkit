@@ -10,7 +10,7 @@ import { showToast } from '../../utils/notifications';
 import { sleep } from '../../utils/helpers';
 import { updateUser } from '../../store/slices/user';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import Dialog from '../../components/Dialog';
 import LoadingWalletScreen from './Loading';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';

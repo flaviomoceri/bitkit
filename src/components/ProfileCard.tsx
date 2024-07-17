@@ -91,7 +91,7 @@ const ProfileCard = ({
 
 				{editable && !contact ? (
 					<TouchableOpacity
-						activeOpacity={0.8}
+						activeOpacity={0.7}
 						style={styles.editImageButton}
 						onPress={async (): Promise<void> => {
 							const result = await launchImageLibrary({

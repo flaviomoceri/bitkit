@@ -7,7 +7,7 @@ import GradientView from '../../../components/GradientView';
 import AmountToggle from '../../../components/AmountToggle';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import Money from '../../../components/Money';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useCurrency, useDisplayValues } from '../../../hooks/displayValues';

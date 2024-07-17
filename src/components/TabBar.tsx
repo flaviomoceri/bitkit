@@ -1,12 +1,11 @@
 import React, { ReactElement, useMemo } from 'react';
 import {
-	TouchableOpacity,
+	Pressable,
 	StyleSheet,
 	Platform,
 	StyleProp,
 	ViewStyle,
 } from 'react-native';
-import { SvgXml } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { FadeIn } from 'react-native-reanimated';
@@ -17,10 +16,9 @@ import { resetSendTransaction } from '../store/actions/wallet';
 import { viewControllersSelector } from '../store/reselect/ui';
 import useColors from '../hooks/colors';
 import { useAppSelector } from '../hooks/redux';
-import { BodySSB } from '../styles/text';
 import { ScanIcon } from '../styles/icons';
-import { AnimatedView, Pressable } from '../styles/components';
-import BlurView from '../components/BlurView';
+import { AnimatedView } from '../styles/components';
+import ButtonBlur from './buttons/ButtonBlur';
 import { rootNavigation } from '../navigation/root/RootNavigator';
 import type { RootNavigationProp } from '../navigation/types';
 
@@ -84,16 +82,13 @@ const TabBar = ({
 			style={[styles.tabRoot, { bottom }]}
 			color="transparent"
 			entering={FadeIn}>
-			<TouchableOpacity
-				style={styles.blurContainer}
-				activeOpacity={0.8}
+			<ButtonBlur
+				style={styles.send}
+				text={t('send')}
+				icon={sendXml}
 				testID="Send"
-				onPress={onSendPress}>
-				<BlurView style={[styles.blur, styles.send]}>
-					<SvgXml xml={sendXml} width={13} height={13} />
-					<BodySSB style={styles.tabText}>{t('send')}</BodySSB>
-				</BlurView>
-			</TouchableOpacity>
+				onPress={onSendPress}
+			/>
 			<Pressable
 				style={({ pressed }): StyleProp<ViewStyle> => [
 					styles.tabScan,
@@ -104,16 +99,13 @@ const TabBar = ({
 				onPressIn={onScanPress}>
 				<ScanIcon width={32} height={32} color="gray2" />
 			</Pressable>
-			<TouchableOpacity
-				style={styles.blurContainer}
-				activeOpacity={0.8}
+			<ButtonBlur
+				style={styles.receive}
+				text={t('receive')}
+				icon={receiveXml}
 				testID="Receive"
-				onPress={onReceivePress}>
-				<BlurView style={[styles.blur, styles.receive]}>
-					<SvgXml xml={receiveXml} width={13} height={13} />
-					<BodySSB style={styles.tabText}>{t('receive')}</BodySSB>
-				</BlurView>
-			</TouchableOpacity>
+				onPress={onReceivePress}
+			/>
 		</AnimatedView>
 	);
 };
@@ -128,30 +120,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		// fix TabBar zIndex on Android
 		zIndex: 0,
-	},
-	blurContainer: {
-		height: 56,
-		flex: 1,
-		shadowColor: 'black',
-		shadowOpacity: 0.8,
-		shadowRadius: 15,
-		shadowOffset: { width: 1, height: 13 },
-	},
-	blur: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		flexDirection: 'row',
-		borderRadius: 30,
-		elevation: 6,
-		...Platform.select({
-			ios: {
-				backgroundColor: 'rgba(255, 255, 255, 0.2)',
-			},
-			android: {
-				backgroundColor: 'rgba(40, 40, 40, 0.95)',
-			},
-		}),
 	},
 	send: {
 		paddingRight: 30,
@@ -169,9 +137,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		zIndex: 1,
-	},
-	tabText: {
-		marginLeft: 6,
 	},
 	pressed: {
 		opacity: 0.8,

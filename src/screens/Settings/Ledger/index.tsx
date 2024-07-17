@@ -2,7 +2,7 @@ import { TBitkitTransaction, TDestination } from '@synonymdev/ledger';
 import React, { ReactElement, memo, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import { useBalance } from '../../../hooks/wallet';
