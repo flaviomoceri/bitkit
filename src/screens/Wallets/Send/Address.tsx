@@ -7,7 +7,7 @@ import {
 	View as ThemedView,
 } from '../../../styles/components';
 import { Caption13Up } from '../../../styles/text';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import GradientView from '../../../components/GradientView';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';

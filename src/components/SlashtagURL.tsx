@@ -39,7 +39,7 @@ const SlashtagURL = ({
 	return (
 		<TouchableOpacity
 			style={style}
-			activeOpacity={0.8}
+			activeOpacity={0.7}
 			delayLongPress={500}
 			testID={testID}
 			accessibilityLabel={url}

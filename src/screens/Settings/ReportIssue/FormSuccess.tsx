@@ -6,7 +6,7 @@ import { BodyM } from '../../../styles/text';
 import { View as ThemedView } from '../../../styles/components';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import type { SettingsScreenProps } from '../../../navigation/types';
 
 const imageSrc = require('../../../assets/illustrations/email.png');

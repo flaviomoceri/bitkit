@@ -28,7 +28,7 @@ import SafeAreaInset from '../../components/SafeAreaInset';
 import SeedInput from '../../components/SeedInput';
 import SeedInputAccessory from '../../components/SeedInputAccessory';
 import VerticalShadow from '../../components/VerticalShadow';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import { useAppDispatch } from '../../hooks/redux';
 import { validateMnemonic } from '../../utils/wallet';
 import { restoreSeed } from '../../utils/startup';

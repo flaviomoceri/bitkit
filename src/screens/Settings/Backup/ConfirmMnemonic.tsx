@@ -7,7 +7,7 @@ import { shuffleArray } from '../../../utils/helpers';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import type { BackupScreenProps } from '../../../navigation/types';
 
 const Word = ({

@@ -7,7 +7,7 @@ import GradientView from '../../../components/GradientView';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import LightningChannel2 from '../../../components/LightningChannel';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import type { ReceiveScreenProps } from '../../../navigation/types';
 
 const Liquidity = ({

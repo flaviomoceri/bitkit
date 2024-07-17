@@ -130,6 +130,7 @@ const ActivityFiltered = ({
 									)}
 									<TouchableOpacity
 										style={styles.filterButton}
+										activeOpacity={0.7}
 										testID="TagsPrompt"
 										onPress={(): void => {
 											Keyboard.dismiss();
@@ -143,6 +144,7 @@ const ActivityFiltered = ({
 									</TouchableOpacity>
 									<TouchableOpacity
 										style={styles.filterButton}
+										activeOpacity={0.7}
 										testID="TimeRangePrompt"
 										onPress={(): void => {
 											Keyboard.dismiss();

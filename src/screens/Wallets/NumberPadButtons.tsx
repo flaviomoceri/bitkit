@@ -2,7 +2,7 @@ import React, { memo, ReactElement } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Pressable } from '../../styles/components';
+import { TouchableHighlight } from '../../styles/components';
 import { Caption13Up } from '../../styles/text';
 import UnitButton from './UnitButton';
 import { IColors } from '../../styles/colors';
@@ -26,13 +26,13 @@ const NumberPadButtons = ({
 		<View style={styles.container}>
 			<View style={styles.buttonContainer}>
 				{onMax && (
-					<Pressable
+					<TouchableHighlight
 						style={styles.button}
 						color="white10"
 						testID="NumberPadButtonsMax"
 						onPressIn={onMax}>
 						<Caption13Up color={color}>{t('send_max')}</Caption13Up>
-					</Pressable>
+					</TouchableHighlight>
 				)}
 			</View>
 
@@ -48,13 +48,13 @@ const NumberPadButtons = ({
 
 			<View style={styles.buttonContainer}>
 				{onDone && (
-					<Pressable
+					<TouchableHighlight
 						style={styles.button}
 						color="white10"
 						testID="NumberPadButtonsDone"
 						onPressIn={onDone}>
 						<Caption13Up color={color}>{t('send_done')}</Caption13Up>
-					</Pressable>
+					</TouchableHighlight>
 				)}
 			</View>
 		</View>

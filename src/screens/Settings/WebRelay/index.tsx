@@ -10,7 +10,7 @@ import { ScanIcon } from '../../../styles/icons';
 import { updateSettings } from '../../../store/slices/settings';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { showToast } from '../../../utils/notifications';
 import { saveProfile, updateSlashPayConfig } from '../../../utils/slashtags';
 import type { SettingsScreenProps } from '../../../navigation/types';

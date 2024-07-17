@@ -1,8 +1,9 @@
 import React, { ReactElement, memo } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, Platform } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useTranslation } from 'react-i18next';
 
+import colors from '../../../styles/colors';
 import { Pressable } from '../../../styles/components';
 import { Caption13Up, BodyMSB } from '../../../styles/text';
 import {
@@ -16,6 +17,7 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import ContactImage from '../../../components/ContactImage';
 import { processInputData } from '../../../utils/scanner';
 import { showToast } from '../../../utils/notifications';
+import useColors from '../../../hooks/colors';
 import { useAppSelector } from '../../../hooks/redux';
 import { useScreenSize } from '../../../hooks/screen';
 import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';
@@ -40,17 +42,21 @@ const Button = ({
 	actions?: ReactElement;
 	testID?: string;
 	onPress: () => void;
-}): ReactElement => (
-	<Pressable
-		style={styles.button}
-		color="white06"
-		testID={testID}
-		onPress={onPress}>
-		<View style={styles.buttonIcon}>{icon}</View>
-		<BodyMSB color="white">{text}</BodyMSB>
-		<View style={styles.buttonActions}>{actions}</View>
-	</Pressable>
-);
+}): ReactElement => {
+	const { white16 } = useColors();
+
+	return (
+		<Pressable
+			style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+			android_ripple={{ color: white16 }}
+			testID={testID}
+			onPress={onPress}>
+			<View style={styles.buttonIcon}>{icon}</View>
+			<BodyMSB color="white">{text}</BodyMSB>
+			<View style={styles.buttonActions}>{actions}</View>
+		</Pressable>
+	);
+};
 
 const Recipient = ({
 	navigation,
@@ -208,12 +214,20 @@ const styles = StyleSheet.create({
 		resizeMode: 'contain',
 	},
 	button: {
+		backgroundColor: colors.white06,
 		flexDirection: 'row',
 		alignItems: 'center',
 		borderRadius: 8,
 		padding: 24,
 		marginBottom: 8,
 		height: 80,
+	},
+	buttonPressed: {
+		...Platform.select({
+			ios: {
+				backgroundColor: colors.white16,
+			},
+		}),
 	},
 	buttonIcon: {
 		marginRight: 16,

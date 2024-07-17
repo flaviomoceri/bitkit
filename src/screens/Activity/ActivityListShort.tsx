@@ -10,12 +10,12 @@ import { useAppSelector } from '../../hooks/redux';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { Caption13Up, BodySSB } from '../../styles/text';
+import { Caption13Up } from '../../styles/text';
 import { groupActivityItems } from '../../utils/activity';
 import { showBottomSheet } from '../../store/utils/ui';
 import { IActivityItem } from '../../store/types/activity';
 import { activityItemsSelector } from '../../store/reselect/activity';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import ListItem, { EmptyItem } from './ListItem';
 import type { RootNavigationProp } from '../../navigation/types';
 
@@ -49,10 +49,10 @@ const ActivityListShort = (): ReactElement => {
 				<ListItem
 					key={item.id}
 					item={item}
-					onPress={(): void =>
-						navigation.navigate('ActivityDetail', { id: item.id })
-					}
 					testID={`ActivityShort-${index}`}
+					onPress={(): void => {
+						navigation.navigate('ActivityDetail', { id: item.id });
+					}}
 				/>
 			);
 		},
@@ -84,9 +84,9 @@ const ActivityListShort = (): ReactElement => {
 					))}
 					<Button
 						style={styles.button}
-						text={<BodySSB color="white80">{t('activity_show_all')}</BodySSB>}
+						text={t('activity_show_all')}
 						size="large"
-						variant="transparent"
+						variant="tertiary"
 						testID="ActivityShowAll"
 						onPress={navigateToActivityFiltered}
 					/>

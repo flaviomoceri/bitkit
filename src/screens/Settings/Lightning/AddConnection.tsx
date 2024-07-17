@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { View as ThemedView, ScrollView } from '../../../styles/components';
 import { Caption13Up, CaptionB, BodyMSB } from '../../../styles/text';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import NavigationHeader from '../../../components/NavigationHeader';
 // import LightningChannel from '../../../components/LightningChannel';
 import Money from '../../../components/Money';

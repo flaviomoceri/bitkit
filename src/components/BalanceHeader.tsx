@@ -51,11 +51,13 @@ const BalanceHeader = (): ReactElement => {
 
 			<TouchableOpacity
 				style={styles.balance}
+				activeOpacity={0.7}
 				testID="TotalBalance"
 				onPress={onSwitchUnit}>
 				<Money sats={totalBalance} enableHide={true} symbol={true} />
 				{hideBalance && (
 					<TouchableOpacity
+						activeOpacity={0.7}
 						hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
 						testID="ShowBalance"
 						onPress={toggleHideBalance}>

@@ -1,7 +1,7 @@
 import React, { ReactElement, memo } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
-import { TouchableOpacity } from '../styles/components';
+import { TouchableHighlight, TouchableOpacity } from '../styles/components';
 import { BodySSB } from '../styles/text';
 import { useProfile } from '../hooks/slashtags';
 import ProfileImage from './ProfileImage';
@@ -25,7 +25,7 @@ const ContactSmall = ({
 	const { profile } = useProfile(url);
 
 	return (
-		<TouchableOpacity
+		<TouchableHighlight
 			style={[
 				styles.container,
 				size === 'large' && styles.containerLarge,
@@ -35,23 +35,26 @@ const ContactSmall = ({
 			activeOpacity={onPress ? 0.6 : 1}
 			onPress={onPress}
 			testID={testID}>
-			<ProfileImage
-				url={url}
-				image={profile.image}
-				size={size === 'large' ? 32 : 24}
-			/>
-			<BodySSB numberOfLines={1} style={styles.name}>
-				{profile.name}
-			</BodySSB>
-			{onDelete && (
-				<TouchableOpacity
-					style={styles.delete}
-					color="transparent"
-					onPress={onDelete}>
-					<XIcon color="secondary" width={16} />
-				</TouchableOpacity>
-			)}
-		</TouchableOpacity>
+			<>
+				<ProfileImage
+					url={url}
+					image={profile.image}
+					size={size === 'large' ? 32 : 24}
+				/>
+				<BodySSB numberOfLines={1} style={styles.name}>
+					{profile.name}
+				</BodySSB>
+				{onDelete && (
+					<TouchableOpacity
+						style={styles.delete}
+						activeOpacity={0.7}
+						color="transparent"
+						onPress={onDelete}>
+						<XIcon color="secondary" width={16} />
+					</TouchableOpacity>
+				)}
+			</>
+		</TouchableHighlight>
 	);
 };
 

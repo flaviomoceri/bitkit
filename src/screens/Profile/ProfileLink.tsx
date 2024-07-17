@@ -4,7 +4,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { BodySB, BodyS } from '../../styles/text';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import LabeledInput from '../../components/LabeledInput';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
@@ -54,6 +54,7 @@ const ProfileLink = ({
 					dispatch(updateProfileLink({ ...form, title: value }));
 				}}>
 				<TouchableOpacity
+					activeOpacity={0.7}
 					testID="ProfileLinkSuggestions"
 					onPress={(): void => {
 						navigation.navigate('ProfileLinkSuggestions');

@@ -57,7 +57,7 @@ import type { SendScreenProps } from '../../../navigation/types';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Dialog from '../../../components/Dialog';
 import Biometrics from '../../../components/Biometrics';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import {
 	exchangeRatesSelector,
 	onChainBalanceSelector,
@@ -94,7 +94,7 @@ const Section = memo(
 		return (
 			<TouchableOpacity
 				style={[styles.sRoot, { borderBottomColor: white10 }]}
-				activeOpacity={onPress ? 0.6 : 1}
+				activeOpacity={onPress ? 0.7 : 1}
 				onPress={onPress}>
 				<View style={styles.sText}>
 					<Caption13Up color="secondary">{title}</Caption13Up>

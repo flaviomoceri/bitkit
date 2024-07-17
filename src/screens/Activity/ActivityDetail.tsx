@@ -42,7 +42,7 @@ import {
 	UserPlusIcon,
 	XIcon,
 } from '../../styles/icons';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import Money from '../../components/Money';
 import ContactSmall from '../../components/ContactSmall';
 import NavigationHeader from '../../components/NavigationHeader';
@@ -372,7 +372,10 @@ const OnchainActivityDetail = ({
 				unitType="secondary"
 				symbol={true}
 			/>
-			<TouchableOpacity style={styles.title} onPress={switchUnit}>
+			<TouchableOpacity
+				style={styles.title}
+				activeOpacity={0.7}
+				onPress={switchUnit}>
 				<View style={styles.titleBlock}>
 					<Money sats={total} sign={isSend ? '- ' : '+ '} />
 				</View>
@@ -573,6 +576,7 @@ const OnchainActivityDetail = ({
 				<>
 					<TouchableOpacity
 						style={styles.sectionContainer}
+						activeOpacity={0.7}
 						onPress={(): void => onCopy(txId)}>
 						<Section
 							title={t('activity_tx_id')}
@@ -581,6 +585,7 @@ const OnchainActivityDetail = ({
 					</TouchableOpacity>
 					<TouchableOpacity
 						style={styles.sectionContainer}
+						activeOpacity={0.7}
 						onPress={(): void => onCopy(address)}>
 						<Section
 							title={t('activity_address')}
@@ -625,6 +630,7 @@ const OnchainActivityDetail = ({
 											title={title}
 											value={
 												<TouchableOpacity
+													activeOpacity={0.7}
 													onPress={(): void => {
 														handleBoostParentPress(parent);
 													}}>
@@ -775,7 +781,10 @@ const LightningActivityDetail = ({
 				color="secondary"
 				symbol={true}
 			/>
-			<TouchableOpacity style={styles.title} onPress={switchUnit}>
+			<TouchableOpacity
+				style={styles.title}
+				activeOpacity={0.7}
+				onPress={switchUnit}>
 				<View style={styles.titleBlock}>
 					<Money sats={total} sign={isSend ? '- ' : '+ '} />
 				</View>
@@ -965,6 +974,7 @@ const LightningActivityDetail = ({
 					{preimage && (
 						<TouchableOpacity
 							style={styles.sectionContainer}
+							activeOpacity={0.7}
 							onPress={(): void => onCopy(preimage)}>
 							<Section
 								title={t('activity_preimage')}
@@ -974,6 +984,7 @@ const LightningActivityDetail = ({
 					)}
 					<TouchableOpacity
 						style={styles.sectionContainer}
+						activeOpacity={0.7}
 						onPress={(): void => onCopy(id)}>
 						<Section
 							title={t('activity_payment_hash')}
@@ -983,6 +994,7 @@ const LightningActivityDetail = ({
 					{address && (
 						<TouchableOpacity
 							style={styles.sectionContainer}
+							activeOpacity={0.7}
 							onPress={(): void => onCopy(address)}>
 							<Section
 								title={t('activity_invoice')}

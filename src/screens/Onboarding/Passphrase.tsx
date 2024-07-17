@@ -11,7 +11,7 @@ import { Display, BodyM } from '../../styles/text';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import NavigationHeader from '../../components/NavigationHeader';
 import KeyboardAvoidingView from '../../components/KeyboardAvoidingView';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import Flag from '../../components/Flag';
 import { useScreenSize } from '../../hooks/screen';
 import type { OnboardingStackScreenProps } from '../../navigation/types';
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
 	},
 	flag: {
 		position: 'absolute',
-		top: 17,
+		top: 12,
 		right: 0,
 	},
 	imageContainer: {

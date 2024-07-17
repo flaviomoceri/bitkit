@@ -8,7 +8,7 @@ import { showToast } from '../../utils/notifications';
 import { getBip39Passphrase, getMnemonicPhrase } from '../../utils/wallet';
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import { Word } from '../Settings/Backup/ShowMnemonic';
 import { RecoveryStackScreenProps } from '../../navigation/types';
 

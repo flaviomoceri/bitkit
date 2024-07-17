@@ -13,7 +13,7 @@ import {
 	useSnapPoints,
 } from '../../hooks/bottomSheet';
 import { generateCalendar } from '../../utils/helpers';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import { languageSelector, timeZoneSelector } from '../../store/reselect/ui';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { i18nTime } from '../../utils/i18n';
@@ -78,9 +78,10 @@ const Day = ({
 
 	return (
 		<TouchableOpacity
-			onPress={onPress}
 			style={styles.day}
-			testID={day ? `Day-${day}` : undefined}>
+			activeOpacity={0.7}
+			testID={day ? `Day-${day}` : undefined}
+			onPress={onPress}>
 			{back}
 			<BodyMSB color={textColor} testID={today ? 'Today' : undefined}>
 				{day}
@@ -168,15 +169,17 @@ const Calendar = ({
 					</BodyMSB>
 				</View>
 				<TouchableOpacity
-					onPress={prevMonth}
 					style={styles.arrow}
-					testID="PrevMonth">
+					activeOpacity={0.7}
+					testID="PrevMonth"
+					onPress={prevMonth}>
 					<LeftSign color="brand" />
 				</TouchableOpacity>
 				<TouchableOpacity
-					onPress={nextMonth}
 					style={styles.arrow}
-					testID="NextMonth">
+					activeOpacity={0.7}
+					testID="NextMonth"
+					onPress={nextMonth}>
 					<RightSign color="brand" />
 				</TouchableOpacity>
 			</View>

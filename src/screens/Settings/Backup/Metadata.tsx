@@ -6,7 +6,7 @@ import { BodyM, BodySB, BodyS } from '../../../styles/text';
 import GradientView from '../../../components/GradientView';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { closeSheet } from '../../../store/slices/ui';
 import { backupSelector } from '../../../store/reselect/backup';

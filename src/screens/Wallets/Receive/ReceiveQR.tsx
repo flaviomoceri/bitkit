@@ -54,7 +54,7 @@ import { getReceiveAddress } from '../../../utils/wallet';
 import GradientView from '../../../components/GradientView';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import Tooltip from '../../../components/Tooltip';
 import Dot from '../../../components/SliderDots';
 import SwitchRow from '../../../components/SwitchRow';
@@ -725,7 +725,6 @@ const styles = StyleSheet.create({
 	},
 	actionButton: {
 		paddingHorizontal: 16,
-		minWidth: 0,
 	},
 	invoices: {
 		borderRadius: 9,

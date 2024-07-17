@@ -22,7 +22,7 @@ const ImageText = ({
 	return (
 		<TouchableOpacity
 			style={styles.container}
-			activeOpacity={onPress ? 0.6 : 1}
+			activeOpacity={onPress ? 0.7 : 1}
 			onPress={onPress}>
 			<View style={styles.textColumn}>
 				{icon}

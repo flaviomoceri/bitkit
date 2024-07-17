@@ -64,12 +64,14 @@ const AppError = ({ error }: { error: ReactError }): ReactElement => {
 					<View style={styles.buttonContainer}>
 						<TouchableOpacity
 							style={[styles.button, styles.buttonSecondary]}
+							activeOpacity={0.7}
 							testID="ErrorClose"
 							onPress={onClose}>
 							<Text style={styles.buttonText}>Close Bitkit</Text>
 						</TouchableOpacity>
 						<TouchableOpacity
 							style={[styles.button, styles.buttonPrimary]}
+							activeOpacity={0.7}
 							testID="ErrorReport"
 							onPress={onSend}>
 							<Text style={styles.buttonText}>Send Report</Text>

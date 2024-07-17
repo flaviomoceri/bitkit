@@ -2,7 +2,7 @@ import React, { memo, ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import { useAppSelector } from '../../../hooks/redux';

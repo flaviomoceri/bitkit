@@ -62,6 +62,7 @@ const WalletOnboarding = ({
 			{showClose && onHide && (
 				<TouchableOpacity
 					style={styles.closeButton}
+					activeOpacity={0.7}
 					testID="WalletOnboardingClose"
 					onPress={onHide}>
 					<XIcon color="secondary" width={16} height={16} />

@@ -32,6 +32,7 @@ const AdjustValue = ({
 		<View style={[styles.root, style]}>
 			<TouchableOpacity
 				style={styles.icon}
+				activeOpacity={0.9}
 				disabled={decreaseDisabled}
 				onPress={decreaseValue}>
 				<MinusCircledIcon
@@ -50,6 +51,7 @@ const AdjustValue = ({
 			</View>
 			<TouchableOpacity
 				style={styles.icon}
+				activeOpacity={0.9}
 				disabled={increaseDisabled}
 				onPress={increaseValue}>
 				<PlusCircledIcon

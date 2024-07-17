@@ -121,7 +121,7 @@ const Biometrics = ({
 			<TouchableOpacity
 				style={[styles.container, { paddingBottom: insets.bottom + 120 }]}
 				color="transparent"
-				activeOpacity={0.6}
+				activeOpacity={0.7}
 				onPress={(): void => authenticate()}
 				testID="Biometrics">
 				<Icon />

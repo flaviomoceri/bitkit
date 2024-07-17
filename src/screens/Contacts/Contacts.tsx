@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import {
 	View as ThemedView,
-	TouchableOpacity as ThemedTouchableOpacity,
+	TouchableHighlight,
 } from '../../styles/components';
 import { PlusIcon } from '../../styles/icons';
 import ContactsOnboarding from './ContactsOnboarding';
@@ -70,17 +70,16 @@ const ContactsScreen = ({
 						onChangeText={handleChangeText}
 						testID="ContactsSearchInput"
 					/>
-					<ThemedTouchableOpacity
+					<TouchableHighlight
 						style={styles.addButton}
 						color="white16"
-						activeOpacity={0.8}
 						testID="AddContact"
 						onPress={(): void => {
 							Keyboard.dismiss();
 							showBottomSheet('addContactModal');
 						}}>
 						<PlusIcon width={24} height={24} color="brand" />
-					</ThemedTouchableOpacity>
+					</TouchableHighlight>
 				</View>
 				<View style={styles.contacts}>
 					<ContactsList

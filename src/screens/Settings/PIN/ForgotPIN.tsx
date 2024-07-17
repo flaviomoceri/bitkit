@@ -6,7 +6,7 @@ import { BodyM } from '../../../styles/text';
 import BottomSheetWrapper from '../../../components/BottomSheetWrapper';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { closeSheet } from '../../../store/slices/ui';
 import { wipeApp } from '../../../store/utils/settings';
 import { useAppDispatch } from '../../../hooks/redux';

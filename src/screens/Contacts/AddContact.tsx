@@ -10,7 +10,7 @@ import { handleSlashtagURL } from '../../utils/slashtags';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
 import LabeledInput from '../../components/LabeledInput';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import { BodyM } from '../../styles/text';
 import { ClipboardTextIcon, CornersOutIcon } from '../../styles/icons';
@@ -114,12 +114,14 @@ const AddContact = ({
 						color={error ? 'brand' : undefined}>
 						<TouchableOpacity
 							style={styles.action}
+							activeOpacity={0.7}
 							hitSlop={styles.hitSlop}
 							onPress={handleScanner}>
 							<CornersOutIcon width={24} height={24} color="brand" />
 						</TouchableOpacity>
 						<TouchableOpacity
 							style={styles.action}
+							activeOpacity={0.7}
 							hitSlop={styles.hitSlop}
 							onPress={handlePaste}>
 							<ClipboardTextIcon width={24} height={24} color="brand" />

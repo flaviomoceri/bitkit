@@ -3,12 +3,13 @@ import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 
-import { View as ThemedView, Pressable } from '../styles/components';
+import { View as ThemedView } from '../styles/components';
 import {
 	TransferIcon,
 	BitcoinCircleIcon,
 	LightningCircleIcon,
 } from '../styles/icons';
+import Button from './buttons/Button';
 import NetworkRow from './NetworkRow';
 import { useBalance } from '../hooks/wallet';
 import { useAppSelector } from '../hooks/redux';
@@ -54,14 +55,14 @@ const Balances = (): ReactElement => {
 			/>
 			<View style={styles.transferRow}>
 				<ThemedView style={styles.line} color="white16" />
-				<Pressable
+				<Button
 					style={styles.transferButton}
 					color="white16"
+					icon={<TransferIcon color="white" />}
 					disabled={!canTransfer}
 					testID="TransferButton"
-					onPress={onTransfer}>
-					<TransferIcon color="white" />
-				</Pressable>
+					onPress={onTransfer}
+				/>
 				<ThemedView style={styles.line} color="white16" />
 			</View>
 			<NetworkRow

@@ -15,7 +15,7 @@ import { BodyS } from '../../styles/text';
 import { PlusIcon } from '../../styles/icons';
 import NavigationHeader from '../../components/NavigationHeader';
 import KeyboardAvoidingView from '../../components/KeyboardAvoidingView';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import ProfileCard from '../../components/ProfileCard';
 import ProfileLinks from '../../components/ProfileLinks';

@@ -17,7 +17,7 @@ import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import type { SettingsScreenProps } from '../../../navigation/types';
 import LabeledInput from '../../../components/LabeledInput';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { __CHATWOOT_API__ } from '../../../constants/env';
 import KeyboardAvoidingView from '../../../components/KeyboardAvoidingView';
 

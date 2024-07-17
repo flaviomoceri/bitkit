@@ -21,7 +21,7 @@ import { FaceIdIcon, TouchIdIcon } from '../../../styles/icons';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { IsSensorAvailableResult } from '../../../components/Biometrics';
 import { useAppDispatch } from '../../../hooks/redux';
 import rnBiometrics from '../../../utils/biometrics';

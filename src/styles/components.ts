@@ -5,13 +5,16 @@ import {
 	Switch as RNSwitch,
 	ScrollViewProps,
 	TouchableOpacity as RNTouchableOpacity,
+	TouchableHighlight as RNTouchableHighlight,
 	TouchableOpacityProps,
+	TouchableHighlightProps,
 	Pressable as RNPressable,
 	ViewProps,
 	TextInput as RNTextInput,
 	TextInputProps as RNTextInputProps,
 	SwitchProps,
 } from 'react-native';
+import Color from 'color';
 import Animated, { AnimatedProps } from 'react-native-reanimated';
 import { SafeAreaProvider as _SafeAreaProvider } from 'react-native-safe-area-context';
 import { BottomSheetTextInput as _BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -98,6 +101,19 @@ export const TouchableOpacity = styled(RNTouchableOpacity)<
 	backgroundColor: props.color
 		? props.theme.colors[props.color]
 		: props.theme.colors.background,
+}));
+
+export const TouchableHighlight = styled(RNTouchableHighlight).attrs<
+	TouchableHighlightProps & ColorProps
+>((props) => {
+	const backgroundColor = props.theme.colors[props.color];
+	// double the opacity for pressed state
+	const underlayColor = Color(backgroundColor).opaquer(1).string();
+	return { underlayColor };
+})<TouchableHighlightProps>((props) => ({
+	backgroundColor: props.color
+		? props.theme.colors[props.color]
+		: props.theme.colors.transparent,
 }));
 
 export const Pressable = styled(RNPressable)<PressableProps & ColorProps>(

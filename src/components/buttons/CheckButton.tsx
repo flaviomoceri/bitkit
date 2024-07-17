@@ -6,9 +6,9 @@ import {
 	TouchableOpacityProps,
 } from 'react-native';
 
-import { BodyM, Caption } from '../styles/text';
-import { View as StyledView } from '../styles/components';
-import { Checkmark } from '../styles/icons';
+import { BodyM, Caption } from '../../styles/text';
+import { View as StyledView } from '../../styles/components';
+import { Checkmark } from '../../styles/icons';
 
 interface CheckButtonProps extends TouchableOpacityProps {
 	label: ReactNode;
@@ -27,7 +27,7 @@ const CheckButton = memo(
 		return (
 			<TouchableOpacity
 				style={[styles.item, style]}
-				activeOpacity={0.6}
+				activeOpacity={0.7}
 				{...props}>
 				<View style={styles.leftColumn}>
 					<View>

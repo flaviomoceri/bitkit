@@ -7,7 +7,7 @@ import { BodyM } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { capitalize } from '../../../utils/helpers';
 import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';
 import type { BackupScreenProps } from '../../../navigation/types';

@@ -7,7 +7,7 @@ import { Subtitle, Text13UP } from '../../styles/text';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Tag from '../../components/Tag';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import { closeSheet } from '../../store/slices/ui';
 import { viewControllerSelector } from '../../store/reselect/ui';
 import { addMetaTxTag } from '../../store/slices/metadata';

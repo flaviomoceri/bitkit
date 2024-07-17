@@ -6,7 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { AnimatedView } from '../../styles/components';
 import { Display, BodyM } from '../../styles/text';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import DetectSwipe from '../../components/DetectSwipe';
 import type { OnboardingStackScreenProps } from '../../navigation/types';
 

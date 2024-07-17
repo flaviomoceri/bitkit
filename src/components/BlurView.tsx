@@ -4,22 +4,37 @@ import { BlurView as Blur } from '@react-native-community/blur';
 import { View } from '../styles/components';
 
 type BlurViewProps = {
+	pressed?: boolean;
 	style?: StyleProp<ViewStyle>;
 	children?: ReactNode;
 };
 
-const BlurView = ({ style, ...props }: BlurViewProps): ReactElement => {
+const BlurView = ({
+	pressed,
+	style,
+	...props
+}: BlurViewProps): ReactElement => {
 	return Platform.OS === 'ios' ? (
-		<Blur {...props} style={[styles.containerIos, style]} blurAmount={4} />
+		<Blur
+			{...props}
+			style={[styles.ios, style]}
+			blurAmount={pressed ? 10 : 4}
+		/>
 	) : (
-		<View {...props} style={[styles.containerAndroid, style]} />
+		<View
+			{...props}
+			style={[styles.android, style, pressed && styles.androidPressed]}
+		/>
 	);
 };
 
 const styles = StyleSheet.create({
-	containerIos: {},
-	containerAndroid: {
+	ios: {},
+	android: {
 		backgroundColor: 'rgba(20, 20, 20, 0.95)',
+	},
+	androidPressed: {
+		backgroundColor: 'rgba(20, 20, 20, 1)',
 	},
 });
 

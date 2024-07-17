@@ -7,7 +7,7 @@ import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigati
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
 import AmountToggle from '../../../components/AmountToggle';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { closeSheet } from '../../../store/slices/ui';
 import { activityItemSelector } from '../../../store/reselect/activity';

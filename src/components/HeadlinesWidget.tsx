@@ -118,7 +118,7 @@ const HeadlinesWidget = ({
 
 				<TouchableOpacity
 					style={styles.source}
-					activeOpacity={0.9}
+					activeOpacity={0.7}
 					hitSlop={{ right: 15, bottom: 15, left: 15 }}
 					onPress={(): void => {
 						if (link) {

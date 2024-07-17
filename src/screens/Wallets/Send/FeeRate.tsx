@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Caption13Up } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import GradientView from '../../../components/GradientView';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 
 import { useBalance } from '../../../hooks/wallet';
 import { useAppSelector } from '../../../hooks/redux';

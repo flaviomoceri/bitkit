@@ -16,7 +16,7 @@ import {
 } from '../../hooks/bottomSheet';
 import { viewControllerSelector } from '../../store/reselect/ui';
 import { EActivityType } from '../../store/types/activity';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 
 const confettiOrangeSrc = require('../../assets/lottie/confetti-orange.json');
 const confettiPurpleSrc = require('../../assets/lottie/confetti-purple.json');

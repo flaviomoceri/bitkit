@@ -16,7 +16,7 @@ import SafeAreaInset from './SafeAreaInset';
 import NavigationHeader from './NavigationHeader';
 import { IsSensorAvailableResult } from './Biometrics';
 import NumberPad from './NumberPad';
-import Button from './Button';
+import Button from './buttons/Button';
 import useColors from '../hooks/colors';
 import { wipeApp } from '../store/utils/settings';
 import { showBottomSheet } from '../store/utils/ui';

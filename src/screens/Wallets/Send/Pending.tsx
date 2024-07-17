@@ -8,7 +8,7 @@ import AmountToggle from '../../../components/AmountToggle';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
 import HourglassSpinner from '../../../components/HourglassSpinner';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { rootNavigation } from '../../../navigation/root/RootNavigator';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { closeSheet } from '../../../store/slices/ui';

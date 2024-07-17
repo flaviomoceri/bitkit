@@ -9,7 +9,7 @@ import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import SvgImage from '../../components/SvgImage';
 import Divider from '../../components/Divider';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import { handleSlashtagURL } from '../../utils/slashtags';
 import { useSlashfeed } from '../../hooks/widgets';
 import type { RootStackScreenProps } from '../../navigation/types';
@@ -71,7 +71,7 @@ const Feed = ({
 		return (
 			<TouchableOpacity
 				style={failed && styles.feedDisabled}
-				activeOpacity={0.6}
+				activeOpacity={0.7}
 				disabled={failed}
 				testID={testID}
 				onPress={(): void => handleSlashtagURL(url)}>

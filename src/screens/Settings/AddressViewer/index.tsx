@@ -38,7 +38,7 @@ import {
 	selectedWalletSelector,
 } from '../../../store/reselect/wallet';
 import { TWalletName } from '../../../store/types/wallet';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import {
 	defaultAddressContent,
 	addressTypes,

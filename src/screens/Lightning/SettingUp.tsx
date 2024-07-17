@@ -8,7 +8,7 @@ import SafeAreaInset from '../../components/SafeAreaInset';
 import NavigationHeader from '../../components/NavigationHeader';
 import HourglassSpinner from '../../components/HourglassSpinner';
 import ProgressSteps from '../../components/ProgressSteps';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import { useAppSelector } from '../../hooks/redux';
 import { lightningSettingUpStepSelector } from '../../store/reselect/user';
 import type { LightningScreenProps } from '../../navigation/types';

@@ -4,7 +4,7 @@ import { View, Image, ImageSourcePropType, StyleSheet } from 'react-native';
 import { Display, BodyM } from '../styles/text';
 import { View as ThemedView } from '../styles/components';
 import SafeAreaInset from './SafeAreaInset';
-import Button from './Button';
+import Button from './buttons/Button';
 import NavigationHeader from './NavigationHeader';
 
 const InfoScreen = ({

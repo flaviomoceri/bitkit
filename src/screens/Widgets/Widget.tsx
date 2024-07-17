@@ -17,7 +17,7 @@ import { SUPPORTED_FEED_TYPES } from '../../utils/widgets';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useSlashfeed } from '../../hooks/widgets';
 import { getDefaultSettings } from './WidgetEdit';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import SvgImage from '../../components/SvgImage';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import NavigationHeader from '../../components/NavigationHeader';
@@ -120,7 +120,7 @@ const Widget = ({
 						config.type === SUPPORTED_FEED_TYPES.BLOCKS_FEED) && (
 						<TouchableOpacity
 							style={styles.item}
-							activeOpacity={0.6}
+							activeOpacity={0.7}
 							testID="WidgetEdit"
 							onPress={onEdit}>
 							<View style={styles.columnLeft}>

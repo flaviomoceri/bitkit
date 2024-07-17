@@ -62,7 +62,7 @@ const LightningNodeInfo = ({
 				</View>
 
 				{!error && (
-					<TouchableOpacity onPress={onCopy}>
+					<TouchableOpacity activeOpacity={0.7} onPress={onCopy}>
 						<Subtitle testID="LDKNodeID" accessibilityLabel={nodeId}>
 							{nodeId}
 						</Subtitle>

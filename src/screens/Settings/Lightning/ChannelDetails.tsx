@@ -16,7 +16,7 @@ import {
 	View,
 } from 'react-native';
 
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import LightningChannel, {
 	TStatus,
 } from '../../../components/LightningChannel';
@@ -60,9 +60,9 @@ const Section = memo(
 	}): ReactElement => {
 		return (
 			<TouchableOpacity
-				activeOpacity={onPress ? 0.5 : 1}
-				onPress={onPress}
-				style={styles.sectionRoot}>
+				style={styles.sectionRoot}
+				activeOpacity={onPress ? 0.7 : 1}
+				onPress={onPress}>
 				<View style={styles.sectionName}>
 					<CaptionB>{name}</CaptionB>
 				</View>

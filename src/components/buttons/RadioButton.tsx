@@ -8,8 +8,8 @@ import {
 	ViewStyle,
 } from 'react-native';
 
-import { BodyM, Caption } from '../styles/text';
-import { Checkmark } from '../styles/icons';
+import { BodyM, Caption } from '../../styles/text';
+import { Checkmark } from '../../styles/icons';
 
 type RadioButtonProps = {
 	label: ReactNode;
@@ -30,7 +30,7 @@ export const RadioButton = memo(
 		return (
 			<TouchableOpacity
 				style={[styles.item, style]}
-				activeOpacity={0.6}
+				activeOpacity={0.7}
 				onPress={onPress}>
 				<View style={styles.leftColumn}>
 					<View>

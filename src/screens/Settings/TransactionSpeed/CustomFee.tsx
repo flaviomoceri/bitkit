@@ -12,7 +12,7 @@ import SafeAreaInset from '../../../components/SafeAreaInset';
 import NavigationHeader from '../../../components/NavigationHeader';
 import Amount from '../../../components/Amount';
 import NumberPad from '../../../components/NumberPad';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useDisplayValues } from '../../../hooks/displayValues';
 import { TRANSACTION_DEFAULTS } from '../../../utils/wallet/constants';

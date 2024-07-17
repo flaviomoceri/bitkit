@@ -15,7 +15,7 @@ import { Caption13Up, Display, BodyM, BodyS } from '../../styles/text';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import NavigationHeader from '../../components/NavigationHeader';
 import Percentage from '../../components/Percentage';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import FancySlider from '../../components/FancySlider';
 import TransferTextField from '../../components/TransferTextField';
 import NumberPadLightning from './NumberPadLightning';

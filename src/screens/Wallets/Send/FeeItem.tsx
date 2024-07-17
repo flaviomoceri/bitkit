@@ -54,11 +54,9 @@ const FeeItem = ({
 		<>
 			<View style={styles.divider} />
 			<TouchableOpacity
-				onPress={onPress}
-				style={[
-					styles.root,
-					isSelected && { backgroundColor: colors.white06 },
-				]}>
+				style={[styles.root, isSelected && { backgroundColor: colors.white06 }]}
+				activeOpacity={0.7}
+				onPress={onPress}>
 				<View style={styles.imageContainer}>{icon}</View>
 
 				<View style={styles.row}>

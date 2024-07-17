@@ -1,11 +1,5 @@
 import React, { ReactElement, ReactNode, useMemo, useState } from 'react';
-import {
-	Alert,
-	View,
-	TouchableOpacity,
-	StyleSheet,
-	useWindowDimensions,
-} from 'react-native';
+import { Alert, View, StyleSheet, useWindowDimensions } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -19,11 +13,10 @@ import {
 	PictureIcon,
 	FlashlightIcon,
 } from '../../styles/icons';
-import useColors from '../../hooks/colors';
 import Camera from '../../components/Camera';
 import GradientView from '../../components/CameraGradientView';
 import BlurView from '../../components/BlurView';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import { __E2E__ } from '../../constants/env';
 
 type ScannerComponentProps = {
@@ -38,7 +31,6 @@ const ScannerComponent = ({
 	onRead,
 }: ScannerComponentProps): ReactElement => {
 	const { t } = useTranslation('other');
-	const { white10, white50 } = useColors();
 	const dimensions = useWindowDimensions();
 	const [torchMode, setTorchMode] = useState(false);
 	const [isChooingFile, setIsChoosingFile] = useState(false);
@@ -135,22 +127,19 @@ const ScannerComponent = ({
 						<View style={{ height: size, width: size }}>
 							{bottomSheet && <View style={styles.maskRing} />}
 							<View style={styles.actionsRow}>
-								<TouchableOpacity
-									style={[styles.actionButton, { backgroundColor: white10 }]}
-									activeOpacity={1}
+								<Button
+									style={styles.actionButton}
+									color="white10"
+									icon={<PictureIcon width={24} height={24} />}
 									disabled={isChooingFile}
-									onPress={onPickFile}>
-									<PictureIcon width={24} height={24} />
-								</TouchableOpacity>
-								<TouchableOpacity
-									style={[
-										styles.actionButton,
-										{ backgroundColor: torchMode ? white50 : white10 },
-									]}
-									activeOpacity={1}
-									onPress={(): void => setTorchMode((prevState) => !prevState)}>
-									<FlashlightIcon width={24} height={24} />
-								</TouchableOpacity>
+									onPress={onPickFile}
+								/>
+								<Button
+									style={styles.actionButton}
+									color="white10"
+									icon={<FlashlightIcon width={24} height={24} />}
+									onPress={(): void => setTorchMode((prevState) => !prevState)}
+								/>
 							</View>
 						</View>
 						<Background style={backgroundStyles} />
@@ -172,8 +161,8 @@ const ScannerComponent = ({
 								style={styles.pasteButton}
 								text="Enter QRCode string"
 								size="large"
-								onPress={onReadDebug}
 								testID="ScanPrompt"
+								onPress={onReadDebug}
 							/>
 						)}
 
@@ -223,7 +212,8 @@ const styles = StyleSheet.create({
 		minHeight: 32,
 		minWidth: 32,
 		borderRadius: 50,
-		padding: 13,
+		paddingVertical: 13,
+		paddingHorizontal: 13,
 	},
 	bottom: {
 		paddingHorizontal: 16,

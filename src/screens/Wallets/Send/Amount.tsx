@@ -10,7 +10,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 
-import { TouchableOpacity } from '../../../styles/components';
+import { TouchableHighlight } from '../../../styles/components';
 import { Caption13Up } from '../../../styles/text';
 import { IColors } from '../../../styles/colors';
 import GradientView from '../../../components/GradientView';
@@ -20,7 +20,7 @@ import Money from '../../../components/Money';
 import ContactImage from '../../../components/ContactImage';
 import NumberPadTextField from '../../../components/NumberPadTextField';
 import SendNumberPad from './SendNumberPad';
-import Button from '../../../components/Button';
+import Button from '../../../components/buttons/Button';
 import UnitButton from '../UnitButton';
 import {
 	getTransactionOutputValue,
@@ -288,13 +288,13 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 						</View>
 						<View style={styles.actionButtons}>
 							<View style={styles.actionButtonContainer}>
-								<TouchableOpacity
+								<TouchableHighlight
 									style={styles.actionButton}
 									color="white10"
 									testID="SendNumberPadMax"
 									onPress={onMaxAmount}>
 									<Caption13Up color="brand">{t('send_max')}</Caption13Up>
-								</TouchableOpacity>
+								</TouchableHighlight>
 							</View>
 
 							<View style={styles.actionButtonContainer}>

@@ -10,7 +10,7 @@ import SafeAreaInset from '../../components/SafeAreaInset';
 import ActivityHeader from '../../components/ActivityHeader';
 import WalletOnboarding from '../../components/WalletOnboarding';
 import Money from '../../components/Money';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import ActivityList from './ActivityList';
 import { useBalance } from '../../hooks/wallet';
 import { useAppSelector } from '../../hooks/redux';

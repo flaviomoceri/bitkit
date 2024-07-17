@@ -27,7 +27,7 @@ import { showToast } from '../../utils/notifications';
 import { RootStackScreenProps } from '../../navigation/types';
 import Dialog from '../../components/Dialog';
 import Tooltip from '../../components/Tooltip';
-import IconButton from '../../components/IconButton';
+import IconButton from '../../components/buttons/IconButton';
 import { deleteContact } from '../../store/slices/slashtags';
 import {
 	selectedNetworkSelector,

@@ -8,7 +8,7 @@ import SafeAreaView from './SafeAreaView';
 import NavigationHeader from './NavigationHeader';
 import BottomSheetNavigationHeader from './BottomSheetNavigationHeader';
 import SafeAreaInset from './SafeAreaInset';
-import Button from './Button';
+import Button from './buttons/Button';
 
 const CameraNoAuth = ({
 	bottomSheet = false,

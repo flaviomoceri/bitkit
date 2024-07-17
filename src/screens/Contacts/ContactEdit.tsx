@@ -5,7 +5,7 @@ import { parse } from '@synonymdev/slashtags-url';
 
 import { BodyS } from '../../styles/text';
 import { View as ThemedView } from '../../styles/components';
-import Button from '../../components/Button';
+import Button from '../../components/buttons/Button';
 import Divider from '../../components/Divider';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import HourglassSpinner from '../../components/HourglassSpinner';
