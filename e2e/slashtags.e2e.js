@@ -34,6 +34,16 @@ d('Profile and Contacts', () => {
 	let waitForElectrum;
 	const rpc = new BitcoinJsonRpc(bitcoinURL);
 
+	const waitForSuggestionsLabel = async () => {
+		for (let i = 0; i < 60; i++) {
+			await sleep(1000);
+			try {
+				await element(by.id('SuggestionsLabel')).tap();
+				break;
+			} catch (e) {}
+		}
+	};
+
 	beforeAll(async () => {
 		await completeOnboarding();
 
@@ -173,6 +183,20 @@ d('Profile and Contacts', () => {
 			await expect(element(by.text(satoshi.name))).not.toBeVisible();
 			await expect(element(by.text(hal.name2))).toBeVisible();
 
+			// RESTART APP
+			await device.launchApp({ newInstance: true, delete: false });
+			await waitForSuggestionsLabel();
+
+			await waitFor(element(by.text('NewTestName')))
+				.toBeVisible()
+				.withTimeout(60000);
+
+			await element(by.id('HeaderContactsButton')).tap();
+			// check un-edited contact
+			await expect(element(by.text(satoshi.name))).toBeVisible();
+			// check edited contact retains new name
+			await expect(element(by.text(hal.name2))).toBeVisible();
+
 			// REMOVE CONTACT
 			await element(by.text(hal.name2)).tap();
 			await element(by.id('DeleteContactButton')).tap();
@@ -238,15 +262,7 @@ d('Profile and Contacts', () => {
 				.toBeVisible()
 				.withTimeout(300000); // 5 min
 			await element(by.id('GetStartedButton')).tap();
-
-			// wait for SuggestionsLabel to appear and be accessible
-			for (let i = 0; i < 60; i++) {
-				await sleep(1000);
-				try {
-					await element(by.id('SuggestionsLabel')).tap();
-					break;
-				} catch (e) {}
-			}
+			await waitForSuggestionsLabel();
 
 			// CHECK PROFILE, CONTACTS, TRANSACTION
 			await waitFor(element(by.text('NewTestName')))
@@ -255,6 +271,8 @@ d('Profile and Contacts', () => {
 
 			await element(by.id('HeaderContactsButton')).tap();
 			await expect(element(by.text(satoshi.name))).toBeVisible();
+			await expect(element(by.text(hal.name1))).not.toBeVisible();
+			await expect(element(by.text(hal.name2))).not.toBeVisible();
 			await element(by.id('NavigationClose')).tap();
 
 			await element(by.id('ActivitySavings')).tap();
