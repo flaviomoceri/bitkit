@@ -4663,16 +4663,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@synonymdev/react-native-ldk@npm:0.0.147":
-  version: 0.0.147
-  resolution: "@synonymdev/react-native-ldk@npm:0.0.147"
+"@synonymdev/react-native-ldk@npm:0.0.148":
+  version: 0.0.148
+  resolution: "@synonymdev/react-native-ldk@npm:0.0.148"
   dependencies:
     "@synonymdev/raw-transaction-decoder": 1.1.0
     bech32: ^2.0.0
     bitcoinjs-lib: ^6.0.2
   peerDependencies:
     react-native: "*"
-  checksum: fa999832a99c56cda62dd46a2e9c3d4b2ab53725cfd6a4474beff318090b27dcbb11e3276a945416f95ce7efc4d78aac781c65ef53d5c18be8f75a90e40fe9fb
+  checksum: 79f990e6b2e63bcf18680c4ec9583a91e5571cb1c71c408363e0e6be8248cb12a49e097f7106cce5832c465e347d5e8385d7ef8a5be7dfd9d13eb8cc62e3f05a
   languageName: node
   linkType: hard
 
@@ -6314,7 +6314,7 @@ __metadata:
     "@synonymdev/blocktank-lsp-http-client": 1.1.2
     "@synonymdev/feeds": 2.1.1
     "@synonymdev/ledger": 0.0.5
-    "@synonymdev/react-native-ldk": 0.0.147
+    "@synonymdev/react-native-ldk": 0.0.148
     "@synonymdev/react-native-lnurl": 0.0.10
     "@synonymdev/result": 0.0.2
     "@synonymdev/slashtags-keychain": 1.0.0

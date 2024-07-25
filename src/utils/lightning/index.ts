@@ -321,7 +321,6 @@ export const setupLdk = async ({
 				},
 				manually_accept_inbound_channels: true,
 			},
-			trustedZeroConfPeers: __TRUSTED_ZERO_CONF_PEERS__,
 			rapidGossipSyncUrl,
 			skipParamCheck: true, //Switch off for debugging LDK networking issues
 			lspLogEvent: async (payload) => {
@@ -337,6 +336,7 @@ export const setupLdk = async ({
 			updateLightningNodeIdThunk(),
 			updateLightningNodeVersionThunk(),
 			removeUnusedPeers({ selectedWallet, selectedNetwork }),
+			addTrustedPeers(),
 		]);
 		if (shouldRefreshLdk) {
 			const refreshRes = await refreshLdk({ selectedWallet, selectedNetwork });
@@ -1521,6 +1521,19 @@ export const getPeersFromStorage = ({
 	selectedNetwork?: EAvailableNetwork;
 }): string[] => {
 	return getLightningStore().nodes[selectedWallet].peers[selectedNetwork];
+};
+
+/**
+ * Adds trusted peers from env file as well as directly from Blocktank API
+ */
+export const addTrustedPeers = async (): Promise<Result<string>> => {
+	const btInfo = await getBlocktankInfo(true);
+	const btNodeIds = btInfo.nodes.map((n) => n.pubkey);
+
+	await lm.setTrustedZeroConfPeerNodeIds(
+		Array.from(new Set([...btNodeIds, ...__TRUSTED_ZERO_CONF_PEERS__])),
+	);
+	return ok('Trusted peers added.');
 };
 
 /**
