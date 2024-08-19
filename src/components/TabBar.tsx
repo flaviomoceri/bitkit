@@ -15,6 +15,7 @@ import { toggleBottomSheet } from '../store/utils/ui';
 import { resetSendTransaction } from '../store/actions/wallet';
 import { viewControllersSelector } from '../store/reselect/ui';
 import useColors from '../hooks/colors';
+import { useBalance } from '../hooks/wallet';
 import { useAppSelector } from '../hooks/redux';
 import { ScanIcon } from '../styles/icons';
 import { AnimatedView } from '../styles/components';
@@ -29,6 +30,7 @@ const TabBar = ({
 }): ReactElement => {
 	const { white10 } = useColors();
 	const insets = useSafeAreaInsets();
+	const { lightningBalance } = useBalance();
 	const { t } = useTranslation('wallet');
 	const viewControllers = useAppSelector(viewControllersSelector);
 
@@ -39,7 +41,8 @@ const TabBar = ({
 
 	const onReceivePress = (): void => {
 		const currentRoute = rootNavigation.getCurrenRoute();
-		if (currentRoute === 'ActivitySpending') {
+
+		if (currentRoute === 'ActivitySpending' && lightningBalance === 0) {
 			toggleBottomSheet('receiveNavigation', {
 				receiveScreen: 'ReceiveAmount',
 			});
