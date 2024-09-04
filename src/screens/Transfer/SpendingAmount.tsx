@@ -17,18 +17,24 @@ import { Display, Caption13Up } from '../../styles/text';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import NavigationHeader from '../../components/NavigationHeader';
 import NumberPadTextField from '../../components/NumberPadTextField';
+import Money from '../../components/Money';
 import Button from '../../components/buttons/Button';
+import UnitButton from '../Wallets/UnitButton';
 import TransferNumberPad from './TransferNumberPad';
 import type { TransferScreenProps } from '../../navigation/types';
 import { useAppSelector } from '../../hooks/redux';
 import { useBalance, useSwitchUnit } from '../../hooks/wallet';
+import { convertToSats } from '../../utils/conversion';
+import { showToast } from '../../utils/notifications';
+import { getNumberPadText } from '../../utils/numberpad';
+import { getDisplayValues } from '../../utils/displayValues';
+import { getMaxSendAmount } from '../../utils/wallet/transactions';
+import { transactionSelector } from '../../store/reselect/wallet';
+import { transferLimitsSelector } from '../../store/reselect/aggregations';
 import {
 	resetSendTransaction,
 	setupOnChainTransaction,
 } from '../../store/actions/wallet';
-import { convertToSats } from '../../utils/conversion';
-import { showToast } from '../../utils/notifications';
-import { getNumberPadText } from '../../utils/numberpad';
 import {
 	startChannelPurchase,
 	refreshBlocktankInfo,
@@ -39,12 +45,6 @@ import {
 	conversionUnitSelector,
 	denominationSelector,
 } from '../../store/reselect/settings';
-import UnitButton from '../Wallets/UnitButton';
-import Money from '../../components/Money';
-import { getMaxSendAmount } from '../../utils/wallet/transactions';
-import { transactionSelector } from '../../store/reselect/wallet';
-import { MAX_SPENDING_PERCENTAGE } from '../../utils/wallet/constants';
-import { blocktankInfoSelector } from '../../store/reselect/blocktank';
 
 const SpendingAmount = ({
 	navigation,
@@ -52,12 +52,12 @@ const SpendingAmount = ({
 	const { t } = useTranslation('lightning');
 	const switchUnit = useSwitchUnit();
 	const { onchainBalance } = useBalance();
-	const blocktankInfo = useAppSelector(blocktankInfoSelector);
 	const transaction = useAppSelector(transactionSelector);
 	const unit = useAppSelector(unitSelector);
 	const nextUnit = useAppSelector(nextUnitSelector);
 	const conversionUnit = useAppSelector(conversionUnitSelector);
 	const denomination = useAppSelector(denominationSelector);
+	const limits = useAppSelector(transferLimitsSelector);
 
 	const [textFieldValue, setTextFieldValue] = useState('');
 	const [loading, setLoading] = useState(false);
@@ -73,16 +73,7 @@ const SpendingAmount = ({
 		}, []),
 	);
 
-	// Calculate limits
-	const minChannelSize = blocktankInfo.options.minChannelSizeSat;
-	const maxChannelSize = blocktankInfo.options.maxChannelSizeSat;
-	const max0ConfClientBalance = blocktankInfo.options.max0ConfClientBalanceSat;
-	// 80% cap to leave buffer for fees
-	const localLimit = Math.round(onchainBalance * MAX_SPENDING_PERCENTAGE);
-	// LSP balance should be at least half of the max channel size
-	// TODO: get exact requirements from LSP
-	const lspLimit = maxChannelSize / 2;
-	const maxClientBalance = Math.min(localLimit, lspLimit);
+	const { maxChannelSize, maxClientBalance } = limits;
 
 	const clientBalance = useMemo((): number => {
 		return convertToSats(textFieldValue, conversionUnit);
@@ -105,24 +96,23 @@ const SpendingAmount = ({
 
 	const onQuarter = (): void => {
 		const quarter = Math.round(onchainBalance / 4);
-		const maxAmount = Math.min(localLimit, lspLimit);
-		const amount = Math.min(quarter, maxAmount);
+		const amount = Math.min(quarter, maxClientBalance);
 		const result = getNumberPadText(amount, denomination, unit);
 		setTextFieldValue(result);
 	};
 
 	const onMaxAmount = (): void => {
-		const maxAmount = Math.min(localLimit, lspLimit);
-		const result = getNumberPadText(maxAmount, denomination, unit);
+		const result = getNumberPadText(maxClientBalance, denomination, unit);
 		setTextFieldValue(result);
 	};
 
 	const onNumberPadError = (): void => {
+		const dv = getDisplayValues({ satoshis: maxClientBalance });
 		showToast({
 			type: 'warning',
 			title: t('spending_amount.error_max.title'),
 			description: t('spending_amount.error_max.description', {
-				amount: maxClientBalance,
+				amount: dv.bitcoinFormatted,
 			}),
 		});
 	};
@@ -130,18 +120,8 @@ const SpendingAmount = ({
 	const onContinue = async (): Promise<void> => {
 		setLoading(true);
 
-		// Aim for a balanced channel
-		let lspBalance = clientBalance;
-		// If the resulting channel is not large enough, add more to the LSP side
-		if (clientBalance + lspBalance < minChannelSize) {
-			lspBalance = minChannelSize - clientBalance;
-		}
-
-		const response = await startChannelPurchase({
-			clientBalance,
-			lspBalance,
-			zeroConfPayment: clientBalance <= max0ConfClientBalance,
-		});
+		const lspBalance = Math.round(maxChannelSize / 2);
+		const response = await startChannelPurchase({ clientBalance, lspBalance });
 
 		setLoading(false);
 
