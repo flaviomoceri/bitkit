@@ -33,6 +33,7 @@ const SavingsIntro = ({
 			description={t('savings_intro.text')}
 			image={imageSrc}
 			buttonText={t('savings_intro.button')}
+			mirrorImage={true}
 			testID="SavingsIntro"
 			onClosePress={onClose}
 			onButtonPress={onContinue}

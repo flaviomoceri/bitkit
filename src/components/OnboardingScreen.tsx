@@ -16,6 +16,7 @@ const OnboardingScreen = ({
 	buttonText,
 	displayBackButton = true,
 	disableNav = false,
+	mirrorImage = false,
 	testID,
 	onClosePress,
 	onButtonPress,
@@ -28,6 +29,7 @@ const OnboardingScreen = ({
 	buttonText: string;
 	displayBackButton?: boolean;
 	disableNav?: boolean;
+	mirrorImage?: boolean;
 	testID?: string;
 	onClosePress?: () => void;
 	onButtonPress: () => void;
@@ -51,6 +53,7 @@ const OnboardingScreen = ({
 						styles.imageContainer,
 						// eslint-disable-next-line react-native/no-inline-styles
 						{ marginBottom: imagePosition === 'center' ? 'auto' : 48 },
+						mirrorImage ? { transform: [{ rotateY: '180deg' }] } : {},
 					]}>
 					<Image style={styles.image} source={image} />
 				</View>
