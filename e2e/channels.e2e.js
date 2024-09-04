@@ -53,7 +53,7 @@ d('LN Channel Onboarding', () => {
 		// Advanced
 		// - can change amount
 
-		it('Can buy a channel via the SpendingAmount and CustomSetup', async () => {
+		it('Can buy a channel with default and custom receive capacity', async () => {
 			if (checkComplete('channels-1')) {
 				return;
 			}
@@ -99,7 +99,7 @@ d('LN Channel Onboarding', () => {
 			await element(by.id('NavigationBack')).tap();
 			await element(by.id('SpendingIntro-button')).tap();
 
-			// NumberPad
+			// can change amount
 			await element(by.id('N2').withAncestor(by.id('SpendingAmount'))).tap();
 			await element(by.id('N0').withAncestor(by.id('SpendingAmount'))).multiTap(
 				5,
@@ -116,7 +116,7 @@ d('LN Channel Onboarding', () => {
 				.toBeVisible()
 				.withTimeout(10000);
 
-			// Advanced
+			// Get another channel with custom receiving capacity
 			await element(by.id('NavigationClose')).tap();
 			await element(by.id('ActivitySavings')).tap();
 			await element(by.id('TransferToSpending')).tap();
@@ -130,13 +130,26 @@ d('LN Channel Onboarding', () => {
 			await element(by.id('SpendingConfirmAdvanced')).tap();
 
 			// Receiving Capacity
-			await element(by.id('SpendingAdvancedDefault')).tap();
-			await expect(element(by.text('100 000'))).toBeVisible();
+			// can continue with min amount
 			await element(by.id('SpendingAdvancedMin')).tap();
-			await expect(element(by.text('2 000'))).toBeVisible();
-			await element(
-				by.id('NRemove').withAncestor(by.id('SpendingAdvanced')),
-			).multiTap(5);
+			await expect(element(by.text('110 000'))).toBeVisible();
+			await element(by.id('SpendingAdvancedContinue')).tap();
+			await element(by.id('SpendingConfirmDefault')).tap();
+			await element(by.id('SpendingConfirmAdvanced')).tap();
+
+			// can continue with default amount
+			await element(by.id('SpendingAdvancedDefault')).tap();
+			await element(by.id('SpendingAdvancedContinue')).tap();
+			await element(by.id('SpendingConfirmDefault')).tap();
+			await element(by.id('SpendingConfirmAdvanced')).tap();
+
+			// can continue with max amount
+			await element(by.id('SpendingAdvancedMax')).tap();
+			await element(by.id('SpendingAdvancedContinue')).tap();
+			await element(by.id('SpendingConfirmDefault')).tap();
+			await element(by.id('SpendingConfirmAdvanced')).tap();
+
+			// can set custom amount
 			await element(by.id('N1').withAncestor(by.id('SpendingAdvanced'))).tap();
 			await element(by.id('N5').withAncestor(by.id('SpendingAdvanced'))).tap();
 			await element(

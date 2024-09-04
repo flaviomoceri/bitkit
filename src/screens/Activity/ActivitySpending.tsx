@@ -15,7 +15,7 @@ import ActivityList from './ActivityList';
 import { useBalance } from '../../hooks/wallet';
 import { useAppSelector } from '../../hooks/redux';
 import { EActivityType } from '../../store/types/activity';
-import { activityItemsSelector } from '../../store/reselect/activity';
+import { spendingOnboardingSelector } from '../../store/reselect/aggregations';
 import { WalletScreenProps } from '../../navigation/types';
 
 const imageSrc = require('../../assets/illustrations/coin-stack-x-2.png');
@@ -25,13 +25,7 @@ const ActivitySpending = ({
 }: WalletScreenProps<'ActivitySpending'>): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const { lightningBalance, balanceInTransferToSpending } = useBalance();
-	const items = useAppSelector(activityItemsSelector);
-
-	const spendingItems = useMemo(() => {
-		return items.filter((item) => {
-			return item.activityType === EActivityType.lightning;
-		});
-	}, [items]);
+	const isSpendingOnboarding = useAppSelector(spendingOnboardingSelector);
 
 	const filter = useMemo(() => {
 		return {
@@ -39,11 +33,6 @@ const ActivitySpending = ({
 			includeTransfers: true,
 		};
 	}, []);
-
-	const showOnboarding =
-		lightningBalance === 0 &&
-		spendingItems.length === 0 &&
-		!balanceInTransferToSpending;
 
 	const onTransfer = (): void => {
 		navigation.navigate('TransferRoot', { screen: 'SavingsIntro' });
@@ -87,7 +76,7 @@ const ActivitySpending = ({
 
 				<View style={styles.divider} />
 
-				{showOnboarding ? (
+				{isSpendingOnboarding ? (
 					<WalletOnboarding
 						text={
 							<Trans

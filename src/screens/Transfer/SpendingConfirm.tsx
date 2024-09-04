@@ -10,18 +10,18 @@ import NavigationHeader from '../../components/NavigationHeader';
 import SwipeToConfirm from '../../components/SwipeToConfirm';
 import Button from '../../components/buttons/Button';
 import Money from '../../components/Money';
+import LightningChannel from '../../components/LightningChannel';
 import { sleep } from '../../utils/helpers';
+import { showToast } from '../../utils/notifications';
 import { useAppSelector } from '../../hooks/redux';
+import { useSwitchUnit } from '../../hooks/wallet';
+import { TransferScreenProps } from '../../navigation/types';
+import { transactionFeeSelector } from '../../store/reselect/wallet';
+import { transferLimitsSelector } from '../../store/reselect/aggregations';
 import {
 	confirmChannelPurchase,
 	startChannelPurchase,
 } from '../../store/utils/blocktank';
-import { transactionFeeSelector } from '../../store/reselect/wallet';
-import { TransferScreenProps } from '../../navigation/types';
-import { useSwitchUnit } from '../../hooks/wallet';
-import LightningChannel from '../../components/LightningChannel';
-import { showToast } from '../../utils/notifications';
-import { blocktankInfoSelector } from '../../store/reselect/blocktank';
 
 const SpendingConfirm = ({
 	navigation,
@@ -32,9 +32,8 @@ const SpendingConfirm = ({
 	const { t } = useTranslation('lightning');
 	const [loading, setLoading] = useState(false);
 	const transactionFee = useAppSelector(transactionFeeSelector);
-	const blocktankInfo = useAppSelector(blocktankInfoSelector);
+	const limits = useAppSelector(transferLimitsSelector);
 
-	const minChannelSize = blocktankInfo.options.minChannelSizeSat;
 	const clientBalance = order.clientBalanceSat;
 	const lspBalance = order.lspBalanceSat;
 	const lspFee = order.feeSat - clientBalance;
@@ -56,19 +55,12 @@ const SpendingConfirm = ({
 	};
 
 	const onDefault = async (): Promise<void> => {
-		const { max0ConfClientBalanceSat } = blocktankInfo.options;
-
-		// Aim for a balanced channel
-		let defaultLspBalance = clientBalance;
-		// If the resulting channel is not large enough, add more to the LSP side
-		if (clientBalance + defaultLspBalance < minChannelSize) {
-			defaultLspBalance = minChannelSize - clientBalance;
-		}
+		const { maxChannelSize } = limits;
+		const defaultLspBalance = Math.round(maxChannelSize / 2);
 
 		const response = await startChannelPurchase({
 			clientBalance,
 			lspBalance: defaultLspBalance,
-			zeroConfPayment: clientBalance <= max0ConfClientBalanceSat,
 		});
 
 		if (response.isErr()) {

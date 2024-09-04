@@ -19,7 +19,8 @@ import { convertToSats } from '../../utils/conversion';
 import { showToast } from '../../utils/notifications';
 import { estimateOrderFee } from '../../utils/blocktank';
 import { getNumberPadText } from '../../utils/numberpad';
-import { blocktankInfoSelector } from '../../store/reselect/blocktank';
+import type { TransferScreenProps } from '../../navigation/types';
+import { transferLimitsSelector } from '../../store/reselect/aggregations';
 import { startChannelPurchase } from '../../store/utils/blocktank';
 import {
 	nextUnitSelector,
@@ -27,7 +28,6 @@ import {
 	conversionUnitSelector,
 	denominationSelector,
 } from '../../store/reselect/settings';
-import type { TransferScreenProps } from '../../navigation/types';
 
 const SpendingAdvanced = ({
 	navigation,
@@ -40,23 +40,18 @@ const SpendingAdvanced = ({
 	const nextUnit = useAppSelector(nextUnitSelector);
 	const conversionUnit = useAppSelector(conversionUnitSelector);
 	const denomination = useAppSelector(denominationSelector);
-	const blocktankInfo = useAppSelector(blocktankInfoSelector);
+	const limits = useAppSelector(transferLimitsSelector);
 
 	const [textFieldValue, setTextFieldValue] = useState('');
 	const [loading, setLoading] = useState(false);
-	const [feeEstimate, setFeeEstimate] = useState<{
-		[key: string]: number;
-	}>({});
+	const [feeEstimate, setFeeEstimate] = useState<{ [key: string]: number }>({});
 
-	// Calculate limits
-	const minChannelSize = blocktankInfo.options.minChannelSizeSat;
 	const clientBalance = order.clientBalanceSat;
-	const { maxChannelSizeSat, max0ConfClientBalanceSat } = blocktankInfo.options;
-	// LSP balance must be at least 1.5% of the client balance
-	const minLspBalance1 = Math.round(clientBalance * 0.02);
-	const minLspBalance2 = Math.round(minChannelSize - clientBalance);
-	const minLspBalance = Math.max(minLspBalance1, minLspBalance2);
-	const maxLspBalance = Math.round(maxChannelSizeSat - clientBalance);
+	const { minChannelSize, maxChannelSize } = limits;
+	// LSP balance should be at least half of the channel size
+	// TODO: get exact requirements from LSP
+	const minLspBalance = Math.max(minChannelSize, clientBalance);
+	const maxLspBalance = Math.round(maxChannelSize - clientBalance);
 
 	const lspBalance = useMemo((): number => {
 		return convertToSats(textFieldValue, conversionUnit);
@@ -103,13 +98,7 @@ const SpendingAdvanced = ({
 	};
 
 	const onDefault = (): void => {
-		// Aim for a balanced channel
-		let defaultLspBalance = clientBalance;
-		// If the resulting channel is not large enough, add more to the LSP side
-		if (clientBalance + defaultLspBalance < minChannelSize) {
-			defaultLspBalance = minChannelSize - clientBalance;
-		}
-
+		const defaultLspBalance = Math.round(maxChannelSize / 2);
 		const result = getNumberPadText(defaultLspBalance, denomination, unit);
 		setTextFieldValue(result);
 	};
@@ -127,16 +116,7 @@ const SpendingAdvanced = ({
 	const onContinue = async (): Promise<void> => {
 		setLoading(true);
 
-		// If the resulting channel is not large enough, add more to the LSP side
-		if (clientBalance + lspBalance < minChannelSize) {
-			console.log({ minChannelSize: minChannelSize });
-		}
-
-		const response = await startChannelPurchase({
-			clientBalance,
-			lspBalance,
-			zeroConfPayment: clientBalance <= max0ConfClientBalanceSat,
-		});
+		const response = await startChannelPurchase({ clientBalance, lspBalance });
 
 		setLoading(false);
 

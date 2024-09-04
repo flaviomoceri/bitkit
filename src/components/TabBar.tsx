@@ -14,8 +14,8 @@ import { receiveIcon, sendIcon } from '../assets/icons/tabs';
 import { toggleBottomSheet } from '../store/utils/ui';
 import { resetSendTransaction } from '../store/actions/wallet';
 import { viewControllersSelector } from '../store/reselect/ui';
+import { spendingOnboardingSelector } from '../store/reselect/aggregations';
 import useColors from '../hooks/colors';
-import { useBalance } from '../hooks/wallet';
 import { useAppSelector } from '../hooks/redux';
 import { ScanIcon } from '../styles/icons';
 import { AnimatedView } from '../styles/components';
@@ -30,9 +30,9 @@ const TabBar = ({
 }): ReactElement => {
 	const { white10 } = useColors();
 	const insets = useSafeAreaInsets();
-	const { lightningBalance } = useBalance();
 	const { t } = useTranslation('wallet');
 	const viewControllers = useAppSelector(viewControllersSelector);
+	const isSpendingOnboarding = useAppSelector(spendingOnboardingSelector);
 
 	const shouldHide = useMemo(() => {
 		const activityFilterSheets = ['timeRangePrompt', 'tagsPrompt'];
@@ -42,7 +42,8 @@ const TabBar = ({
 	const onReceivePress = (): void => {
 		const currentRoute = rootNavigation.getCurrenRoute();
 
-		if (currentRoute === 'ActivitySpending' && lightningBalance === 0) {
+		// if we are on the spending screen and the user has not yet received funds
+		if (currentRoute === 'ActivitySpending' && isSpendingOnboarding) {
 			toggleBottomSheet('receiveNavigation', {
 				receiveScreen: 'ReceiveAmount',
 			});
