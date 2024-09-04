@@ -3,6 +3,8 @@ import { lightningBalanceSelector, pendingPaymentsSelector } from './lightning';
 import { newChannelsNotificationsSelector } from './todos';
 import { onChainBalanceSelector, pendingTransfersSelector } from './wallet';
 import { createShallowEqualSelector } from './utils';
+import { activityItemsSelector } from './activity';
+import { EActivityType } from '../types/activity';
 
 export type TBalance = {
 	/** Total onchain funds */
@@ -82,5 +84,30 @@ export const balanceSelector = createShallowEqualSelector(
 			balanceInTransferToSavings: claimableBalance,
 			totalBalance,
 		};
+	},
+);
+// Determine if the onboarding text is shown on the ActivitySpending screen
+export const spendingOnboardingSelector = createShallowEqualSelector(
+	[lightningBalanceSelector, pendingTransfersSelector, activityItemsSelector],
+	(lightningBalance, pendingTransfers, activityItems): boolean => {
+		const { spendingBalance } = lightningBalance;
+
+		let inTransferToSpending = pendingTransfers.reduce((acc, transfer) => {
+			if (transfer.type === ETransferType.open) {
+				acc += transfer.amount;
+			}
+			return acc;
+		}, 0);
+
+		const spendingItems = activityItems.filter((item) => {
+			return item.activityType === EActivityType.lightning;
+		});
+
+		const isOnboarding =
+			spendingBalance === 0 &&
+			spendingItems.length === 0 &&
+			!inTransferToSpending;
+
+		return isOnboarding;
 	},
 );
