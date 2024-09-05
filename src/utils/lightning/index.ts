@@ -1115,6 +1115,9 @@ export const addPeers = async ({
 	selectedNetwork?: EAvailableNetwork;
 } = {}): Promise<Result<string[]>> => {
 	try {
+		//Connect to any existing persisted peers.
+		await lm.addPeers();
+
 		const geoBlocked = await isGeoBlocked(true);
 
 		let blocktankNodeUris: string[] = [];
@@ -1140,6 +1143,7 @@ export const addPeers = async ({
 			...blocktankLightningPeers,
 			...customLightningPeers,
 		];
+
 		const addPeerRes = await Promise.all(
 			peers.map(async (peer) => {
 				const addPeerResponse = await addPeer({
@@ -1594,8 +1598,6 @@ export const removeUnusedPeers = async ({
 				}).then();
 
 				removedCount++;
-
-				console.error(`Removed unused peer: ${peerStr}`);
 			}
 		}),
 	);
