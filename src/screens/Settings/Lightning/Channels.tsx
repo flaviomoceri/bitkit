@@ -507,9 +507,8 @@ const Channels = ({
 						/>
 						<Button
 							style={styles.devButton}
-							text={'Remove unused peers'}
+							text="Remove unused peers"
 							onPress={onRemoveUnusedPeers}
-							testID="AddPeerButton"
 						/>
 						<Button
 							style={styles.devButton}
