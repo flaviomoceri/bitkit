@@ -335,7 +335,6 @@ export const setupLdk = async ({
 		await Promise.all([
 			updateLightningNodeIdThunk(),
 			updateLightningNodeVersionThunk(),
-			removeUnusedPeers({ selectedWallet, selectedNetwork }),
 			addTrustedPeers(),
 		]);
 		if (shouldRefreshLdk) {
@@ -1575,6 +1574,8 @@ export const removeUnusedPeers = async ({
 	const blocktankPubKeys = blocktankInfo.nodes.map((n) => n.pubkey);
 	const peers = await lm.getPeers();
 
+	let removedCount = 0;
+
 	await Promise.all(
 		peers.map((peer) => {
 			if (
@@ -1591,10 +1592,14 @@ export const removeUnusedPeers = async ({
 					address: peer.address,
 					port: peer.port,
 				}).then();
+
+				removedCount++;
+
+				console.error(`Removed unused peer: ${peerStr}`);
 			}
 		}),
 	);
-	return ok('Unused peers removed.');
+	return ok(`${removedCount} unused peers removed.`);
 };
 
 /**

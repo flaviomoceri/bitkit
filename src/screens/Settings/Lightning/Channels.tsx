@@ -45,6 +45,7 @@ import {
 	recoverOutputsFromForceClose,
 	refreshLdk,
 	setupLdk,
+	removeUnusedPeers,
 } from '../../../utils/lightning';
 import { showToast } from '../../../utils/notifications';
 import {
@@ -349,6 +350,23 @@ const Channels = ({
 		});
 	}, [peer, selectedNetwork, selectedWallet, t]);
 
+	const onRemoveUnusedPeers = useCallback(async () => {
+		const res = await removeUnusedPeers({ selectedWallet, selectedNetwork });
+		if (res.isErr()) {
+			showToast({
+				type: 'warning',
+				title: 'No unused peers removed',
+				description: res.error.message,
+			});
+		} else {
+			showToast({
+				type: 'info',
+				title: 'Removed unused peers',
+				description: res.value,
+			});
+		}
+	}, [selectedNetwork, selectedWallet]);
+
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
@@ -486,6 +504,11 @@ const Channels = ({
 							}
 							onPress={onAddPeer}
 							testID="AddPeerButton"
+						/>
+						<Button
+							style={styles.devButton}
+							text="Remove unused peers"
+							onPress={onRemoveUnusedPeers}
 						/>
 						<Button
 							style={styles.devButton}
