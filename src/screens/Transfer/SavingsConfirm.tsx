@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		resizeMode: 'contain',
 		width: 256,
+		transform: [{ rotateY: '180deg' }],
 	},
 	buttonContainer: {
 		marginTop: 'auto',

@@ -1,48 +1,43 @@
 import React, { ReactElement, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { View as ThemedView, TouchableOpacity } from '../../styles/components';
-import { BodySB, Caption13Up, Display } from '../../styles/text';
+import { View as ThemedView } from '../../styles/components';
+import { Caption13Up, Display } from '../../styles/text';
 import { LightningIcon } from '../../styles/icons';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import NavigationHeader from '../../components/NavigationHeader';
 import SwipeToConfirm from '../../components/SwipeToConfirm';
 import Button from '../../components/buttons/Button';
 import Money from '../../components/Money';
+import LightningChannel from '../../components/LightningChannel';
 import { sleep } from '../../utils/helpers';
+import { showToast } from '../../utils/notifications';
 import { useAppSelector } from '../../hooks/redux';
+import { TransferScreenProps } from '../../navigation/types';
+import { transactionFeeSelector } from '../../store/reselect/wallet';
+import { transferLimitsSelector } from '../../store/reselect/aggregations';
 import {
 	confirmChannelPurchase,
 	startChannelPurchase,
 } from '../../store/utils/blocktank';
-import { transactionFeeSelector } from '../../store/reselect/wallet';
-import { TransferScreenProps } from '../../navigation/types';
-import { useSwitchUnit } from '../../hooks/wallet';
-import LightningChannel from '../../components/LightningChannel';
-import { showToast } from '../../utils/notifications';
-import { blocktankInfoSelector } from '../../store/reselect/blocktank';
+
+const image = require('../../assets/illustrations/coin-stack-x.png');
 
 const SpendingConfirm = ({
 	navigation,
 	route,
 }: TransferScreenProps<'SpendingConfirm'>): ReactElement => {
 	const { order, advanced } = route.params;
-	const switchUnit = useSwitchUnit();
 	const { t } = useTranslation('lightning');
 	const [loading, setLoading] = useState(false);
 	const transactionFee = useAppSelector(transactionFeeSelector);
-	const blocktankInfo = useAppSelector(blocktankInfoSelector);
+	const limits = useAppSelector(transferLimitsSelector);
 
-	const minChannelSize = blocktankInfo.options.minChannelSizeSat;
 	const clientBalance = order.clientBalanceSat;
 	const lspBalance = order.lspBalanceSat;
 	const lspFee = order.feeSat - clientBalance;
 	const totalFee = order.feeSat + transactionFee;
-
-	const channelSize = clientBalance + lspBalance;
-	const remoteReserve = channelSize / 100;
-	const remoteBalance = Math.round(channelSize - clientBalance - remoteReserve);
 
 	const onMore = (): void => {
 		navigation.navigate('Liquidity', {
@@ -56,19 +51,12 @@ const SpendingConfirm = ({
 	};
 
 	const onDefault = async (): Promise<void> => {
-		const { max0ConfClientBalanceSat } = blocktankInfo.options;
-
-		// Aim for a balanced channel
-		let defaultLspBalance = clientBalance;
-		// If the resulting channel is not large enough, add more to the LSP side
-		if (clientBalance + defaultLspBalance < minChannelSize) {
-			defaultLspBalance = minChannelSize - clientBalance;
-		}
+		const { maxChannelSize } = limits;
+		const defaultLspBalance = Math.round(maxChannelSize / 2);
 
 		const response = await startChannelPurchase({
 			clientBalance,
 			lspBalance: defaultLspBalance,
-			zeroConfPayment: clientBalance <= max0ConfClientBalanceSat,
 		});
 
 		if (response.isErr()) {
@@ -113,18 +101,6 @@ const SpendingConfirm = ({
 					/>
 				</Display>
 
-				<View style={styles.amount}>
-					<Caption13Up style={styles.amountLabel} color="secondary">
-						{t('spending_confirm.label')}
-					</Caption13Up>
-
-					<TouchableOpacity
-						testID="SpendingAdvancedAmount"
-						onPress={switchUnit}>
-						<Money sats={clientBalance} size="display" symbol={true} />
-					</TouchableOpacity>
-				</View>
-
 				<View style={styles.fees}>
 					<View style={styles.feesRow}>
 						<View style={styles.feeItem}>
@@ -143,17 +119,15 @@ const SpendingConfirm = ({
 					<View style={styles.feesRow}>
 						<View style={styles.feeItem}>
 							<Caption13Up style={styles.feeItemLabel} color="secondary">
-								{t('spending_confirm.total_fee')}
+								{t('spending_confirm.amount')}
 							</Caption13Up>
-							<Money sats={totalFee} size="bodySSB" symbol={true} />
+							<Money sats={clientBalance} size="bodySSB" symbol={true} />
 						</View>
 						<View style={styles.feeItem}>
 							<Caption13Up style={styles.feeItemLabel} color="secondary">
-								{t('spending_confirm.duration')}
+								{t('spending_confirm.total')}
 							</Caption13Up>
-							<BodySB>
-								{order.channelExpiryWeeks} {t('spending_confirm.weeks')}
-							</BodySB>
+							<Money sats={totalFee} size="bodySSB" symbol={true} />
 						</View>
 					</View>
 				</View>
@@ -163,9 +137,10 @@ const SpendingConfirm = ({
 						style={styles.channel}
 						capacity={clientBalance + lspBalance}
 						localBalance={clientBalance}
-						remoteBalance={remoteBalance}
+						remoteBalance={lspBalance}
 						status="open"
 						showLabels={true}
+						testID="SpendingConfirmChannel"
 					/>
 				)}
 
@@ -189,6 +164,12 @@ const SpendingConfirm = ({
 						/>
 					)}
 				</View>
+
+				{!advanced && (
+					<View style={styles.imageContainer}>
+						<Image style={styles.image} source={image} />
+					</View>
+				)}
 
 				<View style={styles.buttonContainer}>
 					<SwipeToConfirm
@@ -215,12 +196,6 @@ const styles = StyleSheet.create({
 		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
-	amountLabel: {
-		marginBottom: 16,
-	},
-	amount: {
-		marginTop: 32,
-	},
 	fees: {
 		marginTop: 25,
 		gap: 16,
@@ -245,6 +220,18 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		gap: 16,
 		marginTop: 16,
+	},
+	imageContainer: {
+		flexShrink: 1,
+		alignItems: 'center',
+		alignSelf: 'center',
+		width: 256,
+		aspectRatio: 1,
+		marginTop: 'auto',
+	},
+	image: {
+		flex: 1,
+		resizeMode: 'contain',
 	},
 	buttonContainer: {
 		marginTop: 'auto',
