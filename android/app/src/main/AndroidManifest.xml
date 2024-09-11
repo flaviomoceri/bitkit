@@ -20,6 +20,9 @@
   <uses-permission
     tools:node="remove"
     android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+  <uses-permission
+    tools:node="remove"
+    android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
   <uses-feature android:name="android.hardware.nfc" android:required="false" />
 
