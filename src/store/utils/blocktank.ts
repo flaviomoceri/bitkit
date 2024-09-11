@@ -485,7 +485,7 @@ export const scheduleNotifications = async (): Promise<void> => {
 
 		const options = {
 			title: i18n.t('other:transfer_notification.title'),
-			body: i18n.t('other:transfer_notification.description'),
+			body: i18n.t('other:transfer_notification.body'),
 			android: {
 				channelId,
 				smallIcon: 'ic_launcher_transparent',
