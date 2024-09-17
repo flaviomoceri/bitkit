@@ -327,6 +327,9 @@
     "authorizing": {
       "string": "Authorizing..."
     },
+    "success": {
+      "string": "Success"
+    },
     "claims": {
       "string": "This service claims to be"
     },

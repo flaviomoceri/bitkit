@@ -1,4 +1,4 @@
-import React, { memo, ReactElement, useEffect } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +17,8 @@ import { getPubkySecretKey } from '../../utils/pubky';
 import { showToast } from '../../utils/notifications.ts';
 import { dispatch } from '../../store/helpers.ts';
 import { closeSheet } from '../../store/slices/ui.ts';
+import { CheckCircleIcon } from '../../styles/icons.ts';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 const defaultParsedUrl: PubkyAuthDetails = {
 	relay: '',
@@ -66,11 +68,7 @@ const PubkyAuth = (): ReactElement => {
 		};
 	}, [url]);
 
-	const onDeny = (): void => {
-		dispatch(closeSheet('pubkyAuth'));
-	};
-
-	const onAuthorize = async (): Promise<void> => {
+	const onAuthorize = useMemo(() => async (): Promise<void> => {
 		try {
 			setAuthorizing(true);
 			const secretKey = await getPubkySecretKey();
@@ -103,7 +101,52 @@ const PubkyAuth = (): ReactElement => {
 			});
 			setAuthorizing(false);
 		}
-	};
+	}, [t, url]);
+
+	const onClose = useMemo(() => (): void => {
+		dispatch(closeSheet('pubkyAuth'));
+	}, []);
+
+	const Buttons = useCallback(() => {
+		if (authSuccess) {
+			return (
+				<Button
+					style={styles.authorizeButton}
+					text={t('authorization.success')}
+					size="large"
+					onPress={onClose}
+				/>
+			);
+		}
+		return (
+			<>
+				<Button
+					style={styles.closeButton}
+					text={t('authorization.deny')}
+					size="large"
+					onPress={onClose}
+				/>
+				<Button
+					loading={authorizing}
+					style={styles.authorizeButton}
+					text={authorizing ? t('authorization.authorizing') : t('authorization.authorize')}
+					size="large"
+					onPress={onAuthorize}
+				/>
+			</>
+		);
+	}, [authSuccess, authorizing, onAuthorize, onClose, t]);
+
+	const SuccessCircle = useCallback(() => {
+		if (authSuccess) {
+			return (
+				<Animated.View style={styles.circleIcon} entering={FadeIn}>
+					<CheckCircleIcon color="green" height={60} width={60} />
+				</Animated.View>
+			);
+		}
+		return null;
+	}, [authSuccess]);
 
 	return (
 		<BottomSheetWrapper view="pubkyAuth" snapPoints={snapPoints}>
@@ -133,20 +176,10 @@ const PubkyAuth = (): ReactElement => {
 
 				<View style={styles.buffer} />
 
+				{SuccessCircle()}
+
 				<View style={styles.buttonContainer}>
-					<Button
-						style={styles.denyButton}
-						text={t('authorization.deny')}
-						size="large"
-						onPress={onDeny}
-					/>
-					<Button
-						loading={authorizing}
-						style={styles.authorizeButton}
-						text={authorizing ? t('authorization.authorizing') : t('authorization.authorize')}
-						size="large"
-						onPress={onAuthorize}
-					/>
+					{Buttons()}
 				</View>
 				<SafeAreaInset type="bottom" minPadding={16} />
 			</View>
@@ -168,7 +201,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		margin: 5,
 	},
-	denyButton: {
+	closeButton: {
 		flex: 1,
 		margin: 5,
 		backgroundColor: 'black',
@@ -180,6 +213,11 @@ const styles = StyleSheet.create({
 	row: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
+	},
+	circleIcon: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 });
 
