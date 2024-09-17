@@ -14,6 +14,7 @@ import PINNavigation from './PINNavigation';
 import ReceiveNavigation from './ReceiveNavigation';
 import SendNavigation from './SendNavigation';
 import TreasureHuntNavigation from './TreasureHuntNavigation';
+import PubkyAuth from './PubkyAuth.tsx';
 
 const BottomSheets = (): JSX.Element => {
 	const views = useAppSelector(viewControllersSelector);
@@ -31,6 +32,7 @@ const BottomSheets = (): JSX.Element => {
 			{views.receiveNavigation.isMounted && <ReceiveNavigation />}
 			{views.sendNavigation.isMounted && <SendNavigation />}
 			{views.treasureHunt.isMounted && <TreasureHuntNavigation />}
+			{views.pubkyAuth.isMounted && <PubkyAuth />}
 		</>
 	);
 };

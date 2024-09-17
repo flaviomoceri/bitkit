@@ -296,17 +296,23 @@ export const generateAddresses = async ({
 /**
  * Returns private key for the provided address data.
  * @param {IAddress} addressData
+ * @param {string} path
  * @param {EAvailableNetwork} [selectedNetwork]
  * @return {Promise<Result<string>>}
  */
 export const getPrivateKey = async ({
 	addressData,
+	path,
 	selectedNetwork = getSelectedNetwork(),
 }: {
-	addressData: IAddress;
+	addressData?: IAddress;
+	path?: string;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	try {
+		if (!addressData && !path) {
+			return err('No address data or path specified.');
+		}
 		if (!addressGenerator) {
 			const res = await setupAddressGenerator({});
 			if (res.isErr()) {
@@ -317,7 +323,7 @@ export const getPrivateKey = async ({
 			}
 		}
 		return await addressGenerator.getPrivateKey({
-			path: addressData.path,
+			path: path ?? addressData?.path,
 			selectedNetwork,
 		});
 	} catch (e) {

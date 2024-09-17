@@ -310,5 +310,40 @@
   },
   "wiped_message": {
     "string": "Bitkit has been reset and all wallet data has been deleted."
+  },
+  "authorization": {
+    "title": {
+      "string": "Authorization"
+    },
+    "description": {
+      "string": "Make sure you trust this service before granting permission to manage your data."
+    },
+    "authorize": {
+      "string": "Authorize"
+    },
+    "deny": {
+      "string": "Deny"
+    },
+    "authorizing": {
+      "string": "Authorizing..."
+    },
+    "claims": {
+      "string": "This service claims to be"
+    },
+    "requested_permissions": {
+      "string": "Requested Permissions"
+    },
+    "pubky_secret_error_title": {
+      "string": "Pubky Error"
+    },
+    "pubky_secret_error_description": {
+      "string": "Unable to retrieve Pubky key"
+    },
+    "pubky_auth_error_title": {
+        "string": "Pubky Auth Error"
+        },
+    "pubky_auth_error_description": {
+        "string": "Unable to auth with Pubky service"
+    }
   }
 }
