@@ -23,6 +23,8 @@ jobs:
 
       - name: Install Node.js dependencies
         run: yarn install || yarn install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_READ }}
 
       - name: Type check
         run: yarn tsc:check

@@ -34,6 +34,8 @@ jobs:
 
       - name: Install Node.js dependencies
         run: yarn install || yarn install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_READ }}
 
       - name: Activate enviroment variables
         run: cp .env.development.template .env

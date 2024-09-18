@@ -23,6 +23,8 @@ jobs:
 
       - name: Install Node.js dependencies
         run: yarn install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_READ }}
 
       - name: Lint check
         run: yarn lint:check
