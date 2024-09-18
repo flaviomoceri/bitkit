@@ -75,8 +75,8 @@ const PubkyAuth = (): ReactElement => {
 			if (secretKey.isErr()) {
 				showToast({
 					type: 'error',
-					title: t('pubky_secret_error_title'),
-					description: t('pubky_secret_error_description'),
+					title: t('authorization.pubky_secret_error_title'),
+					description: t('authorization.pubky_secret_error_description'),
 				});
 				setAuthorizing(false);
 				return;
@@ -85,8 +85,8 @@ const PubkyAuth = (): ReactElement => {
 			if (authRes.isErr()) {
 				showToast({
 					type: 'error',
-					title: t('pubky_auth_error_title'),
-					description: t('pubky_auth_error_description'),
+					title: t('authorization.pubky_auth_error_title'),
+					description: t('authorization.pubky_auth_error_description'),
 				});
 				setAuthorizing(false);
 				return;
@@ -96,7 +96,7 @@ const PubkyAuth = (): ReactElement => {
 		} catch (e) {
 			showToast({
 				type: 'error',
-				title: t('pubky_auth_error_title'),
+				title: t('authorization.pubky_auth_error_title'),
 				description: JSON.stringify(e),
 			});
 			setAuthorizing(false);
