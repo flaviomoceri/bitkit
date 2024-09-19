@@ -21,10 +21,13 @@ jobs:
           node-version: 20
           cache: 'yarn'
 
-      - name: Configure npm authentication
+      - name: Configure npm authentication for Yarn
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPMJS_READ }}" > ~/.npmrc
+          # Ensure Yarn uses the npm registry for @synonymdev scope
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPMJS_READ_RN_PUBKY }}" > ~/.npmrc
           echo "@synonymdev:registry=https://registry.npmjs.org/" >> ~/.npmrc
+          # Optional: Verify .npmrc configuration for troubleshooting
+          cat ~/.npmrc
 
       - name: Install Node.js dependencies
         run: yarn install || yarn install
