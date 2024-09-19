@@ -21,10 +21,13 @@ jobs:
           node-version: 20
           cache: 'yarn'
 
+      - name: Configure npm authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPMJS_READ }}" > ~/.npmrc
+          echo "@synonymdev:registry=https://registry.npmjs.org/" >> ~/.npmrc
+
       - name: Install Node.js dependencies
         run: yarn install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_READ }}
 
       - name: Lint check
         run: yarn lint:check
