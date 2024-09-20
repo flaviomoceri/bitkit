@@ -40,6 +40,29 @@ type PubkyAuthDetails = {
 	secret: string;
 };
 
+const Permission = memo(({ capability, authSuccess }: { capability: Capability; authSuccess: boolean }): ReactElement => {
+	return (
+		<View style={styles.row}>
+			<View style={styles.path}>
+				<CaptionB color={authSuccess ? 'green' : 'red'}>{capability.path}</CaptionB>
+			</View>
+			<View style={styles.permissionsRow}>
+				<View style={styles.permission}>
+					{capability.permission.includes('r') && (
+						<CaptionB color={authSuccess ? 'green' : 'red'}>Read</CaptionB>
+
+					)}
+				</View>
+				<View style={styles.permission}>
+					{capability.permission.includes('w') && (
+						<CaptionB color={authSuccess ? 'green' : 'red'}>Write</CaptionB>
+					)}
+				</View>
+			</View>
+		</View>
+	);
+});
+
 const PubkyAuth = (): ReactElement => {
 	const { t } = useTranslation('security');
 	const snapPoints = useSnapPoints('medium');
@@ -164,14 +187,9 @@ const PubkyAuth = (): ReactElement => {
 
 				<View style={styles.buffer} />
 
-				<Text13UP color="secondary">{t('requested_permissions')}</Text13UP>
+				<Text13UP color="secondary">{t('authorization.requested_permissions')}</Text13UP>
 				{parsed.capabilities.map((capability) => {
-					return (
-						<View style={styles.row}>
-							<CaptionB color={authSuccess ? 'green' : 'red'}>{capability.path}</CaptionB>
-							<CaptionB color={authSuccess ? 'green' : 'red'}>{capability.permission}</CaptionB>
-						</View>
-					);
+					return <Permission capability={capability} authSuccess={authSuccess} />;
 				})}
 
 				<View style={styles.buffer} />
@@ -191,6 +209,9 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		marginHorizontal: 32,
+	},
+	path: {
+		flex: 3,
 	},
 	buttonContainer: {
 		marginTop: 'auto',
@@ -213,6 +234,14 @@ const styles = StyleSheet.create({
 	row: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
+	},
+	permission: {
+		flex: 1,
+	},
+	permissionsRow: {
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-around',
 	},
 	circleIcon: {
 		flex: 1,

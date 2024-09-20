@@ -1,5 +1,5 @@
 import {
-	getPrivateKey,
+	getPrivateKeyFromPath,
 	getSelectedNetwork,
 } from '../wallet';
 import { EAvailableNetwork } from '../networks.ts';
@@ -16,7 +16,7 @@ export const getPubkySecretKey = async ({
 	switch (version) {
 		case 1:
 			// TODO: Update path/key derivation accordingly
-			const privateKey = await getPrivateKey({ path: "m/184'/0'/0'/0/0", selectedNetwork });
+			const privateKey = await getPrivateKeyFromPath({ path: "m/184'/0'/0'/0/0", selectedNetwork });
 			if (privateKey.isErr()) {
 				return err(privateKey.error.message);
 			}
