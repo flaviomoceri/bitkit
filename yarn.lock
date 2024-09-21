@@ -4968,15 +4968,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@synonymdev/react-native-pubky@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "@synonymdev/react-native-pubky@npm:0.2.3"
+"@synonymdev/react-native-pubky@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@synonymdev/react-native-pubky@npm:0.3.0"
   dependencies:
     "@synonymdev/result": ^0.0.2
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: b5d893f8d80a7e5cccb1bebaa26ba4444182dc6194e7ebac9c0991d0aa2f74d1d53de1eb711692c2ac52541da6921e618be38ebf013e697c52e20a0560befe27
+  checksum: 9b77b129cc840ea6f4d0f297aaaf096b25ca8ac18ee0db567f015d6cba42de1b91505a8ccd3ebf141369298514392e02c41001fba7a259f441dd9c8a32fa2970
   languageName: node
   linkType: hard
 
@@ -6608,7 +6608,7 @@ __metadata:
     "@synonymdev/react-native-keychain": 8.2.2
     "@synonymdev/react-native-ldk": 0.0.152
     "@synonymdev/react-native-lnurl": 0.0.10
-    "@synonymdev/react-native-pubky": ^0.2.3
+    "@synonymdev/react-native-pubky": ^0.3.0
     "@synonymdev/result": 0.0.2
     "@synonymdev/slashtags-keychain": 1.0.0
     "@synonymdev/slashtags-profile": 2.0.0
