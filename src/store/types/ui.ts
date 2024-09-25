@@ -20,6 +20,7 @@ export type ViewControllerParamList = {
 	orangeTicket: { ticketId: string };
 	PINNavigation: { showLaterButton: boolean };
 	profileAddDataForm: undefined;
+	pubkyAuth: { url: string };
 	receiveNavigation: { receiveScreen: keyof ReceiveStackParamList } | undefined;
 	sendNavigation:
 		| { screen: keyof SendStackParamList }

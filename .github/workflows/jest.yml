@@ -30,7 +30,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'yarn'
+
+      - name: Configure npm authentication
+        run: |
+          echo "" >> .yarnrc.yml
+          echo "npmScopes:" >> .yarnrc.yml
+          echo "  synonymdev:" >> .yarnrc.yml
+          echo '    npmAuthToken: "${{ secrets.NPMJS_READ_RN_PUBKY }}"' >> .yarnrc.yml
 
       - name: Install Node.js dependencies
         run: yarn install || yarn install

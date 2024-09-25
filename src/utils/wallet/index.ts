@@ -296,6 +296,7 @@ export const generateAddresses = async ({
 /**
  * Returns private key for the provided address data.
  * @param {IAddress} addressData
+ * @param {string} path
  * @param {EAvailableNetwork} [selectedNetwork]
  * @return {Promise<Result<string>>}
  */
@@ -303,26 +304,44 @@ export const getPrivateKey = async ({
 	addressData,
 	selectedNetwork = getSelectedNetwork(),
 }: {
-	addressData: IAddress;
+	addressData?: IAddress;
 	selectedNetwork?: EAvailableNetwork;
 }): Promise<Result<string>> => {
 	try {
-		if (!addressGenerator) {
-			const res = await setupAddressGenerator({});
-			if (res.isErr()) {
-				return err(res.error.message);
-			}
-			if (!addressGenerator) {
-				return err('Unable to setup address generator.');
-			}
-		}
-		return await addressGenerator.getPrivateKey({
-			path: addressData.path,
+		return await getPrivateKeyFromPath({
+			path: addressData?.path,
 			selectedNetwork,
 		});
 	} catch (e) {
 		return err(e);
 	}
+};
+
+export const getPrivateKeyFromPath = async ({
+	path,
+	selectedNetwork = getSelectedNetwork(),
+}: {
+	path?: string;
+	selectedNetwork?: EAvailableNetwork;
+}): Promise<Result<string>> => {
+	if (!path) {
+		return err('No address path specified.');
+	}
+	if (!addressGenerator) {
+		const res = await setupAddressGenerator({
+			selectedNetwork,
+		});
+		if (res.isErr()) {
+			return err(res.error.message);
+		}
+		if (!addressGenerator) {
+			return err('Unable to setup address generator.');
+		}
+	}
+	return await addressGenerator.getPrivateKey({
+		path,
+		selectedNetwork,
+	});
 };
 
 const slashtagsPrimaryKeyKeyChainName = (seedHash: string = ''): string =>

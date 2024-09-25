@@ -63,6 +63,7 @@ export enum EQRDataType {
 	slashFeedURL = 'slashFeedURL',
 	nodeId = 'nodeId',
 	treasureHunt = 'treasureHunt',
+	pubkyAuth = 'pubkyAuth',
 	//TODO add xpub, lightning node peer etc
 }
 
@@ -82,7 +83,8 @@ export type QRData =
 	| TSlashTagUrl
 	| TSlashAuthUrl
 	| TSlashFeedUrl
-	| TTreasureChestUrl;
+	| TTreasureChestUrl
+	| TPubkyAuthUrl;
 
 export type TBitcoinUrl = {
 	qrDataType: EQRDataType.bitcoinAddress;
@@ -149,6 +151,11 @@ export type TSlashFeedUrl = {
 export type TTreasureChestUrl = {
 	qrDataType: EQRDataType.treasureHunt;
 	chestId: string;
+};
+
+export type TPubkyAuthUrl = {
+	qrDataType: EQRDataType.pubkyAuth;
+	url: string;
 };
 
 /**
@@ -379,6 +386,11 @@ export const decodeQRData = async (
 		return ok([{ qrDataType: EQRDataType.slashtagURL, url: data }]);
 	} else if (data.startsWith('slashfeed:')) {
 		return ok([{ qrDataType: EQRDataType.slashFeedURL, url: data }]);
+	}
+
+	// Pubky Auth
+	if (data.startsWith('pubkyauth:')) {
+		return ok([{ qrDataType: EQRDataType.pubkyAuth, url: data }]);
 	}
 
 	let foundNetworksInQR: (
@@ -1041,6 +1053,12 @@ export const handleData = async ({
 		case EQRDataType.treasureHunt: {
 			showBottomSheet('treasureHunt', { chestId: data.chestId });
 			return ok({ type: EQRDataType.treasureHunt });
+		}
+
+		case EQRDataType.pubkyAuth: {
+			const { url } = data;
+			showBottomSheet('pubkyAuth', { url });
+			return ok({ type: EQRDataType.pubkyAuth });
 		}
 
 		default:
