@@ -62,6 +62,13 @@ jobs:
         with:
           node-version: 20
 
+      - name: Configure npm authentication
+        run: |
+          echo "" >> .yarnrc.yml
+          echo "npmScopes:" >> .yarnrc.yml
+          echo "  synonymdev:" >> .yarnrc.yml
+          echo '    npmAuthToken: "${{ secrets.NPMJS_READ_RN_PUBKY }}"' >> .yarnrc.yml
+
       - name: Use gradle caches
         uses: actions/cache@v4
         with:

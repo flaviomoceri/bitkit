@@ -53,6 +53,13 @@ jobs:
       - name: Activate enviroment variables
         run: cp .env.test.template .env
 
+      - name: Configure npm authentication
+        run: |
+          echo "" >> .yarnrc.yml
+          echo "npmScopes:" >> .yarnrc.yml
+          echo "  synonymdev:" >> .yarnrc.yml
+          echo '    npmAuthToken: "${{ secrets.NPMJS_READ_RN_PUBKY }}"' >> .yarnrc.yml
+
       - name: Yarn Install
         run: yarn --no-audit --prefer-offline || yarn --no-audit --prefer-offline || yarn
         env:
