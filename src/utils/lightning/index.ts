@@ -1014,7 +1014,7 @@ export const getNodeIdFromStorage = (): string => {
 };
 
 /**
- * Parses a lightning uri.
+ * Parses a node connection URI.
  * @param {string} str
  * @returns {{ publicKey: string; ip: string; port: number; }}
  */
@@ -1036,11 +1036,7 @@ export const parseUri = (
 	}
 	const ip = parsed[0];
 	const port = Number(parsed[1]);
-	return ok({
-		publicKey,
-		ip,
-		port,
-	});
+	return ok({ publicKey, ip, port });
 };
 
 /**
