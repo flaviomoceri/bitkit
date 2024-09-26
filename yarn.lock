@@ -6695,7 +6695,7 @@ __metadata:
     react-native-svg-transformer: ^1.3.0
     react-native-tcp-socket: 6.0.6
     react-native-toast-message: 2.2.0
-    react-native-zip-archive: 6.1.0
+    react-native-zip-archive: 7.0.1
     react-redux: 9.1.2
     reactotron-react-native: ^5.1.6
     reactotron-react-native-mmkv: ^0.2.6
@@ -14606,13 +14606,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-zip-archive@npm:6.1.0":
-  version: 6.1.0
-  resolution: "react-native-zip-archive@npm:6.1.0"
+"react-native-zip-archive@npm:7.0.1":
+  version: 7.0.1
+  resolution: "react-native-zip-archive@npm:7.0.1"
   peerDependencies:
     react: ">=16.8.6"
     react-native: ">=0.60.0"
-  checksum: bb329e3dde9550a1ca51076034f912c1210df8c1697c8522329a16bd1980c9084dc29c3fda52418b1c6bf8423cca7dec3d0f8a7f6f999278a4111f07d7cdbb80
+  checksum: 2f7747d2ed903102e0d097921d1a019311f0c23c9ceb15304c39d699fba380e60b70cb1474b1fb516d114514af2a3c8a88ee5690f83d0a92d87500d095ba2b39
   languageName: node
   linkType: hard
 
