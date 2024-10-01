@@ -1,6 +1,7 @@
 import { EmitterSubscription } from 'react-native';
 import Keychain from '@synonymdev/react-native-keychain';
 import * as bitcoin from 'bitcoinjs-lib';
+import ecc from '@bitcoinerlab/secp256k1';
 import RNFS from 'react-native-fs';
 import { err, ok, Result } from '@synonymdev/result';
 import { EPaymentType, TGetAddressHistory } from 'beignet';
@@ -1039,6 +1040,23 @@ export const parseUri = (
 	return ok({ publicKey, ip, port });
 };
 
+const isValidLightningNodePublicKey = (pubkey: string): boolean => {
+	const pubkeyBytes = new Uint8Array(Buffer.from(pubkey, 'hex'));
+	if (pubkeyBytes.length !== 33) {
+		return false;
+	}
+
+	if (!ecc.isPoint(pubkeyBytes)) {
+		return false;
+	}
+
+	if (!ecc.isPointCompressed(pubkeyBytes)) {
+		return false;
+	}
+
+	return true;
+};
+
 /**
  * Prompt LDK to add a specified peer.
  * @param {string} peer
@@ -1054,6 +1072,10 @@ export const addPeer = async ({
 	const parsedUri = parseUri(peer);
 	if (parsedUri.isErr()) {
 		return err(parsedUri.error.message);
+	}
+
+	if (!isValidLightningNodePublicKey(parsedUri.value.publicKey)) {
+		return err(i18n.t('lightning:error_add_msg'));
 	}
 
 	const res = await lm.addPeer({
