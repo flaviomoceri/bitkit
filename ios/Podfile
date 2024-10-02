@@ -10,6 +10,13 @@ end
 node_require('react-native/scripts/react_native_pods.rb')
 node_require('react-native-permissions/scripts/setup.rb')
 
+# Read min iOS version from Xcode project and set as min iOS version for Podfile
+require 'xcodeproj'
+project_path = File.expand_path('bitkit.xcodeproj', __dir__)
+project = Xcodeproj::Project.open(project_path)
+min_ios_version_supported = project.build_configurations.first.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+puts "Set minimum iOS version supported using Xcode project: #{min_ios_version_supported}"
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
@@ -27,8 +34,6 @@ if linkage != nil
 end
 
 target 'bitkit' do
-  # lock OpenSSL otherwise it breaks react-native-quick-crypto
-  pod "OpenSSL-Universal", "= 1.1.1100"
   config = use_native_modules!
 
   use_react_native!(
