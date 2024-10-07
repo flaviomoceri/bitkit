@@ -1075,7 +1075,7 @@ export const addPeer = async ({
 	}
 
 	if (!isValidLightningNodePublicKey(parsedUri.value.publicKey)) {
-		return err(i18n.t('lightning:error_add_msg'));
+		return err(i18n.t('lightning:error_add'));
 	}
 
 	const res = await lm.addPeer({
@@ -1086,7 +1086,7 @@ export const addPeer = async ({
 	});
 
 	if (res.isErr()) {
-		res.error.message = i18n.t('lightning:error_add_msg', {
+		res.error.message = i18n.t('lightning:error_add', {
 			raw: res.error.message,
 		});
 	}
