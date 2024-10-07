@@ -1,7 +1,7 @@
 import React, { memo, ReactElement, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { err, ok, Result } from '@synonymdev/result';
-import Url from 'url-parse';
+import parseUrl from 'url-parse';
 import { useTranslation } from 'react-i18next';
 import isEqual from 'lodash/isEqual';
 import { EProtocol } from 'beignet';
@@ -42,20 +42,35 @@ const radioButtons: RadioButtonItem[] = [
 ];
 
 const isValidURL = (data: string): boolean => {
-	const pattern = new RegExp(
-		'^(https?:\\/\\/)?' + // protocol
-			'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-			'((\\d{1,3}\\.){3}\\d{1,3}))' + // IP (v4) address
-			'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*', // port and path
-		'i',
-	);
-
-	// wave through everything 'localhost' for development
-	if (__DEV__ && data.includes('localhost')) {
-		return true;
+	// Add 'http://' if the protocol is missing to enable URL parsing
+	let normalizedData = data;
+	if (!/^https?:\/\//i.test(data)) {
+		normalizedData = 'http://' + data;
 	}
 
-	return !!pattern.test(data);
+	try {
+		const url = parseUrl(normalizedData);
+
+		// Allow standard domains, custom TLDs like .local, and IPv4 addresses
+		const isValidDomainOrIP = !!url.hostname.match(
+			/^([a-z\d]([a-z\d-]*[a-z\d])*\.[a-z\d-]+|(\d{1,3}\.){3}\d{1,3})$/i,
+		);
+
+		// Always allow .local domains
+		if (url.hostname.endsWith('.local')) {
+			return true;
+		}
+
+		// Allow localhost in development mode
+		if (__DEV__ && data.includes('localhost')) {
+			return true;
+		}
+
+		return isValidDomainOrIP;
+	} catch (e) {
+		// If URL constructor fails, it's not a valid URL
+		return false;
+	}
 };
 
 const validateInput = (
@@ -218,7 +233,7 @@ const ElectrumConfig = ({
 				protocol: _protocol,
 			};
 		} else {
-			const url = new Url(data);
+			const url = parseUrl(data);
 
 			connectData = {
 				host: url.hostname,
