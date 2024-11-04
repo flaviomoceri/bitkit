@@ -19,7 +19,12 @@ import {
 	addBoostedTransaction,
 	updateSendTransaction,
 } from '../../store/actions/wallet';
-import { dispatch, getFeesStore, getSettingsStore } from '../../store/helpers';
+import {
+	dispatch,
+	getFeesStore,
+	getSettingsStore,
+	getUiStore,
+} from '../../store/helpers';
 import { removeActivityItem } from '../../store/slices/activity';
 import { initialFeesState } from '../../store/slices/fees';
 import {
@@ -120,18 +125,10 @@ export const createTransaction = async (
 
 /**
  * Returns onchain transaction data related to the specified network and wallet.
- * @returns {Result<ISendTransaction>}
+ * @returns {ISendTransaction}
  */
-export const getOnchainTransactionData = (): Result<ISendTransaction> => {
-	try {
-		const transaction = getOnChainWalletTransaction().data;
-		if (transaction) {
-			return ok(transaction);
-		}
-		return err('Unable to get transaction data.');
-	} catch (e) {
-		return err(e);
-	}
+export const getOnchainTransactionData = (): ISendTransaction => {
+	return getOnChainWalletTransaction().data;
 };
 
 export const broadcastTransaction = async ({
@@ -160,11 +157,7 @@ export const getTransactionOutputValue = ({
 } = {}): number => {
 	try {
 		if (!outputs) {
-			const transaction = getOnchainTransactionData();
-			if (transaction.isErr()) {
-				return 0;
-			}
-			outputs = transaction.value.outputs;
+			outputs = getOnchainTransactionData().outputs;
 		}
 		const response = reduceValue(outputs, 'value');
 		if (response.isOk()) {
@@ -188,11 +181,7 @@ export const getTransactionInputValue = ({
 }): number => {
 	try {
 		if (!inputs) {
-			const transaction = getOnchainTransactionData();
-			if (transaction.isErr()) {
-				return 0;
-			}
-			inputs = transaction.value.inputs;
+			inputs = getOnchainTransactionData().inputs;
 		}
 		if (inputs) {
 			const response = reduceValue(inputs, 'value');
@@ -434,34 +423,28 @@ export const getEstimatedRoutingFee = (amount: number): number => {
 /**
  * Calculates the max amount able to send for onchain/lightning
  * @param {ISendTransaction} [transaction]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @param {TWalletName} [selectedWallet]
- * @param {number} [index]
+ * @param {'onchain' | 'lightning'} [method
  */
 export const getMaxSendAmount = ({
 	transaction,
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
+	method,
 }: {
 	transaction?: ISendTransaction;
-	selectedNetwork?: EAvailableNetwork;
-	selectedWallet?: TWalletName;
+	method?: 'onchain' | 'lightning';
 } = {}): Result<{ amount: number; fee: number }> => {
 	try {
 		if (!transaction) {
-			const transactionDataResponse = getOnchainTransactionData();
-			if (transactionDataResponse.isErr()) {
-				return err(transactionDataResponse.error.message);
-			}
-			transaction = transactionDataResponse.value;
+			transaction = getOnchainTransactionData();
 		}
 
-		if (transaction.lightningInvoice) {
+		const defaultMethod = transaction.lightningInvoice
+			? 'lightning'
+			: 'onchain';
+		method = method ?? defaultMethod;
+
+		if (method === 'lightning') {
 			// lightning transaction
-			const { spendingBalance } = getBalance({
-				selectedWallet,
-				selectedNetwork,
-			});
+			const { spendingBalance } = getBalance();
 			const fee = getEstimatedRoutingFee(spendingBalance);
 			const amount = spendingBalance - fee;
 			const maxAmount = { amount, fee };
@@ -505,25 +488,20 @@ export const getMaxSendAmount = ({
 export const sendMax = async ({
 	address,
 	index = 0,
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
 }: {
 	address?: string;
 	index?: number;
-	selectedWallet?: TWalletName;
-	selectedNetwork?: EAvailableNetwork;
 } = {}): Promise<Result<string>> => {
+	const { paymentMethod } = getUiStore();
+
 	try {
 		const tx = getOnChainWalletTransaction();
 		const transaction = tx.data;
 
 		// TODO: Re-work lightning transaction invoices once beignet migration is complete.
 		// Handle max toggle for lightning invoice
-		if (transaction.lightningInvoice) {
-			const { spendingBalance } = getBalance({
-				selectedWallet,
-				selectedNetwork,
-			});
+		if (paymentMethod === 'lightning') {
+			const { spendingBalance } = getBalance();
 
 			const fee = getEstimatedRoutingFee(spendingBalance);
 			const amount = spendingBalance - fee;
@@ -584,11 +562,7 @@ export const adjustFee = ({
 }): Result<{ fee: number }> => {
 	try {
 		if (!transaction) {
-			const transactionDataResponse = getOnchainTransactionData();
-			if (transactionDataResponse.isErr()) {
-				return err(transactionDataResponse.error.message);
-			}
-			transaction = transactionDataResponse.value;
+			transaction = getOnchainTransactionData();
 		}
 		// const coinSelectPreference = getStore().settings.coinSelectPreference;
 		const newSatsPerByte = transaction.satsPerByte + adjustBy;
@@ -613,38 +587,27 @@ export const adjustFee = ({
  * Updates the amount to send for the currently selected output.
  * @param {number} amount
  * @param {ISendTransaction} [transaction]
- * @param {EAvailableNetwork} [selectedNetwork]
- * @param {TWalletName} [selectedWallet]
  */
 export const updateSendAmount = ({
 	amount,
 	transaction,
-	selectedWallet = getSelectedWallet(),
-	selectedNetwork = getSelectedNetwork(),
 }: {
 	amount: number;
 	transaction?: ISendTransaction;
-	selectedNetwork?: EAvailableNetwork;
-	selectedWallet?: TWalletName;
 }): Result<string> => {
+	const { paymentMethod } = getUiStore();
+
 	if (!transaction) {
-		const transactionDataResponse = getOnchainTransactionData();
-		if (transactionDataResponse.isErr()) {
-			return err(transactionDataResponse.error.message);
-		}
-		transaction = transactionDataResponse.value;
+		transaction = getOnchainTransactionData();
 	}
 
 	// TODO: add support for multiple outputs
 	const currentOutput = transaction.outputs[0];
 	let max = false;
 
-	if (transaction.lightningInvoice) {
+	if (paymentMethod === 'lightning') {
 		// lightning transaction
-		const { spendingBalance } = getBalance({
-			selectedWallet,
-			selectedNetwork,
-		});
+		const { spendingBalance } = getBalance();
 
 		if (amount > spendingBalance) {
 			return err(i18n.t('wallet:send_amount_error_balance'));
@@ -709,27 +672,15 @@ export const updateMessage = async ({
 	index?: number;
 }): Promise<Result<string>> => {
 	if (!transaction) {
-		const transactionDataResponse = getOnchainTransactionData();
-		if (transactionDataResponse.isErr()) {
-			return err(transactionDataResponse.error.message);
-		}
-		transaction = transactionDataResponse.value;
+		transaction = getOnchainTransactionData();
 	}
-	const max = transaction?.max;
-	const satsPerByte = transaction?.satsPerByte ?? 1;
-	const outputs = transaction?.outputs ?? [];
-	const inputs = transaction?.inputs ?? [];
-
+	const { max, satsPerByte, outputs, inputs } = transaction;
 	const newFee = getTotalFee({ satsPerByte, message });
-	const inputTotal = getTransactionInputValue({
-		inputs,
-	});
-	const outputTotal = getTransactionOutputValue({
-		outputs,
-	});
+	const inputTotal = getTransactionInputValue({ inputs });
+	const outputTotal = getTransactionOutputValue({ outputs });
 	const totalNewAmount = outputTotal + newFee;
 	let address = '';
-	if (outputs?.length > index) {
+	if (outputs.length > index) {
 		address = outputs[index].address ?? '';
 	}
 	const _transaction: Partial<ISendTransaction> = {
@@ -891,12 +842,7 @@ export const broadcastBoost = async ({
 	oldTxId: string;
 }): Promise<Result<String>> => {
 	try {
-		const transactionDataResponse = getOnchainTransactionData();
-		if (transactionDataResponse.isErr()) {
-			return err(transactionDataResponse.error.message);
-		}
-		const transaction = transactionDataResponse.value;
-
+		const transaction = getOnchainTransactionData();
 		const rawTx = await createTransaction();
 		if (rawTx.isErr()) {
 			return err(rawTx.error.message);
@@ -971,11 +917,8 @@ export const getFeeEstimates = async (
  * @returns {EFeeId}
  */
 export const getSelectedFeeId = (): EFeeId => {
-	const transaction = getOnchainTransactionData();
-	if (transaction.isErr()) {
-		return EFeeId.none;
-	}
-	return transaction.value.selectedFeeId;
+	const { selectedFeeId } = getOnchainTransactionData();
+	return selectedFeeId;
 };
 
 /**
@@ -990,15 +933,12 @@ export const getTransactionOutputAmount = ({
 	outputIndex?: number;
 }): Result<number> => {
 	const transaction = getOnchainTransactionData();
-	if (transaction.isErr()) {
-		return err(transaction.error.message);
-	}
 	if (
-		transaction.value.outputs?.length &&
-		transaction.value.outputs?.length >= outputIndex + 1 &&
-		transaction.value.outputs[outputIndex].value
+		transaction.outputs.length &&
+		transaction.outputs.length >= outputIndex + 1 &&
+		transaction.outputs[outputIndex].value
 	) {
-		return ok(transaction.value.outputs[outputIndex]?.value ?? 0);
+		return ok(transaction.outputs[outputIndex]?.value ?? 0);
 	}
 	return ok(0);
 };
