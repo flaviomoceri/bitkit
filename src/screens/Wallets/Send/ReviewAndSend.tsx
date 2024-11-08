@@ -42,7 +42,6 @@ import {
 } from '../../../store/slices/metadata';
 import useColors from '../../../hooks/colors';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { useDisplayValues } from '../../../hooks/displayValues';
 import { useLightningBalance } from '../../../hooks/lightning';
 import { EFeeId } from '../../../store/types/fees';
 import {
@@ -52,9 +51,9 @@ import {
 import { FeeText } from '../../../utils/fees';
 import { getFiatDisplayValues } from '../../../utils/displayValues';
 import { showToast } from '../../../utils/notifications';
-// import { refreshWallet } from '../../../utils/wallet';
 import type { SendScreenProps } from '../../../navigation/types';
 import SafeAreaInset from '../../../components/SafeAreaInset';
+import Money from '../../../components/Money';
 import Dialog from '../../../components/Dialog';
 import Biometrics from '../../../components/Biometrics';
 import Button from '../../../components/buttons/Button';
@@ -333,8 +332,6 @@ const ReviewAndSend = ({
 		});
 	}, [transaction.satsPerByte, transaction.message]);
 
-	const fiatTransactionFee = useDisplayValues(feeSats);
-
 	const runCreateTxMethods = useCallback((): void => {
 		if (usesLightning) {
 			createLightningTransaction().then();
@@ -609,11 +606,14 @@ const ReviewAndSend = ({
 								value={
 									<View style={styles.fee}>
 										{feeIcon}
-										<BodySSB>
-											{t(`fee:${selectedFeeId}.title`)} (
-											{fiatTransactionFee.fiatSymbol}
-											{fiatTransactionFee.fiatFormatted})
-										</BodySSB>
+										<BodySSB>{t(`fee:${selectedFeeId}.title`)} (</BodySSB>
+										<Money
+											sats={feeSats}
+											size="bodySSB"
+											symbol={true}
+											symbolColor="primary"
+										/>
+										<BodySSB>)</BodySSB>
 										<PencilIcon height={12} width={22} />
 									</View>
 								}
