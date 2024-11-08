@@ -9,7 +9,7 @@ import React, {
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { TouchableHighlight } from '../../../styles/components';
+import { TouchableOpacity } from '../../../styles/components';
 import { Caption13Up } from '../../../styles/text';
 import { IColors } from '../../../styles/colors';
 import GradientView from '../../../components/GradientView';
@@ -95,7 +95,7 @@ const Amount = ({
 
 				<View style={styles.numberPad} testID="SendAmountNumberPad">
 					<View style={styles.actions}>
-						<View>
+						<TouchableOpacity onPress={onMaxAmount}>
 							<Caption13Up style={styles.maxWithdrawableText} color="secondary">
 								{t('lnurl_w_max')}
 							</Caption13Up>
@@ -107,18 +107,8 @@ const Amount = ({
 								symbol={true}
 								{...maxWithdrawableProps}
 							/>
-						</View>
+						</TouchableOpacity>
 						<View style={styles.actionButtons}>
-							<View style={styles.actionButtonContainer}>
-								<TouchableHighlight
-									style={styles.actionButton}
-									color="white10"
-									testID="SendNumberPadMax"
-									onPress={onMaxAmount}>
-									<Caption13Up color="brand">{t('send_max')}</Caption13Up>
-								</TouchableHighlight>
-							</View>
-
 							<View style={styles.actionButtonContainer}>
 								<UnitButton
 									style={styles.actionButton}

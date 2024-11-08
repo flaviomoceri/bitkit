@@ -73,14 +73,14 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 16,
 	},
 	label: {
-		marginTop: 48,
+		marginTop: 'auto',
 		marginBottom: 16,
 	},
 	buttonContainer: {
 		flexDirection: 'row',
 		justifyContent: 'center',
-		marginTop: 'auto',
 		gap: 16,
+		marginTop: 32,
 	},
 	button: {
 		flex: 1,

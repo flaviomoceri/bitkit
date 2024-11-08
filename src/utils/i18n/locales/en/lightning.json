@@ -146,7 +146,7 @@
 			"string": "Liquidity\n<accent>& routing</accent>"
 		},
 		"text": {
-			"string": "Your spending balance in Bitkit is like your internet connection. Instead of bandwidth, you pay for liquidity and payment routing.\n\nPayments to and from your spending balance are cheaper, faster, and more private than regular Bitcoin transactions.\n\nThe network fee and service provider fee are one-time costs to set up your balance."
+			"string": "Your Spending Balance uses the Lightning Network to make your payments cheaper, faster, and more private.\n\nThis works like internet access, but you pay for liquidity & routing instead of bandwidth.\n\nThis setup includes some one-time costs."
 		},
 		"label": {
 			"string": "Spending Balance Liquidity"

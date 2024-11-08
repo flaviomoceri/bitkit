@@ -107,7 +107,7 @@ const LNURLAmount = ({
 
 				<View style={styles.numberPad} testID="SendAmountNumberPad">
 					<View style={styles.actions}>
-						<View>
+						<TouchableOpacity onPress={onMaxAmount}>
 							<Caption13Up style={styles.maxSendableText} color="secondary">
 								{t('lnurl_p_max')}
 							</Caption13Up>
@@ -120,18 +120,8 @@ const LNURLAmount = ({
 								symbol={true}
 								{...maxSendableProps}
 							/>
-						</View>
+						</TouchableOpacity>
 						<View style={styles.actionButtons}>
-							<View style={styles.actionButtonContainer}>
-								<TouchableOpacity
-									style={styles.actionButton}
-									color="white10"
-									testID="SendNumberPadMax"
-									onPress={onMaxAmount}>
-									<Caption13Up color="brand">{t('send_max')}</Caption13Up>
-								</TouchableOpacity>
-							</View>
-
 							<View style={styles.actionButtonContainer}>
 								<UnitButton
 									style={styles.actionButton}
