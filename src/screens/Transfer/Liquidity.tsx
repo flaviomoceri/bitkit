@@ -42,6 +42,7 @@ const Liquidity = ({
 				<BodyM style={styles.description} color="secondary">
 					{t('liquidity.text')}
 				</BodyM>
+
 				<BodyMB style={styles.label}>{t('liquidity.label')}</BodyMB>
 				<LightningChannel
 					capacity={channelSize}
@@ -79,12 +80,12 @@ const styles = StyleSheet.create({
 		marginTop: 4,
 	},
 	label: {
-		marginTop: 32,
+		marginTop: 'auto',
 		marginBottom: 16,
 	},
 	buttonContainer: {
 		flexDirection: 'row',
-		marginTop: 'auto',
+		marginTop: 32,
 	},
 	button: {
 		flex: 1,
