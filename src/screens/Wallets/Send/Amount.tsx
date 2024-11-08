@@ -6,12 +6,13 @@ import React, {
 	useState,
 	useEffect,
 } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 
 import { Caption13Up } from '../../../styles/text';
 import { IColors } from '../../../styles/colors';
+import { TouchableOpacity } from '../../../styles/components';
 import GradientView from '../../../components/GradientView';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
@@ -255,7 +256,7 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 
 				<View style={styles.numberPad} testID="SendAmountNumberPad">
 					<View style={styles.actions}>
-						<TouchableOpacity activeOpacity={0.7} onPress={onMaxAmount}>
+						<TouchableOpacity onPress={onMaxAmount}>
 							<Caption13Up style={styles.availableAmountText} color="secondary">
 								{t('send_available')}
 							</Caption13Up>
