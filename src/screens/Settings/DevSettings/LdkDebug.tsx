@@ -76,7 +76,14 @@ const LdkDebug = (): ReactElement => {
 
 	const onRestartLdk = async (): Promise<void> => {
 		setRestartingLdk(true);
-		await setupLdk({ selectedWallet, selectedNetwork });
+		const res = await setupLdk({ selectedWallet, selectedNetwork });
+		if (res.isErr()) {
+			showToast({
+				type: 'error',
+				title: t('wallet:ldk_start_error_title'),
+				description: res.error.message,
+			});
+		}
 		setRestartingLdk(false);
 	};
 

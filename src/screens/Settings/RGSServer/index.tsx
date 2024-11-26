@@ -74,15 +74,23 @@ const RGSServer = ({
 	const connectToRGSServer = async (): Promise<void> => {
 		setLoading(true);
 		dispatch(updateSettings({ rapidGossipSyncUrl: rgsUrl }));
-		await setupLdk({
+		const res = await setupLdk({
 			selectedWallet,
 			selectedNetwork,
 		});
-		showToast({
-			type: 'success',
-			title: t('rgs.update_success_title'),
-			description: t('rgs.update_success_description'),
-		});
+		if (res.isOk()) {
+			showToast({
+				type: 'success',
+				title: t('rgs.update_success_title'),
+				description: t('rgs.update_success_description'),
+			});
+		} else {
+			showToast({
+				type: 'error',
+				title: t('wallet:ldk_start_error_title'),
+				description: res.error.message,
+			});
+		}
 		setLoading(false);
 	};
 

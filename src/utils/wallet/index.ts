@@ -1102,6 +1102,15 @@ export const setupOnChainWallet = async ({
 	addressTypesToMonitor?: EAddressType[];
 	gapLimitOptions?: TGapLimitOptions;
 }): Promise<Result<Wallet>> => {
+	// Disconnect from Electrum before setting up a new wallet
+	if (globalWallet) {
+		// If wallet refresh is in progress, wait for it to complete
+		if (globalWallet.isRefreshing) {
+			await globalWallet.refreshWallet();
+		}
+		await globalWallet.electrum?.disconnect();
+	}
+
 	if (!mnemonic) {
 		const mnemonicRes = await getMnemonicPhrase(name);
 		if (mnemonicRes.isErr()) {

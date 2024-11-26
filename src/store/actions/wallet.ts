@@ -663,7 +663,6 @@ export const setWalletData = async <K extends keyof IWalletData>(
 			case 'feeEstimates': {
 				const feeEstimates = data2 as IWalletData[typeof value];
 				updateOnchainFeeEstimates({
-					selectedNetwork: getNetworkFromBeignet(network),
 					feeEstimates,
 					forceUpdate: true,
 				});

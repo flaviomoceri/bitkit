@@ -5,6 +5,12 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 import { i18nTime } from '../utils/i18n';
 
+/**
+ * Returns the result of a promise, or an error if the promise takes too long to resolve.
+ * @param {number} ms The time to wait in milliseconds.
+ * @param {Promise<any>} promise The promise to resolve.
+ * @returns {Promise<T>}
+ */
 export const promiseTimeout = <T>(
 	ms: number,
 	promise: Promise<any>,

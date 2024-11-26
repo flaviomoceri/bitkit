@@ -887,6 +887,7 @@ export const broadcastBoost = async ({
  */
 export const getFeeEstimates = async (
 	selectedNetwork: EAvailableNetwork = getSelectedNetwork(),
+	forceUpdate: boolean,
 ): Promise<Result<IOnchainFees>> => {
 	try {
 		if (__E2E__) {
@@ -904,11 +905,11 @@ export const getFeeEstimates = async (
 		}
 
 		const wallet = await getOnChainWalletAsync();
-		const feeRes = await wallet.getFeeEstimates();
-		if (!feeRes) {
-			return err('Unable to get fee estimates.');
+		const feeRes = await wallet.updateFeeEstimates(forceUpdate);
+		if (feeRes.isErr()) {
+			return err(feeRes.error);
 		}
-		return ok(feeRes);
+		return ok(feeRes.value);
 	} catch (e) {
 		return err(e);
 	}
