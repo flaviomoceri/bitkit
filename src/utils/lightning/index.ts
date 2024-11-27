@@ -253,6 +253,7 @@ export const getFees: TGetFees = async () => {
 		});
 	};
 
+	// fetch, validate and map fees from mempool.space to IOnchainFees
 	const fetchMp = async (): Promise<IOnchainFees> => {
 		const f1 = await fetch('https://mempool.space/api/v1/fees/recommended');
 		const j: IGetFeeEstimatesResponse = await f1.json();
@@ -276,6 +277,7 @@ export const getFees: TGetFees = async () => {
 		};
 	};
 
+	// fetch, validate and map fees from Blocktank to IOnchainFees
 	const fetchBt = async (): Promise<IOnchainFees> => {
 		const f2 = await fetch('https://api1.blocktank.to/api/info');
 		const j: IBtInfo = await f2.json();

@@ -905,11 +905,7 @@ export const getFeeEstimates = async (
 		}
 
 		const wallet = await getOnChainWalletAsync();
-		const feeRes = await wallet.updateFeeEstimates(forceUpdate);
-		if (feeRes.isErr()) {
-			return err(feeRes.error);
-		}
-		return ok(feeRes.value);
+		return wallet.updateFeeEstimates(forceUpdate);
 	} catch (e) {
 		return err(e);
 	}
