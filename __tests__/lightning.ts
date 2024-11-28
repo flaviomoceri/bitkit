@@ -56,6 +56,7 @@ describe('getFees', () => {
 			anchorChannelFee: 109,
 			nonAnchorChannelFee: 110,
 			channelCloseMinimum: 108,
+			outputSpendingFee: 111,
 		});
 		expect(fetch).toHaveBeenCalledTimes(2);
 		expect(fetch).toHaveBeenCalledWith(MEMPOOL_URL);
@@ -85,6 +86,7 @@ describe('getFees', () => {
 			anchorChannelFee: 997,
 			nonAnchorChannelFee: 998,
 			channelCloseMinimum: 997,
+			outputSpendingFee: 999,
 		});
 		expect(fetch).toHaveBeenCalledTimes(3);
 	});

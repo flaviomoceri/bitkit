@@ -358,6 +358,7 @@ export const getFees: TGetFees = async () => {
 		anchorChannelFee: fees.slow,
 		nonAnchorChannelFee: fees.normal,
 		channelCloseMinimum: fees.minimum,
+		outputSpendingFee: fees.fast,
 	};
 };
 
