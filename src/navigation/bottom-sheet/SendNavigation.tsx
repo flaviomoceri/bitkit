@@ -121,7 +121,7 @@ const SendNavigation = (): ReactElement => {
 
 	const onOpen = async (): Promise<void> => {
 		if (!transaction?.lightningInvoice) {
-			await updateOnchainFeeEstimates({ selectedNetwork, forceUpdate: true });
+			await updateOnchainFeeEstimates({ forceUpdate: true });
 			if (!transaction?.inputs.length) {
 				await setupOnChainTransaction();
 			}

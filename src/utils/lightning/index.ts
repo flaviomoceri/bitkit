@@ -4,7 +4,13 @@ import * as bitcoin from 'bitcoinjs-lib';
 import ecc from '@bitcoinerlab/secp256k1';
 import RNFS from 'react-native-fs';
 import { err, ok, Result } from '@synonymdev/result';
-import { EPaymentType, TGetAddressHistory } from 'beignet';
+import {
+	EPaymentType,
+	IBtInfo,
+	IGetFeeEstimatesResponse,
+	IOnchainFees,
+	TGetAddressHistory,
+} from 'beignet';
 import lm, {
 	ldk,
 	defaultUserConfig,
@@ -25,11 +31,11 @@ import lm, {
 	TCloseChannelReq,
 	TCreatePaymentReq,
 	TGetFees,
-	THeader,
 	TInvoice,
 	TPaymentReq,
 	TTransactionData,
 	TTransactionPosition,
+	TGetBestBlock,
 } from '@synonymdev/react-native-ldk';
 
 import {
@@ -42,7 +48,6 @@ import {
 	getBip39Passphrase,
 	getCurrentAddressIndex,
 	getMnemonicPhrase,
-	getOnChainWalletDataAsync,
 	getOnChainWalletElectrumAsync,
 	getSelectedNetwork,
 	getSelectedWallet,
@@ -55,9 +60,7 @@ import {
 	getFeesStore,
 	getLightningStore,
 	getStore,
-	getWalletStore,
 } from '../../store/helpers';
-import { defaultHeader } from '../../store/shapes/wallet';
 import { updateBackupState } from '../../store/slices/lightning';
 import {
 	moveMetaIncPaymentTags,
@@ -93,7 +96,10 @@ import {
 	EChannelClosureReason,
 } from '../../store/types/lightning';
 import { getBlocktankInfo, isGeoBlocked, logToBlocktank } from '../blocktank';
-import { refreshOnchainFeeEstimates } from '../../store/utils/fees';
+import {
+	refreshOnchainFeeEstimates,
+	updateOnchainFeeEstimates,
+} from '../../store/utils/fees';
 import {
 	__BACKUPS_SERVER_HOST__,
 	__BACKUPS_SERVER_PUBKEY__,
@@ -104,6 +110,7 @@ import { setKeychainValue } from '../keychain';
 import i18n from '../i18n';
 import { bitkitLedger, syncLedger } from '../ledger';
 import { sendNavigation } from '../../navigation/bottom-sheet/SendNavigation';
+import { initialFeesState } from '../../store/slices/fees';
 
 const PAYMENT_TIMEOUT = 8 * 1000; // 8 seconds
 
@@ -248,8 +255,100 @@ const getScriptPubKeyHistory = async (
 	return await electrum.getScriptPubKeyHistory(scriptPubKey);
 };
 
-const getFees: TGetFees = async () => {
-	const fees = getFeesStore().onchain;
+/**
+ * Fetch fees from mempool.space and blocktank.to, prioritizing mempool.space.
+ * Multiple attempts are made to fetch the fees from each provider
+ * Timeout after 10 seconds
+ */
+export const getFees: TGetFees = async () => {
+	const throwTimeout = (t: number): Promise<never> => {
+		return new Promise((_, rej) => {
+			setTimeout(() => rej(new Error('timeout')), t);
+		});
+	};
+
+	// fetch, validate and map fees from mempool.space to IOnchainFees
+	const fetchMp = async (): Promise<IOnchainFees> => {
+		const f1 = await fetch('https://mempool.space/api/v1/fees/recommended');
+		const j: IGetFeeEstimatesResponse = await f1.json();
+		if (
+			!f1.ok ||
+			!(
+				j.fastestFee > 0 &&
+				j.halfHourFee > 0 &&
+				j.hourFee > 0 &&
+				j.minimumFee > 0
+			)
+		) {
+			throw new Error('Failed to fetch mempool.space fees');
+		}
+		return {
+			fast: j.fastestFee,
+			normal: j.halfHourFee,
+			slow: j.hourFee,
+			minimum: j.minimumFee,
+			timestamp: Date.now(),
+		};
+	};
+
+	// fetch, validate and map fees from Blocktank to IOnchainFees
+	const fetchBt = async (): Promise<IOnchainFees> => {
+		const f2 = await fetch('https://api1.blocktank.to/api/info');
+		const j: IBtInfo = await f2.json();
+		if (
+			!f2.ok ||
+			!(
+				j?.onchain?.feeRates?.fast > 0 &&
+				j?.onchain?.feeRates?.mid > 0 &&
+				j?.onchain?.feeRates?.slow > 0
+			)
+		) {
+			throw new Error('Failed to fetch blocktank fees');
+		}
+		const { fast, mid, slow } = j.onchain.feeRates;
+		return {
+			fast,
+			normal: mid,
+			slow,
+			minimum: slow,
+			timestamp: Date.now(),
+		};
+	};
+
+	let fees: IOnchainFees;
+	if (getFeesStore().override) {
+		fees = getFeesStore().onchain;
+	} else if (getSelectedNetwork() !== 'bitcoin') {
+		fees = initialFeesState.onchain;
+	} else {
+		fees = await new Promise<IOnchainFees>((resolve, reject) => {
+			// try twice
+			const mpPromise = Promise.race([
+				fetchMp().catch(fetchMp),
+				throwTimeout(10000),
+			]);
+			const btPromise = Promise.race([
+				fetchBt().catch(fetchBt),
+				throwTimeout(10000),
+			]).catch(() => null); // Prevent unhandled rejection
+
+			// prioritize mempool.space over blocktank
+			mpPromise.then(resolve).catch(() => {
+				btPromise
+					.then((btFees) => {
+						if (btFees !== null) {
+							resolve(btFees);
+						} else {
+							reject(new Error('Failed to fetch fees'));
+						}
+					})
+					.catch(reject);
+			});
+		});
+
+		updateOnchainFeeEstimates({ feeEstimates: fees });
+	}
+
 	return {
 		//https://github.com/lightningdevkit/rust-lightning/blob/main/CHANGELOG.md#api-updates
 		onChainSweep: fees.fast,
@@ -348,6 +447,20 @@ export const setupLdk = async ({
 		});
 		if (backupRes.isErr()) {
 			return err(backupRes.error);
+		}
+
+		// check if getFees is working
+		try {
+			await getFees();
+		} catch (e) {
+			return err(e);
+		}
+
+		// check if getBestBlock is working
+		try {
+			await getBestBlock();
+		} catch (e) {
+			return err(e);
 		}
 
 		const lmStart = await lm.start({
@@ -690,6 +803,11 @@ export const refreshLdk = async ({
 				shouldPreemptivelyStopLdk: false,
 			});
 			if (setupResponse.isErr()) {
+				showToast({
+					type: 'error',
+					title: i18n.t('wallet:ldk_start_error_title'),
+					description: setupResponse.error.message,
+				});
 				return handleRefreshError(setupResponse.error.message);
 			}
 			keepLdkSynced({ selectedNetwork }).then();
@@ -908,24 +1026,20 @@ export const getSha256 = (str: string): string => {
 };
 
 /**
- * Returns last known header information from storage.
+ * Returns the last known block header when Electrum is connected.
  * @returns {Promise<THeader>}
  */
-export const getBestBlock = async (
-	selectedNetwork: EAvailableNetwork = getSelectedNetwork(),
-): Promise<THeader> => {
-	try {
-		const beignetHeader = (await getOnChainWalletDataAsync()).header;
-		const storageHeader = getWalletStore().header[selectedNetwork];
-		const header =
-			beignetHeader.height > storageHeader.height
-				? beignetHeader
-				: storageHeader;
-		return header?.height ? header : defaultHeader;
-	} catch (e) {
-		console.log(e);
-		return defaultHeader;
+const getBestBlock: TGetBestBlock = async () => {
+	const el = await getOnChainWalletElectrumAsync();
+	let i = 0;
+	while (!(await el.isConnected()) || el.getBlockHeader().hex === '') {
+		await sleep(100);
+		// timeout 10 seconds
+		if (i++ > 100) {
+			throw new Error('Unable to connect to Electrum server');
+		}
 	}
+	return el.getBlockHeader();
 };
 
 /**

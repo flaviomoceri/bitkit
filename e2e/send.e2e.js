@@ -343,7 +343,7 @@ d('Send', () => {
 		await waitFor(
 			element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 		)
-			.toHaveText('109 170')
+			.toHaveText('109 004')
 			.withTimeout(10000);
 
 		// send to unified invoice w/ expired invoice
@@ -365,7 +365,7 @@ d('Send', () => {
 		await waitFor(
 			element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 		)
-			.toHaveText('98 838')
+			.toHaveText('98 506')
 			.withTimeout(10000);
 
 		// send to unified invoice w/o amount (lightning)
@@ -377,7 +377,7 @@ d('Send', () => {
 		await expect(element(by.text('28 900'))).toBeVisible();
 		await element(by.id('AssetButton-switch')).tap();
 		// max amount (onchain)
-		await expect(element(by.text('68 506'))).toBeVisible();
+		await expect(element(by.text('68 008'))).toBeVisible();
 		await element(by.id('AssetButton-switch')).tap();
 		await element(by.id('N1').withAncestor(by.id('SendAmountNumberPad'))).tap();
 		await element(
@@ -392,7 +392,7 @@ d('Send', () => {
 		await waitFor(
 			element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 		)
-			.toHaveText('88 838')
+			.toHaveText('88 506')
 			.withTimeout(10000);
 
 		// send to unified invoice w/o amount (switch to onchain)
@@ -411,7 +411,7 @@ d('Send', () => {
 		await element(by.id('AssetButton-switch')).tap();
 		await element(by.id('AvailableAmount')).tap();
 		await element(by.id('ContinueAmount')).tap();
-		await expect(element(by.text('68 506'))).toBeVisible();
+		await expect(element(by.text('68 008'))).toBeVisible();
 		await element(by.id('NavigationBack')).atIndex(0).tap();
 
 		await element(
@@ -430,7 +430,7 @@ d('Send', () => {
 		await waitFor(
 			element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 		)
-			.toHaveText('78 506')
+			.toHaveText('78 008')
 			.withTimeout(10000);
 
 		// send to lightning invoice w/ amount (quickpay)
@@ -452,7 +452,7 @@ d('Send', () => {
 		await waitFor(
 			element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 		)
-			.toHaveText('77 506')
+			.toHaveText('77 008')
 			.withTimeout(10000);
 
 		// send to unified invoice w/ amount (quickpay)
@@ -470,7 +470,7 @@ d('Send', () => {
 		await waitFor(
 			element(by.id('MoneyText').withAncestor(by.id('TotalBalance'))),
 		)
-			.toHaveText('76 506')
+			.toHaveText('76 008')
 			.withTimeout(10000);
 
 		// send to lightning invoice w/ amount (skip quickpay for large amounts)

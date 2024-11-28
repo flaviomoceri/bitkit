@@ -689,6 +689,9 @@
 	"ldk_sync_error_title": {
 		"string": "Lightning Sync Error"
 	},
+	"ldk_start_error_title": {
+		"string": "Lightning Startup Error"
+	},
 	"receive_insufficient_title": {
 		"string": "Insufficient receiving balance."
 	},

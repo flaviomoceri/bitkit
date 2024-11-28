@@ -750,13 +750,8 @@ const AddressViewer = ({
 			// Switching networks requires us to reset LDK.
 			await setupLdk({ selectedWallet, selectedNetwork });
 			// Start wallet services with the newly selected network.
-			await startWalletServices({
-				selectedNetwork: config.selectedNetwork,
-			});
-			await updateOnchainFeeEstimates({
-				selectedNetwork: config.selectedNetwork,
-				forceUpdate: true,
-			});
+			await startWalletServices({ selectedNetwork: config.selectedNetwork });
+			await updateOnchainFeeEstimates({ forceUpdate: true });
 			updateActivityList();
 			await syncLedger();
 		}

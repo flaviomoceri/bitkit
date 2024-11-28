@@ -26,6 +26,7 @@ import { TWalletName } from '../../store/types/wallet';
 import { runChecks } from '../wallet/checks';
 import { setupLedger, syncLedger } from '../ledger';
 import i18n from '../i18n';
+import { showToast } from '../notifications';
 
 /**
  * Creates a new wallet from scratch
@@ -153,6 +154,12 @@ export const startWalletServices = async ({
 			});
 			if (setupResponse.isOk()) {
 				keepLdkSynced({ selectedNetwork }).then();
+			} else {
+				showToast({
+					type: 'error',
+					title: i18n.t('wallet:ldk_start_error_title'),
+					description: setupResponse.error.message,
+				});
 			}
 		}
 
