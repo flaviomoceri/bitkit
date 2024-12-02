@@ -107,7 +107,6 @@ import {
 import { showToast } from '../notifications';
 import { setKeychainValue } from '../keychain';
 import i18n from '../i18n';
-import { bitkitLedger, syncLedger } from '../ledger';
 import { sendNavigation } from '../../navigation/bottom-sheet/SendNavigation';
 import { initialFeesState } from '../../store/slices/fees';
 
@@ -630,9 +629,6 @@ export const subscribeToLightningPayments = ({
 					});
 
 					await refreshLdk();
-					bitkitLedger?.handleLNTx({ ...res, amount_sat: found.amount });
-				} else {
-					syncLedger(); // TChannelManagerPaymentSent doesn't have amount_sat
 				}
 			},
 		);
@@ -664,7 +660,6 @@ export const subscribeToLightningPayments = ({
 					selectedNetwork,
 					selectedWallet,
 				}).then();
-				bitkitLedger?.handleLNTx(res);
 			},
 		);
 	}
@@ -689,8 +684,6 @@ export const subscribeToLightningPayments = ({
 
 				// Check if this is a CJIT Entry that needs to be added to the activity list.
 				addCJitActivityItem(res.channel_id).then();
-				// We need to sync the ledger because TChannelUpdate doesn't have enough data
-				syncLedger();
 				// Refresh to update balance
 				await refreshLdk();
 				updateSlashPayConfig({ selectedWallet, selectedNetwork });
@@ -707,7 +700,6 @@ export const subscribeToLightningPayments = ({
 					showBottomSheet('connectionClosed');
 				}
 				updateSlashPayConfig({ selectedWallet, selectedNetwork });
-				syncLedger(); // TChannelManagerChannelClosed is different from TChannelMonitor
 			},
 		);
 	}

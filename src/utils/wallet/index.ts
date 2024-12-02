@@ -90,7 +90,6 @@ import { showToast } from '../notifications';
 import { updateUi } from '../../store/slices/ui';
 import { resetActivityState } from '../../store/slices/activity';
 import BitcoinActions from '../bitcoin-actions';
-import { bitkitLedger, syncLedger } from '../ledger';
 import { getTransferForTx } from './transfer';
 import { createWallet } from '../../store/slices/wallet';
 
@@ -1046,13 +1045,10 @@ const onMessage: TOnMessage = async (key, data): Promise<void> => {
 			}
 			refreshWallet({ lightning: false }).then();
 			setTimeout(updateActivityList, 500);
-			bitkitLedger?.handleOnchainTx(txMsg.transaction);
 			break;
 		}
 		case 'transactionSent':
-			const txMsg = data as TTransactionMessage;
 			setTimeout(updateActivityList, 500);
-			bitkitLedger?.handleOnchainTx(txMsg.transaction);
 			break;
 		case 'connectedToElectrum':
 			onElectrumConnectionChange(data as boolean);
@@ -1086,7 +1082,6 @@ const onMessage: TOnMessage = async (key, data): Promise<void> => {
 		case 'newBlock':
 			// Beignet will handle this.
 			refreshWallet({ onchain: false }).then();
-			syncLedger();
 	}
 };
 
