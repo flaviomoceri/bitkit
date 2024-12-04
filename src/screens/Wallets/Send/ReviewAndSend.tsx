@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import { StyleSheet, View, TouchableOpacity, Keyboard } from 'react-native';
 import { TInvoice } from '@synonymdev/react-native-ldk';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTranslation } from 'react-i18next';
 import { validateTransaction } from 'beignet';
 
@@ -568,7 +567,7 @@ const ReviewAndSend = ({
 		<>
 			<GradientView style={styles.container}>
 				<BottomSheetNavigationHeader title={t('send_review')} />
-				<BottomSheetScrollView style={styles.content}>
+				<View style={styles.content}>
 					<AmountToggle
 						style={styles.amountToggle}
 						amount={amount}
@@ -722,7 +721,7 @@ const ReviewAndSend = ({
 							onConfirm={onSwipeToPay}
 						/>
 					</View>
-				</BottomSheetScrollView>
+				</View>
 
 				<Dialog
 					visible={showDialog1}
