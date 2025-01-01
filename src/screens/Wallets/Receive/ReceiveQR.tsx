@@ -644,7 +644,7 @@ const ReceiveQR = ({
 			<GradientView style={styles.container}>
 				<BottomSheetNavigationHeader
 					title={t('receive_bitcoin')}
-					displayBackButton={false}
+					showBackButton={false}
 				/>
 
 				{loading || !uri ? (
