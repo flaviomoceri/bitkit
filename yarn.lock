@@ -6384,9 +6384,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"beignet@npm:0.0.49":
-  version: 0.0.49
-  resolution: "beignet@npm:0.0.49"
+"beignet@npm:0.0.51":
+  version: 0.0.51
+  resolution: "beignet@npm:0.0.51"
   dependencies:
     "@bitcoinerlab/secp256k1": 1.0.5
     bech32: 2.0.0
@@ -6399,8 +6399,8 @@ __metadata:
     ecpair: 2.1.0
     lodash.clonedeep: 4.5.0
     net: 1.0.2
-    rn-electrum-client: 0.0.18
-  checksum: fef6246edf066cb1dad9a3969d10e7a5497524aa9220fab24b3a11cb0644d04b23bddab48912b9485e67b7b58c58e3da951fa5e349c92a5121a042663def0280
+    rn-electrum-client: 0.0.21
+  checksum: 5746286fad3d16374ccf33b7ae17ca921c23369b7755ff52bc212155b5c578d03a2cb953a1389017e8d27aa9054a7cb833e2afe82d321975d2c9a0ca05921625
   languageName: node
   linkType: hard
 
@@ -6644,7 +6644,7 @@ __metadata:
     "@types/uuid": ^9.0.8
     babel-jest: ^29.7.0
     babel-plugin-transform-remove-console: ^6.9.4
-    beignet: 0.0.49
+    beignet: 0.0.51
     bip21: 2.0.3
     bip32: 4.0.0
     bitcoin-address-validation: 2.2.3
@@ -15224,10 +15224,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rn-electrum-client@npm:0.0.18":
-  version: 0.0.18
-  resolution: "rn-electrum-client@npm:0.0.18"
-  checksum: 5b0ef43d1ea01c01eb7bee15b64307aeb250608fedba069914c440e399dde25d3a8ca7b7bc9aa42dfac1997f9f913d7069e42a0781ec280c189d7887bf5dd5f9
+"rn-electrum-client@npm:0.0.21":
+  version: 0.0.21
+  resolution: "rn-electrum-client@npm:0.0.21"
+  checksum: 7aeb73f36fb2133d0bed77c6a907a8f8cc508913ff90dcb5494db067db63df9a747e978592df2ca06c0077ab9b39822d8a0bc7fdf52e4fe6ee83c546878cbbbf
   languageName: node
   linkType: hard
 
