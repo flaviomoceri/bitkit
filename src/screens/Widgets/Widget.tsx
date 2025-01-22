@@ -2,33 +2,54 @@ import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { isEqual } from 'lodash';
 import KeyboardAvoidingView from '../../components/KeyboardAvoidingView';
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import SvgImage from '../../components/SvgImage';
 import Button from '../../components/buttons/Button';
 import CalculatorWidget from '../../components/widgets/CalculatorWidget';
+import WeatherWidget from '../../components/widgets/WeatherWidget';
 import { widgets } from '../../constants/widgets';
 import { useCurrency } from '../../hooks/displayValues';
-import { useAppDispatch } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import type { RootStackScreenProps } from '../../navigation/types';
+import { widgetSelector } from '../../store/reselect/widgets';
 import { deleteWidget, saveWidget } from '../../store/slices/widgets';
-import { ScrollView, View as ThemedView } from '../../styles/components';
+import { TWidgetOptions } from '../../store/types/widgets';
+import {
+	ScrollView,
+	View as ThemedView,
+	TouchableOpacity,
+} from '../../styles/components';
+import { ChevronRight } from '../../styles/icons';
 import { BodyM, Caption13Up, Headline } from '../../styles/text';
+import { getDefaultOptions } from './WidgetEdit';
 
 const Widget = ({
 	navigation,
 	route,
 }: RootStackScreenProps<'Widget'>): ReactElement => {
-	const { id } = route.params;
+	const { id, preview } = route.params;
 	const { t } = useTranslation('widgets');
 	const dispatch = useAppDispatch();
 	const { fiatSymbol } = useCurrency();
+	const savedWidget = useAppSelector((state) => {
+		return widgetSelector(state, id);
+	}) as TWidgetOptions;
 
 	const widget = {
 		name: t(`${id}.name`),
 		description: t(`${id}.description`, { fiatSymbol }),
 		icon: widgets[id].icon,
+	};
+
+	const defaultOptions = getDefaultOptions(id);
+	const options = preview ?? savedWidget ?? defaultOptions;
+	const hasEdited = !isEqual(options, defaultOptions);
+
+	const onEdit = (): void => {
+		navigation.navigate('WidgetEdit', { id, initialFields: options });
 	};
 
 	const onDelete = (): void => {
@@ -37,8 +58,19 @@ const Widget = ({
 	};
 
 	const onSave = (): void => {
-		dispatch(saveWidget({ id }));
+		dispatch(saveWidget({ id, options }));
 		navigation.popToTop();
+	};
+
+	const renderWidget = (): ReactElement => {
+		switch (id) {
+			case 'calculator':
+				return <CalculatorWidget />;
+			case 'weather':
+				return <WeatherWidget options={options} />;
+			default:
+				return <></>;
+		}
 	};
 
 	return (
@@ -61,12 +93,31 @@ const Widget = ({
 						{widget.description}
 					</BodyM>
 
+					{id === 'weather' && (
+						<TouchableOpacity
+							style={styles.item}
+							testID="WidgetEdit"
+							onPress={onEdit}>
+							<View style={styles.columnLeft}>
+								<BodyM color="white">{t('widget.edit')}</BodyM>
+							</View>
+							<View style={styles.columnRight}>
+								<BodyM style={styles.valueText} testID="Value">
+									{hasEdited
+										? t('widget.edit_custom')
+										: t('widget.edit_default')}
+								</BodyM>
+								<ChevronRight color="secondary" width={24} height={24} />
+							</View>
+						</TouchableOpacity>
+					)}
+
 					<View style={styles.footer}>
 						<Caption13Up style={styles.caption} color="secondary">
 							{t('preview')}
 						</Caption13Up>
 
-						<CalculatorWidget />
+						{renderWidget()}
 
 						<View style={styles.buttonsContainer}>
 							<Button
@@ -111,7 +162,8 @@ const styles = StyleSheet.create({
 		marginBottom: 16,
 	},
 	headerText: {
-		maxWidth: '70%',
+		justifyContent: 'center',
+		maxWidth: '75%',
 	},
 	headerImage: {
 		borderRadius: 8,

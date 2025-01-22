@@ -21,7 +21,7 @@ import {
 	widgetsSelector,
 } from '../store/reselect/widgets';
 import { setWidgetsSortOrder } from '../store/slices/widgets';
-import { TFeedWidget } from '../store/types/widgets';
+import { TFeedWidget, TWeatherWidgetOptions } from '../store/types/widgets';
 import { TouchableOpacity, View } from '../styles/components';
 import { Checkmark, PlusIcon, SortAscendingIcon } from '../styles/icons';
 import { Caption13Up } from '../styles/text';
@@ -34,6 +34,7 @@ import LuganoFeedWidget from './LuganoFeedWidget';
 import PriceWidget from './PriceWidget';
 import Button from './buttons/Button';
 import CalculatorWidget from './widgets/CalculatorWidget';
+import WeatherWidget from './widgets/WeatherWidget';
 
 const Widgets = (): ReactElement => {
 	const { t } = useTranslation('slashtags');
@@ -82,33 +83,40 @@ const Widgets = (): ReactElement => {
 				}
 			};
 
+			if (id === 'calculator') {
+				return (
+					<CalculatorWidget
+						style={styles.widget}
+						isEditing={editing}
+						testID="CalculatorWidget"
+						onLongPress={initiateDrag}
+						onPressIn={initiateDrag}
+					/>
+				);
+			}
+
+			if (id === 'weather') {
+				const options = widgets[id] as TWeatherWidgetOptions;
+				return (
+					<WeatherWidget
+						style={styles.widget}
+						options={options}
+						isEditing={editing}
+						testID="WeatherWidget"
+						onLongPress={initiateDrag}
+						onPressIn={initiateDrag}
+					/>
+				);
+			}
+
+			const feedWidget = widgets[id] as TFeedWidget;
 			let testID: string;
 			let Component:
 				| typeof PriceWidget
 				| typeof HeadlinesWidget
 				| typeof BlocksWidget
 				| typeof FactsWidget
-				| typeof FeedWidget
-				| typeof CalculatorWidget;
-
-			if (id === 'calculator') {
-				Component = CalculatorWidget;
-				testID = 'CalculatorWidget';
-
-				return (
-					<ScaleDecorator>
-						<Component
-							style={styles.widget}
-							isEditing={editing}
-							testID={testID}
-							onLongPress={initiateDrag}
-							onPressIn={initiateDrag}
-						/>
-					</ScaleDecorator>
-				);
-			}
-
-			const feedWidget = widgets[id] as TFeedWidget;
+				| typeof FeedWidget;
 
 			switch (feedWidget.type) {
 				case SUPPORTED_FEED_TYPES.PRICE_FEED:
@@ -137,17 +145,15 @@ const Widgets = (): ReactElement => {
 			}
 
 			return (
-				<ScaleDecorator>
-					<Component
-						style={styles.widget}
-						url={id}
-						widget={feedWidget}
-						isEditing={editing}
-						testID={testID}
-						onLongPress={initiateDrag}
-						onPressIn={initiateDrag}
-					/>
-				</ScaleDecorator>
+				<Component
+					style={styles.widget}
+					url={id}
+					widget={feedWidget}
+					isEditing={editing}
+					testID={testID}
+					onLongPress={initiateDrag}
+					onPressIn={initiateDrag}
+				/>
 			);
 		},
 		[editing, widgets, sortedWidgets.length],
@@ -174,7 +180,9 @@ const Widgets = (): ReactElement => {
 			<DraggableFlatList
 				data={sortedWidgets}
 				keyExtractor={(id): string => id}
-				renderItem={renderItem}
+				renderItem={(params): ReactElement => (
+					<ScaleDecorator>{renderItem(params)}</ScaleDecorator>
+				)}
 				scrollEnabled={false}
 				activationDistance={editing ? 0 : 100}
 				onDragEnd={onDragEnd}

@@ -23,6 +23,7 @@ const WidgetsSuggestions = ({
 				<ScrollView>
 					<FeedWidgetItems />
 					<WidgetListItem id="calculator" />
+					<WidgetListItem id="weather" />
 				</ScrollView>
 
 				<View style={styles.buttonContainer}>

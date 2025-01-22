@@ -30,7 +30,7 @@ import {
 import { ChevronRight, QuestionMarkIcon } from '../../styles/icons';
 import { BodyM, Caption13Up, Headline } from '../../styles/text';
 import { SUPPORTED_FEED_TYPES } from '../../utils/widgets';
-import { getDefaultSettings } from './WidgetEdit';
+import { getDefaultSettings } from './FeedWidgetEdit';
 
 const SlashfeedWidget = ({
 	navigation,
@@ -56,7 +56,7 @@ const SlashfeedWidget = ({
 	const hasEdited = !isEqual(settings, defaultSettings);
 
 	const onEdit = (): void => {
-		navigation.navigate('WidgetEdit', {
+		navigation.navigate('FeedWidgetEdit', {
 			url,
 			initialFields: settings,
 		});

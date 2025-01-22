@@ -8,6 +8,9 @@
 				"noBannedTypes": "off",
 				"noForEach": "off"
 			},
+			"nursery": {
+				"useExplicitType": "off"
+			},
 			"performance": {
 				"noAccumulatingSpread": "off"
 			},

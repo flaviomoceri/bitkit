@@ -35,8 +35,17 @@ export type TFeedWidget = {
 	extras?: TFeedWidgetOptions['extras'];
 };
 
-export type TWidget = TFeedWidget;
+export type TWeatherWidgetOptions = {
+	showStatus: boolean;
+	showText: boolean;
+	showMedian: boolean;
+	showNextBlockFee: boolean;
+};
+
+export type TWidgetOptions = TWeatherWidgetOptions;
+
+export type TWidget = TFeedWidget | TWidgetOptions;
 
 export type TWidgets = {
-	[id: string]: TFeedWidget | undefined;
+	[id: string]: TWidget | undefined;
 };

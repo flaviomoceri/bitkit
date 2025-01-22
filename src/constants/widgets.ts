@@ -1,4 +1,4 @@
-import { calculatorIcon } from '../assets/icons/widgets';
+import { calculatorIcon, weatherIcon } from '../assets/icons/widgets';
 
 export const priceFeedUrl =
 	'slashfeed:9ckhj7ea31ugskdewy9eiod5trhtbgcu9juza8aypjyugsp5f4oo/Bitcoin Price';
@@ -11,4 +11,5 @@ export const bitcoinFactsUrl =
 
 export const widgets = {
 	calculator: { id: 'calculator', icon: calculatorIcon() },
+	weather: { id: 'weather', icon: weatherIcon() },
 };

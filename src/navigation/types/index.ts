@@ -9,7 +9,10 @@ import {
 
 import type { RecoveryStackParamList } from '../../screens/Recovery/RecoveryNavigator';
 import type { IActivityItem } from '../../store/types/activity';
-import type { TFeedWidgetOptions } from '../../store/types/widgets';
+import type {
+	TFeedWidgetOptions,
+	TWidgetOptions,
+} from '../../store/types/widgets';
 import type { BackupStackParamList } from '../bottom-sheet/BackupNavigation';
 import type { LNURLWithdrawStackParamList } from '../bottom-sheet/LNURLWithdrawNavigation';
 import type { OrangeTicketStackParamList } from '../bottom-sheet/OrangeTicketNavigation';
@@ -45,9 +48,10 @@ export type RootStackParamList = {
 	BuyBitcoin: undefined;
 	WidgetsOnboarding: undefined;
 	WidgetsSuggestions: undefined;
-	Widget: { id: string };
+	Widget: { id: string; preview?: TWidgetOptions };
+	WidgetEdit: { id: string; initialFields: TWidgetOptions };
 	FeedWidget: { url: string; preview?: TFeedWidgetOptions };
-	WidgetEdit: { url: string; initialFields: TFeedWidgetOptions };
+	FeedWidgetEdit: { url: string; initialFields: TFeedWidgetOptions };
 };
 
 // Root Stack Navigator
