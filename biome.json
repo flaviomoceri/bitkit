@@ -10,6 +10,7 @@
 			},
 			"nursery": {
 				"useExplicitType": "off"
+			},
 			"correctness": {
 				"noUnusedFunctionParameters": "error",
 				"noUnusedVariables": "error"
