@@ -8,6 +8,9 @@
 				"noBannedTypes": "off",
 				"noForEach": "off"
 			},
+			"nursery": {
+				"useExplicitType": "off"
+			},
 			"correctness": {
 				"noUnusedFunctionParameters": "error",
 				"noUnusedVariables": "error"

@@ -13,11 +13,13 @@ import { ListIcon, SettingsIcon, TrashIcon } from '../../styles/icons';
 import { BodyMSB } from '../../styles/text';
 import { truncate } from '../../utils/helpers';
 import Dialog from '../Dialog';
+// import LoadingView from '../LoadingView';
 import SvgImage from '../SvgImage';
 
 const BaseWidget = ({
 	id,
 	children,
+	// isLoading,
 	isEditing,
 	style,
 	testID,
@@ -27,6 +29,7 @@ const BaseWidget = ({
 }: {
 	id: string;
 	children: ReactElement;
+	// isLoading?: boolean;
 	isEditing?: boolean;
 	style?: StyleProp<ViewStyle>;
 	testID?: string;
@@ -110,6 +113,15 @@ const BaseWidget = ({
 				{showTitle && !isEditing && <View style={styles.spacer} />}
 
 				{!isEditing && children}
+
+				{/* {!isEditing && (
+					<LoadingView
+						style={styles.content}
+						loading={!!isLoading}
+						delay={1000}>
+						{children}
+					</LoadingView>
+				)} */}
 			</TouchableOpacity>
 
 			<Dialog
