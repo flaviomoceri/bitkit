@@ -121,7 +121,7 @@
 				"string": "The amount you can transfer to your spending balance is currently limited to ₿ {amount}."
 			},
 			"description_zero": {
-				"string": "You've reached the maximum for your spending balance."
+				"string": "Your transfer to the spending balance is limited due to liquidity policy. For details, visit the Help Center."
 			}
 		}
 	},
