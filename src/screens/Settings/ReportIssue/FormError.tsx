@@ -1,13 +1,13 @@
 import React, { memo, ReactElement } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Image, StyleSheet, View } from 'react-native';
 
-import { BodyM } from '../../../styles/text';
-import { View as ThemedView } from '../../../styles/components';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/buttons/Button';
 import type { SettingsScreenProps } from '../../../navigation/types';
+import { View as ThemedView } from '../../../styles/components';
+import { BodyM } from '../../../styles/text';
 
 const imageSrc = require('../../../assets/illustrations/cross.png');
 
@@ -23,12 +23,7 @@ const FormError = ({
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={t('support.title_unsuccess')}
-				onClosePress={(): void => {
-					navigation.navigate('Wallet');
-				}}
-			/>
+			<NavigationHeader title={t('support.title_unsuccess')} />
 			<View style={styles.content}>
 				<BodyM style={styles.text} color="secondary">
 					{t('support.text_unsuccess')}

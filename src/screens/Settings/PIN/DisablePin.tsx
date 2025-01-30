@@ -1,14 +1,14 @@
 import React, { memo, ReactElement } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Image, StyleSheet, View } from 'react-native';
 
+import NavigationHeader from '../../../components/NavigationHeader';
+import SafeAreaInset from '../../../components/SafeAreaInset';
+import Button from '../../../components/buttons/Button';
+import type { SettingsScreenProps } from '../../../navigation/types';
 import { View as ThemedView } from '../../../styles/components';
 import { BodyM } from '../../../styles/text';
-import SafeAreaInset from '../../../components/SafeAreaInset';
-import NavigationHeader from '../../../components/NavigationHeader';
-import Button from '../../../components/buttons/Button';
 import { removePin } from '../../../utils/settings';
-import type { SettingsScreenProps } from '../../../navigation/types';
 
 const imageSrc = require('../../../assets/illustrations/shield.png');
 
@@ -33,12 +33,7 @@ const DisablePin = ({
 	return (
 		<ThemedView style={styles.container}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={t('pin_disable_title')}
-				onClosePress={(): void => {
-					navigation.navigate('Wallet');
-				}}
-			/>
+			<NavigationHeader title={t('pin_disable_title')} />
 
 			<View style={styles.message}>
 				<BodyM color="secondary">{t('pin_disable_text')}</BodyM>

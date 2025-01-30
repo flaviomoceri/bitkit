@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display } from '../../styles/text';
 import OnboardingScreen from '../../components/OnboardingScreen';
 import { useAppDispatch } from '../../hooks/redux';
-import { updateUser } from '../../store/slices/user';
 import type { TransferScreenProps } from '../../navigation/types';
+import { updateSettings } from '../../store/slices/settings';
+import { Display } from '../../styles/text';
 
 const imageSrc = require('../../assets/illustrations/piggybank.png');
 
@@ -15,13 +15,9 @@ const SavingsIntro = ({
 	const { t } = useTranslation('lightning');
 	const dispatch = useAppDispatch();
 
-	const onClose = (): void => {
-		navigation.navigate('Wallet');
-	};
-
 	const onContinue = (): void => {
 		navigation.navigate('Availability');
-		dispatch(updateUser({ savingsIntroSeen: true }));
+		dispatch(updateSettings({ savingsIntroSeen: true }));
 	};
 
 	return (
@@ -39,7 +35,6 @@ const SavingsIntro = ({
 			buttonText={t('savings_intro.button')}
 			mirrorImage={true}
 			testID="SavingsIntro"
-			onClosePress={onClose}
 			onButtonPress={onContinue}
 		/>
 	);

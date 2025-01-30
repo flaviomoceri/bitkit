@@ -1,15 +1,15 @@
 import React, { memo, ReactElement } from 'react';
-import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet } from 'react-native';
 
-import { processUri } from '../../utils/scanner/scanner';
-import SafeAreaInset from '../../components/SafeAreaInset';
-import NavigationHeader from '../../components/NavigationHeader';
-import { showToast } from '../../utils/notifications';
-import ScannerComponent from './ScannerComponent';
-import type { RootStackScreenProps } from '../../navigation/types';
 import DetectSwipe from '../../components/DetectSwipe';
+import NavigationHeader from '../../components/NavigationHeader';
+import SafeAreaInset from '../../components/SafeAreaInset';
+import type { RootStackScreenProps } from '../../navigation/types';
 import { resetSendTransaction } from '../../store/actions/wallet';
+import { showToast } from '../../utils/notifications';
+import { processUri } from '../../utils/scanner/scanner';
+import ScannerComponent from './ScannerComponent';
 
 const ScannerScreen = ({
 	navigation,
@@ -19,7 +19,7 @@ const ScannerScreen = ({
 	const onScan = route.params?.onScan;
 
 	const onSwipeRight = (): void => {
-		navigation.navigate('Wallet');
+		navigation.popToTop();
 	};
 
 	const onRead = (uri: string): void => {
@@ -51,7 +51,6 @@ const ScannerScreen = ({
 				<NavigationHeader
 					style={styles.navigationHeader}
 					title={t('qr_scan')}
-					onClosePress={(): void => navigation.pop()}
 				/>
 			</ScannerComponent>
 		</DetectSwipe>

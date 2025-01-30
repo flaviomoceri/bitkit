@@ -1,26 +1,26 @@
 import React, { ReactElement, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
+import { Image, StyleSheet, View } from 'react-native';
 
-import { View as ThemedView } from '../../styles/components';
-import { Caption13Up, Display } from '../../styles/text';
-import { LightningIcon } from '../../styles/icons';
-import SafeAreaInset from '../../components/SafeAreaInset';
+import LightningChannel from '../../components/LightningChannel';
+import Money from '../../components/Money';
 import NavigationHeader from '../../components/NavigationHeader';
+import SafeAreaInset from '../../components/SafeAreaInset';
 import SwipeToConfirm from '../../components/SwipeToConfirm';
 import Button from '../../components/buttons/Button';
-import Money from '../../components/Money';
-import LightningChannel from '../../components/LightningChannel';
-import { sleep } from '../../utils/helpers';
-import { showToast } from '../../utils/notifications';
-import { useTransfer } from '../../hooks/transfer';
 import { useAppSelector } from '../../hooks/redux';
+import { useTransfer } from '../../hooks/transfer';
 import { TransferScreenProps } from '../../navigation/types';
 import { transactionFeeSelector } from '../../store/reselect/wallet';
 import {
 	confirmChannelPurchase,
 	startChannelPurchase,
 } from '../../store/utils/blocktank';
+import { View as ThemedView } from '../../styles/components';
+import { LightningIcon } from '../../styles/icons';
+import { Caption13Up, Display } from '../../styles/text';
+import { sleep } from '../../utils/helpers';
+import { showToast } from '../../utils/notifications';
 
 const image = require('../../assets/illustrations/coin-stack-x.png');
 
@@ -85,10 +85,7 @@ const SpendingConfirm = ({
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={t('transfer.nav_title')}
-				onClosePress={(): void => navigation.navigate('Wallet')}
-			/>
+			<NavigationHeader title={t('transfer.nav_title')} />
 			<View style={styles.content}>
 				<Display>
 					<Trans
@@ -100,13 +97,13 @@ const SpendingConfirm = ({
 
 				<View style={styles.fees}>
 					<View style={styles.feesRow}>
-						<View style={styles.feeItem}>
+						<View testID="SpendingConfirmNetworkFee" style={styles.feeItem}>
 							<Caption13Up style={styles.feeItemLabel} color="secondary">
 								{t('spending_confirm.network_fee')}
 							</Caption13Up>
 							<Money sats={transactionFee} size="bodySSB" symbol={true} />
 						</View>
-						<View style={styles.feeItem}>
+						<View testID="SpendingConfirmLspFee" style={styles.feeItem}>
 							<Caption13Up style={styles.feeItemLabel} color="secondary">
 								{t('spending_confirm.lsp_fee')}
 							</Caption13Up>
@@ -114,13 +111,13 @@ const SpendingConfirm = ({
 						</View>
 					</View>
 					<View style={styles.feesRow}>
-						<View style={styles.feeItem}>
+						<View testID="SpendingConfirmAmount" style={styles.feeItem}>
 							<Caption13Up style={styles.feeItemLabel} color="secondary">
 								{t('spending_confirm.amount')}
 							</Caption13Up>
 							<Money sats={clientBalance} size="bodySSB" symbol={true} />
 						</View>
-						<View style={styles.feeItem}>
+						<View testID="SpendingConfirmTotal" style={styles.feeItem}>
 							<Caption13Up style={styles.feeItemLabel} color="secondary">
 								{t('spending_confirm.total')}
 							</Caption13Up>

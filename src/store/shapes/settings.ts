@@ -12,8 +12,8 @@ import {
 	__ELECTRUM_REGTEST_TCP_PORT__,
 	__WEB_RELAY__,
 } from '../../constants/env';
-import { TSettings } from '../slices/settings';
 import { EAvailableNetwork } from '../../utils/networks';
+import { TSettings } from '../slices/settings';
 import { ETransactionSpeed } from '../types/settings';
 import { EDenomination, EUnit } from '../types/wallet';
 
@@ -74,6 +74,7 @@ const defaultReceivePreference = [
 ];
 
 export const initialSettingsState: TSettings = {
+	backupVerified: false,
 	enableAutoReadClipboard: false,
 	enableSendAmountWarning: false,
 	enableSwipeToHideBalance: true,
@@ -89,7 +90,7 @@ export const initialSettingsState: TSettings = {
 	selectedCurrency: 'USD',
 	selectedLanguage: 'english',
 	customElectrumPeers: defaultElectrumPeer,
-	rapidGossipSyncUrl: 'https://rapidsync.lightningdevkit.org/snapshot/',
+	rapidGossipSyncUrl: 'https://rgs.blocktank.to/snapshot/',
 	coinSelectAuto: true,
 	coinSelectPreference: 'small',
 	receivePreference: defaultReceivePreference,
@@ -107,6 +108,10 @@ export const initialSettingsState: TSettings = {
 	treasureChests: [],
 	orangeTickets: [],
 	webRelay: __WEB_RELAY__,
+	quickpayIntroSeen: false,
+	transferIntroSeen: false,
+	spendingIntroSeen: false,
+	savingsIntroSeen: false,
 };
 
 export const getDefaultSettingsShape = (): TSettings => {

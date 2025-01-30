@@ -1,13 +1,12 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import {
-	TChannel as TLdkChannel,
 	TBackupStateUpdate,
 	TChannelMonitor,
+	TChannel as TLdkChannel,
 } from '@synonymdev/react-native-ldk';
 
-import { initialLightningState } from '../shapes/lightning';
 import { EAvailableNetwork } from '../../utils/networks';
-import { TWalletName } from '../types/wallet';
+import { initialLightningState } from '../shapes/lightning';
 import {
 	EChannelStatus,
 	TChannel,
@@ -15,6 +14,7 @@ import {
 	TLightningNodeVersion,
 	TPendingPayment,
 } from '../types/lightning';
+import { TWalletName } from '../types/wallet';
 
 export const lightningSlice = createSlice({
 	name: 'lightning',
@@ -143,9 +143,9 @@ export const lightningSlice = createSlice({
 			}>,
 		) => {
 			const { selectedWallet, selectedNetwork } = action.payload;
-			let filtered = state.nodes[selectedWallet].peers[selectedNetwork].filter(
-				(peer) => peer !== action.payload.peer,
-			);
+			const filtered = state.nodes[selectedWallet].peers[
+				selectedNetwork
+			].filter((peer) => peer !== action.payload.peer);
 			state.nodes[selectedWallet].peers[selectedNetwork] = filtered;
 		},
 		updateBackupState: (

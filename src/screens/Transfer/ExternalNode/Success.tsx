@@ -1,10 +1,10 @@
 import React, { ReactElement, memo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { BodyMB, Display } from '../../../styles/text';
 import InfoScreen from '../../../components/InfoScreen';
-import { getRandomOkText } from '../../../utils/i18n/helpers';
 import type { TransferScreenProps } from '../../../navigation/types';
+import { BodyMB, Display } from '../../../styles/text';
+import { getRandomOkText } from '../../../utils/i18n/helpers';
 
 const imageSrc = require('../../../assets/illustrations/switch.png');
 
@@ -14,13 +14,12 @@ const ExternalSuccess = ({
 	const { t } = useTranslation('lightning');
 
 	const onContinue = (): void => {
-		navigation.navigate('Wallet', { screen: 'Wallets' });
+		navigation.popTo('Wallet', { screen: 'Wallets' });
 	};
 
 	return (
 		<InfoScreen
 			navTitle={t('external.nav_title')}
-			displayBackButton={false}
 			title={
 				<Trans
 					t={t}
@@ -37,8 +36,8 @@ const ExternalSuccess = ({
 			}
 			image={imageSrc}
 			buttonText={getRandomOkText()}
+			showBackButton={false}
 			testID="ExternalSuccess"
-			onClosePress={onContinue}
 			onButtonPress={onContinue}
 		/>
 	);

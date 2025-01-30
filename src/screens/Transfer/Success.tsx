@@ -1,10 +1,10 @@
 import React, { ReactElement, memo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display } from '../../styles/text';
 import InfoScreen from '../../components/InfoScreen';
-import { getRandomOkText } from '../../utils/i18n/helpers';
 import type { TransferScreenProps } from '../../navigation/types';
+import { Display } from '../../styles/text';
+import { getRandomOkText } from '../../utils/i18n/helpers';
 
 const imageSrc = require('../../assets/illustrations/check.png');
 
@@ -16,7 +16,7 @@ const Success = ({
 	const { type } = route.params;
 
 	const onContinue = (): void => {
-		navigation.navigate('Wallet', { screen: 'Wallets' });
+		navigation.popTo('Wallet', { screen: 'Wallets' });
 	};
 
 	const isTransferToSavings = type === 'savings';
@@ -28,7 +28,6 @@ const Success = ({
 	return (
 		<InfoScreen
 			navTitle={t('transfer_success.nav_title')}
-			displayBackButton={false}
 			title={
 				<Trans
 					t={t}
@@ -39,6 +38,8 @@ const Success = ({
 			description={t(`transfer_success.${description}`)}
 			image={imageSrc}
 			buttonText={buttonText}
+			showBackButton={false}
+			showCloseButton={false}
 			testID="TransferSuccess"
 			onButtonPress={onContinue}
 		/>

@@ -1,15 +1,4 @@
-import { EmitterSubscription } from 'react-native';
-import Keychain from 'react-native-keychain';
 import ecc from '@bitcoinerlab/secp256k1';
-import RNFS from 'react-native-fs';
-import { err, ok, Result } from '@synonymdev/result';
-import {
-	EPaymentType,
-	IBtInfo,
-	IGetFeeEstimatesResponse,
-	IOnchainFees,
-	TGetAddressHistory,
-} from 'beignet';
 import lm, {
 	ldk,
 	defaultUserConfig,
@@ -36,13 +25,75 @@ import lm, {
 	TTransactionPosition,
 	TGetBestBlock,
 } from '@synonymdev/react-native-ldk';
+import { Result, err, ok } from '@synonymdev/result';
+import {
+	EPaymentType,
+	IBtInfo,
+	IGetFeeEstimatesResponse,
+	IOnchainFees,
+	TGetAddressHistory,
+} from 'beignet';
+import { EmitterSubscription } from 'react-native';
+import RNFS from 'react-native-fs';
+import Keychain from 'react-native-keychain';
 
 import {
-	getBlockHeader,
-	getBlockHex,
-	getTransactionMerkle,
-	transactionExists,
-} from '../wallet/electrum';
+	__BACKUPS_SERVER_HOST__,
+	__BACKUPS_SERVER_PUBKEY__,
+	__TRUSTED_ZERO_CONF_PEERS__,
+} from '../../constants/env';
+import { sendNavigation } from '../../navigation/bottom-sheet/SendNavigation';
+import {
+	dispatch,
+	getBlocktankStore,
+	getFeesStore,
+	getLightningStore,
+	getStore,
+} from '../../store/helpers';
+import { addActivityItem } from '../../store/slices/activity';
+import { initialFeesState } from '../../store/slices/fees';
+import { updateBackupState } from '../../store/slices/lightning';
+import { closeSheet, updateUi } from '../../store/slices/ui';
+import {
+	EActivityType,
+	TLightningActivityItem,
+} from '../../store/types/activity';
+import {
+	EChannelClosureReason,
+	EChannelStatus,
+	TChannel,
+	TLdkAccountVersion,
+	TLightningNodeVersion,
+} from '../../store/types/lightning';
+import { IWalletItem, TWalletName } from '../../store/types/wallet';
+import { addCJitActivityItem } from '../../store/utils/activity';
+import {
+	refreshOnchainFeeEstimates,
+	updateOnchainFeeEstimates,
+} from '../../store/utils/fees';
+import {
+	closeChannelThunk,
+	moveMetaIncPaymentTags,
+	removePeer,
+	syncLightningTxsWithActivityList,
+	updateChannelsThunk,
+	updateLightningNodeIdThunk,
+	updateLightningNodeVersionThunk,
+} from '../../store/utils/lightning';
+import { showBottomSheet } from '../../store/utils/ui';
+import { getBlocktankInfo, isGeoBlocked, logToBlocktank } from '../blocktank';
+import {
+	promiseTimeout,
+	reduceValue,
+	sleep,
+	tryNTimes,
+	vibrate,
+} from '../helpers';
+import i18n from '../i18n';
+import { setKeychainValue } from '../keychain';
+import { EAvailableNetwork } from '../networks';
+import { showToast } from '../notifications';
+import { updateSlashPayConfig } from '../slashtags';
 import {
 	getBip39Passphrase,
 	getCurrentAddressIndex,
@@ -52,63 +103,12 @@ import {
 	getSelectedWallet,
 	ldkSeed,
 } from '../wallet';
-import { EAvailableNetwork } from '../networks';
 import {
-	dispatch,
-	getBlocktankStore,
-	getFeesStore,
-	getLightningStore,
-	getStore,
-} from '../../store/helpers';
-import { updateBackupState } from '../../store/slices/lightning';
-import {
-	moveMetaIncPaymentTags,
-	removePeer,
-	syncLightningTxsWithActivityList,
-	closeChannelThunk,
-	updateChannelsThunk,
-	updateLightningNodeIdThunk,
-	updateLightningNodeVersionThunk,
-} from '../../store/utils/lightning';
-import {
-	promiseTimeout,
-	reduceValue,
-	sleep,
-	tryNTimes,
-	vibrate,
-} from '../helpers';
-import {
-	EActivityType,
-	TLightningActivityItem,
-} from '../../store/types/activity';
-import { addActivityItem } from '../../store/slices/activity';
-import { addCJitActivityItem } from '../../store/utils/activity';
-import { IWalletItem, TWalletName } from '../../store/types/wallet';
-import { closeSheet, updateUi } from '../../store/slices/ui';
-import { showBottomSheet } from '../../store/utils/ui';
-import { updateSlashPayConfig } from '../slashtags';
-import {
-	TLdkAccountVersion,
-	TLightningNodeVersion,
-	TChannel,
-	EChannelStatus,
-	EChannelClosureReason,
-} from '../../store/types/lightning';
-import { getBlocktankInfo, isGeoBlocked, logToBlocktank } from '../blocktank';
-import {
-	refreshOnchainFeeEstimates,
-	updateOnchainFeeEstimates,
-} from '../../store/utils/fees';
-import {
-	__BACKUPS_SERVER_HOST__,
-	__BACKUPS_SERVER_PUBKEY__,
-	__TRUSTED_ZERO_CONF_PEERS__,
-} from '../../constants/env';
-import { showToast } from '../notifications';
-import { setKeychainValue } from '../keychain';
-import i18n from '../i18n';
-import { sendNavigation } from '../../navigation/bottom-sheet/SendNavigation';
-import { initialFeesState } from '../../store/slices/fees';
+	getBlockHeader,
+	getBlockHex,
+	getTransactionMerkle,
+	transactionExists,
+} from '../wallet/electrum';
 
 const PAYMENT_TIMEOUT = 8 * 1000; // 8 seconds
 
@@ -869,7 +869,7 @@ export const setAccount = async ({
 		key: name,
 		value: JSON.stringify(account),
 	});
-	return result.isOk() ? true : false;
+	return result.isOk();
 };
 
 /**
@@ -933,9 +933,8 @@ export const createDefaultLdkAccount = async ({
 	const setAccountResponse = await setAccount(defaultAccount);
 	if (setAccountResponse) {
 		return ok(defaultAccount);
-	} else {
-		return err('Unable to set LDK account.');
 	}
+	return err('Unable to set LDK account.');
 };
 
 /**
@@ -1034,9 +1033,9 @@ const getBestBlock: TGetBestBlock = async () => {
  * @returns {Promise<TTransactionData>}
  */
 export const getTransactionData = async (
-	txId: string = '',
+	txId = '',
 ): Promise<TTransactionData | undefined> => {
-	let transactionData = DefaultTransactionDataShape;
+	const transactionData = DefaultTransactionDataShape;
 	try {
 		const data = [{ tx_hash: txId }];
 		const electrum = await getOnChainWalletElectrumAsync();
@@ -1105,7 +1104,11 @@ export const getTransactionPosition = async ({
 		tx_hash,
 		height,
 	});
-	if (response.error || isNaN(response.data?.pos) || response.data?.pos < 0) {
+	if (
+		response.error ||
+		Number.isNaN(response.data?.pos) ||
+		response.data?.pos < 0
+	) {
 		return -1;
 	}
 	return response.data.pos;
@@ -1123,9 +1126,9 @@ export const isLdkRunning = async (): Promise<boolean> => {
 
 	if (getNodeIdResponse.isOk()) {
 		return true;
-	} else {
-		return false;
 	}
+
+	return false;
 };
 
 /**
@@ -1373,7 +1376,7 @@ export const getLdkChannels = (): Promise<Result<TLdkChannel[]>> => {
  * @returns Promise<Result<TChannelMonitor[]>>
  */
 export const getChannelMonitors = async (
-	ignoreOpenChannels: boolean = true,
+	ignoreOpenChannels = true,
 ): Promise<Result<TChannelMonitor[]>> => {
 	return ldk.listChannelMonitors(ignoreOpenChannels);
 };
@@ -1628,11 +1631,10 @@ export const keepLdkSynced = async ({
 }): Promise<void> => {
 	if (LDKIsStayingSynced) {
 		return;
-	} else {
-		LDKIsStayingSynced = true;
 	}
+	LDKIsStayingSynced = true;
 
-	let error: string = '';
+	let error = '';
 	while (!error) {
 		const syncRes = await refreshLdk({ selectedNetwork, selectedWallet });
 		if (!syncRes) {

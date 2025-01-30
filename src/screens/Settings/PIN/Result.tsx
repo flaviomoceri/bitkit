@@ -1,18 +1,19 @@
 import React, { memo, ReactElement, useMemo } from 'react';
-import { StyleSheet, View, Pressable, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 
-import { Switch } from '../../../styles/components';
-import { BodyM, BodyMSB } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
-import SafeAreaInset from '../../../components/SafeAreaInset';
 import GradientView from '../../../components/GradientView';
+import SafeAreaInset from '../../../components/SafeAreaInset';
+import Switch from '../../../components/Switch';
 import Button from '../../../components/buttons/Button';
+import { useBottomSheetScreenBackPress } from '../../../hooks/bottomSheet';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { closeSheet } from '../../../store/slices/ui';
-import { updateSettings } from '../../../store/slices/settings';
-import { pinForPaymentsSelector } from '../../../store/reselect/settings';
 import type { PinScreenProps } from '../../../navigation/types';
+import { pinForPaymentsSelector } from '../../../store/reselect/settings';
+import { updateSettings } from '../../../store/slices/settings';
+import { closeSheet } from '../../../store/slices/ui';
+import { BodyM, BodyMSB } from '../../../styles/text';
 
 const imageSrc = require('../../../assets/illustrations/check.png');
 
@@ -22,13 +23,15 @@ const Result = ({ route }: PinScreenProps<'Result'>): ReactElement => {
 	const dispatch = useAppDispatch();
 	const pinForPayments = useAppSelector(pinForPaymentsSelector);
 
+	useBottomSheetScreenBackPress();
+
 	const biometricsName = useMemo(
 		() =>
 			type === 'TouchID'
 				? t('bio_touch_id')
 				: type === 'FaceID'
-				? t('bio_face_id')
-				: type ?? t('bio'),
+					? t('bio_face_id')
+					: (type ?? t('bio')),
 		[type, t],
 	);
 
@@ -44,7 +47,7 @@ const Result = ({ route }: PinScreenProps<'Result'>): ReactElement => {
 		<GradientView style={styles.root}>
 			<BottomSheetNavigationHeader
 				title={t('success_title')}
-				displayBackButton={false}
+				showBackButton={false}
 			/>
 
 			<View style={styles.content}>

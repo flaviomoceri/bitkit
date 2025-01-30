@@ -6,6 +6,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import {
 	Keyboard,
 	NativeSyntheticEvent,
@@ -14,15 +15,9 @@ import {
 	TextInputKeyPressEventData,
 	View,
 } from 'react-native';
-import { Trans, useTranslation } from 'react-i18next';
 import { KeyboardAccessoryView } from 'react-native-keyboard-accessory';
 import rnAndroidKeyboardAdjust from 'rn-android-keyboard-adjust';
 
-import {
-	ScrollView,
-	TextInput,
-	View as ThemedView,
-} from '../../styles/components';
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import SeedInput from '../../components/SeedInput';
@@ -31,7 +26,13 @@ import VerticalShadow from '../../components/VerticalShadow';
 import Button from '../../components/buttons/Button';
 import { useAppDispatch } from '../../hooks/redux';
 import { OnboardingStackScreenProps } from '../../navigation/types';
-import { updateUser, verifyBackup } from '../../store/slices/user';
+import { verifyBackup } from '../../store/slices/settings';
+import { updateUser } from '../../store/slices/user';
+import {
+	ScrollView,
+	TextInput,
+	View as ThemedView,
+} from '../../styles/components';
 import { BodyM, BodyS, Display } from '../../styles/text';
 import { validateMnemonic } from '../../utils/wallet';
 
@@ -163,7 +164,7 @@ const RestoreFromSeed = ({
 		<ThemedView style={styles.root}>
 			<View style={styles.header}>
 				<SafeAreaInset type="top" />
-				<NavigationHeader displayBackButton={true} />
+				<NavigationHeader showCloseButton={false} />
 			</View>
 
 			<ScrollView
@@ -263,6 +264,7 @@ const RestoreFromSeed = ({
 
 			{showPassphrase ? (
 				<KeyboardAccessoryView hideBorder androidAdjustResize avoidKeyboard>
+					{/* biome-ignore lint/complexity/noUselessFragments: children expected */}
 					<></>
 				</KeyboardAccessoryView>
 			) : (

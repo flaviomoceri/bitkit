@@ -47,14 +47,17 @@ const PinPad = ({
 		biometryData?.biometryType === 'TouchID'
 			? t('bio_touch_id')
 			: biometryData?.biometryType === 'FaceID'
-			? t('bio_face_id')
-			: biometryData?.biometryType ?? t('bio');
+				? t('bio_face_id')
+				: (biometryData?.biometryType ?? t('bio'));
 
 	return (
 		<ThemedView style={styles.root}>
 			<View style={styles.header}>
 				<SafeAreaInset type="top" />
-				<NavigationHeader displayBackButton={showBackNavigation} />
+				<NavigationHeader
+					showBackButton={showBackNavigation}
+					showCloseButton={false}
+				/>
 			</View>
 			<View style={styles.container} testID="PinPad">
 				<View style={styles.logo}>

@@ -16,6 +16,7 @@ import GradientView from '../../../components/GradientView';
 import LightningSyncing from '../../../components/LightningSyncing';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import SwipeToConfirm from '../../../components/SwipeToConfirm';
+import { useBottomSheetScreenBackPress } from '../../../hooks/bottomSheet';
 import useColors from '../../../hooks/colors';
 import useKeyboard, { Keyboard } from '../../../hooks/keyboard';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
@@ -77,6 +78,8 @@ const LNURLConfirm = ({
 	const [isLoading, setIsLoading] = useState(false);
 	const [showBiotmetrics, setShowBiometrics] = useState(false);
 	const [comment, setComment] = useState('');
+
+	useBottomSheetScreenBackPress();
 
 	const onError = useCallback(
 		(errorMessage: string) => {
@@ -184,7 +187,7 @@ const LNURLConfirm = ({
 			<GradientView style={styles.container}>
 				<BottomSheetNavigationHeader
 					title={t('lnurl_p_title')}
-					displayBackButton={!fixedAmount}
+					showBackButton={!fixedAmount}
 				/>
 				<View style={styles.content}>
 					<AmountToggle

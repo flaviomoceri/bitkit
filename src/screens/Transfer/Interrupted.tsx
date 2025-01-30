@@ -1,9 +1,9 @@
 import React, { ReactElement, memo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { BodyMB, Display } from '../../styles/text';
 import InfoScreen from '../../components/InfoScreen';
 import type { TransferScreenProps } from '../../navigation/types';
+import { BodyMB, Display } from '../../styles/text';
 
 const imageSrc = require('../../assets/illustrations/exclamation-mark.png');
 
@@ -13,13 +13,12 @@ const Interrupted = ({
 	const { t } = useTranslation('lightning');
 
 	const onContinue = (): void => {
-		navigation.navigate('Wallet', { screen: 'Wallets' });
+		navigation.popTo('Wallet', { screen: 'Wallets' });
 	};
 
 	return (
 		<InfoScreen
 			navTitle={t('savings_interrupted.nav_title')}
-			displayBackButton={false}
 			title={
 				<Trans
 					t={t}
@@ -36,6 +35,8 @@ const Interrupted = ({
 			}
 			image={imageSrc}
 			buttonText={t('ok')}
+			showBackButton={false}
+			showCloseButton={false}
 			testID="TransferInterrupted"
 			onButtonPress={onContinue}
 		/>

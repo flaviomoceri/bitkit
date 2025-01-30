@@ -1,18 +1,18 @@
-import React, { memo, ReactElement, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
+import React, { memo, ReactElement, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { View as ThemedView, TextInput } from '../../../styles/components';
-import { BodyM, Caption13Up, Display } from '../../../styles/text';
-import { ClipboardTextIcon } from '../../../styles/icons';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/buttons/Button';
-import { showToast } from '../../../utils/notifications';
-import { addPeer, parseUri } from '../../../utils/lightning';
-import { savePeer } from '../../../store/utils/lightning';
 import type { TransferScreenProps } from '../../../navigation/types';
+import { savePeer } from '../../../store/utils/lightning';
+import { TextInput, View as ThemedView } from '../../../styles/components';
+import { ClipboardTextIcon } from '../../../styles/icons';
+import { BodyM, Caption13Up, Display } from '../../../styles/text';
+import { addPeer, parseUri } from '../../../utils/lightning';
+import { showToast } from '../../../utils/notifications';
 
 const ExternalNode = ({
 	navigation,
@@ -93,11 +93,8 @@ const ExternalNode = ({
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={t('external.nav_title')}
-				onClosePress={(): void => navigation.navigate('Wallet')}
-			/>
-			<View style={styles.content} testID="ExternalNode">
+			<NavigationHeader title={t('external.nav_title')} />
+			<ScrollView contentContainerStyle={styles.content} testID="ExternalNode">
 				<Display>
 					<Trans
 						t={t}
@@ -190,7 +187,7 @@ const ExternalNode = ({
 						onPress={onContinue}
 					/>
 				</View>
-			</View>
+			</ScrollView>
 			<SafeAreaInset type="bottom" minPadding={16} />
 		</ThemedView>
 	);
@@ -201,7 +198,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	content: {
-		flex: 1,
+		flexGrow: 1,
 		paddingTop: 16,
 		paddingHorizontal: 16,
 	},
@@ -229,6 +226,7 @@ const styles = StyleSheet.create({
 	},
 	button: {
 		flex: 1,
+		marginTop: 32,
 	},
 });
 

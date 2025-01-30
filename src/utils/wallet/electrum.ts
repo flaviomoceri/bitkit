@@ -1,15 +1,5 @@
-import { err, ok, Result } from '@synonymdev/result';
+import { Result, err, ok } from '@synonymdev/result';
 
-import { EAvailableNetwork } from '../networks';
-import {
-	ITransaction,
-	getCustomElectrumPeers,
-	getOnChainWalletAsync,
-	getOnChainWalletElectrum,
-	getOnChainWalletElectrumAsync,
-	getSelectedNetwork,
-	refreshWallet,
-} from './index';
 import {
 	EAvailableNetworks,
 	EProtocol,
@@ -21,6 +11,16 @@ import {
 	TServer,
 } from 'beignet';
 import { __E2E__ } from '../../constants/env';
+import { EAvailableNetwork } from '../networks';
+import {
+	ITransaction,
+	getCustomElectrumPeers,
+	getOnChainWalletAsync,
+	getOnChainWalletElectrum,
+	getOnChainWalletElectrumAsync,
+	getSelectedNetwork,
+	refreshWallet,
+} from './index';
 
 export interface IGetUtxosResponse {
 	utxos: IUtxo[];
@@ -50,7 +50,7 @@ export const getAddressUtxos = async ({
 }: {
 	allAddresses: IAddress[];
 }): Promise<Result<IGetUtxosResponse>> => {
-	let addresses: IAddresses = {};
+	const addresses: IAddresses = {};
 	allAddresses.map((a) => {
 		addresses[a.scriptHash] = a;
 	});

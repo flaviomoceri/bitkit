@@ -1,23 +1,23 @@
 import React, { ReactElement, memo, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Image, StyleSheet, View } from 'react-native';
 
+import AmountToggle from '../../../components/AmountToggle';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import GradientView from '../../../components/GradientView';
-import AmountToggle from '../../../components/AmountToggle';
-import type { LNURLWithdrawProps } from '../../../navigation/types';
+import LightningSyncing from '../../../components/LightningSyncing';
 import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/buttons/Button';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import type { LNURLWithdrawProps } from '../../../navigation/types';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from '../../../store/reselect/wallet';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { handleLnurlWithdraw } from '../../../utils/lnurl';
-import { BodyM } from '../../../styles/text';
-import { showToast } from '../../../utils/notifications';
-import LightningSyncing from '../../../components/LightningSyncing';
 import { closeSheet } from '../../../store/slices/ui';
+import { BodyM } from '../../../styles/text';
+import { handleLnurlWithdraw } from '../../../utils/lnurl';
+import { showToast } from '../../../utils/notifications';
 
 const imageSrc = require('../../../assets/illustrations/transfer.png');
 
@@ -55,9 +55,7 @@ const Confirm = ({ route }: LNURLWithdrawProps<'Confirm'>): ReactElement => {
 			<GradientView style={styles.container}>
 				<BottomSheetNavigationHeader
 					title={t('lnurl_w_title')}
-					displayBackButton={
-						wParams.minWithdrawable !== wParams.maxWithdrawable
-					}
+					showBackButton={wParams.minWithdrawable !== wParams.maxWithdrawable}
 				/>
 				<View style={styles.content}>
 					<AmountToggle style={styles.amountToggle} amount={amount} />

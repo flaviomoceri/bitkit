@@ -1,16 +1,16 @@
-import { configureStore, Middleware } from '@reduxjs/toolkit';
-import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
+import { Middleware, configureStore } from '@reduxjs/toolkit';
 import {
-	persistReducer,
-	persistStore,
-	createMigrate,
 	FLUSH,
-	REHYDRATE,
 	PAUSE,
 	PERSIST,
 	PURGE,
 	REGISTER,
+	REHYDRATE,
+	createMigrate,
+	persistReducer,
+	persistStore,
 } from 'redux-persist';
+import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 
 import {
 	__ENABLE_MIGRATION_DEBUG__,
@@ -18,9 +18,9 @@ import {
 	__ENABLE_REDUX_LOGGER__,
 	__JEST__,
 } from '../constants/env';
+import migrations from './migrations';
 import { reduxStorage } from './mmkv-storage';
 import rootReducer, { RootReducer } from './reducers';
-import migrations from './migrations';
 
 const devMiddleware: Middleware[] = [];
 if (__ENABLE_REDUX_LOGGER__) {
@@ -32,7 +32,7 @@ const persistConfig = {
 	key: 'root',
 	storage: reduxStorage,
 	// increase version after store shape changes
-	version: 49,
+	version: 52,
 	stateReconciler: autoMergeLevel2,
 	blacklist: ['receive', 'ui'],
 	migrate: createMigrate(migrations, { debug: __ENABLE_MIGRATION_DEBUG__ }),
@@ -56,17 +56,15 @@ const store = configureStore({
 
 		if (__DEV__ && !__JEST__) {
 			return defaultMiddleware.concat(devMiddleware);
-		} else {
-			return defaultMiddleware;
 		}
+		return defaultMiddleware;
 	},
 	enhancers: (getDefaultEnhancers) => {
 		if (__DEV__ && !__JEST__) {
 			const Reactotron = require('../../ReactotronConfig').default;
 			return getDefaultEnhancers().concat(Reactotron.createEnhancer());
-		} else {
-			return getDefaultEnhancers();
 		}
+		return getDefaultEnhancers();
 	},
 });
 

@@ -1,3 +1,9 @@
+import { NavigationIndependentTree } from '@react-navigation/native';
+import {
+	NativeStackNavigationOptions,
+	NativeStackNavigationProp,
+	createNativeStackNavigator,
+} from '@react-navigation/native-stack';
 import React, {
 	ReactElement,
 	memo,
@@ -5,25 +11,20 @@ import React, {
 	useEffect,
 	useState,
 } from 'react';
-import {
-	createNativeStackNavigator,
-	NativeStackNavigationProp,
-	NativeStackNavigationOptions,
-} from '@react-navigation/native-stack';
 
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import { __E2E__ } from '../../constants/env';
+import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
 import { useSnapPoints } from '../../hooks/bottomSheet';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import Airdrop from '../../screens/TreasureHunt/Airdrop';
 import Chest from '../../screens/TreasureHunt/Chest';
+import ErrorScreen from '../../screens/TreasureHunt/Error';
 import Loading from '../../screens/TreasureHunt/Loading';
 import Prize from '../../screens/TreasureHunt/Prize';
-import Airdrop from '../../screens/TreasureHunt/Airdrop';
-import Error from '../../screens/TreasureHunt/Error';
 import { viewControllerSelector } from '../../store/reselect/ui';
-import { NavigationContainer } from '../../styles/components';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { addTreasureChest } from '../../store/slices/settings';
-import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
+import { NavigationContainer } from '../../styles/components';
 
 export type TreasureHuntNavigationProp =
 	NativeStackNavigationProp<TreasureHuntStackParamList>;
@@ -99,6 +100,7 @@ const TreasureHuntNavigation = (): ReactElement => {
 		setIsLoading(false);
 	}, [chestId, dispatch]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: onOpen
 	useEffect(() => {
 		if (!isOpen) {
 			setIsLoading(true);
@@ -119,9 +121,6 @@ const TreasureHuntNavigation = (): ReactElement => {
 		} else {
 			getChest();
 		}
-
-		// onOpen
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isOpen, getChest]);
 
 	if (!isOpen || isLoading) {
@@ -130,29 +129,31 @@ const TreasureHuntNavigation = (): ReactElement => {
 
 	return (
 		<BottomSheetWrapper view="treasureHunt" snapPoints={snapPoints}>
-			<NavigationContainer key={isOpen.toString()}>
-				<Stack.Navigator
-					initialRouteName={initialScreen}
-					screenOptions={screenOptions}>
-					<Stack.Screen name="Chest" component={Chest} />
-					<Stack.Screen
-						name="Loading"
-						component={Loading}
-						initialParams={{ chestId }}
-					/>
-					<Stack.Screen
-						name="Prize"
-						component={Prize}
-						initialParams={{ chestId }}
-					/>
-					<Stack.Screen
-						name="Airdrop"
-						component={Airdrop}
-						initialParams={{ chestId }}
-					/>
-					<Stack.Screen name="Error" component={Error} />
-				</Stack.Navigator>
-			</NavigationContainer>
+			<NavigationIndependentTree>
+				<NavigationContainer key={isOpen.toString()}>
+					<Stack.Navigator
+						initialRouteName={initialScreen}
+						screenOptions={screenOptions}>
+						<Stack.Screen name="Chest" component={Chest} />
+						<Stack.Screen
+							name="Loading"
+							component={Loading}
+							initialParams={{ chestId }}
+						/>
+						<Stack.Screen
+							name="Prize"
+							component={Prize}
+							initialParams={{ chestId }}
+						/>
+						<Stack.Screen
+							name="Airdrop"
+							component={Airdrop}
+							initialParams={{ chestId }}
+						/>
+						<Stack.Screen name="Error" component={ErrorScreen} />
+					</Stack.Navigator>
+				</NavigationContainer>
+			</NavigationIndependentTree>
 		</BottomSheetWrapper>
 	);
 };

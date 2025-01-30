@@ -6,7 +6,7 @@ import {
 	View,
 	ViewStyle,
 } from 'react-native';
-import { Switch } from '../styles/components';
+import Switch from '../components/Switch';
 import { IThemeColors } from '../styles/themes';
 
 const SwitchRow = ({

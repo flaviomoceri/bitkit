@@ -1,48 +1,51 @@
-import React, { ReactElement, memo } from 'react';
-import { createNavigationContainerRef } from '@react-navigation/native';
 import {
-	createNativeStackNavigator,
+	NavigationIndependentTree,
+	createNavigationContainerRef,
+} from '@react-navigation/native';
+import {
 	NativeStackNavigationOptions,
 	NativeStackNavigationProp,
+	createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import { LNURLPayParams } from 'js-lnurl';
+import React, { ReactElement, memo } from 'react';
 
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
-import Recipient from '../../screens/Wallets/Send/Recipient';
-import Amount from '../../screens/Wallets/Send/Amount';
-import FeeRate from '../../screens/Wallets/Send/FeeRate';
-import FeeCustom from '../../screens/Wallets/Send/FeeCustom';
-import ReviewAndSend from '../../screens/Wallets/Send/ReviewAndSend';
-import Tags from '../../screens/Wallets/Send/Tags';
-import AutoRebalance from '../../screens/Wallets/Send/AutoRebalance';
-import PinCheck from '../../screens/Wallets/Send/PinCheck';
-import Pending from '../../screens/Wallets/Send/Pending';
-import Quickpay from '../../screens/Wallets/Send/Quickpay';
-import Success from '../../screens/Wallets/Send/Success';
-import Error from '../../screens/Wallets/Send/Error';
-import Contacts from '../../screens/Wallets/Send/Contacts';
-import Address from '../../screens/Wallets/Send/Address';
-import Scanner from '../../screens/Wallets/Send/Scanner';
-import CoinSelection from '../../screens/Wallets/Send/CoinSelection';
-import LNURLAmount from '../../screens/Wallets/LNURLPay/Amount';
-import LNURLConfirm from '../../screens/Wallets/LNURLPay/Confirm';
-import { NavigationContainer } from '../../styles/components';
-import { useSnapPoints } from '../../hooks/bottomSheet';
-import { viewControllerSelector } from '../../store/reselect/ui';
-import {
-	setupOnChainTransaction,
-	setupFeeForOnChainTransaction,
-} from '../../store/actions/wallet';
 import { __E2E__ } from '../../constants/env';
-import { EActivityType } from '../../store/types/activity';
-import { updateOnchainFeeEstimates } from '../../store/utils/fees';
+import { useSnapPoints } from '../../hooks/bottomSheet';
 import { useLightningBalance } from '../../hooks/lightning';
 import { useAppSelector } from '../../hooks/redux';
+import LNURLAmount from '../../screens/Wallets/LNURLPay/Amount';
+import LNURLConfirm from '../../screens/Wallets/LNURLPay/Confirm';
+import Address from '../../screens/Wallets/Send/Address';
+import Amount from '../../screens/Wallets/Send/Amount';
+import AutoRebalance from '../../screens/Wallets/Send/AutoRebalance';
+import CoinSelection from '../../screens/Wallets/Send/CoinSelection';
+import Contacts from '../../screens/Wallets/Send/Contacts';
+import ErrorScreen from '../../screens/Wallets/Send/Error';
+import FeeCustom from '../../screens/Wallets/Send/FeeCustom';
+import FeeRate from '../../screens/Wallets/Send/FeeRate';
+import Pending from '../../screens/Wallets/Send/Pending';
+import PinCheck from '../../screens/Wallets/Send/PinCheck';
+import Quickpay from '../../screens/Wallets/Send/Quickpay';
+import Recipient from '../../screens/Wallets/Send/Recipient';
+import ReviewAndSend from '../../screens/Wallets/Send/ReviewAndSend';
+import Scanner from '../../screens/Wallets/Send/Scanner';
+import Success from '../../screens/Wallets/Send/Success';
+import Tags from '../../screens/Wallets/Send/Tags';
+import {
+	setupFeeForOnChainTransaction,
+	setupOnChainTransaction,
+} from '../../store/actions/wallet';
+import { viewControllerSelector } from '../../store/reselect/ui';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 	transactionSelector,
 } from '../../store/reselect/wallet';
+import { EActivityType } from '../../store/types/activity';
+import { updateOnchainFeeEstimates } from '../../store/utils/fees';
+import { NavigationContainer } from '../../styles/components';
 import { refreshLdk } from '../../utils/lightning';
 
 export type SendNavigationProp = NativeStackNavigationProp<SendStackParamList>;
@@ -139,42 +142,44 @@ const SendNavigation = (): ReactElement => {
 			snapPoints={snapPoints}
 			testID="SendSheet"
 			onOpen={onOpen}>
-			<NavigationContainer key={isOpen.toString()} ref={navigationRef}>
-				<Stack.Navigator
-					initialRouteName={initialRouteName}
-					screenOptions={screenOptions}>
-					<Stack.Screen name="Recipient" component={Recipient} />
-					<Stack.Screen name="Contacts" component={Contacts} />
-					<Stack.Screen name="Address" component={Address} />
-					<Stack.Screen name="Scanner" component={Scanner} />
-					<Stack.Screen name="Amount" component={Amount} />
-					<Stack.Screen name="CoinSelection" component={CoinSelection} />
-					<Stack.Screen name="FeeRate" component={FeeRate} />
-					<Stack.Screen name="FeeCustom" component={FeeCustom} />
-					<Stack.Screen name="ReviewAndSend" component={ReviewAndSend} />
-					<Stack.Screen name="Tags" component={Tags} />
-					<Stack.Screen name="AutoRebalance" component={AutoRebalance} />
-					<Stack.Screen name="PinCheck" component={PinCheck} />
-					<Stack.Screen name="Pending" component={Pending} />
-					<Stack.Screen
-						name="Quickpay"
-						component={Quickpay}
-						initialParams={{ invoice, amount }}
-					/>
-					<Stack.Screen name="Success" component={Success} />
-					<Stack.Screen name="Error" component={Error} />
-					<Stack.Screen
-						name="LNURLAmount"
-						component={LNURLAmount}
-						initialParams={{ pParams, url }}
-					/>
-					<Stack.Screen
-						name="LNURLConfirm"
-						component={LNURLConfirm}
-						initialParams={{ pParams, url, amount }}
-					/>
-				</Stack.Navigator>
-			</NavigationContainer>
+			<NavigationIndependentTree>
+				<NavigationContainer key={isOpen.toString()} ref={navigationRef}>
+					<Stack.Navigator
+						initialRouteName={initialRouteName}
+						screenOptions={screenOptions}>
+						<Stack.Screen name="Recipient" component={Recipient} />
+						<Stack.Screen name="Contacts" component={Contacts} />
+						<Stack.Screen name="Address" component={Address} />
+						<Stack.Screen name="Scanner" component={Scanner} />
+						<Stack.Screen name="Amount" component={Amount} />
+						<Stack.Screen name="CoinSelection" component={CoinSelection} />
+						<Stack.Screen name="FeeRate" component={FeeRate} />
+						<Stack.Screen name="FeeCustom" component={FeeCustom} />
+						<Stack.Screen name="ReviewAndSend" component={ReviewAndSend} />
+						<Stack.Screen name="Tags" component={Tags} />
+						<Stack.Screen name="AutoRebalance" component={AutoRebalance} />
+						<Stack.Screen name="PinCheck" component={PinCheck} />
+						<Stack.Screen name="Pending" component={Pending} />
+						<Stack.Screen
+							name="Quickpay"
+							component={Quickpay}
+							initialParams={{ invoice, amount }}
+						/>
+						<Stack.Screen name="Success" component={Success} />
+						<Stack.Screen name="Error" component={ErrorScreen} />
+						<Stack.Screen
+							name="LNURLAmount"
+							component={LNURLAmount}
+							initialParams={{ pParams, url }}
+						/>
+						<Stack.Screen
+							name="LNURLConfirm"
+							component={LNURLConfirm}
+							initialParams={{ pParams, url, amount }}
+						/>
+					</Stack.Navigator>
+				</NavigationContainer>
+			</NavigationIndependentTree>
 		</BottomSheetWrapper>
 	);
 };

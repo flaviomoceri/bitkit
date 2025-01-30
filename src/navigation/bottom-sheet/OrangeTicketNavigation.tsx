@@ -1,3 +1,10 @@
+import { NavigationIndependentTree } from '@react-navigation/native';
+import {
+	NativeStackNavigationOptions,
+	NativeStackNavigationProp,
+	createNativeStackNavigator,
+} from '@react-navigation/native-stack';
+import { ldk } from '@synonymdev/react-native-ldk';
 import React, {
 	memo,
 	ReactElement,
@@ -5,28 +12,22 @@ import React, {
 	useEffect,
 	useState,
 } from 'react';
-import { ldk } from '@synonymdev/react-native-ldk';
-import {
-	createNativeStackNavigator,
-	NativeStackNavigationProp,
-	NativeStackNavigationOptions,
-} from '@react-navigation/native-stack';
 
-import { NavigationContainer } from '../../styles/components';
+import ErrorScreen from '../../screens/OrangeTicket/Error';
 import Prize from '../../screens/OrangeTicket/Prize';
 import UsedCard from '../../screens/OrangeTicket/UsedCard';
-import Error from '../../screens/OrangeTicket/Error';
+import { NavigationContainer } from '../../styles/components';
 
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
-import { useAppSelector } from '../../hooks/redux';
+import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
 import {
 	useBottomSheetBackPress,
 	useSnapPoints,
 } from '../../hooks/bottomSheet';
-import { showToast } from '../../utils/notifications';
-import { getNodeId, waitForLdk } from '../../utils/lightning';
+import { useAppSelector } from '../../hooks/redux';
 import { viewControllerSelector } from '../../store/reselect/ui';
-import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
+import { getNodeId, waitForLdk } from '../../utils/lightning';
+import { showToast } from '../../utils/notifications';
 
 export type OrangeTicketNavigationProp =
 	NativeStackNavigationProp<OrangeTicketStackParamList>;
@@ -58,6 +59,7 @@ const OrangeTicket = (): ReactElement => {
 
 	useBottomSheetBackPress('orangeTicket');
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only when ticketId changes
 	const getPrize = useCallback(async (): Promise<void> => {
 		const getChest = async (): Promise<any> => {
 			const response = await fetch(__TREASURE_HUNT_HOST__, {
@@ -137,8 +139,6 @@ const OrangeTicket = (): ReactElement => {
 		}
 		setIsLoading(false);
 		setAmount(openResponse.amountSat);
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ticketId]);
 
 	useEffect(() => {
@@ -157,27 +157,29 @@ const OrangeTicket = (): ReactElement => {
 
 	return (
 		<BottomSheetWrapper view="orangeTicket" snapPoints={snapPoints}>
-			<NavigationContainer key={isOpen.toString()}>
-				<Stack.Navigator
-					initialRouteName={initialScreen}
-					screenOptions={screenOptions}>
-					<Stack.Screen
-						name="Prize"
-						component={Prize}
-						initialParams={{ ticketId, amount }}
-					/>
-					<Stack.Screen
-						name="UsedCard"
-						component={UsedCard}
-						initialParams={{ amount }}
-					/>
-					<Stack.Screen
-						name="Error"
-						component={Error}
-						initialParams={{ errorCode }}
-					/>
-				</Stack.Navigator>
-			</NavigationContainer>
+			<NavigationIndependentTree>
+				<NavigationContainer key={isOpen.toString()}>
+					<Stack.Navigator
+						initialRouteName={initialScreen}
+						screenOptions={screenOptions}>
+						<Stack.Screen
+							name="Prize"
+							component={Prize}
+							initialParams={{ ticketId, amount }}
+						/>
+						<Stack.Screen
+							name="UsedCard"
+							component={UsedCard}
+							initialParams={{ amount }}
+						/>
+						<Stack.Screen
+							name="Error"
+							component={ErrorScreen}
+							initialParams={{ errorCode }}
+						/>
+					</Stack.Navigator>
+				</NavigationContainer>
+			</NavigationIndependentTree>
 		</BottomSheetWrapper>
 	);
 };

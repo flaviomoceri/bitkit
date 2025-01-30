@@ -1,15 +1,15 @@
-import { err, ok, Result } from '@synonymdev/result';
+import { Result, err, ok } from '@synonymdev/result';
 import { EPaymentType, IFormattedTransaction } from 'beignet';
 
-import { btcToSats } from '../conversion';
-import i18n, { i18nTime } from '../../utils/i18n';
-import { getTransferForTx } from '../wallet/transfer';
 import { getActivityStore } from '../../store/helpers';
 import {
 	EActivityType,
 	IActivityItem,
 	TOnchainActivityItem,
 } from '../../store/types/activity';
+import i18n, { i18nTime } from '../../utils/i18n';
+import { btcToSats } from '../conversion';
+import { getTransferForTx } from '../wallet/transfer';
 
 /**
  * Converts a formatted transaction to an activity item
@@ -21,13 +21,11 @@ export const onChainTransactionToActivityItem = async ({
 }: {
 	transaction: IFormattedTransaction;
 }): Promise<TOnchainActivityItem> => {
+	const { type, value, fee } = transaction;
 	const transfer = await getTransferForTx(transaction);
 
 	// subtract fee from amount if applicable
-	const amount =
-		transaction.type === 'sent'
-			? transaction.value + transaction.fee
-			: transaction.value;
+	const amount = type === 'sent' ? value + fee : value;
 
 	return {
 		id: transaction.txid,
@@ -230,7 +228,7 @@ export const groupActivityItems = (
 	const year: IActivityItem[] = [];
 	const earlier: IActivityItem[] = [];
 
-	for (let item of activityItems) {
+	for (const item of activityItems) {
 		if (item.timestamp >= beginningOfDay) {
 			today.push(item);
 		} else if (item.timestamp >= beginningOfYesterday) {

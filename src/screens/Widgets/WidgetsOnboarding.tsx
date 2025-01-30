@@ -1,12 +1,12 @@
-import React, { ReactElement } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display } from '../../styles/text';
+import OnboardingScreen from '../../components/OnboardingScreen';
 import { useAppDispatch } from '../../hooks/redux';
 import { RootStackParamList } from '../../navigation/types';
 import { setWidgetsOnboarding } from '../../store/slices/widgets';
-import OnboardingScreen from '../../components/OnboardingScreen';
+import { Display } from '../../styles/text';
 
 const imageSrc = require('../../assets/illustrations/puzzle.png');
 
@@ -34,9 +34,6 @@ const WidgetsOnboarding = ({
 			image={imageSrc}
 			buttonText={t('continue')}
 			testID="WidgetsOnboarding"
-			onClosePress={(): void => {
-				navigation.navigate('Wallet');
-			}}
 			onButtonPress={(): void => {
 				dispatch(setWidgetsOnboarding(true));
 				navigation.navigate('WidgetsSuggestions');

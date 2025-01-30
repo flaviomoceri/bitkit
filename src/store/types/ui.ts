@@ -1,8 +1,8 @@
+import { LNURLPayParams, LNURLWithdrawParams } from 'js-lnurl';
 import { AppStateStatus } from 'react-native';
-import { LNURLWithdrawParams, LNURLPayParams } from 'js-lnurl';
-import { EActivityType, TOnchainActivityItem } from './activity';
 import { ReceiveStackParamList } from '../../navigation/bottom-sheet/ReceiveNavigation';
 import { SendStackParamList } from '../../navigation/bottom-sheet/SendNavigation';
+import { EActivityType, TOnchainActivityItem } from './activity';
 
 export type ViewControllerParamList = {
 	activityTagsPrompt: { id: string };
@@ -28,8 +28,12 @@ export type ViewControllerParamList = {
 		| { screen: keyof SendStackParamList }
 		| { screen: 'Quickpay'; invoice: string; amount: number }
 		| { screen: 'LNURLAmount'; pParams: LNURLPayParams; url: string }
-		// prettier-ignore
-		| { screen: 'LNURLConfirm'; pParams: LNURLPayParams; url: string; amount?: number; }
+		| {
+				screen: 'LNURLConfirm';
+				pParams: LNURLPayParams;
+				url: string;
+				amount?: number;
+		  }
 		| undefined;
 	timeRangePrompt: undefined;
 	transferFailed: undefined;

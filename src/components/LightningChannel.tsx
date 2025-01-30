@@ -1,12 +1,12 @@
 import React, { ReactElement, memo } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { Caption13Up } from '../styles/text';
-import { DownArrow, UpArrow } from '../styles/icons';
-import { View as ThemedView } from '../styles/components';
-import { IThemeColors } from '../styles/themes';
 import { EUnit } from '../store/types/wallet';
+import { View as ThemedView } from '../styles/components';
+import { DownArrow, UpArrow } from '../styles/icons';
+import { Caption13Up } from '../styles/text';
+import { IThemeColors } from '../styles/themes';
 import Money from './Money';
 
 export type TStatus = 'pending' | 'open' | 'closed';
@@ -61,7 +61,7 @@ const LightningChannel = ({
 				</View>
 			)}
 			<View style={styles.amounts}>
-				<View style={styles.amount}>
+				<View testID="LightningChannelSpending" style={styles.amount}>
 					<UpArrow color={spendingAvailableColor} width={14} height={14} />
 					<Money
 						sats={localBalance}
@@ -70,7 +70,7 @@ const LightningChannel = ({
 						unit={EUnit.BTC}
 					/>
 				</View>
-				<View style={styles.amount}>
+				<View testID="LightningChannelReceiving" style={styles.amount}>
 					<DownArrow color={receivingAvailableColor} width={14} height={14} />
 					<Money
 						sats={remoteBalance}

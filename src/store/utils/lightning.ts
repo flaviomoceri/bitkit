@@ -1,13 +1,29 @@
-import { LNURLChannelParams } from 'js-lnurl';
-import { err, ok, Result } from '@synonymdev/result';
 import {
-	ldk,
 	TChannelManagerChannelClosed,
 	TInvoice,
+	ldk,
 } from '@synonymdev/react-native-ldk';
 import { getLNURLParams, lnurlChannel } from '@synonymdev/react-native-lnurl';
+import { Result, err, ok } from '@synonymdev/result';
 import { EPaymentType } from 'beignet';
+import { LNURLChannelParams } from 'js-lnurl';
 
+import { reduceValue } from '../../utils/helpers';
+import {
+	addPeers,
+	createPaymentRequest,
+	getChannelMonitors,
+	getClaimedLightningPayments,
+	getCustomLightningPeers,
+	getLdkChannels,
+	getNodeVersion,
+	getPendingInvoice,
+	getSentLightningPayments,
+	parseUri,
+} from '../../utils/lightning';
+import { EAvailableNetwork } from '../../utils/networks';
+import { getSelectedNetwork, getSelectedWallet } from '../../utils/wallet';
+import { getBlockHeader } from '../../utils/wallet/electrum';
 import {
 	dispatch,
 	getBlocktankStore,
@@ -26,20 +42,7 @@ import {
 } from '../slices/lightning';
 import { moveMetaIncTxTag } from '../slices/metadata';
 import { addTransfer, updateTransfer } from '../slices/wallet';
-import { EAvailableNetwork } from '../../utils/networks';
-import { getSelectedNetwork, getSelectedWallet } from '../../utils/wallet';
-import {
-	addPeers,
-	createPaymentRequest,
-	getChannelMonitors,
-	getClaimedLightningPayments,
-	getCustomLightningPeers,
-	getLdkChannels,
-	getNodeVersion,
-	getPendingInvoice,
-	getSentLightningPayments,
-	parseUri,
-} from '../../utils/lightning';
+import { EActivityType, TLightningActivityItem } from '../types/activity';
 import {
 	EChannelClosureReason,
 	EChannelStatus,
@@ -47,9 +50,6 @@ import {
 	TLightningNodeVersion,
 } from '../types/lightning';
 import { ETransferStatus, ETransferType, TWalletName } from '../types/wallet';
-import { EActivityType, TLightningActivityItem } from '../types/activity';
-import { reduceValue } from '../../utils/helpers';
-import { getBlockHeader } from '../../utils/wallet/electrum';
 
 /**
  * Attempts to update the node id for the selected wallet and network.
@@ -121,7 +121,7 @@ export const updateChannelsThunk = async (): Promise<Result<string>> => {
 	// Update the transfer status for pending channels.
 	channels.forEach((channel) => {
 		if (channel.funding_txid) {
-			let { funding_txid, confirmations, confirmations_required } = channel;
+			const { funding_txid, confirmations, confirmations_required } = channel;
 			let txId = funding_txid;
 			const confirmsIn = Math.max(confirmations_required! - confirmations, 0);
 
@@ -216,7 +216,7 @@ export const closeChannelThunk = async (
 				claimableBalances[0].confirmation_height ?? blockHeight + 6;
 		}
 
-		let txId = channelMonitor.funding_txo_txid;
+		const txId = channelMonitor.funding_txo_txid;
 		let status = ETransferStatus.pending;
 		let confirmsIn = Math.max(confirmationHeight - blockHeight, 0);
 

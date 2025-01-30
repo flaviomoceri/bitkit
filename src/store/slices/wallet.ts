@@ -8,19 +8,19 @@ import {
 	IWalletData,
 } from 'beignet';
 
+import { EAvailableNetwork } from '../../utils/networks';
 import {
+	IAddressTypeContent,
 	defaultWalletStoreShape,
 	getDefaultWalletShape,
-	IAddressTypeContent,
 } from '../shapes/wallet';
 import {
 	ETransferStatus,
 	IWalletItem,
-	IWallets,
 	IWalletStore,
+	IWallets,
 	TTransfer,
 } from '../types/wallet';
-import { EAvailableNetwork } from '../../utils/networks';
 
 type TWalletDataKey = Exclude<
 	keyof IWalletData,
@@ -118,9 +118,9 @@ export const walletSlice = createSlice({
 						amount: amount || transfer.amount,
 					};
 					return updatedTransfer;
-				} else {
-					return transfer;
 				}
+
+				return transfer;
 			});
 
 			state.wallets[selectedWallet].transfers[selectedNetwork] = updated;

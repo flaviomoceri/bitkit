@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, {
 	memo,
 	ReactElement,
@@ -5,19 +6,18 @@ import React, {
 	useCallback,
 	useMemo,
 } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
-import { Caption13Up } from '../../styles/text';
-import { useAppSelector } from '../../hooks/redux';
-import { groupActivityItems } from '../../utils/activity';
-import { showBottomSheet } from '../../store/utils/ui';
-import { IActivityItem } from '../../store/types/activity';
-import { activityItemsSelector } from '../../store/reselect/activity';
 import Button from '../../components/buttons/Button';
-import ListItem, { EmptyItem } from './ListItem';
+import { useAppSelector } from '../../hooks/redux';
 import type { RootNavigationProp } from '../../navigation/types';
+import { activityItemsSelector } from '../../store/reselect/activity';
+import { EActivityType, IActivityItem } from '../../store/types/activity';
+import { showBottomSheet } from '../../store/utils/ui';
+import { Caption13Up } from '../../styles/text';
+import { groupActivityItems } from '../../utils/activity';
+import ListItem, { EmptyItem } from './ListItem';
 
 const MAX_ACTIVITY_ITEMS = 3;
 
@@ -27,8 +27,15 @@ const ActivityListShort = (): ReactElement => {
 	const items = useAppSelector(activityItemsSelector);
 
 	const groupedItems = useMemo(() => {
-		const activityItems = items.slice(0, MAX_ACTIVITY_ITEMS);
-		return groupActivityItems(activityItems);
+		const sliced = items.slice(0, MAX_ACTIVITY_ITEMS);
+		return groupActivityItems(sliced);
+	}, [items]);
+
+	const droppedItems = useMemo(() => {
+		const dropped = items.filter((item) => {
+			return item.activityType === EActivityType.onchain && !item.exists;
+		});
+		return dropped;
 	}, [items]);
 
 	const renderItem = useCallback(
@@ -36,9 +43,7 @@ const ActivityListShort = (): ReactElement => {
 			item,
 			index,
 		}: {
-			// eslint-disable-next-line react/no-unused-prop-types
 			item: string | IActivityItem;
-			// eslint-disable-next-line react/no-unused-prop-types
 			index: number;
 		}): ReactNode => {
 			if (typeof item === 'string') {
@@ -69,8 +74,15 @@ const ActivityListShort = (): ReactElement => {
 
 	return (
 		<View style={styles.content}>
-			<Caption13Up color="secondary" style={styles.title}>
+			<Caption13Up style={styles.title} color="secondary">
 				{t('activity')}
+
+				{droppedItems.length !== 0 && (
+					<Caption13Up color="red">
+						{' '}
+						({droppedItems.length} {t('activity_removed')})
+					</Caption13Up>
+				)}
 			</Caption13Up>
 
 			{groupedItems.length === 0 ? (

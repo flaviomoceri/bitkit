@@ -1,3 +1,4 @@
+import { ldk } from '@synonymdev/react-native-ldk';
 import React, {
 	ReactElement,
 	memo,
@@ -7,23 +8,22 @@ import React, {
 } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
-import { ldk } from '@synonymdev/react-native-ldk';
 
-import { CaptionB, BodyMSB } from '../../styles/text';
+import BitkitLogo from '../../assets/bitkit-logo.svg';
 import GradientView from '../../components/GradientView';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import Title from './Title';
-import GradientText from './GradientText';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
 import { useDisplayValues } from '../../hooks/displayValues';
-import { airdrop } from './prizes';
 import { useLightningMaxInboundCapacity } from '../../hooks/lightning';
-import { getNodeIdFromStorage, waitForLdk } from '../../utils/lightning';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import type { TreasureHuntScreenProps } from '../../navigation/types';
 import { updateTreasureChest } from '../../store/slices/settings';
 import { createLightningInvoice } from '../../store/utils/lightning';
-import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
-import BitkitLogo from '../../assets/bitkit-logo.svg';
-import type { TreasureHuntScreenProps } from '../../navigation/types';
+import { BodyMSB, CaptionB } from '../../styles/text';
+import { getNodeIdFromStorage, waitForLdk } from '../../utils/lightning';
+import GradientText from './GradientText';
+import Title from './Title';
+import { airdrop } from './prizes';
 
 const lightningIcon = `
   <svg width="14" height="16" viewBox="0 0 14 16">
@@ -61,6 +61,7 @@ const Airdrop = ({
 
 	const dv = useDisplayValues(prize.amount);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	const getLightningInvoice = useCallback(async (): Promise<string> => {
 		const response = await createLightningInvoice({
 			amountSats: 0,
@@ -74,9 +75,9 @@ const Airdrop = ({
 		}
 
 		return response.value.to_str;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		const openChest = async (): Promise<void> => {
 			await waitForLdk();
@@ -153,13 +154,13 @@ const Airdrop = ({
 				if (result.error) {
 					console.log(result.error);
 					return;
-				} else {
-					updateTreasureChest({
-						chestId,
-						state: 'claimed',
-						attemptId: result.attemptId,
-					});
 				}
+
+				updateTreasureChest({
+					chestId,
+					state: 'claimed',
+					attemptId: result.attemptId,
+				});
 			}
 		};
 
@@ -180,21 +181,21 @@ const Airdrop = ({
 			if (result.error) {
 				console.log(result.error);
 				return;
-			} else {
-				if (result.state === 'INFLIGHT') {
-					return;
-				}
+			}
 
-				clearTimeout(interval.current);
+			if (result.state === 'INFLIGHT') {
+				return;
+			}
 
-				updateTreasureChest({
-					chestId,
-					state: result.state === 'SUCCESS' ? 'success' : 'failed',
-				});
+			clearTimeout(interval.current);
 
-				if (result.state === 'FAILED') {
-					navigation.replace('Error');
-				}
+			updateTreasureChest({
+				chestId,
+				state: result.state === 'SUCCESS' ? 'success' : 'failed',
+			});
+
+			if (result.state === 'FAILED') {
+				navigation.replace('Error');
 			}
 		};
 
@@ -209,8 +210,6 @@ const Airdrop = ({
 		if (state === 'claimed') {
 			interval.current = setInterval(checkPayment, 20000);
 		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [state]);
 
 	return (

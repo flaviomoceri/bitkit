@@ -6,36 +6,32 @@ import React, {
 	useState,
 	useEffect,
 } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
-import { TouchableOpacity } from '../../../styles/components';
-import { Caption13Up } from '../../../styles/text';
-import { IColors } from '../../../styles/colors';
-import GradientView from '../../../components/GradientView';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
-import SafeAreaInset from '../../../components/SafeAreaInset';
+import GradientView from '../../../components/GradientView';
 import Money from '../../../components/Money';
 import NumberPadTextField from '../../../components/NumberPadTextField';
+import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/buttons/Button';
-import UnitButton from '../UnitButton';
-import SendNumberPad from '../Send/SendNumberPad';
-import { sendMax } from '../../../utils/wallet/transactions';
-import {
-	selectedNetworkSelector,
-	selectedWalletSelector,
-} from '../../../store/reselect/wallet';
+import { useAppSelector } from '../../../hooks/redux';
+import { useSwitchUnit } from '../../../hooks/wallet';
+import type { LNURLWithdrawProps } from '../../../navigation/types';
 import {
 	conversionUnitSelector,
 	denominationSelector,
 	nextUnitSelector,
 	unitSelector,
 } from '../../../store/reselect/settings';
-import { useAppSelector } from '../../../hooks/redux';
-import { useSwitchUnit } from '../../../hooks/wallet';
-import { getNumberPadText } from '../../../utils/numberpad';
+import { IColors } from '../../../styles/colors';
+import { TouchableOpacity } from '../../../styles/components';
+import { Caption13Up } from '../../../styles/text';
 import { convertToSats } from '../../../utils/conversion';
-import type { LNURLWithdrawProps } from '../../../navigation/types';
+import { getNumberPadText } from '../../../utils/numberpad';
+import { sendMax } from '../../../utils/wallet/transactions';
+import SendNumberPad from '../Send/SendNumberPad';
+import UnitButton from '../UnitButton';
 
 const Amount = ({
 	navigation,
@@ -49,8 +45,6 @@ const Amount = ({
 	const nextUnit = useAppSelector(nextUnitSelector);
 	const conversionUnit = useAppSelector(conversionUnitSelector);
 	const denomination = useAppSelector(denominationSelector);
-	const selectedWallet = useAppSelector(selectedWalletSelector);
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const [text, setText] = useState('');
 	const [error, setError] = useState(false);
 
@@ -58,7 +52,7 @@ const Amount = ({
 	useEffect(() => {
 		const result = getNumberPadText(minWithdrawable, denomination, unit);
 		setText(result);
-	}, [selectedWallet, selectedNetwork, minWithdrawable, denomination, unit]);
+	}, [minWithdrawable, denomination, unit]);
 
 	const amount = useMemo((): number => {
 		return convertToSats(text, conversionUnit);

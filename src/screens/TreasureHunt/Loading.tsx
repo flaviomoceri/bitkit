@@ -1,18 +1,18 @@
+import { ldk } from '@synonymdev/react-native-ldk';
 import React, { ReactElement, memo, useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { ldk } from '@synonymdev/react-native-ldk';
 
-import { Subtitle, BodySSB } from '../../styles/text';
+import BitkitLogo from '../../assets/bitkit-logo.svg';
 import GradientView from '../../components/GradientView';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import Title from './Title';
-import { getNodeIdFromStorage, waitForLdk } from '../../utils/lightning';
-import { updateTreasureChest } from '../../store/slices/settings';
+import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { useScreenSize } from '../../hooks/screen';
-import { __TREASURE_HUNT_HOST__ } from '../../constants/env';
-import BitkitLogo from '../../assets/bitkit-logo.svg';
 import type { TreasureHuntScreenProps } from '../../navigation/types';
+import { updateTreasureChest } from '../../store/slices/settings';
+import { BodySSB, Subtitle } from '../../styles/text';
+import { getNodeIdFromStorage, waitForLdk } from '../../utils/lightning';
+import Title from './Title';
 
 const imageSrc = require('../../assets/treasure-hunt/loading.jpg');
 
@@ -31,6 +31,7 @@ const Loading = ({
 		right: isSmallScreen ? 90 : 80,
 	};
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: onMount
 	useEffect(() => {
 		const openChest = async (): Promise<void> => {
 			await waitForLdk();
@@ -82,9 +83,6 @@ const Loading = ({
 		};
 
 		setTimeout(openChest, 3000);
-
-		// onMount
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

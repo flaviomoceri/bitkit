@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display } from '../styles/text';
 import OnboardingScreen from '../components/OnboardingScreen';
 import { useAppSelector } from '../hooks/redux';
-import { openURL } from '../utils/helpers';
 import { availableUpdateSelector } from '../store/reselect/ui';
+import { Display } from '../styles/text';
+import { openURL } from '../utils/helpers';
 
 const imageSrc = require('../assets/illustrations/exclamation-mark.png');
 
@@ -33,6 +33,7 @@ const AppUpdate = (): ReactElement => {
 			imagePosition="center"
 			buttonText={t('update_critical_button')}
 			testID="CriticalUpdate"
+			showCloseButton={false}
 			onButtonPress={onUpdate}
 		/>
 	);

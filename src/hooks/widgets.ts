@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
 import { Reader } from '@synonymdev/feeds';
 import b4a from 'b4a';
+import { useEffect, useMemo, useState } from 'react';
 
 import { SlashFeedJSON } from '../store/types/widgets';
 import { SUPPORTED_FEED_TYPES, decodeWidgetFieldValue } from '../utils/widgets';
@@ -32,6 +32,7 @@ export const useSlashfeedConfig = (options: { url: string }): SlashFeedJSON => {
 		return new Reader(webRelayClient, `${options.url}?relay=${webRelayUrl}`);
 	}, [options.url, webRelayUrl, webRelayClient]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		const getData = async (): Promise<void> => {
 			try {

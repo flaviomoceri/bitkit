@@ -1,0 +1,110 @@
+{
+  "widgets": {
+    "string": "Widgets"
+  },
+  "widget": {
+    "nav_title": {
+      "string": "Widget"
+    },
+    "edit": {
+      "string": "Widget Feed"
+    },
+    "edit_default": {
+      "string": "Default"
+    },
+    "edit_custom": {
+      "string": "Custom"
+    },
+    "edit_description": {
+      "string": "Please select which fields you want to display in the {name} widget."
+    }
+  },
+  "delete": {
+    "title": {
+      "string": "Delete Widget?"
+    },
+    "description": {
+      "string": "Are you sure you want to delete ‘{name}‘ from your widgets?"
+    }
+  },
+  "price": {
+    "name": {
+      "string": "Bitcoin Price"
+    },
+    "description": {
+      "string": "Check the latest Bitcoin exchange rates for a variety of fiat currencies."
+    }
+  },
+  "headlines": {
+    "name": {
+      "string": "Bitcoin Headlines"
+    },
+    "description": {
+      "string": "Read the latest & greatest Bitcoin headlines from various news sites."
+    }
+  },
+  "blocks": {
+    "name": {
+      "string": "Bitcoin Blocks"
+    },
+    "description": {
+      "string": "Examine various statistics on newly mined Bitcoin Blocks."
+    }
+  },
+  "facts": {
+    "name": {
+      "string": "Bitcoin Facts"
+    },
+    "description": {
+      "string": "Discover fun facts about Bitcoin, every time you open your wallet."
+    }
+  },
+  "calculator": {
+    "name": {
+      "string": "Bitcoin Calculator"
+    },
+    "description": {
+      "string": "Convert ₿ amounts to {fiatSymbol} or vice versa."
+    }
+  },
+  "weather": {
+    "name": {
+      "string": "Bitcoin Weather"
+    },
+    "description": {
+      "string": "Find out when it’s a good time to transact on the Bitcoin blockchain."
+    },
+    "condition": {
+      "good": {
+        "title": {
+          "string": "Favorable Conditions"
+        },
+        "description": {
+          "string": "All clear. Now would be a good time to transact on the blockchain."
+        }
+      },
+      "average": {
+        "title": {
+          "string": "Average Conditions"
+        },
+        "description": {
+          "string": "The next block rate is close to the monthly averages."
+        }
+      },
+      "poor": {
+        "title": {
+          "string": "Poor Conditions"
+        },
+        "description": {
+          "string": "If you are not in a hurry to transact, it may be better to wait a bit."
+        }
+      }
+    },
+    "current_fee": {
+      "string": "Current fee"
+    },
+    "next_block": {
+      "string": "Next block inclusion"
+    }
+  }
+}

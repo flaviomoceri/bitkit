@@ -1,19 +1,19 @@
 import React, { ReactElement } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
+import { Image, StyleSheet, View } from 'react-native';
 
-import { View as ThemedView, TouchableOpacity } from '../../styles/components';
-import { Caption13Up, Display } from '../../styles/text';
-import { Checkmark } from '../../styles/icons';
-import SafeAreaInset from '../../components/SafeAreaInset';
+import Money from '../../components/Money';
 import NavigationHeader from '../../components/NavigationHeader';
+import SafeAreaInset from '../../components/SafeAreaInset';
 import SwipeToConfirm from '../../components/SwipeToConfirm';
 import Button from '../../components/buttons/Button';
-import Money from '../../components/Money';
-import { useSwitchUnit } from '../../hooks/wallet';
 import { useAppSelector } from '../../hooks/redux';
+import { useSwitchUnit } from '../../hooks/wallet';
 import { TransferScreenProps } from '../../navigation/types';
 import { openChannelsSelector } from '../../store/reselect/lightning';
+import { View as ThemedView, TouchableOpacity } from '../../styles/components';
+import { Checkmark } from '../../styles/icons';
+import { Caption13Up, Display } from '../../styles/text';
 
 const image = require('../../assets/illustrations/piggybank.png');
 
@@ -49,10 +49,7 @@ const SavingsConfirm = ({
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={t('transfer.nav_title')}
-				onClosePress={(): void => navigation.navigate('Wallet')}
-			/>
+			<NavigationHeader title={t('transfer.nav_title')} />
 			<View style={styles.content} testID="TransferConfirm">
 				<Display>
 					<Trans

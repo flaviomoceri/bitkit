@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React, {
 	memo,
 	ReactElement,
@@ -5,22 +6,20 @@ import React, {
 	useEffect,
 	useCallback,
 } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
-import { BodyM, BodyS } from '../../../styles/text';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
 import GradientView from '../../../components/GradientView';
 import NumberPad from '../../../components/NumberPad';
 import useColors from '../../../hooks/colors';
-import { vibrate } from '../../../utils/helpers';
-import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';
-import { addPin } from '../../../utils/settings';
-import { hideTodo } from '../../../store/slices/todos';
-import { pinTodo } from '../../../store/shapes/todos';
-import type { PinScreenProps } from '../../../navigation/types';
 import { useAppDispatch } from '../../../hooks/redux';
+import type { PinScreenProps } from '../../../navigation/types';
+import { pinTodo } from '../../../store/shapes/todos';
+import { hideTodo } from '../../../store/slices/todos';
+import { BodyM, BodyS } from '../../../styles/text';
+import { vibrate } from '../../../utils/helpers';
+import { addPin } from '../../../utils/settings';
 
 const ChoosePIN = ({
 	navigation,
@@ -48,8 +47,6 @@ const ChoosePIN = ({
 
 	// reset pin on back
 	useFocusEffect(useCallback(() => setPin(''), []));
-
-	useBottomSheetBackPress('PINNavigation');
 
 	useEffect(() => {
 		const timer = setTimeout(async () => {

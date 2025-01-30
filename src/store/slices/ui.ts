@@ -3,11 +3,11 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { initialUiState } from '../shapes/ui';
 import {
-	TUiState,
 	TAvailableUpdate,
 	TProfileLink,
-	ViewControllerParamList,
 	TSendTransaction,
+	TUiState,
+	ViewControllerParamList,
 } from '../types/ui';
 
 export const uiSlice = createSlice({
@@ -55,6 +55,11 @@ export const uiSlice = createSlice({
 				isMounted: true,
 			};
 		},
+		closeAllSheets: (state) => {
+			Object.keys(state.viewControllers).forEach((key) => {
+				state.viewControllers[key].isOpen = false;
+			});
+		},
 		updateProfileLink: (state, action: PayloadAction<TProfileLink>) => {
 			state.profileLink = Object.assign(state.profileLink, action.payload);
 		},
@@ -79,6 +84,7 @@ export const {
 	showSheet,
 	toggleSheet,
 	closeSheet,
+	closeAllSheets,
 	updateProfileLink,
 	updateSendTransaction,
 	resetUiState,

@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React, {
 	ReactElement,
 	memo,
@@ -5,38 +6,40 @@ import React, {
 	useMemo,
 	useState,
 } from 'react';
-import { StyleSheet } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet } from 'react-native';
 import DraggableFlatList, {
 	RenderItemParams,
 	ScaleDecorator,
 } from 'react-native-draggable-flatlist';
 
-import { rootNavigation } from '../navigation/root/RootNavigator';
-import { Caption13Up } from '../styles/text';
-import { TouchableOpacity, View } from '../styles/components';
-import { PlusIcon, SortAscendingIcon, Checkmark } from '../styles/icons';
-import Button from './buttons/Button';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
-import { SUPPORTED_FEED_TYPES } from '../utils/widgets';
-import { setWidgetsSortOrder } from '../store/slices/widgets';
-import PriceWidget from './PriceWidget';
-import FeedWidget from './FeedWidget';
-import HeadlinesWidget from './HeadlinesWidget';
-import BlocksWidget from './BlocksWidget';
-import FactsWidget from './FactsWidget';
-import LuganoFeedWidget from './LuganoFeedWidget';
-import { TFeedWidget, TWidget } from '../store/types/widgets';
+import { rootNavigation } from '../navigation/root/RootNavigator';
 import {
 	onboardedWidgetsSelector,
 	widgetsOrderSelector,
 	widgetsSelector,
 } from '../store/reselect/widgets';
+import { setWidgetsSortOrder } from '../store/slices/widgets';
+import { TFeedWidget, TWeatherWidgetOptions } from '../store/types/widgets';
+import { TouchableOpacity, View } from '../styles/components';
+import { Checkmark, PlusIcon, SortAscendingIcon } from '../styles/icons';
+import { Caption13Up } from '../styles/text';
+import { SUPPORTED_FEED_TYPES } from '../utils/widgets';
+import BlocksWidget from './BlocksWidget';
+import FactsWidget from './FactsWidget';
+import FeedWidget from './FeedWidget';
+import HeadlinesWidget from './HeadlinesWidget';
+import LuganoFeedWidget from './LuganoFeedWidget';
+import PriceWidget from './PriceWidget';
+import Button from './buttons/Button';
+import CalculatorWidget from './widgets/CalculatorWidget';
+import WeatherWidget from './widgets/WeatherWidget';
 
 const Widgets = (): ReactElement => {
 	const { t } = useTranslation('slashtags');
 	const dispatch = useAppDispatch();
+
 	const widgets = useAppSelector(widgetsSelector);
 	const sortOrder = useAppSelector(widgetsOrderSelector);
 	const onboardedWidgets = useAppSelector(onboardedWidgetsSelector);
@@ -45,15 +48,20 @@ const Widgets = (): ReactElement => {
 	useFocusEffect(useCallback(() => setEditing(false), []));
 
 	const sortedWidgets = useMemo(() => {
-		const savedWidgets = Object.entries(widgets) as [string, TWidget][];
-		return savedWidgets.sort(
-			([a], [b]) => sortOrder.indexOf(a) - sortOrder.indexOf(b),
-		);
+		const savedWidgets = Object.keys(widgets);
+
+		const sorted = savedWidgets.sort((a, b) => {
+			const indexA = sortOrder.indexOf(a);
+			const indexB = sortOrder.indexOf(b);
+			return indexA - indexB;
+		});
+
+		return sorted;
 	}, [widgets, sortOrder]);
 
 	const onDragEnd = useCallback(
 		({ data }) => {
-			const order = data.map((i): string => i[0]);
+			const order = data.map((id): string => id);
 			dispatch(setWidgetsSortOrder(order));
 		},
 		[dispatch],
@@ -67,18 +75,41 @@ const Widgets = (): ReactElement => {
 	};
 
 	const renderItem = useCallback(
-		({ item, drag }: RenderItemParams<[string, TWidget]>): ReactElement => {
-			let [url, widget] = item;
-
-			const _drag = (): void => {
+		({ item: id, drag }: RenderItemParams<string>): ReactElement => {
+			const initiateDrag = (): void => {
 				// only allow dragging if there are more than 1 widget
 				if (sortedWidgets.length > 1 && editing) {
 					drag();
 				}
 			};
 
-			const feedWidget = widget as TFeedWidget;
+			if (id === 'calculator') {
+				return (
+					<CalculatorWidget
+						style={styles.widget}
+						isEditing={editing}
+						testID="CalculatorWidget"
+						onLongPress={initiateDrag}
+						onPressIn={initiateDrag}
+					/>
+				);
+			}
 
+			if (id === 'weather') {
+				const options = widgets[id] as TWeatherWidgetOptions;
+				return (
+					<WeatherWidget
+						style={styles.widget}
+						options={options}
+						isEditing={editing}
+						testID="WeatherWidget"
+						onLongPress={initiateDrag}
+						onPressIn={initiateDrag}
+					/>
+				);
+			}
+
+			const feedWidget = widgets[id] as TFeedWidget;
 			let testID: string;
 			let Component:
 				| typeof PriceWidget
@@ -114,20 +145,18 @@ const Widgets = (): ReactElement => {
 			}
 
 			return (
-				<ScaleDecorator>
-					<Component
-						style={styles.widget}
-						url={url}
-						widget={feedWidget}
-						isEditing={editing}
-						onLongPress={_drag}
-						onPressIn={_drag}
-						testID={testID}
-					/>
-				</ScaleDecorator>
+				<Component
+					style={styles.widget}
+					url={id}
+					widget={feedWidget}
+					isEditing={editing}
+					testID={testID}
+					onLongPress={initiateDrag}
+					onPressIn={initiateDrag}
+				/>
 			);
 		},
-		[editing, sortedWidgets.length],
+		[editing, widgets, sortedWidgets.length],
 	);
 
 	return (
@@ -136,7 +165,6 @@ const Widgets = (): ReactElement => {
 				<Caption13Up color="secondary">{t('widgets')}</Caption13Up>
 				{sortedWidgets.length > 0 && (
 					<TouchableOpacity
-						activeOpacity={0.7}
 						hitSlop={{ top: 15, right: 15, bottom: 15, left: 15 }}
 						testID="WidgetsEdit"
 						onPress={(): void => setEditing(!editing)}>
@@ -151,8 +179,10 @@ const Widgets = (): ReactElement => {
 
 			<DraggableFlatList
 				data={sortedWidgets}
-				keyExtractor={(item): string => item[0]}
-				renderItem={renderItem}
+				keyExtractor={(id): string => id}
+				renderItem={(params): ReactElement => (
+					<ScaleDecorator>{renderItem(params)}</ScaleDecorator>
+				)}
 				scrollEnabled={false}
 				activationDistance={editing ? 0 : 100}
 				onDragEnd={onDragEnd}

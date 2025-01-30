@@ -1,21 +1,21 @@
 import React, { memo, ReactElement, useMemo, useState } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { Subtitle, BodyMSB, Caption13Up } from '../../styles/text';
-import { View as ThemedView } from '../../styles/components';
-import { LeftSign, RightSign } from '../../styles/icons';
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { closeSheet } from '../../store/slices/ui';
+import Button from '../../components/buttons/Button';
 import {
 	useBottomSheetBackPress,
 	useSnapPoints,
 } from '../../hooks/bottomSheet';
-import { generateCalendar } from '../../utils/helpers';
-import Button from '../../components/buttons/Button';
-import { languageSelector, timeZoneSelector } from '../../store/reselect/ui';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { languageSelector, timeZoneSelector } from '../../store/reselect/ui';
+import { closeSheet } from '../../store/slices/ui';
+import { View as ThemedView } from '../../styles/components';
+import { LeftSign, RightSign } from '../../styles/icons';
+import { BodyMSB, Caption13Up, Subtitle } from '../../styles/text';
+import { generateCalendar } from '../../utils/helpers';
 import { i18nTime } from '../../utils/i18n';
 
 const DAY_HEIGHT = 44;
@@ -29,8 +29,8 @@ const Day = ({
 	selection?: 'single' | 'start' | 'end' | 'middle' | 'today';
 	onPress?: () => void;
 }): ReactElement => {
-	let back;
-	let textColor;
+	let back: ReactElement | null = null;
+	let textColor: 'brand' | undefined;
 	let today = false;
 	switch (selection) {
 		case 'single':
@@ -207,7 +207,13 @@ const Calendar = ({
 								).getTime();
 							}
 
-							let selection;
+							let selection:
+								| 'single'
+								| 'start'
+								| 'end'
+								| 'middle'
+								| 'today'
+								| undefined;
 							if (dayDate === begin && !end) {
 								selection = 'single';
 							} else if (dayDate === begin) {
@@ -224,8 +230,8 @@ const Calendar = ({
 								<Day
 									key={j}
 									day={day}
-									onPress={(): void => handleSelect(day)}
 									selection={selection}
+									onPress={(): void => handleSelect(day)}
 								/>
 							);
 						})}

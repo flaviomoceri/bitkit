@@ -1,38 +1,38 @@
-import React, { memo, ReactElement, useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { err, ok, Result } from '@synonymdev/result';
-import parseUrl from 'url-parse';
-import { useTranslation } from 'react-i18next';
-import isEqual from 'lodash/isEqual';
+import { Result, err, ok } from '@synonymdev/result';
 import { EProtocol } from 'beignet';
+import isEqual from 'lodash/isEqual';
+import React, { memo, ReactElement, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet } from 'react-native';
+import parseUrl from 'url-parse';
 
-import { View, TextInput, ScrollView } from '../../../styles/components';
-import { BodyM, Caption13Up } from '../../../styles/text';
-import { ScanIcon } from '../../../styles/icons';
-import useBreakpoints from '../../../styles/breakpoints';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { updateUi } from '../../../store/slices/ui';
-import { addElectrumPeer } from '../../../store/slices/settings';
-import { selectedNetworkSelector } from '../../../store/reselect/wallet';
-import { customElectrumPeersSelector } from '../../../store/reselect/settings';
-import { defaultElectrumPeer } from '../../../store/shapes/settings';
-import { connectToElectrum } from '../../../utils/wallet/electrum';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
-import { RadioButtonGroup } from '../../../components/buttons/RadioButton';
 import Button from '../../../components/buttons/Button';
+import { RadioButtonGroup } from '../../../components/buttons/RadioButton';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import type { SettingsScreenProps } from '../../../navigation/types';
+import { customElectrumPeersSelector } from '../../../store/reselect/settings';
+import { isConnectedToElectrumSelector } from '../../../store/reselect/ui';
+import { selectedNetworkSelector } from '../../../store/reselect/wallet';
+import { defaultElectrumPeer } from '../../../store/shapes/settings';
+import { addElectrumPeer } from '../../../store/slices/settings';
+import { updateUi } from '../../../store/slices/ui';
+import { updateActivityList } from '../../../store/utils/activity';
+import useBreakpoints from '../../../styles/breakpoints';
+import { ScrollView, TextInput, View } from '../../../styles/components';
+import { ScanIcon } from '../../../styles/icons';
+import { BodyM, Caption13Up } from '../../../styles/text';
 import {
 	defaultElectrumPorts,
 	getDefaultPort,
 	getProtocolForPort,
 } from '../../../utils/electrum';
-import { showToast } from '../../../utils/notifications';
-import { getConnectedPeer, IPeerData } from '../../../utils/wallet/electrum';
-import { refreshWallet, rescanAddresses } from '../../../utils/wallet';
 import { EAvailableNetwork } from '../../../utils/networks';
-import { updateActivityList } from '../../../store/utils/activity';
-import { isConnectedToElectrumSelector } from '../../../store/reselect/ui';
-import type { SettingsScreenProps } from '../../../navigation/types';
+import { showToast } from '../../../utils/notifications';
+import { refreshWallet, rescanAddresses } from '../../../utils/wallet';
+import { connectToElectrum } from '../../../utils/wallet/electrum';
+import { IPeerData, getConnectedPeer } from '../../../utils/wallet/electrum';
 
 type RadioButtonItem = { label: string; value: EProtocol };
 
@@ -45,7 +45,7 @@ const isValidURL = (data: string): boolean => {
 	// Add 'http://' if the protocol is missing to enable URL parsing
 	let normalizedData = data;
 	if (!/^https?:\/\//i.test(data)) {
-		normalizedData = 'http://' + data;
+		normalizedData = `http://${data}`;
 	}
 
 	try {
@@ -67,7 +67,7 @@ const isValidURL = (data: string): boolean => {
 		}
 
 		return isValidDomainOrIP;
-	} catch (e) {
+	} catch (_e) {
 		// If URL constructor fails, it's not a valid URL
 		return false;
 	}
@@ -75,17 +75,17 @@ const isValidURL = (data: string): boolean => {
 
 const validateInput = (
 	{ host, port }: { host: string; port: string },
-	t: (error: string) => void,
+	t: (error: string) => string,
 ): Result<string> => {
 	//Ensure the user passed in a host & port to test.
-	let error;
+	let error = '';
 	if (host === '' && port === '') {
 		error = t('es.error_host_port');
 	} else if (host === '') {
 		error = t('es.error_host');
 	} else if (port === '') {
 		error = t('es.error_port');
-	} else if (isNaN(Number(port))) {
+	} else if (Number.isNaN(Number(port))) {
 		error = t('es.error_port_invalid');
 	}
 
@@ -116,6 +116,7 @@ const ElectrumConfig = ({
 	const [port, setPort] = useState(savedPeer[savedPeer.protocol].toString());
 	const [protocol, setProtocol] = useState(savedPeer.protocol);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		const getAndUpdateConnectedPeer = async (): Promise<void> => {
 			const peerInfo = await getConnectedPeer();
@@ -216,7 +217,7 @@ const ElectrumConfig = ({
 		let connectData: IPeerData;
 
 		if (!data.startsWith('http://') && !data.startsWith('https://')) {
-			let [_host, _port, shortProtocol] = data.split(':');
+			const [_host, _port, shortProtocol] = data.split(':');
 			let _protocol = EProtocol.tcp;
 
 			if (shortProtocol) {
@@ -276,6 +277,7 @@ const ElectrumConfig = ({
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('adv.electrum_server')}
+				showCloseButton={false}
 				actionIcon={<ScanIcon color="white" width={20} height={20} />}
 				onActionPress={navigateToScanner}
 			/>

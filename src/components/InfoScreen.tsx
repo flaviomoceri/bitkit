@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
-import { View, Image, ImageSourcePropType, StyleSheet } from 'react-native';
+import { Image, ImageSourcePropType, StyleSheet, View } from 'react-native';
 
-import { Display, BodyM } from '../styles/text';
 import { View as ThemedView } from '../styles/components';
+import { BodyM, Display } from '../styles/text';
+import NavigationHeader from './NavigationHeader';
 import SafeAreaInset from './SafeAreaInset';
 import Button from './buttons/Button';
-import NavigationHeader from './NavigationHeader';
 
 const InfoScreen = ({
 	navTitle,
@@ -13,9 +13,9 @@ const InfoScreen = ({
 	description,
 	image,
 	buttonText,
-	displayBackButton = true,
+	showBackButton = true,
+	showCloseButton = true,
 	testID,
-	onClosePress,
 	onButtonPress,
 }: {
 	navTitle: string;
@@ -23,9 +23,9 @@ const InfoScreen = ({
 	description: string | ReactElement;
 	image: ImageSourcePropType;
 	buttonText: string;
-	displayBackButton?: boolean;
+	showBackButton?: boolean;
+	showCloseButton?: boolean;
 	testID?: string;
-	onClosePress?: () => void;
 	onButtonPress: () => void;
 }): ReactElement => {
 	return (
@@ -33,8 +33,8 @@ const InfoScreen = ({
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={navTitle}
-				displayBackButton={displayBackButton}
-				onClosePress={onClosePress}
+				showBackButton={showBackButton}
+				showCloseButton={showCloseButton}
 			/>
 			<View style={styles.content} testID={testID}>
 				<Display>{title}</Display>

@@ -1,7 +1,7 @@
 import React, { ReactElement, RefObject } from 'react';
-import { View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
-import { TextInput, BottomSheetTextInput } from '../styles/components';
-import { Caption13Up, BodyS } from '../styles/text';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { BottomSheetTextInput, TextInput } from '../styles/components';
+import { BodyS, Caption13Up } from '../styles/text';
 import { IThemeColors } from '../styles/themes';
 
 type LabeledInputProps = {
@@ -58,7 +58,7 @@ const LabeledInput = ({
 					<BodyS
 						color="brand"
 						style={styles.error}
-						testID={testID ? testID + '-error' : undefined}>
+						testID={testID ? `${testID}-error` : undefined}>
 						{error}
 					</BodyS>
 				)}

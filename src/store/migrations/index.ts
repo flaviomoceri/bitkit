@@ -1,7 +1,7 @@
 // Add migrations for every persisted store version change
 import { PersistedState } from 'redux-persist';
-import { getDefaultGapLimitOptions } from '../shapes/wallet';
 import { storage as mmkv } from '../../store/mmkv-storage';
+import { getDefaultGapLimitOptions } from '../shapes/wallet';
 
 const migrations = {
 	43: (state): PersistedState => {
@@ -76,9 +76,47 @@ const migrations = {
 			for (const key of keys) {
 				mmkv.delete(key);
 			}
-		} catch (e) {}
+		} catch (_e) {}
 
 		return state;
+	},
+	50: (state): PersistedState => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				backupVerified: state.user.backupVerified,
+				quickpayIntroSeen: state.user.quickpayIntroSeen,
+				transferIntroSeen: state.user.transferIntroSeen,
+				spendingIntroSeen: state.user.spendingIntroSeen,
+				savingsIntroSeen: state.user.savingsIntroSeen,
+			},
+		};
+	},
+	51: (state): PersistedState => {
+		return {
+			...state,
+			settings: {
+				...state.settings,
+				rapidGossipSyncUrl: 'https://rgs.blocktank.to/snapshot/',
+			},
+		};
+	},
+	52: (state): PersistedState => {
+		// add 'url' to all widgets
+		const newWidgets = { ...state.widgets.widgets };
+
+		for (const url of Object.keys(newWidgets)) {
+			newWidgets[url].url = url;
+		}
+
+		return {
+			...state,
+			widgets: {
+				...state.widgets,
+				widgets: newWidgets,
+			},
+		};
 	},
 };
 

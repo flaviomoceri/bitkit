@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React, {
 	ReactElement,
 	memo,
@@ -5,42 +6,41 @@ import React, {
 	useState,
 	useCallback,
 } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { Trans, useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
-import {
-	View as ThemedView,
-	TouchableHighlight,
-} from '../../../styles/components';
-import { Display, Caption13Up } from '../../../styles/text';
-import SafeAreaInset from '../../../components/SafeAreaInset';
+import Money from '../../../components/Money';
 import NavigationHeader from '../../../components/NavigationHeader';
 import NumberPadTextField from '../../../components/NumberPadTextField';
-import Money from '../../../components/Money';
+import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/buttons/Button';
-import UnitButton from '../../Wallets/UnitButton';
-import TransferNumberPad from '../TransferNumberPad';
 import { useAppSelector } from '../../../hooks/redux';
 import { useBalance, useSwitchUnit } from '../../../hooks/wallet';
-import { convertToSats } from '../../../utils/conversion';
-import { showToast } from '../../../utils/notifications';
-import { getNumberPadText } from '../../../utils/numberpad';
-import { getDisplayValues } from '../../../utils/displayValues';
-import { getMaxSendAmount } from '../../../utils/wallet/transactions';
 import type { TransferScreenProps } from '../../../navigation/types';
-import { transactionSelector } from '../../../store/reselect/wallet';
-import { onChainFeesSelector } from '../../../store/reselect/fees';
 import {
 	resetSendTransaction,
 	setupOnChainTransaction,
 } from '../../../store/actions/wallet';
+import { onChainFeesSelector } from '../../../store/reselect/fees';
 import {
-	nextUnitSelector,
-	unitSelector,
 	conversionUnitSelector,
 	denominationSelector,
+	nextUnitSelector,
+	unitSelector,
 } from '../../../store/reselect/settings';
+import { transactionSelector } from '../../../store/reselect/wallet';
+import {
+	View as ThemedView,
+	TouchableHighlight,
+} from '../../../styles/components';
+import { Caption13Up, Display } from '../../../styles/text';
+import { convertToSats } from '../../../utils/conversion';
+import { getDisplayValues } from '../../../utils/displayValues';
+import { showToast } from '../../../utils/notifications';
+import { getNumberPadText } from '../../../utils/numberpad';
+import { getMaxSendAmount } from '../../../utils/wallet/transactions';
+import UnitButton from '../../Wallets/UnitButton';
+import TransferNumberPad from '../TransferNumberPad';
 
 const ExternalAmount = ({
 	navigation,
@@ -60,15 +60,13 @@ const ExternalAmount = ({
 	const [textFieldValue, setTextFieldValue] = useState('');
 
 	useFocusEffect(
+		// biome-ignore lint/correctness/useExhaustiveDependencies: onFocus
 		useCallback(() => {
 			const setupTransaction = async (): Promise<void> => {
 				await resetSendTransaction();
 				await setupOnChainTransaction({ satsPerByte: fees.fast, rbf: false });
 			};
 			setupTransaction();
-
-			// onMount
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []),
 	);
 
@@ -76,15 +74,13 @@ const ExternalAmount = ({
 		return convertToSats(textFieldValue, conversionUnit);
 	}, [textFieldValue, conversionUnit]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: recalculate max when utxos or fee change
 	const availableAmount = useMemo(() => {
 		const maxAmountResponse = getMaxSendAmount();
 		if (maxAmountResponse.isOk()) {
 			return maxAmountResponse.value.amount;
 		}
 		return 0;
-
-		// recalculate max when utxos or fee change
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [transaction.outputs, transaction.satsPerByte]);
 
 	const maxClientBalance = availableAmount;
@@ -128,10 +124,7 @@ const ExternalAmount = ({
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={t('external.nav_title')}
-				onClosePress={(): void => navigation.navigate('Wallet')}
-			/>
+			<NavigationHeader title={t('external.nav_title')} />
 
 			<View style={styles.content} testID="ExternalAmount">
 				<Display>

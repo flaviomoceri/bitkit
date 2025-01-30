@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
-import { View, Image, ImageSourcePropType, StyleSheet } from 'react-native';
+import { Image, ImageSourcePropType, StyleSheet, View } from 'react-native';
 
-import { Display, BodyM, Title } from '../styles/text';
 import { View as ThemedView } from '../styles/components';
+import { BodyM, Display, Title } from '../styles/text';
+import NavigationHeader from './NavigationHeader';
 import SafeAreaInset from './SafeAreaInset';
 import Button from './buttons/Button';
-import NavigationHeader from './NavigationHeader';
 
 const OnboardingScreen = ({
 	navTitle,
@@ -14,11 +14,11 @@ const OnboardingScreen = ({
 	image,
 	imagePosition,
 	buttonText,
-	displayBackButton = true,
+	showBackButton = true,
+	showCloseButton = true,
 	disableNav = false,
 	mirrorImage = false,
 	testID,
-	onClosePress,
 	onButtonPress,
 }: {
 	navTitle?: string;
@@ -27,11 +27,11 @@ const OnboardingScreen = ({
 	image: ImageSourcePropType;
 	imagePosition?: 'center' | 'bottom';
 	buttonText: string;
-	displayBackButton?: boolean;
+	showBackButton?: boolean;
+	showCloseButton?: boolean;
 	disableNav?: boolean;
 	mirrorImage?: boolean;
 	testID?: string;
-	onClosePress?: () => void;
 	onButtonPress: () => void;
 }): ReactElement => {
 	return (
@@ -42,8 +42,8 @@ const OnboardingScreen = ({
 			) : (
 				<NavigationHeader
 					title={navTitle}
-					displayBackButton={displayBackButton}
-					onClosePress={onClosePress}
+					showBackButton={showBackButton}
+					showCloseButton={showCloseButton}
 				/>
 			)}
 
@@ -51,7 +51,6 @@ const OnboardingScreen = ({
 				<View
 					style={[
 						styles.imageContainer,
-						// eslint-disable-next-line react-native/no-inline-styles
 						{ marginBottom: imagePosition === 'center' ? 'auto' : 48 },
 						mirrorImage ? { transform: [{ rotateY: '180deg' }] } : {},
 					]}>

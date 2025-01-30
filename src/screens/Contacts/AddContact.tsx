@@ -1,26 +1,26 @@
-import React, { ReactElement, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { parse } from '@synonymdev/slashtags-url';
+import React, { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { closeSheet } from '../../store/slices/ui';
-import { handleSlashtagURL } from '../../utils/slashtags';
-import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import BottomSheetNavigationHeader from '../../components/BottomSheetNavigationHeader';
+import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import LabeledInput from '../../components/LabeledInput';
-import Button from '../../components/buttons/Button';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { BodyM } from '../../styles/text';
-import { ClipboardTextIcon, CornersOutIcon } from '../../styles/icons';
-import type { RootStackParamList } from '../../navigation/types';
-import { useAppDispatch } from '../../hooks/redux';
-import { useSlashtags } from '../../hooks/slashtags';
+import Button from '../../components/buttons/Button';
 import {
 	useBottomSheetBackPress,
 	useSnapPoints,
 } from '../../hooks/bottomSheet';
+import { useAppDispatch } from '../../hooks/redux';
+import { useSlashtags } from '../../hooks/slashtags';
+import type { RootStackParamList } from '../../navigation/types';
+import { closeSheet } from '../../store/slices/ui';
+import { ClipboardTextIcon, CornersOutIcon } from '../../styles/icons';
+import { BodyM } from '../../styles/text';
+import { handleSlashtagURL } from '../../utils/slashtags';
 
 const AddContact = ({
 	navigation,
@@ -50,7 +50,7 @@ const AddContact = ({
 
 		try {
 			parse(contactUrl);
-		} catch (e) {
+		} catch (_e) {
 			setError(t('contact_error_key'));
 			return;
 		}
@@ -60,7 +60,7 @@ const AddContact = ({
 				setError(t('contact_error_yourself'));
 				return;
 			}
-		} catch (e) {}
+		} catch (_e) {}
 
 		const onError = (): void => {
 			setError(t('contact_error_key'));
@@ -95,7 +95,7 @@ const AddContact = ({
 			<View style={styles.container}>
 				<BottomSheetNavigationHeader
 					title={t('contact_add_capital')}
-					displayBackButton={false}
+					showBackButton={false}
 				/>
 
 				<View style={styles.content}>

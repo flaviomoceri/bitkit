@@ -1,3 +1,5 @@
+import { ldk } from '@synonymdev/react-native-ldk';
+import Lottie from 'lottie-react-native';
 import React, {
 	ReactElement,
 	memo,
@@ -6,27 +8,25 @@ import React, {
 	useRef,
 } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { SvgXml } from 'react-native-svg';
-import Lottie from 'lottie-react-native';
-import { ldk } from '@synonymdev/react-native-ldk';
 import { useReducedMotion } from 'react-native-reanimated';
+import { SvgXml } from 'react-native-svg';
 
-import { CaptionB, BodyMSB } from '../../styles/text';
+import BitkitLogo from '../../assets/bitkit-logo.svg';
 import GradientView from '../../components/GradientView';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import Title from './Title';
-import GradientText from './GradientText';
-import { emptyPrize, prizes } from './prizes';
-import BitkitLogo from '../../assets/bitkit-logo.svg';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { useScreenSize } from '../../hooks/screen';
+import { __E2E__, __TREASURE_HUNT_HOST__ } from '../../constants/env';
 import { useDisplayValues } from '../../hooks/displayValues';
 import { useLightningMaxInboundCapacity } from '../../hooks/lightning';
-import { getNodeIdFromStorage, waitForLdk } from '../../utils/lightning';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { useScreenSize } from '../../hooks/screen';
+import type { TreasureHuntScreenProps } from '../../navigation/types';
 import { updateTreasureChest } from '../../store/slices/settings';
 import { createLightningInvoice } from '../../store/utils/lightning';
-import { __E2E__, __TREASURE_HUNT_HOST__ } from '../../constants/env';
-import type { TreasureHuntScreenProps } from '../../navigation/types';
+import { BodyMSB, CaptionB } from '../../styles/text';
+import { getNodeIdFromStorage, waitForLdk } from '../../utils/lightning';
+import GradientText from './GradientText';
+import Title from './Title';
+import { emptyPrize, prizes } from './prizes';
 
 const confettiSrc = require('../../assets/lottie/confetti-yellow.json');
 
@@ -75,6 +75,7 @@ const Prize = ({
 	const dv = useDisplayValues(prize.amount);
 	const isWinner = prize.winType === 'winning';
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	const getLightningInvoice = useCallback(async (): Promise<string> => {
 		const response = await createLightningInvoice({
 			amountSats: 0,
@@ -88,9 +89,9 @@ const Prize = ({
 		}
 
 		return response.value.to_str;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: onMount
 	useEffect(() => {
 		if (winType === 'empty') {
 			return;
@@ -141,15 +142,15 @@ const Prize = ({
 				if (result.error) {
 					console.log(result.error);
 					return;
-				} else {
-					dispatch(
-						updateTreasureChest({
-							chestId,
-							attemptId,
-							state: 'claimed',
-						}),
-					);
 				}
+
+				dispatch(
+					updateTreasureChest({
+						chestId,
+						attemptId,
+						state: 'claimed',
+					}),
+				);
 			}
 		};
 
@@ -175,23 +176,23 @@ const Prize = ({
 				console.log(result.error);
 				clearTimeout(interval.current);
 				return;
-			} else {
-				if (result.state === 'INFLIGHT') {
-					return;
-				}
+			}
 
-				clearTimeout(interval.current);
+			if (result.state === 'INFLIGHT') {
+				return;
+			}
 
-				dispatch(
-					updateTreasureChest({
-						chestId,
-						state: result.state === 'SUCCESS' ? 'success' : 'failed',
-					}),
-				);
+			clearTimeout(interval.current);
 
-				if (result.state === 'FAILED') {
-					navigation.replace('Error');
-				}
+			dispatch(
+				updateTreasureChest({
+					chestId,
+					state: result.state === 'SUCCESS' ? 'success' : 'failed',
+				}),
+			);
+
+			if (result.state === 'FAILED') {
+				navigation.replace('Error');
 			}
 		};
 
@@ -202,9 +203,6 @@ const Prize = ({
 		if (state !== 'success' && state !== 'failed') {
 			interval.current = setInterval(checkPayment, 20000);
 		}
-
-		// onMount
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
@@ -237,7 +235,6 @@ const Prize = ({
 				<BodyMSB style={styles.description} color="yellow">
 					{prize.description}
 				</BodyMSB>
-				{/* eslint-disable-next-line react-native/no-inline-styles */}
 				<View style={{ marginTop: isSmallScreen ? 40 : 80 }}>
 					{prize.note ? (
 						<CaptionB style={styles.noteText} color="yellow">

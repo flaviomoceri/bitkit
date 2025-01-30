@@ -5,6 +5,7 @@ import React, {
 	useEffect,
 	useCallback,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
 	Image,
 	Linking,
@@ -13,21 +14,21 @@ import {
 	StyleSheet,
 	View,
 } from 'react-native';
-import { useTranslation } from 'react-i18next';
 
-import { Switch } from '../../../styles/components';
-import { BodyMSB, BodyM } from '../../../styles/text';
-import { FaceIdIcon, TouchIdIcon } from '../../../styles/icons';
-import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
-import SafeAreaInset from '../../../components/SafeAreaInset';
-import GradientView from '../../../components/GradientView';
-import Button from '../../../components/buttons/Button';
 import { IsSensorAvailableResult } from '../../../components/Biometrics';
+import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
+import GradientView from '../../../components/GradientView';
+import SafeAreaInset from '../../../components/SafeAreaInset';
+import Switch from '../../../components/Switch';
+import Button from '../../../components/buttons/Button';
+import { useBottomSheetScreenBackPress } from '../../../hooks/bottomSheet';
 import { useAppDispatch } from '../../../hooks/redux';
+import type { PinScreenProps } from '../../../navigation/types';
+import { updateSettings } from '../../../store/slices/settings';
+import { FaceIdIcon, TouchIdIcon } from '../../../styles/icons';
+import { BodyM, BodyMSB } from '../../../styles/text';
 import rnBiometrics from '../../../utils/biometrics';
 import { showToast } from '../../../utils/notifications';
-import { updateSettings } from '../../../store/slices/settings';
-import type { PinScreenProps } from '../../../navigation/types';
 
 const imageSrc = require('../../../assets/illustrations/cog.png');
 
@@ -38,6 +39,8 @@ const AskForBiometrics = ({
 	const dispatch = useAppDispatch();
 	const [biometryData, setBiometricData] = useState<IsSensorAvailableResult>();
 	const [shouldEnableBiometrics, setShouldEnableBiometrics] = useState(false);
+
+	useBottomSheetScreenBackPress();
 
 	useEffect(() => {
 		(async (): Promise<void> => {
@@ -50,8 +53,8 @@ const AskForBiometrics = ({
 		biometryData?.biometryType === 'TouchID'
 			? t('bio_touch_id')
 			: biometryData?.biometryType === 'FaceID'
-			? t('bio_face_id')
-			: biometryData?.biometryType ?? t('bio');
+				? t('bio_face_id')
+				: (biometryData?.biometryType ?? t('bio'));
 
 	const handleTogglePress = (): void => {
 		setShouldEnableBiometrics((prevState) => !prevState);
@@ -115,7 +118,7 @@ const AskForBiometrics = ({
 		<GradientView style={styles.root}>
 			<BottomSheetNavigationHeader
 				title={biometricsName}
-				displayBackButton={false}
+				showBackButton={false}
 			/>
 
 			<View style={styles.content}>

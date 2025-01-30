@@ -1,27 +1,26 @@
+import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia';
+import { EPaymentType } from 'beignet';
 import React, { ReactElement, memo, useMemo, useState, useRef } from 'react';
-import { StyleSheet, TouchableOpacity, View, Keyboard } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureType } from 'react-native-gesture-handler';
 import { SharedValue, useSharedValue } from 'react-native-reanimated';
-import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia';
-import { useTranslation } from 'react-i18next';
-import { EPaymentType } from 'beignet';
 
-import { View as ThemedView, ScrollView } from '../../styles/components';
-import { CalendarIcon, TagIcon } from '../../styles/icons';
-import NavigationHeader from '../../components/NavigationHeader';
-import SearchInput from '../../components/SearchInput';
 import BlurView from '../../components/BlurView';
-import SafeAreaInset from '../../components/SafeAreaInset';
 import DetectSwipe from '../../components/DetectSwipe';
+import NavigationHeader from '../../components/NavigationHeader';
+import SafeAreaInset from '../../components/SafeAreaInset';
+import SearchInput from '../../components/SearchInput';
 import Tabs, { TTab } from '../../components/Tabs';
 import Tag from '../../components/Tag';
-import TagsPrompt from './TagsPrompt';
-import ActivityList from './ActivityList';
-import TimeRangePrompt from './TimeRangePrompt';
 import { useAppDispatch } from '../../hooks/redux';
 import { closeSheet } from '../../store/slices/ui';
 import { showBottomSheet } from '../../store/utils/ui';
-import type { WalletScreenProps } from '../../navigation/types';
+import { ScrollView, View as ThemedView } from '../../styles/components';
+import { CalendarIcon, TagIcon } from '../../styles/icons';
+import ActivityList from './ActivityList';
+import TagsPrompt from './TagsPrompt';
+import TimeRangePrompt from './TimeRangePrompt';
 
 const tabs: TTab[] = [
 	{ id: 'all', filter: { includeTransfers: true } },
@@ -47,9 +46,7 @@ const Glow = ({
 	);
 };
 
-const ActivityFiltered = ({
-	navigation,
-}: WalletScreenProps<'ActivityFiltered'>): ReactElement => {
+const ActivityFiltered = (): ReactElement => {
 	const { t } = useTranslation('wallet');
 	const dispatch = useAppDispatch();
 	const size = useSharedValue({ width: 0, height: 0 });
@@ -102,10 +99,7 @@ const ActivityFiltered = ({
 							<Glow size={size} />
 						</Canvas>
 						<SafeAreaInset type="top" />
-						<NavigationHeader
-							title={t('activity_all')}
-							onClosePress={navigation.popToTop}
-						/>
+						<NavigationHeader title={t('activity_all')} />
 						<View style={styles.formContainer}>
 							<SearchInput
 								style={styles.searchInput}

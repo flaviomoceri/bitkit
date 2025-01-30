@@ -1,17 +1,17 @@
 import React, { ReactElement, memo, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { Trans, useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
-import { Display, BodyMB, BodyM } from '../../styles/text';
-import { View as ThemedView } from '../../styles/components';
-import SafeAreaInset from '../../components/SafeAreaInset';
-import NavigationHeader from '../../components/NavigationHeader';
 import HourglassSpinner from '../../components/HourglassSpinner';
+import NavigationHeader from '../../components/NavigationHeader';
 import ProgressSteps from '../../components/ProgressSteps';
+import SafeAreaInset from '../../components/SafeAreaInset';
 import Button from '../../components/buttons/Button';
 import { useAppSelector } from '../../hooks/redux';
-import { lightningSettingUpStepSelector } from '../../store/reselect/user';
 import type { TransferScreenProps } from '../../navigation/types';
+import { lightningSettingUpStepSelector } from '../../store/reselect/user';
+import { View as ThemedView } from '../../styles/components';
+import { BodyM, BodyMB, Display } from '../../styles/text';
 
 const SettingUp = ({
 	navigation,
@@ -35,7 +35,7 @@ const SettingUp = ({
 	}, [lightningSettingUpStep, navigation]);
 
 	const onClose = (): void => {
-		navigation.navigate('Wallet', { screen: 'Wallets' });
+		navigation.popTo('Wallet', { screen: 'Wallets' });
 	};
 
 	return (
@@ -43,8 +43,7 @@ const SettingUp = ({
 			<SafeAreaInset type="top" />
 			<NavigationHeader
 				title={t('transfer.nav_title')}
-				displayBackButton={false}
-				onClosePress={onClose}
+				showBackButton={false}
 			/>
 			<View style={styles.content} testID="LightningSettingUp">
 				<Display color="purple">{t('setting_up_header')}</Display>

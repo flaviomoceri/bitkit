@@ -1,3 +1,4 @@
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import React, {
 	ReactElement,
 	memo,
@@ -6,29 +7,33 @@ import React, {
 	useState,
 	useEffect,
 } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { StyleSheet, View } from 'react-native';
 
-import { Caption13Up } from '../../../styles/text';
-import { IColors } from '../../../styles/colors';
-import { TouchableOpacity } from '../../../styles/components';
-import GradientView from '../../../components/GradientView';
 import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
-import SafeAreaInset from '../../../components/SafeAreaInset';
-import Money from '../../../components/Money';
 import ContactImage from '../../../components/ContactImage';
+import GradientView from '../../../components/GradientView';
+import Money from '../../../components/Money';
 import NumberPadTextField from '../../../components/NumberPadTextField';
-import SendNumberPad from './SendNumberPad';
+import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/buttons/Button';
-import AssetButton from '../AssetButton';
-import UnitButton from '../UnitButton';
+import { useBottomSheetScreenBackPress } from '../../../hooks/bottomSheet';
+import { useAppSelector } from '../../../hooks/redux';
+import { useBalance, useSwitchUnit } from '../../../hooks/wallet';
+import type { SendScreenProps } from '../../../navigation/types';
 import {
-	getTransactionOutputValue,
-	getMaxSendAmount,
-	sendMax,
-	updateSendAmount,
-} from '../../../utils/wallet/transactions';
+	setupFeeForOnChainTransaction,
+	setupOnChainTransaction,
+	updateBeignetSendTransaction,
+} from '../../../store/actions/wallet';
+import {
+	coinSelectAutoSelector,
+	conversionUnitSelector,
+	denominationSelector,
+	nextUnitSelector,
+	unitSelector,
+} from '../../../store/reselect/settings';
+import { sendTransactionSelector } from '../../../store/reselect/ui';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
@@ -36,26 +41,22 @@ import {
 	transactionSelector,
 	utxosSelector,
 } from '../../../store/reselect/wallet';
-import {
-	unitSelector,
-	coinSelectAutoSelector,
-	denominationSelector,
-	conversionUnitSelector,
-	nextUnitSelector,
-} from '../../../store/reselect/settings';
-import { useAppSelector } from '../../../hooks/redux';
-import { useBalance, useSwitchUnit } from '../../../hooks/wallet';
-import {
-	setupFeeForOnChainTransaction,
-	setupOnChainTransaction,
-	updateBeignetSendTransaction,
-} from '../../../store/actions/wallet';
-import { getNumberPadText } from '../../../utils/numberpad';
-import { showToast } from '../../../utils/notifications';
+import { IColors } from '../../../styles/colors';
+import { TouchableOpacity } from '../../../styles/components';
+import { Caption13Up } from '../../../styles/text';
 import { convertToSats } from '../../../utils/conversion';
+import { showToast } from '../../../utils/notifications';
+import { getNumberPadText } from '../../../utils/numberpad';
 import { TRANSACTION_DEFAULTS } from '../../../utils/wallet/constants';
-import type { SendScreenProps } from '../../../navigation/types';
-import { sendTransactionSelector } from '../../../store/reselect/ui';
+import {
+	getMaxSendAmount,
+	getTransactionOutputValue,
+	sendMax,
+	updateSendAmount,
+} from '../../../utils/wallet/transactions';
+import AssetButton from '../AssetButton';
+import UnitButton from '../UnitButton';
+import SendNumberPad from './SendNumberPad';
 
 const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 	const route = useRoute();
@@ -78,22 +79,24 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 	const { paymentMethod } = useAppSelector(sendTransactionSelector);
 	const usesLightning = paymentMethod === 'lightning';
 
+	useBottomSheetScreenBackPress();
+
 	const outputAmount = useMemo(() => {
 		const amount = getTransactionOutputValue({ outputs: transaction.outputs });
 		return amount;
 	}, [transaction.outputs]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: recalculate max when utxos, fee or payment method change
 	const availableAmount = useMemo(() => {
 		const maxAmountResponse = getMaxSendAmount({ method: paymentMethod });
 		if (maxAmountResponse.isOk()) {
 			return maxAmountResponse.value.amount;
 		}
 		return 0;
-		// recalculate max when utxos, fee or payment method change
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [transaction.outputs, transaction.satsPerByte, paymentMethod]);
 
 	useFocusEffect(
+		// biome-ignore lint/correctness/useExhaustiveDependencies: ignore transaction.outputs here because it causes infinite loop
 		useCallback(() => {
 			// This is triggered when the user removes all inputs from the coin selection screen.
 			if (
@@ -110,8 +113,6 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 				const result = getNumberPadText(0, denomination, unit);
 				setText(result);
 			}
-			// ignore transaction.outputs here because it causes infinite loop
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [
 			availableAmount,
 			onchainBalance,
@@ -125,11 +126,10 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 	);
 
 	// Set initial text for NumberPadTextField
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only update if the outputAmount/wallet/network changes
 	useEffect(() => {
 		const result = getNumberPadText(outputAmount, denomination, unit);
 		setText(result);
-		// Only update this if the outputAmount/wallet/network changes, so we can ignore unit in the dependency array.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [outputAmount, selectedWallet, selectedNetwork]);
 
 	const amount = useMemo((): number => {
@@ -241,7 +241,7 @@ const Amount = ({ navigation }: SendScreenProps<'Amount'>): ReactElement => {
 		<GradientView style={styles.container}>
 			<BottomSheetNavigationHeader
 				title={t('send_amount')}
-				displayBackButton={canGoBack}
+				showBackButton={canGoBack}
 				actionIcon={
 					transaction.slashTagsUrl ? (
 						<ContactImage url={transaction.slashTagsUrl} />

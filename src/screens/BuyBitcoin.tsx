@@ -1,18 +1,15 @@
 import React, { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display } from '../styles/text';
 import OnboardingScreen from '../components/OnboardingScreen';
-import { openURL } from '../utils/helpers';
 import { useAppDispatch } from '../hooks/redux';
 import { hideTodo } from '../store/slices/todos';
-import type { RootStackScreenProps } from '../navigation/types';
+import { Display } from '../styles/text';
+import { openURL } from '../utils/helpers';
 
 const imageSrc = require('../assets/illustrations/bitcoin-emboss.png');
 
-const BuyBitcoin = ({
-	navigation,
-}: RootStackScreenProps<'BuyBitcoin'>): ReactElement => {
+const BuyBitcoin = (): ReactElement => {
 	const { t } = useTranslation('other');
 	const dispatch = useAppDispatch();
 
@@ -30,9 +27,6 @@ const BuyBitcoin = ({
 			imagePosition="center"
 			buttonText={t('buy_button')}
 			testID="BuyBitcoin"
-			onClosePress={(): void => {
-				navigation.navigate('Wallet');
-			}}
 			onButtonPress={(): void => {
 				dispatch(hideTodo('buyBitcoin'));
 				openURL('https://bitcoin.org/en/exchanges');

@@ -1,20 +1,20 @@
 import React, { ReactElement, useMemo, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { useAppSelector } from '../../hooks/redux';
-import { Trans, useTranslation } from 'react-i18next';
 
-import { CaptionB, Caption13Up, Display, BodyM } from '../../styles/text';
-import { View as ThemedView } from '../../styles/components';
-import SafeAreaInset from '../../components/SafeAreaInset';
+import Divider from '../../components/Divider';
 import NavigationHeader from '../../components/NavigationHeader';
-import { ellipsis } from '../../utils/helpers';
+import SafeAreaInset from '../../components/SafeAreaInset';
+import Button from '../../components/buttons/Button';
 import type { TransferScreenProps } from '../../navigation/types';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
 } from '../../store/reselect/wallet';
-import Divider from '../../components/Divider';
-import Button from '../../components/buttons/Button';
+import { View as ThemedView } from '../../styles/components';
+import { BodyM, Caption13Up, CaptionB, Display } from '../../styles/text';
+import { ellipsis } from '../../utils/helpers';
 import { handleLnurlChannel } from '../../utils/lnurl';
 
 const LNURLChannel = ({
@@ -50,16 +50,13 @@ const LNURLChannel = ({
 	};
 
 	const onClosePress = (): void => {
-		navigation.navigate('Wallet');
+		navigation.popTo('Wallet', { screen: 'Wallets' });
 	};
 
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={t('lnurl_channel_header')}
-				onClosePress={onClosePress}
-			/>
+			<NavigationHeader title={t('lnurl_channel_header')} />
 			<View style={styles.content}>
 				<Display style={styles.title}>
 					<Trans
@@ -101,9 +98,9 @@ const LNURLChannel = ({
 					style={styles.button}
 					size="large"
 					text={t('common:connect')}
-					onPress={handleConnect}
 					loading={loading}
 					testID="ConnectButton"
+					onPress={handleConnect}
 				/>
 			</View>
 			<SafeAreaInset type="bottom" minPadding={16} />

@@ -16,13 +16,13 @@ import {
 	View,
 } from 'react-native';
 
-import Button from '../../../components/buttons/Button';
 import LightningChannel, {
 	TStatus,
 } from '../../../components/LightningChannel';
 import Money from '../../../components/Money';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
+import Button from '../../../components/buttons/Button';
 import { usePaidBlocktankOrders } from '../../../hooks/blocktank';
 import useColors from '../../../hooks/colors';
 import {
@@ -112,13 +112,14 @@ const ChannelDetails = ({
 	const channelIsOpen = channel.status === EChannelStatus.open;
 	const channelIsPending = channel.status === EChannelStatus.pending;
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: onMount
 	useEffect(() => {
 		if (blocktankOrder) {
 			updateOrder(blocktankOrder.id).then();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		if (!channel.funding_txid) {
 			return;
@@ -231,10 +232,7 @@ const ChannelDetails = ({
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={channelName}
-				onClosePress={(): void => navigation.navigate('Wallet')}
-			/>
+			<NavigationHeader title={channelName} />
 			<ScrollView
 				contentContainerStyle={styles.content}
 				testID="ChannelScrollView"

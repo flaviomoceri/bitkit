@@ -1,9 +1,23 @@
 import React, { memo, ReactElement, ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
-import { TouchableOpacity, View as ThemedView } from '../../styles/components';
-import { CaptionB, BodyMSB } from '../../styles/text';
+import { EPaymentType } from 'beignet';
+import Money from '../../components/Money';
+import ProfileImage from '../../components/ProfileImage';
+import { useFeeText } from '../../hooks/fees';
+import { useAppSelector } from '../../hooks/redux';
+import { useProfile } from '../../hooks/slashtags';
+import { slashTagsUrlSelector } from '../../store/reselect/metadata';
+import { transferSelector } from '../../store/reselect/wallet';
+import {
+	EActivityType,
+	IActivityItem,
+	TLightningActivityItem,
+	TOnchainActivityItem,
+} from '../../store/types/activity';
+import { ETransferStatus } from '../../store/types/wallet';
+import { View as ThemedView, TouchableOpacity } from '../../styles/components';
 import {
 	HeartbeatIcon,
 	HourglassSimpleIcon,
@@ -13,23 +27,9 @@ import {
 	TransferIcon,
 	XIcon,
 } from '../../styles/icons';
-import Money from '../../components/Money';
-import ProfileImage from '../../components/ProfileImage';
-import {
-	EActivityType,
-	IActivityItem,
-	TLightningActivityItem,
-	TOnchainActivityItem,
-} from '../../store/types/activity';
-import { useAppSelector } from '../../hooks/redux';
-import { useProfile } from '../../hooks/slashtags';
-import { useFeeText } from '../../hooks/fees';
-import { ETransferStatus } from '../../store/types/wallet';
-import { slashTagsUrlSelector } from '../../store/reselect/metadata';
-import { getDurationForBlocks, truncate } from '../../utils/helpers';
+import { BodyMSB, CaptionB } from '../../styles/text';
 import { getActivityItemDate } from '../../utils/activity';
-import { transferSelector } from '../../store/reselect/wallet';
-import { EPaymentType } from 'beignet';
+import { getDurationForBlocks, truncate } from '../../utils/helpers';
 
 export const ListItem = ({
 	title,
@@ -107,8 +107,10 @@ const OnchainListItem = ({
 	let title = t(isSend ? 'activity_sent' : 'activity_received');
 	const amount = isSend ? value + fee : value;
 
-	let description;
-	if (feeRateDescription) {
+	let description: string;
+	if (!exists) {
+		description = t('activity_removed');
+	} else if (feeRateDescription) {
 		description = t('activity_confirms_in', { feeRateDescription });
 	} else {
 		description = t('activity_low_fee');
@@ -117,7 +119,7 @@ const OnchainListItem = ({
 	if (transfer) {
 		title = t('activity_transfer');
 		icon = (
-			<ThemedView style={styles.icon} color="brand16">
+			<ThemedView style={styles.icon} color="brand16" testID="TransferIcon">
 				<TransferIcon color="brand" />
 			</ThemedView>
 		);

@@ -1,16 +1,15 @@
-import React, { memo, ReactElement } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import React, { memo, ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
+import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
+import GradientView from '../../../components/GradientView';
+import SafeAreaInset from '../../../components/SafeAreaInset';
+import Button from '../../../components/buttons/Button';
+import type { BackupScreenProps } from '../../../navigation/types';
 import { View as ThemedView } from '../../../styles/components';
 import { BodyM, BodyMSB, BodyS } from '../../../styles/text';
-import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
-import SafeAreaInset from '../../../components/SafeAreaInset';
-import GradientView from '../../../components/GradientView';
-import Button from '../../../components/buttons/Button';
-import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';
-import type { BackupScreenProps } from '../../../navigation/types';
 
 const ShowPassphrase = ({
 	navigation,
@@ -18,8 +17,6 @@ const ShowPassphrase = ({
 }: BackupScreenProps<'ShowPassphrase'>): ReactElement => {
 	const { t } = useTranslation('security');
 	const { bip39Passphrase, seed } = route.params;
-
-	useBottomSheetBackPress('backupNavigation');
 
 	return (
 		<GradientView style={styles.gradient}>

@@ -1,14 +1,15 @@
-import React, { ReactElement, memo } from 'react';
-import { useAppSelector } from '../../hooks/redux';
+import { NavigationIndependentTree } from '@react-navigation/native';
 import {
 	NativeStackNavigationOptions,
 	NativeStackNavigationProp,
 	createNativeStackNavigator,
 } from '@react-navigation/native-stack';
+import React, { ReactElement, memo } from 'react';
 
 import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import { __E2E__ } from '../../constants/env';
 import { useSnapPoints } from '../../hooks/bottomSheet';
+import { useAppSelector } from '../../hooks/redux';
 import ProfileLink from '../../screens/Profile/ProfileLink';
 import ProfileLinkSuggestions from '../../screens/Profile/ProfileLinkSuggestions';
 import { viewControllerIsOpenSelector } from '../../store/reselect/ui';
@@ -37,15 +38,17 @@ const ProfileLinkNavigation = (): ReactElement => {
 
 	return (
 		<BottomSheetWrapper view="profileAddDataForm" snapPoints={snapPoints}>
-			<NavigationContainer key={isOpen.toString()}>
-				<Stack.Navigator screenOptions={screenOptions}>
-					<Stack.Screen name="ProfileLink" component={ProfileLink} />
-					<Stack.Screen
-						name="ProfileLinkSuggestions"
-						component={ProfileLinkSuggestions}
-					/>
-				</Stack.Navigator>
-			</NavigationContainer>
+			<NavigationIndependentTree>
+				<NavigationContainer key={isOpen.toString()}>
+					<Stack.Navigator screenOptions={screenOptions}>
+						<Stack.Screen name="ProfileLink" component={ProfileLink} />
+						<Stack.Screen
+							name="ProfileLinkSuggestions"
+							component={ProfileLinkSuggestions}
+						/>
+					</Stack.Navigator>
+				</NavigationContainer>
+			</NavigationIndependentTree>
 		</BottomSheetWrapper>
 	);
 };

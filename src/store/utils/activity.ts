@@ -1,7 +1,8 @@
 import { TChannel } from '@synonymdev/react-native-ldk';
-import { ok, Result } from '@synonymdev/result';
+import { Result, ok } from '@synonymdev/result';
 import { EPaymentType } from 'beignet';
 
+import { persistor } from '..';
 import { onChainTransactionToActivityItem } from '../../utils/activity';
 import { formatBoostedActivityItems } from '../../utils/boost';
 import { vibrate } from '../../utils/helpers';
@@ -13,7 +14,6 @@ import { updateSettings } from '../slices/settings';
 import { closeSheet } from '../slices/ui';
 import { EActivityType, TLightningActivityItem } from '../types/activity';
 import { showBottomSheet } from './ui';
-import { persistor } from '..';
 
 /**
  * Attempts to determine if a given channel open was in response to
@@ -84,28 +84,26 @@ export const updateActivityList = (): Result<string> => {
  * @returns {Result<string>}
  */
 export const updateOnChainActivityList = async (): Promise<Result<string>> => {
-	let { currentWallet } = getCurrentWallet();
+	const { currentWallet } = getCurrentWallet();
 	if (!currentWallet) {
 		console.warn(
 			'No wallet found. Cannot update activity list with transactions.',
 		);
 		return ok('');
 	}
-	const { selectedNetwork, selectedWallet } = getCurrentWallet();
+	const { selectedNetwork } = getCurrentWallet();
 	const boostedTransactions =
 		currentWallet.boostedTransactions[selectedNetwork];
 
 	const transactions = currentWallet.transactions[selectedNetwork];
 	const promises = Object.values(transactions).map(async (tx) => {
-		return await onChainTransactionToActivityItem({ transaction: tx });
+		return onChainTransactionToActivityItem({ transaction: tx });
 	});
 	const activityItems = await Promise.all(promises);
 
 	const boostFormattedItems = await formatBoostedActivityItems({
 		items: activityItems,
 		boostedTransactions,
-		selectedWallet,
-		selectedNetwork,
 	});
 	dispatch(updateActivityItems(boostFormattedItems));
 

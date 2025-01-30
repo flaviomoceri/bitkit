@@ -1,15 +1,12 @@
 import React, { memo, ReactElement, useMemo, useState } from 'react';
-import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { View as ThemedView } from '../../styles/components';
-import { BodyM, BodyS } from '../../styles/text';
-import SearchInput from '../../components/SearchInput';
 import List, { IListData } from '../../components/List';
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
-import { SettingsScreenProps } from '../../navigation/types';
-import { SettingsStackParamList } from '../../navigation/settings/SettingsNavigator';
+import SearchInput from '../../components/SearchInput';
+import { View as ThemedView } from '../../styles/components';
+import { BodyM, BodyS } from '../../styles/text';
 
 const SettingsView = ({
 	title = ' ',
@@ -34,11 +31,6 @@ const SettingsView = ({
 	childrenPosition?: 'top' | 'bottom';
 	style?: StyleProp<ViewStyle>;
 }): ReactElement => {
-	const navigation =
-		useNavigation<
-			SettingsScreenProps<keyof SettingsStackParamList>['navigation']
-		>();
-
 	const [search, setSearch] = useState('');
 	const filteredListData = useMemo(() => {
 		return (
@@ -59,13 +51,7 @@ const SettingsView = ({
 			style={[fullHeight && styles.fullHeight, style]}
 			color={fullHeight ? 'black' : 'transparent'}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={title}
-				displayBackButton={showBackNavigation}
-				onClosePress={(): void => {
-					navigation.navigate('Wallet');
-				}}
-			/>
+			<NavigationHeader title={title} showBackButton={showBackNavigation} />
 
 			{showSearch && (
 				<SearchInput

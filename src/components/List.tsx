@@ -1,27 +1,27 @@
+import isEqual from 'lodash/isEqual';
 import React, { memo, ReactElement, useCallback } from 'react';
 import {
-	View,
+	ActivityIndicator,
 	SectionList,
 	StyleProp,
 	StyleSheet,
-	ViewStyle,
 	TouchableOpacity,
-	ActivityIndicator,
+	View,
+	ViewStyle,
 } from 'react-native';
 import { SvgProps } from 'react-native-svg';
-import isEqual from 'lodash/isEqual';
 
-import { Switch } from '../styles/components';
+import Switch from '../components/Switch';
+import DraggableList from '../screens/Settings/PaymentPreference/DraggableList';
+import { Checkmark, ChevronRight } from '../styles/icons';
 import {
 	BodyM,
 	BodyMSB,
 	BodyS,
 	BodySSB,
-	Caption13Up,
 	Caption,
+	Caption13Up,
 } from '../styles/text';
-import { ChevronRight, Checkmark } from '../styles/icons';
-import DraggableList from '../screens/Settings/PaymentPreference/DraggableList';
 
 const _SectionHeader = memo(
 	({
@@ -87,14 +87,14 @@ export type ItemData = SwitchItem | ButtonItem | TextButtonItem | DraggableItem;
 
 export type SwitchItem = {
 	type: EItemType.switch;
+	enabled: boolean;
 	title: string;
 	Icon?: React.FC<SvgProps>;
 	iconColor?: string;
-	enabled?: boolean;
 	disabled?: boolean;
 	hide?: boolean;
-	onPress?: () => void;
 	testID?: string;
+	onPress?: () => void;
 };
 
 export type ButtonItem = {
@@ -107,10 +107,10 @@ export type ButtonItem = {
 	iconColor?: string;
 	disabled?: boolean;
 	enabled?: boolean;
-	hide?: boolean;
-	onPress?: () => void;
-	testID?: string;
 	loading?: boolean;
+	hide?: boolean;
+	testID?: string;
+	onPress?: () => void;
 };
 
 export type TextButtonItem = {
@@ -122,8 +122,8 @@ export type TextButtonItem = {
 	iconColor?: string;
 	enabled?: boolean;
 	hide?: boolean;
-	onPress?: () => void;
 	testID?: string;
+	onPress?: () => void;
 };
 
 export type DraggableItem = {
@@ -131,8 +131,8 @@ export type DraggableItem = {
 	value: TItemDraggable[];
 	title: string;
 	hide?: boolean;
-	onDragEnd?: (data: TItemDraggable[]) => void;
 	testID?: string;
+	onDragEnd?: (data: TItemDraggable[]) => void;
 };
 
 const _Item = memo((item: ItemData): ReactElement => {
@@ -251,10 +251,7 @@ const _Item = memo((item: ItemData): ReactElement => {
 
 		return (
 			<TouchableOpacity
-				style={
-					// eslint-disable-next-line react-native/no-inline-styles
-					{ opacity: enabled ? 1 : 0.5 }
-				}
+				style={{ opacity: enabled ? 1 : 0.5 }}
 				activeOpacity={0.7}
 				disabled={disabled}
 				testID={testID}

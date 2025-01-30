@@ -1,24 +1,20 @@
 import React, { memo, ReactElement, useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display } from '../../styles/text';
-import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import BottomSheetScreen from '../../components/BottomSheetScreen';
-import { closeAllChannels } from '../../utils/lightning';
-import { showToast } from '../../utils/notifications';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import BottomSheetWrapper from '../../components/BottomSheetWrapper';
 import {
 	useBottomSheetBackPress,
 	useSnapPoints,
 } from '../../hooks/bottomSheet';
-import { closeSheet } from '../../store/slices/ui';
-import { showBottomSheet } from '../../store/utils/ui';
-import { clearCoopCloseTimer } from '../../store/slices/user';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { startCoopCloseTimestampSelector } from '../../store/reselect/user';
-import {
-	selectedNetworkSelector,
-	selectedWalletSelector,
-} from '../../store/reselect/wallet';
+import { closeSheet } from '../../store/slices/ui';
+import { clearCoopCloseTimer } from '../../store/slices/user';
+import { showBottomSheet } from '../../store/utils/ui';
+import { Display } from '../../styles/text';
+import { closeAllChannels } from '../../utils/lightning';
+import { showToast } from '../../utils/notifications';
 
 const imageSrc = require('../../assets/illustrations/exclamation-mark.png');
 
@@ -30,14 +26,13 @@ const ForceTransfer = (): ReactElement => {
 	const snapPoints = useSnapPoints('large');
 	const dispatch = useAppDispatch();
 	const startTime = useAppSelector(startCoopCloseTimestampSelector);
-	const selectedWallet = useAppSelector(selectedWalletSelector);
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const [isPending, setIsPending] = useState(false);
 
 	useBottomSheetBackPress('forceTransfer');
 
 	// try to cooperatively close the channel(s) for 30min
 	useEffect(() => {
+		// biome-ignore lint/style/useConst: false alarm
 		let interval: NodeJS.Timer;
 
 		if (!startTime) {
@@ -78,7 +73,7 @@ const ForceTransfer = (): ReactElement => {
 		return (): void => {
 			clearInterval(interval);
 		};
-	}, [selectedNetwork, selectedWallet, startTime, dispatch]);
+	}, [startTime, dispatch]);
 
 	const onCancel = (): void => {
 		dispatch(closeSheet('forceTransfer'));

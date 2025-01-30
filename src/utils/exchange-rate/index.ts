@@ -1,9 +1,9 @@
-import { ok, err, Result } from '@synonymdev/result';
+import { Result, err, ok } from '@synonymdev/result';
 
-import i18n from '../i18n';
-import { timeAgo } from '../helpers';
+import { __BACKEND_HOST__ } from '../../constants/env';
 import { getWalletStore } from '../../store/helpers';
-import { __BLOCKTANK_HOST__ } from '../../constants/env';
+import { timeAgo } from '../helpers';
+import i18n from '../i18n';
 import { showToast } from '../notifications';
 
 export const mostUsedExchangeTickers = {
@@ -56,7 +56,7 @@ export const getExchangeRates = async (): Promise<Result<IExchangeRates>> => {
 	const lastUpdatedAt = getWalletStore().exchangeRates.USD?.lastUpdatedAt;
 
 	try {
-		const response = await fetch(`${__BLOCKTANK_HOST__}/fx/rates/btc`);
+		const response = await fetch(`${__BACKEND_HOST__}/fx/rates/btc`);
 		const { tickers } = await response.json();
 
 		const rates: IExchangeRates = tickers.reduce(

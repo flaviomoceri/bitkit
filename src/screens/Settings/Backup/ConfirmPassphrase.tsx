@@ -1,16 +1,15 @@
 import React, { memo, ReactElement, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
+import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
+import GradientView from '../../../components/GradientView';
+import SafeAreaInset from '../../../components/SafeAreaInset';
+import Button from '../../../components/buttons/Button';
+import type { BackupScreenProps } from '../../../navigation/types';
 import { BottomSheetTextInput } from '../../../styles/components';
 import { BodyM } from '../../../styles/text';
-import BottomSheetNavigationHeader from '../../../components/BottomSheetNavigationHeader';
-import SafeAreaInset from '../../../components/SafeAreaInset';
-import GradientView from '../../../components/GradientView';
-import Button from '../../../components/buttons/Button';
 import { capitalize } from '../../../utils/helpers';
-import { useBottomSheetBackPress } from '../../../hooks/bottomSheet';
-import type { BackupScreenProps } from '../../../navigation/types';
 
 const ConfirmPassphrase = ({
 	navigation,
@@ -19,8 +18,6 @@ const ConfirmPassphrase = ({
 	const { t } = useTranslation('security');
 	const { bip39Passphrase: origPass } = route.params;
 	const [bip39Passphrase, setPassphrase] = useState<string>('');
-
-	useBottomSheetBackPress('backupNavigation');
 
 	return (
 		<GradientView style={styles.gradient}>

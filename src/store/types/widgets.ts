@@ -19,7 +19,7 @@ export interface SlashFeedJSON {
 
 export type TGraphPeriod = '1D' | '1W' | '1M';
 
-export type TWidgetSettings = {
+export type TFeedWidgetOptions = {
 	fields: string[];
 	extras?: {
 		period?: TGraphPeriod;
@@ -29,13 +29,23 @@ export type TWidgetSettings = {
 };
 
 export type TFeedWidget = {
+	url: string;
 	type: string;
 	fields: SlashFeedJSON['fields'];
-	extras?: TWidgetSettings['extras'];
+	extras?: TFeedWidgetOptions['extras'];
 };
 
-export type TWidget = TFeedWidget;
+export type TWeatherWidgetOptions = {
+	showStatus: boolean;
+	showText: boolean;
+	showMedian: boolean;
+	showNextBlockFee: boolean;
+};
+
+export type TWidgetOptions = TWeatherWidgetOptions;
+
+export type TWidget = TFeedWidget | TWidgetOptions;
 
 export type TWidgets = {
-	[url: string]: TWidget | undefined;
+	[id: string]: TWidget | undefined;
 };

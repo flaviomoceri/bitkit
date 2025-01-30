@@ -2,19 +2,18 @@ import React, { memo, ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 
-import Button from '../../../components/buttons/Button';
 import NavigationHeader from '../../../components/NavigationHeader';
 import SafeAreaInset from '../../../components/SafeAreaInset';
+import Button from '../../../components/buttons/Button';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import type { SettingsScreenProps } from '../../../navigation/types';
-import { updateWallet } from '../../../store/slices/wallet';
 import { gapLimitOptionsSelector } from '../../../store/reselect/wallet';
+import { updateWallet } from '../../../store/slices/wallet';
 import { ScrollView, TextInput, View } from '../../../styles/components';
 import { Caption13Up } from '../../../styles/text';
 import { showToast } from '../../../utils/notifications';
 import { getOnChainWalletAsync, refreshWallet } from '../../../utils/wallet';
 
-const GapLimit = ({}: SettingsScreenProps<'GapLimit'>): ReactElement => {
+const GapLimit = (): ReactElement => {
 	const { t } = useTranslation('settings');
 	const dispatch = useAppDispatch();
 	const gapLimitOptions = useAppSelector(gapLimitOptionsSelector);

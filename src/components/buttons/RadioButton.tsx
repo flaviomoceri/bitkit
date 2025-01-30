@@ -1,15 +1,15 @@
 import React, { memo, ReactElement, ReactNode } from 'react';
 import {
-	View,
-	StyleSheet,
-	TouchableOpacity,
 	GestureResponderEvent,
 	StyleProp,
+	StyleSheet,
+	TouchableOpacity,
+	View,
 	ViewStyle,
 } from 'react-native';
 
-import { BodyM, Caption } from '../../styles/text';
 import { Checkmark } from '../../styles/icons';
+import { BodyM, Caption } from '../../styles/text';
 
 type RadioButtonProps = {
 	label: ReactNode;
@@ -70,16 +70,16 @@ export const RadioButtonGroup = memo(
 								style={styles.itemLast}
 							/>
 						);
-					} else {
-						return (
-							<RadioButton
-								key={item.value}
-								label={item.label}
-								checked={value === item.value}
-								onPress={(): void => onPress?.(item.value)}
-							/>
-						);
 					}
+
+					return (
+						<RadioButton
+							key={item.value}
+							label={item.label}
+							checked={value === item.value}
+							onPress={(): void => onPress?.(item.value)}
+						/>
+					);
 				})}
 			</>
 		);

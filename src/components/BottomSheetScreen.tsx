@@ -7,9 +7,9 @@ import {
 	View,
 } from 'react-native';
 
-import { BodyM, Display } from '../styles/text';
 import BottomSheetNavigationHeader from '../components/BottomSheetNavigationHeader';
 import SafeAreaInset from '../components/SafeAreaInset';
+import { BodyM, Display } from '../styles/text';
 import Button from './buttons/Button';
 
 const BottomSheetScreen = ({
@@ -19,7 +19,7 @@ const BottomSheetScreen = ({
 	image,
 	continueText,
 	cancelText,
-	displayBackButton = true,
+	showBackButton = true,
 	isLoading,
 	testID,
 	onCancel,
@@ -31,7 +31,7 @@ const BottomSheetScreen = ({
 	image: ImageSourcePropType;
 	continueText: string;
 	cancelText?: string;
-	displayBackButton?: boolean;
+	showBackButton?: boolean;
 	isLoading?: boolean;
 	testID?: string;
 	onCancel?: () => void;
@@ -50,11 +50,10 @@ const BottomSheetScreen = ({
 		<View style={styles.root} testID={testID} onLayout={onLayout}>
 			<BottomSheetNavigationHeader
 				title={navTitle}
-				displayBackButton={displayBackButton}
+				showBackButton={showBackButton}
 			/>
 			<View style={styles.content}>
 				<View
-					// eslint-disable-next-line react-native/no-inline-styles
 					style={[styles.imageContainer, { marginBottom: isLarge ? 32 : 0 }]}>
 					<Image style={styles.image} source={image} />
 				</View>

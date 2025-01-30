@@ -1,22 +1,22 @@
 import React, { ReactElement, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-	View,
-	TouchableOpacity,
-	TextInput,
-	StyleSheet,
 	Platform,
+	StyleSheet,
+	TextInput,
+	TouchableOpacity,
+	View,
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { useTranslation } from 'react-i18next';
 import { useTheme } from 'styled-components/native';
 
+import { BasicProfile } from '../store/types/slashtags';
 import { TextInputNoOutline } from '../styles/components';
-import { Text, Headline } from '../styles/text';
 import { CameraIcon } from '../styles/icons';
+import { Headline, Text } from '../styles/text';
+import { truncate } from '../utils/helpers';
 import ProfileImage from './ProfileImage';
 import SlashtagURL from './SlashtagURL';
-import { BasicProfile } from '../store/types/slashtags';
-import { truncate } from '../utils/helpers';
 
 export const MAX_NAME_LENGTH = 50;
 export const MAX_BIO_LENGTH = 160;
@@ -103,7 +103,7 @@ const ProfileCard = ({
 
 							const base64 = result.assets?.[0].base64;
 							const type = result.assets?.[0].type;
-							base64 && onChange?.('image', `data:${type};base64,` + base64);
+							base64 && onChange?.('image', `data:${type};base64,${base64}`);
 						}}>
 						<View style={styles.cameraIconOverlay}>
 							<CameraIcon />

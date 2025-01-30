@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display } from '../../styles/text';
 import OnboardingScreen from '../../components/OnboardingScreen';
 import { useAppDispatch } from '../../hooks/redux';
-import { updateUser } from '../../store/slices/user';
 import type { TransferScreenProps } from '../../navigation/types';
+import { updateSettings } from '../../store/slices/settings';
+import { Display } from '../../styles/text';
 
 const imageSrc = require('../../assets/illustrations/coin-stack-x.png');
 
@@ -17,7 +17,7 @@ const SpendingIntro = ({
 
 	const onContinue = (): void => {
 		navigation.navigate('SpendingAmount');
-		dispatch(updateUser({ spendingIntroSeen: true }));
+		dispatch(updateSettings({ spendingIntroSeen: true }));
 	};
 
 	return (
@@ -34,9 +34,6 @@ const SpendingIntro = ({
 			image={imageSrc}
 			buttonText={t('spending_intro.button')}
 			testID="SpendingIntro"
-			onClosePress={(): void => {
-				navigation.navigate('Wallet');
-			}}
 			onButtonPress={onContinue}
 		/>
 	);

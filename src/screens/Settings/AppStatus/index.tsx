@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { useAppSelector } from '../../../hooks/redux';
-import { SettingsScreenProps } from '../../../navigation/types';
 import { backupSelector } from '../../../store/reselect/backup';
 import { blocktankPaidOrdersFullSelector } from '../../../store/reselect/blocktank';
 import {
@@ -27,7 +26,7 @@ import {
 	GlobeSimpleIcon,
 	LightningHollow,
 } from '../../../styles/icons';
-import { CaptionB, BodyMSB } from '../../../styles/text';
+import { BodyMSB, CaptionB } from '../../../styles/text';
 import { FAILED_BACKUP_CHECK_TIME } from '../../../utils/backup/backups-subscriber';
 import { i18nTime } from '../../../utils/i18n';
 import SettingsView from '../SettingsView';
@@ -83,7 +82,7 @@ const Status = ({
 	);
 };
 
-const AppStatus = ({}: SettingsScreenProps<'AppStatus'>): ReactElement => {
+const AppStatus = (): ReactElement => {
 	const { t } = useTranslation('settings');
 	const { t: tTime } = useTranslation('intl', { i18n: i18nTime });
 	const isOnline = useAppSelector(isOnlineSelector);
@@ -117,7 +116,8 @@ const AppStatus = ({}: SettingsScreenProps<'AppStatus'>): ReactElement => {
 		}
 		if (openChannels.length > 0) {
 			return 'ready';
-		} else if (
+		}
+		if (
 			pendingChannels.length > 0 ||
 			Object.keys(paidOrders.created).length > 0
 		) {
@@ -161,7 +161,7 @@ const AppStatus = ({}: SettingsScreenProps<'AppStatus'>): ReactElement => {
 				return backup[key].synced;
 			});
 			const max = Math.max(...syncTimes);
-			let subtitle = tTime('dateTime', {
+			const subtitle = tTime('dateTime', {
 				v: new Date(max),
 				formatParams: {
 					v: {

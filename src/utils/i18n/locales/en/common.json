@@ -53,6 +53,9 @@
   "delete": {
     "string": "Delete"
   },
+  "delete_yes": {
+    "string": "Yes, Delete"
+  },
   "ok": {
     "string": "OK"
   },
@@ -61,6 +64,9 @@
 		"context": "A list of positive words to show the user after they have completed an action",
 		"developer_comment": "Use a number of words separated by a newline character"
 	},
+  "reset": {
+    "string": "Reset"
+  },
   "retry": {
     "string": "Retry"
   },
@@ -99,5 +105,8 @@
   },
   "default": {
     "string": "Default"
+  },
+  "preview": {
+    "string": "Preview"
   }
 }

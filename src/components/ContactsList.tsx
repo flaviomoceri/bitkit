@@ -1,19 +1,19 @@
-import React, { ReactElement, useCallback, useMemo } from 'react';
-import { View, SectionList, StyleSheet, TouchableOpacity } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../hooks/redux';
 import { BottomSheetSectionList } from '@gorhom/bottom-sheet';
+import React, { ReactElement, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { SectionList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useAppSelector } from '../hooks/redux';
 
+import { useProfile, useSlashtags } from '../hooks/slashtags';
+import { contactsSelector } from '../store/reselect/slashtags';
+import { IContactRecord } from '../store/types/slashtags';
+import { View as ThemedView } from '../styles/components';
+import { BodyMSB, Caption13Up } from '../styles/text';
+import { IThemeColors } from '../styles/themes';
+import { truncate } from '../utils/helpers';
+import Divider from './Divider';
 import ProfileImage from './ProfileImage';
 import SlashtagURL from './SlashtagURL';
-import Divider from './Divider';
-import { View as ThemedView } from '../styles/components';
-import { Caption13Up, BodyMSB } from '../styles/text';
-import { useProfile, useSlashtags } from '../hooks/slashtags';
-import { IContactRecord } from '../store/types/slashtags';
-import { truncate } from '../utils/helpers';
-import { IThemeColors } from '../styles/themes';
-import { contactsSelector } from '../store/reselect/slashtags';
 
 export const ContactItem = ({
 	contact,
@@ -106,9 +106,11 @@ const ContactsList = ({
 			const name = contact?.name ?? 'Contact Name';
 			const char = name.slice(0, 1);
 			if (char) {
-				sections[char]
-					? sections[char].push(contact)
-					: (sections[char] = [contact]);
+				if (sections[char]) {
+					sections[char].push(contact);
+				} else {
+					sections[char] = [contact];
+				}
 			}
 		});
 
@@ -130,7 +132,6 @@ const ContactsList = ({
 	const List = bottomSheet ? BottomSheetSectionList : SectionList;
 
 	const renderSectionHeader = useCallback(
-		// eslint-disable-next-line react/no-unused-prop-types
 		({ section: { title } }: { section: { title: string } }): ReactElement => {
 			const isFirst = title === sectionedContacts[0].title;
 			return (
@@ -145,7 +146,6 @@ const ContactsList = ({
 	);
 
 	const renderItem = useCallback(
-		// eslint-disable-next-line react/no-unused-prop-types
 		({ item }: { item: IContactRecord }): ReactElement => (
 			<ContactItem contact={item} onPress={onPress} />
 		),

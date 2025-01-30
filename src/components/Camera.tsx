@@ -1,9 +1,9 @@
-import React, { ReactElement, useState, useEffect } from 'react';
-import { StyleSheet, Platform, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { Camera as CameraKit, CameraType } from 'react-native-camera-kit';
+import React, { ReactElement, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform, StyleSheet, View } from 'react-native';
+import { Camera as CameraKit, CameraType } from 'react-native-camera-kit';
+import { PERMISSIONS, RESULTS, check, request } from 'react-native-permissions';
 
 import CameraNoAuth from './CameraNoAuth';
 import GradientView from './GradientView';
@@ -39,10 +39,11 @@ const Camera = ({
 			const checkResponse = await check(cameraPermission);
 			switch (checkResponse) {
 				case RESULTS.UNAVAILABLE:
-				case RESULTS.BLOCKED:
+				case RESULTS.BLOCKED: {
 					setCameraStatus(Status.NOT_AUTHORIZED);
 					break;
-				case RESULTS.DENIED:
+				}
+				case RESULTS.DENIED: {
 					const rationale = {
 						title: t('camera_ask_title'),
 						message: t('camera_ask_msg'),
@@ -56,10 +57,12 @@ const Camera = ({
 							: Status.NOT_AUTHORIZED,
 					);
 					break;
+				}
 				case RESULTS.LIMITED:
-				case RESULTS.GRANTED:
+				case RESULTS.GRANTED: {
 					setCameraStatus(Status.AUTHORIZED);
 					break;
+				}
 			}
 		})();
 	}, [t]);

@@ -1,3 +1,7 @@
+import Clipboard from '@react-native-clipboard/clipboard';
+import { Canvas, Path, Skia } from '@shopify/react-native-skia';
+import { parse } from '@synonymdev/slashtags-url';
+import { EBoostType, EPaymentType } from 'beignet';
 import React, {
 	ReactElement,
 	memo,
@@ -7,21 +11,29 @@ import React, {
 	useState,
 	ReactNode,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
 	ActivityIndicator,
 	ScrollView,
 	StyleSheet,
-	View,
 	TouchableOpacity,
+	View,
 } from 'react-native';
-import { Canvas, Path, Skia } from '@shopify/react-native-skia';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { useTranslation } from 'react-i18next';
-import { parse } from '@synonymdev/slashtags-url';
-import { EBoostType, EPaymentType } from 'beignet';
 
+import ContactSmall from '../../components/ContactSmall';
+import Money from '../../components/Money';
+import NavigationHeader from '../../components/NavigationHeader';
+import SafeAreaInset from '../../components/SafeAreaInset';
+import Tag from '../../components/Tag';
+import Button from '../../components/buttons/Button';
+import useColors from '../../hooks/colors';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import {
+	EActivityType,
+	TLightningActivityItem,
+	TOnchainActivityItem,
+} from '../../store/types/activity';
 import { View as ThemedView } from '../../styles/components';
-import { Caption13Up, BodySSB, Title } from '../../styles/text';
 import {
 	CalendarIcon,
 	CheckCircleIcon,
@@ -42,62 +54,50 @@ import {
 	UserPlusIcon,
 	XIcon,
 } from '../../styles/icons';
-import Button from '../../components/buttons/Button';
-import Money from '../../components/Money';
-import ContactSmall from '../../components/ContactSmall';
-import NavigationHeader from '../../components/NavigationHeader';
-import SafeAreaInset from '../../components/SafeAreaInset';
-import Tag from '../../components/Tag';
-import ActivityTagsPrompt from './ActivityTagsPrompt';
-import {
-	EActivityType,
-	TLightningActivityItem,
-	TOnchainActivityItem,
-} from '../../store/types/activity';
+import { BodySSB, Caption13Up, Title } from '../../styles/text';
 import {
 	canBoost,
 	getBlockExplorerLink,
 } from '../../utils/wallet/transactions';
-import useColors from '../../hooks/colors';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import ActivityTagsPrompt from './ActivityTagsPrompt';
 
-import { showBottomSheet } from '../../store/utils/ui';
+import { useOnchainWallet, useSwitchUnit } from '../../hooks/wallet';
+import type {
+	RootNavigationProp,
+	RootStackScreenProps,
+} from '../../navigation/types';
 import {
 	activityItemSelector,
 	activityItemsSelector,
 } from '../../store/reselect/activity';
 import {
-	deleteMetaTxTag,
-	deleteMetaTxSlashtagsUrl,
-} from '../../store/slices/metadata';
-import { getTransactions } from '../../utils/wallet/electrum';
-import { ITransaction, ITxHash } from '../../utils/wallet';
-import {
-	ellipsis,
-	getDurationForBlocks,
-	openURL,
-	vibrate,
-} from '../../utils/helpers';
-import { getBoostedTransactionParents } from '../../utils/boost';
-import { showToast } from '../../utils/notifications';
+	commentSelector,
+	slashTagsUrlSelector,
+	tagSelector,
+} from '../../store/reselect/metadata';
+import { contactsSelector } from '../../store/reselect/slashtags';
 import {
 	boostedTransactionsSelector,
 	selectedNetworkSelector,
 	transferSelector,
 } from '../../store/reselect/wallet';
 import {
-	commentSelector,
-	slashTagsUrlSelector,
-	tagSelector,
-} from '../../store/reselect/metadata';
-import type {
-	RootNavigationProp,
-	RootStackScreenProps,
-} from '../../navigation/types';
-import { i18nTime } from '../../utils/i18n';
-import { useOnchainWallet, useSwitchUnit } from '../../hooks/wallet';
-import { contactsSelector } from '../../store/reselect/slashtags';
+	deleteMetaTxSlashtagsUrl,
+	deleteMetaTxTag,
+} from '../../store/slices/metadata';
 import { ETransferStatus } from '../../store/types/wallet';
+import { showBottomSheet } from '../../store/utils/ui';
+import { getBoostedTransactionParents } from '../../utils/boost';
+import {
+	ellipsis,
+	getDurationForBlocks,
+	openURL,
+	vibrate,
+} from '../../utils/helpers';
+import { i18nTime } from '../../utils/i18n';
+import { showToast } from '../../utils/notifications';
+import { ITransaction, ITxHash } from '../../utils/wallet';
+import { getTransactions } from '../../utils/wallet/electrum';
 
 const Section = memo(
 	({ title, value }: { title: string; value: ReactNode }) => {
@@ -164,7 +164,6 @@ const OnchainActivityDetail = ({
 	const dispatch = useAppDispatch();
 	const contacts = useAppSelector(contactsSelector);
 	const tags = useAppSelector((state) => tagSelector(state, id));
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 	const activityItems = useAppSelector(activityItemsSelector);
 	const boostedTransactions = useAppSelector(boostedTransactionsSelector);
 	const transfer = useAppSelector((state) => {
@@ -201,7 +200,7 @@ const OnchainActivityDetail = ({
 			const data = txData[0].result;
 			setTxDetails(data);
 		});
-	}, [txId, activityType, extended, selectedNetwork, txDetails, t]);
+	}, [txId, extended, txDetails, t]);
 
 	const showBoost = useMemo(() => {
 		if (confirmed || isBoosted) {
@@ -352,7 +351,7 @@ const OnchainActivityDetail = ({
 
 	if (isBoosted) {
 		status = (
-			<View testID="StatusBoosting" style={styles.row}>
+			<View style={styles.row} testID="StatusBoosting">
 				<TimerIconAlt style={styles.rowIcon} color="yellow" height={14} />
 				<BodySSB color="yellow">{t('activity_boosting')}</BodySSB>
 			</View>
@@ -361,7 +360,7 @@ const OnchainActivityDetail = ({
 
 	if (confirmed) {
 		status = (
-			<View testID="StatusConfirmed" style={styles.row}>
+			<View style={styles.row} testID="StatusConfirmed">
 				<CheckCircleIcon style={styles.rowIcon} color="green" />
 				<BodySSB color="green">{t('activity_confirmed')}</BodySSB>
 			</View>
@@ -455,7 +454,7 @@ const OnchainActivityDetail = ({
 								<Section
 									title={t('activity_transfer_to_spending')}
 									value={
-										<View testID="ActivityAmount" style={styles.row}>
+										<View style={styles.row} testID="ActivityAmount">
 											<LightningHollow
 												style={styles.rowIcon}
 												width={16}
@@ -474,7 +473,7 @@ const OnchainActivityDetail = ({
 								<Section
 									title={t('activity_payment')}
 									value={
-										<View testID="ActivityAmount" style={styles.row}>
+										<View style={styles.row} testID="ActivityAmount">
 											<UserIcon
 												style={styles.rowIcon}
 												width={16}
@@ -494,7 +493,7 @@ const OnchainActivityDetail = ({
 							<Section
 								title={t('activity_fee')}
 								value={
-									<View testID="ActivityFee" style={styles.row}>
+									<View style={styles.row} testID="ActivityFee">
 										<TimerIcon style={styles.rowIcon} color="brand" />
 										<Money
 											sats={fees}
@@ -577,8 +576,8 @@ const OnchainActivityDetail = ({
 									isBoosted
 										? 'BoostedButton'
 										: showBoost
-										? 'BoostButton'
-										: 'BoostDisabled'
+											? 'BoostButton'
+											: 'BoostDisabled'
 								}
 								onPress={handleBoost}
 							/>
@@ -628,35 +627,32 @@ const OnchainActivityDetail = ({
 						<ActivityIndicator size="small" />
 					)}
 
-					{hasBoostedParents && (
-						<>
-							{boostedParents.map((parent, i) => {
-								const rbf = boostedTransactions[parent].type === EBoostType.rbf;
-								const testID = rbf ? 'RBFBoosted' : 'CPFPBoosted';
-								const title = rbf
-									? t('activity_boosted_rbf', { num: i + 1 })
-									: t('activity_boosted_cpfp', { num: i + 1 });
+					{hasBoostedParents &&
+						boostedParents.map((parent, i) => {
+							const rbf = boostedTransactions[parent].type === EBoostType.rbf;
+							const testID = rbf ? 'RBFBoosted' : 'CPFPBoosted';
+							const title = rbf
+								? t('activity_boosted_rbf', { num: i + 1 })
+								: t('activity_boosted_cpfp', { num: i + 1 });
 
-								return (
-									<View
-										testID={testID}
-										key={parent}
-										style={styles.sectionContainer}>
-										<TouchableOpacity
-											activeOpacity={0.7}
-											onPress={(): void => {
-												handleBoostParentPress(parent);
-											}}>
-											<Section
-												title={title}
-												value={<BodySSB>{parent}</BodySSB>}
-											/>
-										</TouchableOpacity>
-									</View>
-								);
-							})}
-						</>
-					)}
+							return (
+								<View
+									testID={testID}
+									key={parent}
+									style={styles.sectionContainer}>
+									<TouchableOpacity
+										activeOpacity={0.7}
+										onPress={(): void => {
+											handleBoostParentPress(parent);
+										}}>
+										<Section
+											title={title}
+											value={<BodySSB>{parent}</BodySSB>}
+										/>
+									</TouchableOpacity>
+								</View>
+							);
+						})}
 
 					<View style={styles.buttonDetailsContainer}>
 						<Button
@@ -763,20 +759,12 @@ const LightningActivityDetail = ({
 		statusIcon = (
 			<HourglassSimpleIcon style={styles.rowIcon} color="purple" width={16} />
 		);
-		icon = (
-			<>
-				<HourglassSimpleIcon color="purple" width={24} />
-			</>
-		);
+		icon = <HourglassSimpleIcon color="purple" width={24} />;
 	}
 	if (status === 'failed') {
 		statusText = t('activity_failed');
 		statusIcon = <XIcon style={styles.rowIcon} color="purple" width={16} />;
-		icon = (
-			<>
-				<XIcon color="purple" width={24} />
-			</>
-		);
+		icon = <XIcon color="purple" width={24} />;
 	}
 
 	const StatusRow = (
@@ -1069,13 +1057,7 @@ const ActivityDetail = ({
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={title}
-				onClosePress={(): void => {
-					navigation.goBack();
-					navigation.goBack();
-				}}
-			/>
+			<NavigationHeader title={title} />
 			<ScrollView
 				contentContainerStyle={styles.scrollContent}
 				showsVerticalScrollIndicator={false}>

@@ -9,11 +9,11 @@ import {
 import { IExchangeRates, mostUsedExchangeTickers } from '../exchange-rate';
 import { roundUpToTwoDecimals } from '../helpers';
 import {
-	defaultFiatDisplayValues,
-	defaultBitcoinDisplayValues,
 	IBitcoinDisplayValues,
 	IDisplayValues,
 	IFiatDisplayValues,
+	defaultBitcoinDisplayValues,
+	defaultFiatDisplayValues,
 } from './types';
 
 export const getBitcoinDisplayValues = ({
@@ -50,7 +50,7 @@ export const getBitcoinDisplayValues = ({
 				.reverse()
 				.forEach((c, index) => {
 					if (index > 0 && index % 3 === 0) {
-						res = ' ' + res;
+						res = ` ${res}`;
 					}
 					res = c + res;
 				});

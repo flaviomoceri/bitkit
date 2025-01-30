@@ -1,9 +1,9 @@
 import { default as bitcoinUnits } from 'bitcoin-units';
-import { EConversionUnit, EDenomination } from '../store/types/wallet';
 import { getSettingsStore } from '../store/helpers';
-import { getExchangeRate } from './exchange-rate';
-import { IFiatDisplayValues } from './displayValues/types';
+import { EConversionUnit, EDenomination } from '../store/types/wallet';
 import { getFiatDisplayValues } from './displayValues';
+import { IFiatDisplayValues } from './displayValues/types';
+import { getExchangeRate } from './exchange-rate';
 
 export const btcToSats = (balance: number): number => {
 	try {
@@ -13,7 +13,7 @@ export const btcToSats = (balance: number): number => {
 				.value()
 				.toFixed(0),
 		);
-	} catch (e) {
+	} catch (_e) {
 		return 0;
 	}
 };
@@ -29,7 +29,7 @@ export const convertToSats = (
 	value: number | string,
 	unit: EConversionUnit,
 ): number => {
-	let amount = Number(value);
+	const amount = Number(value);
 
 	if (unit === EConversionUnit.BTC) {
 		return btcToSats(amount);
@@ -75,7 +75,7 @@ export const fiatToBitcoinUnit = ({
 			.toFixed(denomination === EDenomination.modern ? 0 : 8); // satoshi cannot be a fractional number
 
 		return Number(value);
-	} catch (e) {
+	} catch (_e) {
 		return 0;
 	}
 };

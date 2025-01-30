@@ -3,22 +3,26 @@ import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from '..';
 import themes, { IThemeColors } from '../../styles/themes';
 import { TSettings } from '../slices/settings';
-import { selectedNetworkSelector } from './wallet';
-import { EConversionUnit, EDenomination, EUnit } from '../types/wallet';
 import {
+	ETransactionSpeed,
 	ICustomElectrumPeer,
 	TCoinSelectPreference,
 	TCustomElectrumPeers,
 	TReceiveOption,
 	TTheme,
-	ETransactionSpeed,
 } from '../types/settings';
+import { EConversionUnit, EDenomination, EUnit } from '../types/wallet';
+import { selectedNetworkSelector } from './wallet';
 
 export const settingsSelector = (state: RootState): TSettings => state.settings;
+
 const customElectrumPeersState = (state: RootState): TCustomElectrumPeers => {
 	return state.settings.customElectrumPeers;
 };
 
+export const backupVerifiedSelector = (state: RootState): boolean => {
+	return state.settings.backupVerified;
+};
 export const selectedCurrencySelector = (state: RootState): string => {
 	return state.settings.selectedCurrency;
 };
@@ -117,6 +121,18 @@ export const denominationSelector = (state: RootState): EDenomination => {
 };
 export const webRelaySelector = (state: RootState): string => {
 	return state.settings.webRelay;
+};
+export const quickpayIntroSeenSelector = (state: RootState): boolean => {
+	return state.settings.quickpayIntroSeen;
+};
+export const transferIntroSeenSelector = (state: RootState): boolean => {
+	return state.settings.transferIntroSeen;
+};
+export const spendingIntroSeenSelector = (state: RootState): boolean => {
+	return state.settings.spendingIntroSeen;
+};
+export const savingsIntroSeenSelector = (state: RootState): boolean => {
+	return state.settings.savingsIntroSeen;
 };
 
 /**

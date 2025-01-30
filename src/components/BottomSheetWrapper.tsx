@@ -18,6 +18,12 @@
  * getStore().user.viewController['viewName'].isOpen;
  ***********************************************************************************/
 
+import BottomSheet, {
+	BottomSheetView,
+	BottomSheetBackdrop,
+	BottomSheetBackgroundProps,
+	BottomSheetBackdropProps,
+} from '@gorhom/bottom-sheet';
 import React, {
 	memo,
 	ReactElement,
@@ -31,20 +37,14 @@ import React, {
 } from 'react';
 import { StyleSheet } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
-import BottomSheet, {
-	BottomSheetView,
-	BottomSheetBackdrop,
-	BottomSheetBackgroundProps,
-	BottomSheetBackdropProps,
-} from '@gorhom/bottom-sheet';
 import { useTheme } from 'styled-components/native';
 
+import { __E2E__ } from '../constants/env';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import { viewControllerSelector } from '../store/reselect/ui';
 import { closeSheet } from '../store/slices/ui';
 import { TViewController } from '../store/types/ui';
-import { viewControllerSelector } from '../store/reselect/ui';
-import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import BottomSheetBackground from './BottomSheetBackground';
-import { __E2E__ } from '../constants/env';
 
 export interface BottomSheetWrapperProps {
 	children: ReactElement;
@@ -95,7 +95,7 @@ const BottomSheetWrapper = forwardRef(
 		}, [data.isOpen]);
 
 		useImperativeHandle(ref, () => ({
-			snapToIndex(index: number = 0): void {
+			snapToIndex(index = 0): void {
 				bottomSheetRef.current?.snapToIndex(index);
 			},
 			expand(): void {

@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { Display } from '../../styles/text';
 import OnboardingScreen from '../../components/OnboardingScreen';
 import { useAppDispatch } from '../../hooks/redux';
-import { updateUser } from '../../store/slices/user';
 import type { TransferScreenProps } from '../../navigation/types';
+import { updateSettings } from '../../store/slices/settings';
+import { Display } from '../../styles/text';
 
 const imageSrc = require('../../assets/illustrations/lightning.png');
 
@@ -17,12 +17,11 @@ const TransferIntro = ({
 
 	const onContinue = (): void => {
 		navigation.navigate('Funding');
-		dispatch(updateUser({ transferIntroSeen: true }));
+		dispatch(updateSettings({ transferIntroSeen: true }));
 	};
 
 	return (
 		<OnboardingScreen
-			displayBackButton={false}
 			title={
 				<Trans
 					t={t}
@@ -33,10 +32,8 @@ const TransferIntro = ({
 			description={t('transfer_intro.text')}
 			image={imageSrc}
 			buttonText={t('transfer_intro.button')}
+			showBackButton={false}
 			testID="TransferIntro"
-			onClosePress={(): void => {
-				navigation.navigate('Wallet');
-			}}
 			onButtonPress={onContinue}
 		/>
 	);

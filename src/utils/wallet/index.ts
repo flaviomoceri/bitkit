@@ -1,13 +1,8 @@
-import { InteractionManager } from 'react-native';
-import { getAddressInfo } from 'bitcoin-address-validation';
-import * as bitcoin from 'bitcoinjs-lib';
-import * as bip39 from 'bip39';
-import { BIP32Factory } from 'bip32';
-import ecc from '@bitcoinerlab/secp256k1';
-import { err, ok, Result } from '@synonymdev/result';
-import lm, { ldk } from '@synonymdev/react-native-ldk';
 import net from 'net';
 import tls from 'tls';
+import ecc from '@bitcoinerlab/secp256k1';
+import lm, { ldk } from '@synonymdev/react-native-ldk';
+import { Result, err, ok } from '@synonymdev/result';
 import {
 	EAddressType,
 	EAvailableNetworks,
@@ -38,26 +33,20 @@ import {
 } from 'beignet';
 import type { Electrum } from 'beignet/dist/types/electrum';
 import type { Transaction } from 'beignet/dist/types/transaction';
+import { TGetTotalFeeObj, TStorage } from 'beignet/dist/types/types';
 import type { Wallet as TWallet } from 'beignet/dist/types/wallet';
-import { TGetTotalFeeObj } from 'beignet/dist/types/types';
+import { BIP32Factory } from 'bip32';
+import * as bip39 from 'bip39';
+import { getAddressInfo } from 'bitcoin-address-validation';
+import * as bitcoin from 'bitcoinjs-lib';
+import { InteractionManager } from 'react-native';
 
-import { EAvailableNetwork, networks } from '../networks';
 import {
-	getDefaultGapLimitOptions,
-	getDefaultWalletShape,
-	getDefaultWalletStoreShape,
-} from '../../store/shapes/wallet';
-import {
-	IWallet,
-	IWallets,
-	TKeyDerivationAccountType,
-	TTransfer,
-	TWalletName,
-} from '../../store/types/wallet';
-import { IGetAddress, IGenerateAddresses } from '../types';
-import i18n from '../i18n';
-import { btcToSats } from '../conversion';
-import { getKeychainValue, setKeychainValue } from '../keychain';
+	generateNewReceiveAddress,
+	getWalletData,
+	setWalletData,
+	updateExchangeRates,
+} from '../../store/actions/wallet';
 import {
 	dispatch,
 	getLightningStore,
@@ -65,33 +54,44 @@ import {
 	getStore,
 	getWalletStore,
 } from '../../store/helpers';
-import { updateWallet } from '../../store/slices/wallet';
 import {
-	generateNewReceiveAddress,
-	getWalletData,
-	setWalletData,
-	updateExchangeRates,
-} from '../../store/actions/wallet';
+	getDefaultGapLimitOptions,
+	getDefaultWalletShape,
+	getDefaultWalletStoreShape,
+} from '../../store/shapes/wallet';
+import { resetActivityState } from '../../store/slices/activity';
+import { updateUi } from '../../store/slices/ui';
+import { updateWallet } from '../../store/slices/wallet';
+import { createWallet } from '../../store/slices/wallet';
+import { TNode } from '../../store/types/lightning';
 import { TCoinSelectPreference } from '../../store/types/settings';
+import {
+	IWallet,
+	IWallets,
+	TKeyDerivationAccountType,
+	TTransfer,
+	TWalletName,
+} from '../../store/types/wallet';
 import { updateActivityList } from '../../store/utils/activity';
-import { getBlockHeader } from './electrum';
+import { refreshOrdersList } from '../../store/utils/blocktank';
+import { moveMetaIncTxTags } from '../../store/utils/metadata';
+import { showNewOnchainTxPrompt, showNewTxPrompt } from '../../store/utils/ui';
+import BitcoinActions from '../bitcoin-actions';
+import { btcToSats } from '../conversion';
+import { promiseTimeout } from '../helpers';
+import i18n from '../i18n';
+import { getKeychainValue, setKeychainValue } from '../keychain';
 import {
 	getLightningBalance,
 	getLightningReserveBalance,
 	refreshLdk,
 } from '../lightning';
-import { BITKIT_WALLET_SEED_HASH_PREFIX } from './constants';
-import { moveMetaIncTxTags } from '../../store/utils/metadata';
-import { refreshOrdersList } from '../../store/utils/blocktank';
-import { TNode } from '../../store/types/lightning';
-import { showNewOnchainTxPrompt, showNewTxPrompt } from '../../store/utils/ui';
-import { promiseTimeout } from '../helpers';
+import { EAvailableNetwork, networks } from '../networks';
 import { showToast } from '../notifications';
-import { updateUi } from '../../store/slices/ui';
-import { resetActivityState } from '../../store/slices/activity';
-import BitcoinActions from '../bitcoin-actions';
+import { IGenerateAddresses, IGetAddress } from '../types';
+import { BITKIT_WALLET_SEED_HASH_PREFIX } from './constants';
+import { getBlockHeader } from './electrum';
 import { getTransferForTx } from './transfer';
-import { createWallet } from '../../store/slices/wallet';
 
 bitcoin.initEccLib(ecc);
 const bip32 = BIP32Factory(ecc);
@@ -138,7 +138,6 @@ export const setupAddressGenerator = async ({
 export const waitForWallet = async (): Promise<TWallet> => {
 	// Return the wallet when it's defined
 	while (typeof globalWallet === 'undefined') {
-		// eslint-disable-next-line no-promise-executor-return
 		await new Promise((resolve) => setTimeout(resolve, 10));
 	}
 	return globalWallet;
@@ -198,9 +197,7 @@ export const refreshWallet = async ({
  * @param {boolean} [scanAllAddresses] - If set to false, on-chain scanning will adhere to the saved gap limit.
  * @return {Promise<void>}
  */
-const refreshBeignet = async (
-	scanAllAddresses: boolean = false,
-): Promise<void> => {
+const refreshBeignet = async (scanAllAddresses = false): Promise<void> => {
 	// Read additional addresses from LDK. They are used for channel closure transactions.
 	let additionalAddresses: undefined | string[];
 	try {
@@ -631,9 +628,8 @@ export const getSelectedAddressType = ({
 	const storedWallet = getWalletStore().wallets[selectedWallet];
 	if (storedWallet?.addressType[selectedNetwork]) {
 		return storedWallet.addressType[selectedNetwork];
-	} else {
-		return getDefaultWalletShape().addressType[selectedNetwork];
 	}
+	return getDefaultWalletShape().addressType[selectedNetwork];
 };
 
 /**
@@ -733,9 +729,8 @@ export const getTransactionById = ({
 	});
 	if (txid in transactions) {
 		return ok(transactions[txid]);
-	} else {
-		return err('Unable to locate the specified txid.');
 	}
+	return err('Unable to locate the specified txid.');
 };
 
 export interface ITransaction<T> {
@@ -1019,9 +1014,8 @@ const onElectrumConnectionChange = (isConnected: boolean): void => {
 };
 
 // Used to prevent duplicate notifications for the same txid that seems to occur when Bitkit is brought from background to foreground.
-let receivedTxids: string[] = [];
+const receivedTxids: string[] = [];
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 const onMessage: TOnMessage = async (key, data): Promise<void> => {
 	switch (key) {
 		case 'transactionReceived': {
@@ -1047,13 +1041,15 @@ const onMessage: TOnMessage = async (key, data): Promise<void> => {
 			setTimeout(updateActivityList, 500);
 			break;
 		}
-		case 'transactionSent':
+		case 'transactionSent': {
 			setTimeout(updateActivityList, 500);
 			break;
-		case 'connectedToElectrum':
+		}
+		case 'connectedToElectrum': {
 			onElectrumConnectionChange(data as boolean);
 			break;
-		case 'reorg':
+		}
+		case 'reorg': {
 			const utxoArr = data as IUtxo[];
 			// Only notify users of reorg's that impact their transactions.
 			if (utxoArr.length) {
@@ -1068,7 +1064,8 @@ const onMessage: TOnMessage = async (key, data): Promise<void> => {
 				});
 			}
 			break;
-		case 'rbf':
+		}
+		case 'rbf': {
 			const rbfData = data as string[];
 			showToast({
 				type: 'warning',
@@ -1079,9 +1076,11 @@ const onMessage: TOnMessage = async (key, data): Promise<void> => {
 				autoHide: false,
 			});
 			break;
-		case 'newBlock':
+		}
+		case 'newBlock': {
 			// Beignet will handle this.
 			refreshWallet({ onchain: false }).then();
+		}
 	}
 };
 
@@ -1126,7 +1125,7 @@ export const setupOnChainWallet = async ({
 	});
 	// Fetch any stored custom peers.
 	const customPeers = servers ?? getCustomElectrumPeers({ selectedNetwork });
-	let storage;
+	let storage: TStorage | undefined;
 	if (setStorage) {
 		storage = {
 			getData: getWalletData,
@@ -1238,7 +1237,7 @@ export const autoCoinSelect = async ({
 		//Add UTXO's until we have more than the target amount to send.
 		let inputAmount = 0;
 		let newInputs: IUtxo[] = [];
-		let oldInputs: IUtxo[] = [];
+		const oldInputs: IUtxo[] = [];
 
 		//Consolidate UTXO's if unable to determine the amount to send.
 		if (sortMethod === 'consolidate' || !amountToSend) {
@@ -1456,9 +1455,8 @@ export const getCurrentAddressIndex = async ({
 		});
 		if (generatedAddress.isOk()) {
 			return ok(generatedAddress.value);
-		} else {
-			console.log(generatedAddress.error.message);
 		}
+		console.log(generatedAddress.error.message);
 		return err('No address index available.');
 	} catch (e) {
 		return err(e);

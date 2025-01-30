@@ -1,28 +1,22 @@
-import React, { memo, ReactElement, useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
+import React, { memo, ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
+import NavigationHeader from '../../../components/NavigationHeader';
+import SafeAreaInset from '../../../components/SafeAreaInset';
 import {
 	View as ThemedView,
 	TouchableOpacity,
 } from '../../../styles/components';
-import { Subtitle, Caption13Up } from '../../../styles/text';
-import NavigationHeader from '../../../components/NavigationHeader';
-import SafeAreaInset from '../../../components/SafeAreaInset';
-import { useAppSelector } from '../../../hooks/redux';
+import { Caption13Up, Subtitle } from '../../../styles/text';
 import { getNodeId } from '../../../utils/lightning';
 import { showToast } from '../../../utils/notifications';
-import { selectedNetworkSelector } from '../../../store/reselect/wallet';
-import { SettingsScreenProps } from '../../../navigation/types';
 
-const LightningNodeInfo = ({
-	navigation,
-}: SettingsScreenProps<'LightningNodeInfo'>): ReactElement => {
+const LightningNodeInfo = (): ReactElement => {
 	const { t } = useTranslation('lightning');
 	const [nodeId, setNodeId] = useState('');
 	const [error, setError] = useState('');
-	const selectedNetwork = useAppSelector(selectedNetworkSelector);
 
 	useEffect(() => {
 		(async (): Promise<void> => {
@@ -34,7 +28,7 @@ const LightningNodeInfo = ({
 				setError(t('node_failed'));
 			}
 		})();
-	}, [selectedNetwork, t]);
+	}, [t]);
 
 	const onCopy = (): void => {
 		Clipboard.setString(nodeId);
@@ -48,13 +42,7 @@ const LightningNodeInfo = ({
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={t('node_info')}
-				displayBackButton
-				onClosePress={(): void => {
-					navigation.navigate('Wallet');
-				}}
-			/>
+			<NavigationHeader title={t('node_info')} />
 
 			<View style={styles.content}>
 				<View style={styles.label}>

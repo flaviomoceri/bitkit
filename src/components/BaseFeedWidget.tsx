@@ -1,24 +1,24 @@
 import React, { memo, ReactElement, useState } from 'react';
-import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { rootNavigation } from '../navigation/root/RootNavigator';
-import { TouchableOpacity } from '../styles/components';
-import { BodyMSB } from '../styles/text';
-import {
-	SettingsIcon,
-	ListIcon,
-	TrashIcon,
-	QuestionMarkIcon,
-} from '../styles/icons';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { useSlashfeed } from '../hooks/widgets';
-import { truncate } from '../utils/helpers';
-import { deleteWidget } from '../store/slices/widgets';
+import { rootNavigation } from '../navigation/root/RootNavigator';
 import { showWidgetTitlesSelector } from '../store/reselect/settings';
+import { deleteWidget } from '../store/slices/widgets';
+import { TouchableOpacity } from '../styles/components';
+import {
+	ListIcon,
+	QuestionMarkIcon,
+	SettingsIcon,
+	TrashIcon,
+} from '../styles/icons';
+import { BodyMSB } from '../styles/text';
+import { truncate } from '../utils/helpers';
 import Dialog from './Dialog';
-import SvgImage from './SvgImage';
 import LoadingView from './LoadingView';
+import SvgImage from './SvgImage';
 
 const BaseFeedWidget = ({
 	url,
@@ -52,7 +52,7 @@ const BaseFeedWidget = ({
 	const widgetName = name ?? config?.name ?? url;
 
 	const onEdit = (): void => {
-		rootNavigation.navigate('Widget', { url });
+		rootNavigation.navigate('FeedWidget', { url });
 	};
 
 	const onDelete = (): void => {
@@ -89,7 +89,6 @@ const BaseFeedWidget = ({
 							<View style={styles.actions}>
 								<TouchableOpacity
 									style={styles.actionButton}
-									activeOpacity={0.7}
 									color="transparent"
 									hitSlop={{ top: 15, bottom: 15 }}
 									testID="WidgetActionDelete"
@@ -98,7 +97,6 @@ const BaseFeedWidget = ({
 								</TouchableOpacity>
 								<TouchableOpacity
 									style={styles.actionButton}
-									activeOpacity={0.7}
 									color="transparent"
 									hitSlop={{ top: 15, bottom: 15 }}
 									testID="WidgetActionEdit"
@@ -107,7 +105,6 @@ const BaseFeedWidget = ({
 								</TouchableOpacity>
 								<TouchableOpacity
 									style={styles.actionButton}
-									activeOpacity={0.7}
 									color="transparent"
 									hitSlop={{ top: 15, bottom: 15 }}
 									testID="WidgetActionDrag"

@@ -1,3 +1,8 @@
+import Clipboard from '@react-native-clipboard/clipboard';
+import { ldk } from '@synonymdev/react-native-ldk';
+import { Result, err, ok } from '@synonymdev/result';
+import { EAddressType, IAddress, IUtxo } from 'beignet';
+import fuzzysort from 'fuzzysort';
 import React, {
 	memo,
 	ReactElement,
@@ -7,24 +12,49 @@ import React, {
 	useRef,
 	useState,
 } from 'react';
-import { FlatList, StyleSheet, View, ScrollView } from 'react-native';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { useTranslation } from 'react-i18next';
+import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import { err, ok, Result } from '@synonymdev/result';
-import Clipboard from '@react-native-clipboard/clipboard';
-import fuzzysort from 'fuzzysort';
-import { ldk } from '@synonymdev/react-native-ldk';
-import { EAddressType, IAddress, IUtxo } from 'beignet';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 
-import {
-	TouchableOpacity,
-	View as ThemedView,
-} from '../../../styles/components';
-import { Subtitle, BodyS } from '../../../styles/text';
-import SafeAreaInset from '../../../components/SafeAreaInset';
-import type { SettingsScreenProps } from '../../../navigation/types';
 import NavigationHeader from '../../../components/NavigationHeader';
+import SafeAreaInset from '../../../components/SafeAreaInset';
+import SearchInput from '../../../components/SearchInput';
+import Button from '../../../components/buttons/Button';
+import {
+	resetSendTransaction,
+	setupOnChainTransaction,
+	updateBeignetSendTransaction,
+} from '../../../store/actions/wallet';
+import { viewControllerIsOpenSelector } from '../../../store/reselect/ui';
+import {
+	addressTypeSelector,
+	currentWalletSelector,
+	selectedNetworkSelector,
+	selectedWalletSelector,
+} from '../../../store/reselect/wallet';
+import {
+	addressTypes,
+	defaultAddressContent,
+} from '../../../store/shapes/wallet';
+import { resetActivityState } from '../../../store/slices/activity';
+import { updateSendTransaction } from '../../../store/slices/ui';
+import { updateWallet } from '../../../store/slices/wallet';
+import { TWalletName } from '../../../store/types/wallet';
+import { updateActivityList } from '../../../store/utils/activity';
+import { updateOnchainFeeEstimates } from '../../../store/utils/fees';
+import { showBottomSheet } from '../../../store/utils/ui';
+import {
+	View as ThemedView,
+	TouchableOpacity,
+} from '../../../styles/components';
+import { BodyS, Subtitle } from '../../../styles/text';
+import { IThemeColors } from '../../../styles/themes';
+import { openURL } from '../../../utils/helpers';
+import { setupLdk } from '../../../utils/lightning';
+import { EAvailableNetwork } from '../../../utils/networks';
+import { showToast } from '../../../utils/notifications';
+import { startWalletServices } from '../../../utils/startup';
 import {
 	generateAddresses,
 	getKeyDerivationPathObject,
@@ -32,43 +62,12 @@ import {
 	getReceiveAddress,
 	setupAddressGenerator,
 } from '../../../utils/wallet';
-import {
-	addressTypeSelector,
-	currentWalletSelector,
-	selectedNetworkSelector,
-	selectedWalletSelector,
-} from '../../../store/reselect/wallet';
-import { TWalletName } from '../../../store/types/wallet';
-import Button from '../../../components/buttons/Button';
-import {
-	defaultAddressContent,
-	addressTypes,
-} from '../../../store/shapes/wallet';
-import { EAvailableNetwork } from '../../../utils/networks';
-import { showToast } from '../../../utils/notifications';
+import { getAddressUtxos } from '../../../utils/wallet/electrum';
 import {
 	getBlockExplorerLink,
 	sendMax,
 } from '../../../utils/wallet/transactions';
-import { openURL } from '../../../utils/helpers';
-import { getAddressUtxos } from '../../../utils/wallet/electrum';
-import { updateWallet } from '../../../store/slices/wallet';
-import {
-	resetSendTransaction,
-	setupOnChainTransaction,
-	updateBeignetSendTransaction,
-} from '../../../store/actions/wallet';
-import { updateSendTransaction } from '../../../store/slices/ui';
-import { showBottomSheet } from '../../../store/utils/ui';
-import SearchInput from '../../../components/SearchInput';
 import AddressViewerListItem from './AddressViewerListItem';
-import { IThemeColors } from '../../../styles/themes';
-import { updateActivityList } from '../../../store/utils/activity';
-import { resetActivityState } from '../../../store/slices/activity';
-import { setupLdk } from '../../../utils/lightning';
-import { startWalletServices } from '../../../utils/startup';
-import { updateOnchainFeeEstimates } from '../../../store/utils/fees';
-import { viewControllerIsOpenSelector } from '../../../store/reselect/ui';
 
 export type TAddressViewerData = {
 	[EAddressType.p2tr]: {
@@ -196,10 +195,10 @@ const getAllAddresses = async ({
 				addressType: type,
 			});
 			if (generateAddressResponse.isOk()) {
-				let addresses = Object.values(
+				const addresses = Object.values(
 					generateAddressResponse.value.addresses,
 				).sort((a, b) => a.index - b.index);
-				let changeAddresses = Object.values(
+				const changeAddresses = Object.values(
 					generateAddressResponse.value.changeAddresses,
 				).sort((a, b) => a.index - b.index);
 
@@ -224,9 +223,7 @@ const getAllAddresses = async ({
 	return ok(responseData);
 };
 
-const AddressViewer = ({
-	navigation,
-}: SettingsScreenProps<'AddressViewer'>): ReactElement => {
+const AddressViewer = (): ReactElement => {
 	const { t } = useTranslation('settings');
 	const dispatch = useAppDispatch();
 	const selectedWallet = useAppSelector(selectedWalletSelector);
@@ -307,9 +304,9 @@ const AddressViewer = ({
 		totalBalance,
 	]);
 
-	const scrollToEnd = (): void => {
+	const scrollToEnd = useCallback((): void => {
 		setTimeout(() => flatListRef?.current?.scrollToEnd(), 200);
-	};
+	}, []);
 
 	const scrollToTop = useCallback((): void => {
 		if (flatlistData.length > 0) {
@@ -325,7 +322,7 @@ const AddressViewer = ({
 				scrollToEnd();
 			}
 		},
-		[scrollToTop],
+		[scrollToTop, scrollToEnd],
 	);
 
 	/**
@@ -365,6 +362,7 @@ const AddressViewer = ({
 	/**
 	 * Generates a specified amount of addresses per address type. (addressAmount * addressTypes.length)
 	 */
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	const getMoreAddresses = useCallback(
 		async (addressAmount): Promise<void> => {
 			const getAllAddressesRes = await getAllAddresses({
@@ -551,7 +549,7 @@ const AddressViewer = ({
 	 */
 	const getBalanceForAddress = useCallback(
 		(addr: string): number => {
-			let balance: number = 0;
+			let balance = 0;
 			if (utxos && addressesWithBalance.length > 0) {
 				utxos.map((u) => {
 					if (u.address === addr) {
@@ -570,7 +568,7 @@ const AddressViewer = ({
 	 */
 	const getUtxoForAddress = useCallback(
 		(addr: string): IUtxo | undefined => {
-			let utxo;
+			let utxo: IUtxo | undefined;
 			if (utxos && addressesWithBalance.length > 0) {
 				utxo = utxos.find((u) => {
 					return u.address === addr;
@@ -814,7 +812,7 @@ const AddressViewer = ({
 
 	const spendFundsButtonText = useMemo(() => {
 		let fundsToSpend = 0;
-		let uniqueAddresses: string[] = [];
+		const uniqueAddresses: string[] = [];
 		if (utxos) {
 			fundsToSpend = selectedUtxos.reduce((acc, cur) => {
 				return acc + cur.value;
@@ -831,14 +829,15 @@ const AddressViewer = ({
 			: t('addr.spend_all', { count: uniqueAddresses.length });
 	}, [selectedUtxos, selectedUtxosLength, utxos, utxosLength, t]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		const addressAmount =
 			currentAddressIndex + 1 < 20 ? 20 : currentAddressIndex + 1;
 		getMoreAddresses(addressAmount).then();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// Refresh balances after closing the send modal.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		if (sendNavigationIsOpen) {
 			setSendNavigationHasOpened(true);
@@ -846,19 +845,12 @@ const AddressViewer = ({
 		if (sendNavigationHasOpened && !sendNavigationIsOpen) {
 			onCheckBalance().then();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [sendNavigationHasOpened, sendNavigationIsOpen]);
 
 	return (
 		<ThemedView style={styles.root}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader
-				title={t('adv.address_viewer')}
-				displayBackButton={true}
-				onClosePress={(): void => {
-					navigation.navigate('Wallet');
-				}}
-			/>
+			<NavigationHeader title={t('adv.address_viewer')} />
 			<View style={styles.content}>
 				{displayQrCode && (
 					<View style={styles.qrCodeRow}>
@@ -981,8 +973,8 @@ const AddressViewer = ({
 					contentContainerStyle={styles.flatListContent}
 					data={flatlistData}
 					renderItem={({ item }): ReactElement => {
-						let balance;
-						let utxo;
+						let balance = 0;
+						let utxo: IUtxo | undefined;
 						let isSelected = false;
 						if (utxos) {
 							balance = getBalanceForAddress(item.address);
@@ -1012,23 +1004,22 @@ const AddressViewer = ({
 					}}
 					keyExtractor={(item: IAddress): string => item.path}
 				/>
-				<>
-					{totalBalance > 0 && (
-						<View style={styles.spendFundsContainer}>
-							{selectedUtxosLength > 0 && (
-								<Button
-									text={spendFundsButtonText}
-									onPress={(): void => {
-										onSpendFundsPress(utxosLength, selectedUtxosLength).then();
-									}}
-								/>
-							)}
-							<Subtitle style={styles.spendFundsText}>
-								{t('addr.sats_found', { totalBalance })}
-							</Subtitle>
-						</View>
-					)}
-				</>
+
+				{totalBalance > 0 && (
+					<View style={styles.spendFundsContainer}>
+						{selectedUtxosLength > 0 && (
+							<Button
+								text={spendFundsButtonText}
+								onPress={(): void => {
+									onSpendFundsPress(utxosLength, selectedUtxosLength).then();
+								}}
+							/>
+						)}
+						<Subtitle style={styles.spendFundsText}>
+							{t('addr.sats_found', { totalBalance })}
+						</Subtitle>
+					</View>
+				)}
 
 				<View style={styles.footer}>
 					<Button style={styles.backToTop} text="↑" onPress={scrollToTop} />

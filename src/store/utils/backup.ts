@@ -1,5 +1,5 @@
 import lm, { ldk, TBackupServerDetails } from '@synonymdev/react-native-ldk';
-import { err, ok, Result } from '@synonymdev/result';
+import { Result, err, ok } from '@synonymdev/result';
 import { IBoostedTransactions } from 'beignet';
 
 import {
@@ -26,15 +26,21 @@ import {
 	getWidgetsStore,
 } from '../helpers';
 import { getDefaultSettingsShape } from '../shapes/settings';
-import { addActivityItems, TActivity } from '../slices/activity';
+import { getDefaultWalletShape } from '../shapes/wallet';
+import {
+	TActivity,
+	addActivityItems,
+	resetActivityState,
+} from '../slices/activity';
 import { backupError, backupStart, backupSuccess } from '../slices/backup';
 import { updateBlocktank } from '../slices/blocktank';
 import { initialMetadataState, updateMetadata } from '../slices/metadata';
 import { TSettings, updateSettings } from '../slices/settings';
 import { addContacts } from '../slices/slashtags';
+import { restoreBoostedTransactions, restoreTransfers } from '../slices/wallet';
 import {
-	initialWidgetsState,
 	TWidgetsState,
+	initialWidgetsState,
 	updateWidgets,
 } from '../slices/widgets';
 import { EActivityType } from '../types/activity';
@@ -42,9 +48,8 @@ import { TBackupMetadata } from '../types/backup';
 import { IBlocktank } from '../types/blocktank';
 import { TMetadataState } from '../types/metadata';
 import { TSlashtagsState } from '../types/slashtags';
-import { getDefaultWalletShape } from '../shapes/wallet';
 import { IWalletItem, TTransfer } from '../types/wallet';
-import { restoreBoostedTransactions, restoreTransfers } from '../slices/wallet';
+import { updateOnChainActivityList } from './activity';
 
 export enum EBackupCategory {
 	wallet = 'bitkit_wallet',
@@ -184,34 +189,41 @@ export const performBackup = async (
 	try {
 		let data: {};
 		switch (category) {
-			case EBackupCategory.wallet:
+			case EBackupCategory.wallet: {
 				const selectedWallet = getSelectedWallet();
 				const wallet = getWalletStore().wallets[selectedWallet];
 				const { transfers, boostedTransactions } = wallet;
 				data = { boostedTransactions, transfers };
 				break;
-			case EBackupCategory.settings:
+			}
+			case EBackupCategory.settings: {
 				data = getSettingsStore();
 				break;
-			case EBackupCategory.widgets:
+			}
+			case EBackupCategory.widgets: {
 				data = getWidgetsStore();
 				break;
-			case EBackupCategory.metadata:
+			}
+			case EBackupCategory.metadata: {
 				data = getMetaDataStore();
 				break;
-			case EBackupCategory.blocktank:
+			}
+			case EBackupCategory.blocktank: {
 				const { paidOrders, orders } = getBlocktankStore();
 				data = { paidOrders, orders };
 				break;
-			case EBackupCategory.slashtags:
+			}
+			case EBackupCategory.slashtags: {
 				const { contacts } = getSlashtagsStore();
 				data = { contacts };
 				break;
-			case EBackupCategory.ldkActivity:
+			}
+			case EBackupCategory.ldkActivity: {
 				data = getActivityStore().items.filter(
 					(a) => a.activityType === EActivityType.lightning,
 				);
 				break;
+			}
 		}
 
 		const metadata: TBackupMetadata = {
@@ -285,9 +297,13 @@ const performWalletRestore = async (): Promise<
 			return ok({ backupExists: false });
 		}
 
+		// because activity has been updated already before this point
+		// we need to reset the activity state to show boosts correctly
+		dispatch(resetActivityState());
 		dispatch(restoreBoostedTransactions(backup.boostedTransactions));
 		dispatch(restoreTransfers(backup.transfers));
 		dispatch(backupSuccess({ category: EBackupCategory.wallet }));
+		updateOnChainActivityList();
 
 		// Restore success
 		return ok({ backupExists: true });

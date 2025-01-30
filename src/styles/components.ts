@@ -1,31 +1,29 @@
-import {
-	ColorValue,
-	Platform,
-	PressableProps,
-	Switch as RNSwitch,
-	ScrollViewProps,
-	TouchableOpacity as RNTouchableOpacity,
-	TouchableHighlight as RNTouchableHighlight,
-	TouchableOpacityProps,
-	TouchableHighlightProps,
-	Pressable as RNPressable,
-	ViewProps,
-	TextInput as RNTextInput,
-	TextInputProps as RNTextInputProps,
-	SwitchProps,
-} from 'react-native';
-import Color from 'color';
-import Animated, { AnimatedProps } from 'react-native-reanimated';
-import { SafeAreaProvider as _SafeAreaProvider } from 'react-native-safe-area-context';
 import { BottomSheetTextInput as _BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import {
 	DefaultTheme,
 	NavigationContainer as _NavigationContainer,
 } from '@react-navigation/native';
+import Color from 'color';
+import {
+	ColorValue,
+	Platform,
+	PressableProps,
+	Pressable as RNPressable,
+	TextInput as RNTextInput,
+	TextInputProps as RNTextInputProps,
+	TouchableHighlight as RNTouchableHighlight,
+	TouchableOpacity as RNTouchableOpacity,
+	ScrollViewProps,
+	TouchableHighlightProps,
+	TouchableOpacityProps,
+	ViewProps,
+} from 'react-native';
+import Animated, { AnimatedProps } from 'react-native-reanimated';
+import { SafeAreaProvider as _SafeAreaProvider } from 'react-native-safe-area-context';
 
 import _SafeAreaView from '../components/SafeAreaView';
-import styled from './styled-components';
 import colors from './colors';
+import styled from './styled-components';
 import { IThemeColors } from './themes';
 
 type ColorProps = {
@@ -56,7 +54,6 @@ export const Container = styled.View`
 
 export const NavigationContainer = styled(_NavigationContainer).attrs(
 	(props) => ({
-		independent: true,
 		theme: {
 			...DefaultTheme,
 			colors: {
@@ -126,20 +123,6 @@ export const Pressable = styled(RNPressable)<PressableProps & ColorProps>(
 		opacity: props.disabled ? 0.5 : 1,
 	}),
 );
-
-export const Switch = styled(RNSwitch).attrs<SwitchProps & ColorProps>(
-	(props) => ({
-		trackColor: {
-			false: '#3A3A3C',
-			true: props.color
-				? props.theme.colors[props.color]
-				: props.theme.colors.brand,
-		},
-		thumbColor: props.disabled ? '#A0A0A0' : 'white',
-		ios_backgroundColor: '#3A3A3C',
-		...props,
-	}),
-)<SwitchProps & ColorProps>(() => ({}));
 
 export const TextInput = styled(RNTextInput).attrs<TextInputProps>((props) => ({
 	keyboardAppearance: props.theme.id,

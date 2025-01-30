@@ -1,13 +1,13 @@
 import React, { memo, ReactElement } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Image, StyleSheet, View } from 'react-native';
 
-import { View as ThemedView } from '../../../styles/components';
-import { BodyM } from '../../../styles/text';
-import SafeAreaInset from '../../../components/SafeAreaInset';
 import NavigationHeader from '../../../components/NavigationHeader';
+import SafeAreaInset from '../../../components/SafeAreaInset';
 import Button from '../../../components/buttons/Button';
 import type { SettingsScreenProps } from '../../../navigation/types';
+import { View as ThemedView } from '../../../styles/components';
+import { BodyM } from '../../../styles/text';
 
 const imageSrc = require('../../../assets/illustrations/check.png');
 
@@ -23,7 +23,11 @@ const PinChanged = ({
 	return (
 		<ThemedView style={styles.container}>
 			<SafeAreaInset type="top" />
-			<NavigationHeader title={t('cp_changed_title')} />
+			<NavigationHeader
+				title={t('cp_changed_title')}
+				showBackButton={false}
+				showCloseButton={false}
+			/>
 
 			<View style={styles.message}>
 				<BodyM color="secondary">{t('cp_changed_text')}</BodyM>

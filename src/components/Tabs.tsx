@@ -1,19 +1,19 @@
 import React, { ReactElement, memo, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+	GestureResponderEvent,
+	LayoutChangeEvent,
+	StyleProp,
+	StyleSheet,
+	TouchableOpacity,
+	View,
+	ViewStyle,
+} from 'react-native';
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
 	withTiming,
 } from 'react-native-reanimated';
-import {
-	StyleSheet,
-	TouchableOpacity,
-	View,
-	GestureResponderEvent,
-	StyleProp,
-	ViewStyle,
-	LayoutChangeEvent,
-} from 'react-native';
-import { useTranslation } from 'react-i18next';
 
 import colors from '../styles/colors';
 import { CaptionB } from '../styles/text';
@@ -101,7 +101,7 @@ const Tabs = ({
 			{tabs.map((tab, index) => (
 				<Tab
 					key={tab.id}
-					text={t('activity_tabs.' + tab.id)}
+					text={t(`activity_tabs.${tab.id}`)}
 					active={activeTab === index}
 					testID={`Tab-${tab.id}`}
 					onLayout={(event) => handleLayout(tab.id, event, index)}
