@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useCurrency } from '../../hooks/displayValues';
@@ -29,6 +29,11 @@ const CalculatorWidget = ({
 		const dv = getDisplayValues({ satoshis: amount, shouldRoundUpFiat: true });
 		return dv.fiatValue.toString();
 	});
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: update fiat amount when currency changes
+	useEffect(() => {
+		updateFiatAmount(bitcoinAmount);
+	}, [fiatTicker]);
 
 	const updateFiatAmount = (bitcoin: string) => {
 		const amount = Number(bitcoin);
