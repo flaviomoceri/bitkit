@@ -1,7 +1,9 @@
+import { ECoinSelectPreference } from 'beignet';
 import { PIN_ATTEMPTS } from '../../constants/app';
 import { dispatch } from '../../store/helpers';
 import { updateSettings } from '../../store/slices/settings';
 import { resetKeychainValue, setKeychainValue } from '../keychain';
+import { getOnChainWalletAsync } from '../wallet';
 
 /**
  * @async
@@ -45,4 +47,14 @@ export const removePin = async (): Promise<void> => {
 		setKeychainValue({ key: 'pinAttemptsRemaining', value: PIN_ATTEMPTS }),
 		resetKeychainValue('pin'),
 	]);
+};
+
+export const updateCoinSelectPreference = async (
+	preference: ECoinSelectPreference,
+): Promise<void> => {
+	const wallet = await getOnChainWalletAsync();
+	wallet.updateCoinSelectPreference(preference);
+	dispatch(
+		updateSettings({ coinSelectAuto: true, coinSelectPreference: preference }),
+	);
 };
