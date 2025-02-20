@@ -28,6 +28,7 @@ export const satsToBtc = (balance: number): number => {
 export const convertToSats = (
 	value: number | string,
 	unit: EConversionUnit,
+	currency?: string,
 ): number => {
 	const amount = Number(value);
 
@@ -37,7 +38,7 @@ export const convertToSats = (
 
 	if (unit === EConversionUnit.fiat) {
 		const denomination = getSettingsStore().denomination;
-		const btcUnit = fiatToBitcoinUnit({ amount });
+		const btcUnit = fiatToBitcoinUnit({ amount, currency });
 		return denomination === EDenomination.modern ? btcUnit : btcToSats(btcUnit);
 	}
 
