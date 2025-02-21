@@ -40,7 +40,6 @@ import Keychain from 'react-native-keychain';
 import {
 	__BACKUPS_SERVER_HOST__,
 	__BACKUPS_SERVER_PUBKEY__,
-	__TRUSTED_ZERO_CONF_PEERS__,
 } from '../../constants/env';
 import { sendNavigation } from '../../navigation/bottom-sheet/SendNavigation';
 import {
@@ -1712,9 +1711,7 @@ export const addTrustedPeers = async (): Promise<Result<string>> => {
 	const btInfo = await getBlocktankInfo(true);
 	const btNodeIds = btInfo.nodes.map((n) => n.pubkey);
 
-	await lm.setTrustedZeroConfPeerNodeIds(
-		Array.from(new Set([...btNodeIds, ...__TRUSTED_ZERO_CONF_PEERS__])),
-	);
+	await lm.setTrustedZeroConfPeerNodeIds(btNodeIds);
 	return ok('Trusted peers added.');
 };
 

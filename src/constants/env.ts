@@ -4,11 +4,8 @@ import {
 	BACKUPS_SERVER_PUBKEY,
 	BLOCKTANK_HOST,
 	CHATWOOT_API,
+	DEFAULT_BITCOIN_NETWORK,
 	E2E,
-	ELECTRUM_BITCOIN_HOST,
-	ELECTRUM_BITCOIN_PROTO,
-	ELECTRUM_BITCOIN_SSL_PORT,
-	ELECTRUM_BITCOIN_TCP_PORT,
 	ELECTRUM_REGTEST_HOST,
 	ELECTRUM_REGTEST_PROTO,
 	ELECTRUM_REGTEST_SSL_PORT,
@@ -19,21 +16,13 @@ import {
 	ENABLE_REDUX_IMMUTABLE_CHECK,
 	ENABLE_REDUX_LOGGER,
 	TREASURE_HUNT_HOST,
-	TRUSTED_ZERO_CONF_PEERS,
-	WALLET_DEFAULT_SELECTED_NETWORK,
 	WEB_RELAY,
 } from '@env';
 import { isProtocol } from '../store/types/settings';
 import { isBitcoinNetwork } from '../utils/networks';
 
-if (!isBitcoinNetwork(WALLET_DEFAULT_SELECTED_NETWORK)) {
-	throw new Error(
-		`${WALLET_DEFAULT_SELECTED_NETWORK} is not a valid Bitcoin network.`,
-	);
-}
-
-if (!isProtocol(ELECTRUM_BITCOIN_PROTO)) {
-	throw new Error(`${ELECTRUM_BITCOIN_PROTO} is not a valid protocol.`);
+if (!isBitcoinNetwork(DEFAULT_BITCOIN_NETWORK)) {
+	throw new Error(`${DEFAULT_BITCOIN_NETWORK} is not a valid Bitcoin network.`);
 }
 
 if (!isProtocol(ELECTRUM_REGTEST_PROTO)) {
@@ -67,24 +56,14 @@ export const __BACKUPS_SERVER_PUBKEY__ = BACKUPS_SERVER_PUBKEY;
 
 export const __BLOCKTANK_HOST__ = BLOCKTANK_HOST;
 
-export const __ELECTRUM_BITCOIN_HOST__ = ELECTRUM_BITCOIN_HOST;
-export const __ELECTRUM_BITCOIN_SSL_PORT__ = ELECTRUM_BITCOIN_SSL_PORT;
-export const __ELECTRUM_BITCOIN_TCP_PORT__ = ELECTRUM_BITCOIN_TCP_PORT;
-export const __ELECTRUM_BITCOIN_PROTO__ = ELECTRUM_BITCOIN_PROTO;
+export const __DEFAULT_BITCOIN_NETWORK__ = DEFAULT_BITCOIN_NETWORK;
+
 export const __ELECTRUM_REGTEST_HOST__ = ELECTRUM_REGTEST_HOST;
 export const __ELECTRUM_REGTEST_SSL_PORT__ = ELECTRUM_REGTEST_SSL_PORT;
 export const __ELECTRUM_REGTEST_TCP_PORT__ = ELECTRUM_REGTEST_TCP_PORT;
 export const __ELECTRUM_REGTEST_PROTO__ = ELECTRUM_REGTEST_PROTO;
 
-export const __TREASURE_HUNT_HOST__ = TREASURE_HUNT_HOST;
-
-export const __TRUSTED_ZERO_CONF_PEERS__ = TRUSTED_ZERO_CONF_PEERS.split(
-	',',
-).map((nodeId) => nodeId.trim());
-
-export const __WALLET_DEFAULT_SELECTED_NETWORK__ =
-	WALLET_DEFAULT_SELECTED_NETWORK;
-
-export const __E2E__ = E2E === 'true';
 export const __WEB_RELAY__ = WEB_RELAY;
+export const __TREASURE_HUNT_HOST__ = TREASURE_HUNT_HOST;
 export const __CHATWOOT_API__ = CHATWOOT_API;
+export const __E2E__ = E2E === 'true';
