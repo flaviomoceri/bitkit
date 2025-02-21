@@ -15,6 +15,7 @@ const { assetExts, sourceExts } = defaultConfig.resolver;
  * @type {import('metro-config').MetroConfig}
  */
 const config = {
+	resetCache: true,
 	transformer: {
 		// Need this here because of some metro weirdness
 		getTransformOptions: async () => ({}),
