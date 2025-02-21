@@ -9,7 +9,7 @@ import {
 	TGapLimitOptions,
 } from 'beignet';
 import cloneDeep from 'lodash/cloneDeep';
-import { __WALLET_DEFAULT_SELECTED_NETWORK__ } from '../../constants/env';
+import { __DEFAULT_BITCOIN_NETWORK__ } from '../../constants/env';
 import { EAvailableNetwork } from '../../utils/networks';
 import { objectKeys } from '../../utils/objectKeys';
 import { IHeader } from '../../utils/types/electrum';
@@ -176,7 +176,7 @@ export const getDefaultGapLimitOptions = (): TGapLimitOptions => {
 
 export const defaultWalletStoreShape: Readonly<IWalletStore> = {
 	walletExists: false,
-	selectedNetwork: __WALLET_DEFAULT_SELECTED_NETWORK__,
+	selectedNetwork: __DEFAULT_BITCOIN_NETWORK__,
 	selectedWallet: 'wallet0',
 	exchangeRates: {},
 	addressTypesToMonitor: [EAddressType.p2wpkh],
