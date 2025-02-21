@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 
 import { blocktankInfoSelector } from '../store/reselect/blocktank';
 import { blocktankChannelsSizeSelector } from '../store/reselect/lightning';
+import { EConversionUnit } from '../store/types/wallet';
 import { estimateOrderFee } from '../utils/blocktank';
-import { fiatToBitcoinUnit } from '../utils/conversion';
+import { convertToSats } from '../utils/conversion';
 import { useAppSelector } from './redux';
 
 type TTransferValues = {
@@ -17,9 +18,9 @@ const getDefaultLspBalance = (
 	clientBalance: number,
 	maxLspBalance: number,
 ): number => {
-	const threshold1 = fiatToBitcoinUnit({ amount: 225, currency: 'EUR' });
-	const threshold2 = fiatToBitcoinUnit({ amount: 495, currency: 'EUR' });
-	const defaultLspBalance = fiatToBitcoinUnit({ amount: 450, currency: 'EUR' });
+	const threshold1 = convertToSats(225, EConversionUnit.fiat, 'EUR');
+	const threshold2 = convertToSats(495, EConversionUnit.fiat, 'EUR');
+	const defaultLspBalance = convertToSats(450, EConversionUnit.fiat, 'EUR');
 
 	let lspBalance = defaultLspBalance - clientBalance;
 

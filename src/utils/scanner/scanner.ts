@@ -3,6 +3,7 @@ import {
 	lnurlAddress as processLnurlAddress,
 } from '@synonymdev/react-native-lnurl';
 import { Result, err, ok } from '@synonymdev/result';
+import { parse } from '@synonymdev/slashtags-url';
 import {
 	EAddressType,
 	EAvailableNetworks,
@@ -25,7 +26,11 @@ import {
 	setupOnChainTransaction,
 	updateBeignetSendTransaction,
 } from '../../store/actions/wallet';
-import { dispatch, getSettingsStore } from '../../store/helpers';
+import {
+	dispatch,
+	getSettingsStore,
+	getSlashtagsStore,
+} from '../../store/helpers';
 import { closeSheet, updateSendTransaction } from '../../store/slices/ui';
 import { EDenomination } from '../../store/types/wallet';
 import { showBottomSheet } from '../../store/utils/ui';
@@ -106,21 +111,28 @@ export const processUri = async ({
 		paymentData = data;
 	}
 
-	// If we're in the send flow and the data is a slashtag, process for slashpay.
-	if (source === 'send' && data.type === EQRDataType.slashtag) {
-		const slashPayResult = await processSlashPayUrl(data.url);
-		if (slashPayResult.isErr()) {
-			if (showErrors) {
-				showToast({
-					type: 'warning',
-					title: i18n.t('slashtags:error_pay_title'),
-					description: slashPayResult.error.message,
-				});
-			}
-			return err(slashPayResult.error.message);
-		}
+	if (data.type === EQRDataType.slashtag) {
+		const isSend = source === 'send';
+		const { contacts } = getSlashtagsStore();
+		const parsed = parse(data.url);
+		const hasAddedContact = contacts[parsed.id];
 
-		paymentData = slashPayResult.value;
+		// If we're in the send flow or the contact has already been added, process for slashpay.
+		if (isSend || hasAddedContact) {
+			const slashPayResult = await processSlashPayUrl(data.url);
+			if (slashPayResult.isErr()) {
+				if (showErrors) {
+					showToast({
+						type: 'warning',
+						title: i18n.t('slashtags:error_pay_title'),
+						description: slashPayResult.error.message,
+					});
+				}
+				return err(slashPayResult.error.message);
+			}
+
+			paymentData = slashPayResult.value;
+		}
 	}
 
 	// Validate and process payment data.

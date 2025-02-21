@@ -12,7 +12,7 @@ module.exports = {
 				allowUndefined: false,
 			},
 		],
-		'react-native-reanimated/plugin',
+		'react-native-reanimated/plugin', // NOTE: this plugin MUST be last
 	],
 	env: {
 		production: {

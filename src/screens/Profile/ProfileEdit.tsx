@@ -109,7 +109,7 @@ const ProfileEdit = ({
 		if (!onboardedProfile) {
 			dispatch(setOnboardingProfileStep('OfflinePayments'));
 		} else {
-			navigation.navigate('Profile');
+			navigation.popTo('Profile');
 		}
 	};
 

@@ -152,6 +152,10 @@ export const startWalletServices = async ({
 			if (setupResponse.isOk()) {
 				keepLdkSynced({ selectedNetwork }).then();
 			} else {
+				if (setupResponse.error.message.includes('already_init')) {
+					return ok('');
+				}
+
 				showToast({
 					type: 'error',
 					title: i18n.t('wallet:ldk_start_error_title'),
