@@ -11,8 +11,6 @@ declare module '@env' {
 	export const ELECTRUM_REGTEST_TCP_PORT: number;
 	export const ELECTRUM_REGTEST_PROTO: string;
 
-	export const TRUSTED_ZERO_CONF_PEERS: string;
-
 	export const WEB_RELAY: string;
 	export const TREASURE_HUNT_HOST: string;
 	export const CHATWOOT_API: string;

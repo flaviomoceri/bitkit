@@ -16,7 +16,6 @@ import {
 	ENABLE_REDUX_IMMUTABLE_CHECK,
 	ENABLE_REDUX_LOGGER,
 	TREASURE_HUNT_HOST,
-	TRUSTED_ZERO_CONF_PEERS,
 	WEB_RELAY,
 } from '@env';
 import { isProtocol } from '../store/types/settings';
@@ -57,19 +56,14 @@ export const __BACKUPS_SERVER_PUBKEY__ = BACKUPS_SERVER_PUBKEY;
 
 export const __BLOCKTANK_HOST__ = BLOCKTANK_HOST;
 
+export const __DEFAULT_BITCOIN_NETWORK__ = DEFAULT_BITCOIN_NETWORK;
+
 export const __ELECTRUM_REGTEST_HOST__ = ELECTRUM_REGTEST_HOST;
 export const __ELECTRUM_REGTEST_SSL_PORT__ = ELECTRUM_REGTEST_SSL_PORT;
 export const __ELECTRUM_REGTEST_TCP_PORT__ = ELECTRUM_REGTEST_TCP_PORT;
 export const __ELECTRUM_REGTEST_PROTO__ = ELECTRUM_REGTEST_PROTO;
 
-export const __TREASURE_HUNT_HOST__ = TREASURE_HUNT_HOST;
-
-export const __TRUSTED_ZERO_CONF_PEERS__ = TRUSTED_ZERO_CONF_PEERS.split(
-	',',
-).map((nodeId) => nodeId.trim());
-
-export const __DEFAULT_BITCOIN_NETWORK__ = DEFAULT_BITCOIN_NETWORK;
-
-export const __E2E__ = E2E === 'true';
 export const __WEB_RELAY__ = WEB_RELAY;
+export const __TREASURE_HUNT_HOST__ = TREASURE_HUNT_HOST;
 export const __CHATWOOT_API__ = CHATWOOT_API;
+export const __E2E__ = E2E === 'true';
