@@ -2,7 +2,6 @@ import React, { memo, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { __E2E__ } from '../../constants/env';
 import useBlocksWidget from '../../hooks/useBlocksWidget';
 import { TBlocksWidgetOptions } from '../../store/types/widgets';
 import { BodyMSB, BodySSB, CaptionB } from '../../styles/text';
