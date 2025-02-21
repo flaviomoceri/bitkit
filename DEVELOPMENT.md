@@ -1,5 +1,9 @@
 # Development
 
+This document describes how to setup your environment to build Bitkit for development and to run automated tests. If you just want to build it from source for normal usage, see [BUILD.md](./BUILD.md).
+
+## Requirements
+
 Make sure you have [setup your environment for React Native](https://reactnative.dev/docs/environment-setup).
 
 ## Installation

@@ -1,5 +1,14 @@
 # Building Bitkit from source
 
+These instructions are for building Bitkit from source to get a production version of the app. If you are looking for the latest release, you can download it from the [App Store](https://apps.apple.com/app/bitkit-wallet/id6502440655) or [Google Play](https://play.google.com/store/apps/details?id=to.bitkit) or get the latest APK from the [releases page](https://github.com/synonymdev/bitkit/releases).
+
+## Requirements
+
+Make sure you have [setup your environment for React Native](https://reactnative.dev/docs/environment-setup).
+
+> [!NOTE]  
+> Not all of the steps outlined in the above link may be required for building the app. You can skip the ones not relevant to you.
+
 ## Setup
 
 1. Clone the repository
@@ -10,7 +19,7 @@ git clone git@github.com:synonymdev/bitkit.git && cd bitkit
 
 2. Switch Node version
 
-Switch to the Node.js version defined in `.nvmrc`. If `nvm` (or similar) is installed on your system you can run `nvm use`.
+Switch to the Node.js version defined in `.node-version`. You can visit [.node-version File Usage](https://github.com/shadowspawn/node-version-usage) and use one of these methods to change the node version you need.
 
 3. Install dependencies
 
@@ -18,25 +27,18 @@ Switch to the Node.js version defined in `.nvmrc`. If `nvm` (or similar) is inst
 yarn install
 ```
 
+4. Set environment variables
+
+```shell
+cp .env.production.template .env.production
+```
+
 ## Build
 
 ### iOS
 
-For iOS: Open the `ios` folder in Xcode to build the project.
+Follow instructions from the [React Native docs](https://reactnative.dev/docs/publishing-to-app-store) for iOS.
 
 ### Android
 
-For Android: `yarn bundle`.
-
-Moreover, to build the Android APK, it is necessary to configure a signing store to sign
-the apk, as explained by [React Docs](https://reactnative.dev/docs/signed-apk-android).
-
-It is recommend to use the already presented `debug.store` in `android/app`.
-Add the following lines to `~/.gradle/gradle.properties`:
-
-```shell
-BITKIT_UPLOAD_STORE_FILE=debug.keystore
-BITKIT_UPLOAD_STORE_PASSWORD=android
-BITKIT_UPLOAD_KEY_ALIAS=androiddebugkey
-BITKIT_UPLOAD_KEY_PASSWORD=android
-```
+Follow instructions from the [React Native docs](https://reactnative.dev/docs/signed-apk-android) for Android. After that you can find the `.aab` under `android/app/build/outputs/bundle/release/app-release.aab` which can be installed on your device.
