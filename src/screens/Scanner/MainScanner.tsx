@@ -2,7 +2,6 @@ import React, { memo, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 
-import DetectSwipe from '../../components/DetectSwipe';
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import type { RootStackScreenProps } from '../../navigation/types';
@@ -17,10 +16,6 @@ const ScannerScreen = ({
 }: RootStackScreenProps<'Scanner'>): ReactElement => {
 	const { t } = useTranslation('other');
 	const onScan = route.params?.onScan;
-
-	const onSwipeRight = (): void => {
-		navigation.popToTop();
-	};
 
 	const onRead = (uri: string): void => {
 		if (!uri) {
@@ -45,15 +40,10 @@ const ScannerScreen = ({
 	};
 
 	return (
-		<DetectSwipe onSwipeRight={onSwipeRight}>
-			<ScannerComponent onRead={onRead}>
-				<SafeAreaInset type="top" />
-				<NavigationHeader
-					style={styles.navigationHeader}
-					title={t('qr_scan')}
-				/>
-			</ScannerComponent>
-		</DetectSwipe>
+		<ScannerComponent onRead={onRead}>
+			<SafeAreaInset type="top" />
+			<NavigationHeader style={styles.navigationHeader} title={t('qr_scan')} />
+		</ScannerComponent>
 	);
 };
 

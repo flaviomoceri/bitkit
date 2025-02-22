@@ -1,4 +1,3 @@
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, {
 	memo,
 	ReactElement,
@@ -8,17 +7,12 @@ import React, {
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, StyleSheet, View } from 'react-native';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 
-import DetectSwipe from '../../components/DetectSwipe';
 import NavigationHeader from '../../components/NavigationHeader';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import SwitchRow from '../../components/SwitchRow';
 import Button from '../../components/buttons/Button';
-import type {
-	RootStackParamList,
-	RootStackScreenProps,
-} from '../../navigation/types';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
 	selectedNetworkSelector,
 	selectedWalletSelector,
@@ -33,35 +27,30 @@ import { updateSlashPayConfig } from '../../utils/slashtags';
 const crownImageSrc = require('../../assets/illustrations/crown.png');
 const coinsImageSrc = require('../../assets/illustrations/coin-stack.png');
 
-export const ProfileIntro = memo(
-	({ navigation }: RootStackScreenProps<'Profile'>): ReactElement => {
-		const { t } = useTranslation('slashtags');
+export const ProfileIntro = memo((): ReactElement => {
+	const { t } = useTranslation('slashtags');
 
-		return (
-			<Layout
-				navigation={navigation}
-				illustration={crownImageSrc}
-				nextStep="InitialEdit"
-				buttonText={t('continue')}
-				header={t('profile')}>
-				<Display>
-					<Trans
-						t={t}
-						i18nKey="onboarding_profile1_header"
-						components={{ accent: <Display color="brand" /> }}
-					/>
-				</Display>
-				<BodyM color="secondary" style={styles.introText}>
-					{t('onboarding_profile1_text')}
-				</BodyM>
-			</Layout>
-		);
-	},
-);
+	return (
+		<Layout
+			illustration={crownImageSrc}
+			nextStep="InitialEdit"
+			buttonText={t('continue')}
+			header={t('profile')}>
+			<Display>
+				<Trans
+					t={t}
+					i18nKey="onboarding_profile1_header"
+					components={{ accent: <Display color="brand" /> }}
+				/>
+			</Display>
+			<BodyM color="secondary" style={styles.introText}>
+				{t('onboarding_profile1_text')}
+			</BodyM>
+		</Layout>
+	);
+});
 
-export const OfflinePayments = ({
-	navigation,
-}: RootStackScreenProps<'Profile'>): ReactElement => {
+export const OfflinePayments = (): ReactElement => {
 	const { t } = useTranslation('slashtags');
 	const dispatch = useAppDispatch();
 	const selectedWallet = useAppSelector(selectedWalletSelector);
@@ -75,7 +64,6 @@ export const OfflinePayments = ({
 
 	return (
 		<Layout
-			navigation={navigation}
 			illustration={coinsImageSrc}
 			nextStep="Done"
 			buttonText={t('continue')}
@@ -106,7 +94,6 @@ export const OfflinePayments = ({
 
 const Layout = memo(
 	({
-		navigation,
 		illustration,
 		nextStep,
 		buttonText,
@@ -114,7 +101,6 @@ const Layout = memo(
 		children,
 		onNext,
 	}: {
-		navigation: NativeStackNavigationProp<RootStackParamList, 'Profile'>;
 		illustration: ImageSourcePropType;
 		nextStep: TSlashtagsState['onboardingProfileStep'];
 		buttonText: string;
@@ -124,34 +110,28 @@ const Layout = memo(
 	}): ReactElement => {
 		const dispatch = useAppDispatch();
 
-		const onSwipeLeft = (): void => {
-			navigation.popToTop();
-		};
-
 		return (
 			<ThemedView style={styles.root}>
 				<SafeAreaInset type="top" />
 				<NavigationHeader title={header} />
-				<DetectSwipe onSwipeLeft={onSwipeLeft}>
-					<View style={styles.content}>
-						<View style={styles.imageContainer}>
-							<Image style={styles.image} source={illustration} />
-						</View>
-						<View style={styles.middleContainer}>{children}</View>
-						<View style={styles.buttonContainer}>
-							<Button
-								style={styles.button}
-								text={buttonText}
-								size="large"
-								testID="OnboardingContinue"
-								onPress={(): void => {
-									onNext?.();
-									dispatch(setOnboardingProfileStep(nextStep));
-								}}
-							/>
-						</View>
+				<View style={styles.content}>
+					<View style={styles.imageContainer}>
+						<Image style={styles.image} source={illustration} />
 					</View>
-				</DetectSwipe>
+					<View style={styles.middleContainer}>{children}</View>
+					<View style={styles.buttonContainer}>
+						<Button
+							style={styles.button}
+							text={buttonText}
+							size="large"
+							testID="OnboardingContinue"
+							onPress={(): void => {
+								onNext?.();
+								dispatch(setOnboardingProfileStep(nextStep));
+							}}
+						/>
+					</View>
+				</View>
 				<SafeAreaInset type="bottom" minPadding={16} />
 			</ThemedView>
 		);

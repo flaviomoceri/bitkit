@@ -41,7 +41,7 @@ type Props = WalletScreenProps<'Wallets'> & {
 	onFocus: (isFocused: boolean) => void;
 };
 
-const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
+const Wallets = ({ onFocus }: Props): ReactElement => {
 	const [refreshing, setRefreshing] = useState(false);
 	const colors = useColors();
 	const dispatch = useAppDispatch();
@@ -84,14 +84,6 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 		}
 	};
 
-	const navigateToScanner = (): void => {
-		navigation.navigate('Scanner');
-	};
-
-	const navigateToProfile = (): void => {
-		navigation.navigate('Profile');
-	};
-
 	const onRefresh = async (): Promise<void> => {
 		// only scan all addresses once per hour
 		const scanAllAddresses =
@@ -111,48 +103,44 @@ const Wallets = ({ navigation, onFocus }: Props): ReactElement => {
 			<View style={[styles.header, { top: insets.top }]}>
 				<Header />
 			</View>
-			<DetectSwipe
-				onSwipeLeft={navigateToScanner}
-				onSwipeRight={navigateToProfile}>
-				<ScrollView
-					contentContainerStyle={[
-						styles.content,
-						hideOnboarding && styles.scrollView,
-					]}
-					disableScrollViewPanResponder={true}
-					showsVerticalScrollIndicator={false}
-					testID="WalletsScrollView"
-					refreshControl={
-						<RefreshControl
-							refreshing={refreshing}
-							tintColor={colors.refreshControl}
-							progressViewOffset={HEADER_HEIGHT}
-							onRefresh={onRefresh}
-						/>
-					}>
-					<DetectSwipe
-						enabled={enableSwipeToHideBalance}
-						onSwipeLeft={toggleHideBalance}
-						onSwipeRight={toggleHideBalance}>
-						<View>
-							<BalanceHeader />
-						</View>
-					</DetectSwipe>
+			<ScrollView
+				contentContainerStyle={[
+					styles.content,
+					hideOnboarding && styles.scrollView,
+				]}
+				disableScrollViewPanResponder={true}
+				showsVerticalScrollIndicator={false}
+				testID="WalletsScrollView"
+				refreshControl={
+					<RefreshControl
+						refreshing={refreshing}
+						tintColor={colors.refreshControl}
+						progressViewOffset={HEADER_HEIGHT}
+						onRefresh={onRefresh}
+					/>
+				}>
+				<DetectSwipe
+					enabled={enableSwipeToHideBalance}
+					onSwipeLeft={toggleHideBalance}
+					onSwipeRight={toggleHideBalance}>
+					<View>
+						<BalanceHeader />
+					</View>
+				</DetectSwipe>
 
-					{hideOnboarding ? (
-						<>
-							<Balances />
-							<Suggestions />
-							<View style={styles.contentPadding}>
-								{showWidgets && <Widgets />}
-								<ActivityListShort />
-							</View>
-						</>
-					) : (
-						<MainOnboarding style={styles.contentPadding} />
-					)}
-				</ScrollView>
-			</DetectSwipe>
+				{hideOnboarding ? (
+					<>
+						<Balances />
+						<Suggestions />
+						<View style={styles.contentPadding}>
+							{showWidgets && <Widgets />}
+							<ActivityListShort />
+						</View>
+					</>
+				) : (
+					<MainOnboarding style={styles.contentPadding} />
+				)}
+			</ScrollView>
 		</ThemedView>
 	);
 };

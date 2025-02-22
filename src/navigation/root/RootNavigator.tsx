@@ -202,18 +202,10 @@ const RootNavigator = (): ReactElement => {
 					name="ActivityAssignContact"
 					component={ActivityAssignContact}
 				/>
-				<Stack.Screen
-					name="Scanner"
-					component={ScannerScreen}
-					options={{ animation: 'slide_from_right' }}
-				/>
+				<Stack.Screen name="Scanner" component={ScannerScreen} />
 				<Stack.Screen name="TransferRoot" component={TransferNavigator} />
 				<Stack.Screen name="Settings" component={SettingsNavigator} />
-				<Stack.Screen
-					name="Profile"
-					component={Profile}
-					options={{ animation: 'slide_from_left' }}
-				/>
+				<Stack.Screen name="Profile" component={Profile} />
 				<Stack.Screen name="ProfileEdit" component={ProfileEdit} />
 				<Stack.Screen name="Contacts" component={Contacts} />
 				<Stack.Screen name="ContactEdit" component={ContactEdit} />
