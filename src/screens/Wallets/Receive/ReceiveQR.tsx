@@ -676,13 +676,16 @@ const ReceiveQR = ({
 								gesture.activeOffsetX([-10, 10]);
 							}}
 						/>
-						<View style={styles.dots} pointerEvents="none">
+						<View style={styles.dots}>
 							{slides.map((_slide, index) => (
 								<Dot
 									key={index}
 									index={index}
 									animValue={progress}
 									length={slides.length}
+									onPress={(): void => {
+										carouselRef.current?.scrollTo({ index, animated: true });
+									}}
 								/>
 							))}
 						</View>

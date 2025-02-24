@@ -171,11 +171,15 @@ const Slideshow = ({
 		return { opacity };
 	}, [slides.length, progressValue]);
 
+	const scrollToSlide = (index: number): void => {
+		ref.current?.scrollTo({ index, animated: true });
+	};
+
 	const onHeaderButton = (): void => {
 		if (isLastSlide) {
 			navigation.navigate('Passphrase');
 		} else {
-			ref.current?.scrollTo({ index: slides.length - 1, animated: true });
+			scrollToSlide(slides.length - 1);
 		}
 	};
 
@@ -241,13 +245,16 @@ const Slideshow = ({
 				</Animated.View>
 			</View>
 
-			<Animated.View style={[styles.dots, startOpacity]} pointerEvents="none">
+			<Animated.View
+				style={[styles.dots, startOpacity]}
+				pointerEvents={isLastSlide ? 'none' : 'auto'}>
 				{slides.map((_, i) => (
 					<Dot
 						key={i}
 						index={i}
 						animValue={progressValue}
 						length={slides.length}
+						onPress={(): void => scrollToSlide(i)}
 					/>
 				))}
 			</Animated.View>

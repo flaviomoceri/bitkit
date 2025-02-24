@@ -5,7 +5,7 @@ import Animated, {
 	interpolate,
 	useAnimatedStyle,
 } from 'react-native-reanimated';
-import { View } from '../styles/components';
+import { Pressable } from '../styles/components';
 
 const DOT_SIZE = 7;
 
@@ -13,10 +13,12 @@ const Dot = ({
 	animValue,
 	index,
 	length,
+	onPress,
 }: {
 	index: number;
 	length: number;
 	animValue: SharedValue<number>;
+	onPress: () => void;
 }): ReactElement => {
 	const width = DOT_SIZE;
 
@@ -39,9 +41,9 @@ const Dot = ({
 	}, [animValue, index, length]);
 
 	return (
-		<View style={styles.dotRoot} color="gray2">
+		<Pressable style={styles.dotRoot} color="gray2" onPress={onPress}>
 			<Animated.View style={[styles.dot, animStyle]} />
-		</View>
+		</Pressable>
 	);
 };
 

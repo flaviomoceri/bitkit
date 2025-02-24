@@ -13,9 +13,7 @@ import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { FadeIn, FadeOut } from 'react-native-reanimated';
 import Share from 'react-native-share';
-import { useAppSelector } from '../../hooks/redux';
 
-import DetectSwipe from '../../components/DetectSwipe';
 import Divider from '../../components/Divider';
 import NavigationHeader from '../../components/NavigationHeader';
 import ProfileCard from '../../components/ProfileCard';
@@ -24,6 +22,7 @@ import ProfileLinks from '../../components/ProfileLinks';
 import SafeAreaInset from '../../components/SafeAreaInset';
 import Tooltip from '../../components/Tooltip';
 import IconButton from '../../components/buttons/IconButton';
+import { useAppSelector } from '../../hooks/redux';
 import { useProfile, useSlashtags } from '../../hooks/slashtags';
 import type { RootStackScreenProps } from '../../navigation/types';
 import { onboardingProfileStepSelector } from '../../store/reselect/slashtags';
@@ -45,11 +44,11 @@ const Profile = memo((props: RootStackScreenProps<'Profile'>): ReactElement => {
 
 	switch (onboardingProfileStep) {
 		case 'Intro':
-			return <ProfileIntro {...props} />;
+			return <ProfileIntro />;
 		case 'InitialEdit':
 			return <ProfileEdit {...props} />;
 		case 'OfflinePayments':
-			return <OfflinePayments {...props} />;
+			return <OfflinePayments />;
 		default:
 			return <ProfileScreen {...props} />;
 	}
@@ -65,10 +64,6 @@ const ProfileScreen = ({
 
 	const [showCopy, setShowCopy] = useState(false);
 	const [isSharing, setIsSharing] = useState(false);
-
-	const onSwipeLeft = (): void => {
-		navigation.popToTop();
-	};
 
 	const handleCopy = useCallback((): void => {
 		setShowCopy(() => true);
@@ -112,56 +107,54 @@ const ProfileScreen = ({
 				onActionPress={(): void => navigation.navigate('Contacts')}
 			/>
 
-			<DetectSwipe onSwipeLeft={onSwipeLeft}>
-				<ScrollView contentContainerStyle={styles.content}>
-					<ProfileCard url={url} profile={profile} resolving={false} />
-					<Divider />
-					<View style={styles.actions}>
-						<IconButton
-							testID="CopyButton"
-							style={styles.iconButton}
-							onPress={handleCopy}>
-							<CopyIcon height={24} width={24} color="brand" />
-						</IconButton>
-						<IconButton
-							style={styles.iconButton}
-							disabled={isSharing}
-							onPress={handleShare}>
-							<ShareIcon height={24} width={24} color="brand" />
-						</IconButton>
-						<IconButton
-							testID="EditButton"
-							style={styles.iconButton}
-							onPress={(): void => {
-								navigation.navigate('ProfileEdit');
-							}}>
-							<PencilIcon height={20} width={20} color="brand" />
-						</IconButton>
-					</View>
-					<View style={styles.qrContainer}>
-						<QRView
-							url={url}
-							profile={profile}
-							qrRef={qrRef}
-							onPress={handleCopy}
-						/>
-						{showCopy && (
-							<AnimatedView
-								style={styles.tooltip}
-								color="transparent"
-								entering={FadeIn.duration(500)}
-								exiting={FadeOut.duration(500)}>
-								<Tooltip
-									testID="ContactCopiedTooltip"
-									text={t('contact_copied')}
-								/>
-							</AnimatedView>
-						)}
-					</View>
-					<ProfileLinksView profile={profile} />
-					<SafeAreaInset type="bottom" minPadding={16} />
-				</ScrollView>
-			</DetectSwipe>
+			<ScrollView contentContainerStyle={styles.content}>
+				<ProfileCard url={url} profile={profile} resolving={false} />
+				<Divider />
+				<View style={styles.actions}>
+					<IconButton
+						testID="CopyButton"
+						style={styles.iconButton}
+						onPress={handleCopy}>
+						<CopyIcon height={24} width={24} color="brand" />
+					</IconButton>
+					<IconButton
+						style={styles.iconButton}
+						disabled={isSharing}
+						onPress={handleShare}>
+						<ShareIcon height={24} width={24} color="brand" />
+					</IconButton>
+					<IconButton
+						testID="EditButton"
+						style={styles.iconButton}
+						onPress={(): void => {
+							navigation.navigate('ProfileEdit');
+						}}>
+						<PencilIcon height={20} width={20} color="brand" />
+					</IconButton>
+				</View>
+				<View style={styles.qrContainer}>
+					<QRView
+						url={url}
+						profile={profile}
+						qrRef={qrRef}
+						onPress={handleCopy}
+					/>
+					{showCopy && (
+						<AnimatedView
+							style={styles.tooltip}
+							color="transparent"
+							entering={FadeIn.duration(500)}
+							exiting={FadeOut.duration(500)}>
+							<Tooltip
+								testID="ContactCopiedTooltip"
+								text={t('contact_copied')}
+							/>
+						</AnimatedView>
+					)}
+				</View>
+				<ProfileLinksView profile={profile} />
+				<SafeAreaInset type="bottom" minPadding={16} />
+			</ScrollView>
 		</ThemedView>
 	);
 };
