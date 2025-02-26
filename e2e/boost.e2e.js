@@ -11,6 +11,7 @@ import {
 	bitcoinURL,
 	getSeed,
 	restoreWallet,
+	waitForBackup,
 } from './helpers';
 import initElectrum from './electrum';
 
@@ -95,7 +96,7 @@ d('Boost', () => {
 		await element(by.id('Close')).tap();
 
 		// check Activity
-		await element(by.id('WalletsScrollView')).scrollTo('bottom', NaN, 0.85);
+		await element(by.id('WalletsScrollView')).scrollTo('bottom', 0);
 		await expect(element(by.id('ActivityShort-1'))).toBeVisible();
 		await expect(
 			element(by.text('100 000').withAncestor(by.id('ActivityShort-2'))),
@@ -206,7 +207,7 @@ d('Boost', () => {
 		await element(by.id('Close')).tap();
 
 		// check Activity
-		await element(by.id('WalletsScrollView')).scrollTo('bottom', NaN, 0.85);
+		await element(by.id('WalletsScrollView')).scrollTo('bottom', 0);
 		await expect(element(by.id('ActivityShort-1'))).toBeVisible();
 		await expect(
 			element(by.text('100 000').withAncestor(by.id('ActivityShort-2'))),
@@ -268,10 +269,11 @@ d('Boost', () => {
 
 		// wipe & restore
 		const seed = await getSeed();
+		await waitForBackup();
 		await restoreWallet(seed);
 
 		// check activity after restore
-		await element(by.id('WalletsScrollView')).scrollTo('bottom', NaN, 0.85);
+		await element(by.id('WalletsScrollView')).scrollTo('bottom', 0);
 		await expect(element(by.id('BoostingIcon'))).toBeVisible();
 		await element(by.id('ActivityShort-1')).tap();
 		await expect(element(by.id('BoostedButton'))).toBeVisible();

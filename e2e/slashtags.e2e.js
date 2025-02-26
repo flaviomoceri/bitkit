@@ -9,6 +9,7 @@ import {
 	sleep,
 	getSeed,
 	restoreWallet,
+	waitForBackup,
 } from './helpers';
 import initElectrum from './electrum';
 
@@ -222,6 +223,7 @@ d('Profile and Contacts', () => {
 
 			// WIPE APP AND RESTORE FROM THE SEED
 			const seed = await getSeed();
+			await waitForBackup();
 			await restoreWallet(seed);
 
 			// CHECK PROFILE, CONTACTS, TRANSACTION

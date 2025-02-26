@@ -15,6 +15,7 @@ import {
 	waitForPeerConnection,
 	restoreWallet,
 	getSeed,
+	waitForBackup,
 } from './helpers';
 
 d = checkComplete('lighting-1') ? describe.skip : describe;
@@ -78,7 +79,7 @@ d('Lightning', () => {
 			await waitFor(element(by.id('LDKNodeID')))
 				.toBeVisible()
 				.withTimeout(60000);
-			let { label: ldkNodeId } = await element(
+			const { label: ldkNodeId } = await element(
 				by.id('LDKNodeID'),
 			).getAttributes();
 			await element(by.id('NavigationBack')).atIndex(0).tap();
@@ -118,7 +119,7 @@ d('Lightning', () => {
 			await expect(
 				element(by.id('MoneyText').withAncestor(by.id('TotalSize'))),
 			).toHaveText('100 000');
-			await element(by.id('ChannelScrollView')).scrollTo('bottom', NaN, 0.1);
+			await element(by.id('ChannelScrollView')).scrollTo('bottom', Number.NaN, 0.1);
 			await expect(element(by.id('IsUsableYes'))).toBeVisible();
 			await element(by.id('NavigationClose')).atIndex(0).tap();
 
@@ -229,7 +230,7 @@ d('Lightning', () => {
 				.withTimeout(10000);
 
 			// check tx history
-			await element(by.id('WalletsScrollView')).scroll(1000, 'down', NaN, 0.85);
+			await element(by.id('WalletsScrollView')).scroll(1000, 'down', 0);
 			await expect(
 				element(by.text('1 000').withAncestor(by.id('ActivityShort-1'))),
 			).toBeVisible();
@@ -310,6 +311,7 @@ d('Lightning', () => {
 
 			// wipe and restore wallet
 			const seed = await getSeed();
+			await waitForBackup();
 			await restoreWallet(seed);
 
 			// check balance
@@ -320,7 +322,7 @@ d('Lightning', () => {
 				.withTimeout(10000);
 
 			// check tx history
-			await element(by.id('WalletsScrollView')).scroll(1000, 'down', NaN, 0.85);
+			await element(by.id('WalletsScrollView')).scroll(1000, 'down', 0);
 			await expect(
 				element(by.text('111').withAncestor(by.id('ActivityShort-2'))),
 			).toBeVisible();
@@ -334,7 +336,7 @@ d('Lightning', () => {
 			await sleep(100);
 			await element(by.id('Channels')).tap();
 			await element(by.id('Channel')).atIndex(0).tap();
-			await element(by.id('ChannelScrollView')).scrollTo('bottom', NaN, 0.1);
+			await element(by.id('ChannelScrollView')).scrollTo('bottom', Number.NaN, 0.1);
 			await expect(element(by.id('IsUsableYes'))).toBeVisible();
 
 			// close channel
