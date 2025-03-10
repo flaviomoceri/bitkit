@@ -33,6 +33,7 @@ import {
 	getEstimatedRoutingFee,
 	sendMax,
 } from '../../../utils/wallet/transactions';
+import AssetButton from '../AssetButton';
 import SendNumberPad from '../Send/SendNumberPad';
 import UnitButton from '../UnitButton';
 
@@ -124,6 +125,9 @@ const LNURLAmount = ({
 							/>
 						</TouchableOpacity>
 						<View style={styles.actionButtons}>
+							<View style={styles.actionButtonContainer}>
+								<AssetButton style={styles.actionButton} spending={true} />
+							</View>
 							<View style={styles.actionButtonContainer}>
 								<UnitButton
 									style={styles.actionButton}
